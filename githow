@@ -1,0 +1,76 @@
+0. Assign issue to self
+1. Fork
+2. git clone forkUrl
+
+3. Synch w/ upstream
+   gh auth login, HTTPS, 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
+   git checkout master | main # master = Green API
+   set upstream
+     git remote -v # list origin and upstream
+     git remote add upstream github.com/repo0
+   get upstream commits
+     git fetch upstream
+     git rebase upstream/master
+   push new local to fork/origin
+     git push origin master
+
+4. git checkout -b newBranch
+
+5. make local changes
+   git status # lists changed files
+
+5a. store local changes for later
+    git add file2keep.ext
+    git stash --keep-index
+    git reset
+
+    git stash list, stash show, stash apply
+
+6. git add fname | .
+   git commit --no-verify -m "message"
+              or fix .git/hooks/precommit
+   git log # lists commits
+
+6a. Commit message:
+    <fix | feat | docs>(optional scope): <description>
+    [optional body] fix #123
+    Refs: #123
+
+6a. undo previous commit
+    git revert -n
+
+6b. move some commits to newBranch
+    git branch newBranch
+    git cherry-pick -n commitNo
+    git cherry-pick -i
+
+7. git push -u origin branchName
+   | git push --set-upstream origin branchName
+   # all commits go to origin
+   # and to any draft pull request
+
+8. github.com/origin
+   New pull req > create pull => upstream/compare
+   Create pull req, describe, Create draft pull request
+
+9. https://github.com/upstream/repo
+   Pull request: click Ready for review
+
+10. After merge delete branch
+    git branch main|master
+    git merge branchName    
+    git branch -d branchName
+
+
+
+
+
+
+
+
+
+
+
+
+
+
