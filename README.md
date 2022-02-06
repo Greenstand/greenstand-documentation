@@ -16,6 +16,6 @@ They do not require any particular server-side environment.
 
 Clone them to most any directory on most any HTTP server.
 
-/_private, /_swagger, and any other file /_* is meant to be
-password-protected by whatever means the server provides.
+```/_private```, ```/_swagger```, and any other file ```/_*```  
+is meant to be password-protected by whatever means the server provides.
 
