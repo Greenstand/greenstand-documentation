@@ -1,7 +1,8 @@
 // -----------------------------------------------------
 // -----------------------------------------------------
 window.onload=(e)=>{
-  var elms=document.getElementById('contents').getElementsByTagName('span');
+  var elms=[];
+  try{elms=document.getElementById('contents').getElementsByTagName('span');} catch(e){elms=[];}
   for(let i=0;i<elms.length;i++){elms[i].onclick=(e)=>{location.hash=e.target.id.slice(3);}}
   if(location.search.includes('notes')){
     elms=document.getElementsByClassName('note');

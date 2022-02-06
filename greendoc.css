@@ -9,6 +9,10 @@
       a {text-decoration:none;color:#800;cursor:pointer;}
    code, c, .code {font-family:monospace;font-size:13px;padding:2px;margin:4px 0 0 0;
                    white-space:pre;background:#eee;font-size:13px;}
+   input.txt {width:520px;font-family:monospace;background:#eeeeee;border:1px solid #fff;
+              font-size:16px;line-height:20px;margin:6px; }
+   button {padding:2px 8px;}
+
    .in1 {margin-left:12px;}
  .hang1 {margin-left:12px;text-indent:-12px;}
  .tight {margin:0;padding:0;}

@@ -1,0 +1,76 @@
+<!-- HTML for static distribution bundle build -->
+<!-- copied from the /dist directory of swagger-ui-4.4.0.zip -->
+<!-- https://github.com/swagger-api/swagger-ui/realeases/latest -->
+<!-- Phil Norcross, 220118 -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Swagger UI</title>
+    <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
+    <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+    <style>
+      html{box-sizing: border-box;overflow:-moz-scrollbars-vertical;overflow-y: scroll;}
+      *,*:before,*:after{box-sizing:inherit;}
+      body{margin:0;background: #fafafa;}
+      form.download-url-wrapper{display:none !important;}
+    </style>
+  </head>
+  <body>
+
+<!-- ------------------------------------ -->
+<style>
+  div#phil   {margin:12px;}
+  div#phil p {font-family:sans-serif;margin:0;padding:0;font-size:90%;}
+  div#phil button {font-family:monospace;padding:2px;font-size:90%;line-height:90%;}
+  div#phil input {width:90%;font-family:monospace;}
+  div.info {margin-bottom:0 !important;}
+  div.scheme-container{padding:0 !important;box-shadow:none !important;}
+</style>
+<div id='phil'>
+  <p>Provide the URL of a *.yaml file in a Greenstand repository, then <button onclick='getYaml();'>&nbsp;Submit&nbsp;</button></p>
+  <p><input id='yaml' class='txt' type='text' onchange='getYaml();' placeholder='https://raw.githubusercontent.com/Greenstand/&lt;name-of-api>/main/docs/api/spec/query-api.yaml'></input></p>
+<!-- https://raw.githubusercontent.com/Greenstand/treetracker-query-api/main/docs/api/spec/query-api.yaml -->
+  <script>
+    const getYaml=function(init){
+      var yaml=document.getElementById('yaml').value;
+      if((!yaml)&&(document.cookie)&&(document.cookie.includes('yaml='))){  
+        let ck=document.cookie.split('yaml=')[1];
+        yaml=ck.split(';')[0];
+        if(yaml=='null')yaml=null;
+      }//if
+      //if((yaml)&&(!yaml.includes('/Greenstand/'))){alert(yaml+' is not a valid URL for this tool');yaml=null;}
+      if(!yaml)return null;
+      document.cookie='yaml='+yaml;
+      document.getElementById('yaml').value=yaml;
+      if(init)return yaml;
+      location.reload();
+    }//getYaml
+  </script>
+</div>
+<!-- ------------------------------------ -->
+
+    <div id="swagger-ui"></div>
+    <script src="./swagger-ui-bundle.js" charset="UTF-8"> </script>
+    <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
+    <script>
+      window.onload=function(){  //getSwagger();}
+      //const getSwagger=function(){
+        // Begin Swagger UI call region
+        let yml=getYaml(true); //if(!yml)return;
+        const ui = SwaggerUIBundle({
+          url: yml,
+          dom_id: '#swagger-ui',
+          deepLinking: true,
+          presets:[SwaggerUIBundle.presets.apis,SwaggerUIStandalonePreset],
+          plugins:[SwaggerUIBundle.plugins.DownloadUrl],
+          layout: "StandaloneLayout"
+        });
+        // End Swagger UI call region
+        window.ui = ui;
+      };// getSwagger
+    </script>
+  </body>
+</html>
