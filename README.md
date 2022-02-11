@@ -18,5 +18,5 @@ Clone them to most any directory on most any HTTP server.
 ```/_private```, ```/_swagger```, and any other file ```/_*```  
 is meant to be password-protected by whatever means the server provides.
 
-While some of the documents are private, the index's description and list of
-links to the private documents are not themselves private. Authorization is the responsibility of whatever system hosts a given document. 
+While some of the documents are private, the index's descriptions and links
+to the private documents are not themselves private. Authorization is the responsibility of whatever system hosts a given document. 
