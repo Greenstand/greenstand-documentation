@@ -2,8 +2,7 @@
    body {margin:22px;}
      h1 {font-size:24px;font-weight:bold;padding:12px 0 0 0;margin:0;
          border:0px solid #333; border-width:2px 0 0 0;} 
-     h2 {font-size:18px;font-weight:bold;padding:10px 0 0 0;margin:0;
-         border:0px solid #444; border-width:1px 0 0 0;}
+     h2 {font-size:18px;font-weight:bold;padding:10px 0 0 0;margin:0;}
     div {margin:12px 12px 0 0;padding:8px 0 0 0;}
       p {margin:8px 0 0 0;}
       a {text-decoration:none;color:#800;cursor:pointer;}
@@ -16,7 +15,9 @@
    .in1 {margin-left:12px;}
  .hang1 {margin-left:12px;text-indent:-12px;}
  .tight {margin:0;padding:0;}
+  .fine {margin:0;padding:0;font-size:8px;line-height:8px;font-style:italic;color:#666;}
 
+  div.sectn    {border:0px solid #444; border-width:1px 0 0 0;margin-top:24px;}
   div#contents {}
   div#contents p {margin:0;white-space:nowrap;}
   div#contents p span {color:#800;cursor:pointer;}
