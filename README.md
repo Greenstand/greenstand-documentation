@@ -1,3 +1,5 @@
+# March 12: I have complete rebuilt repo on local machine, will push soon.
+
 # GreenDocs
 Documentation, how-to, guides, references for Greenstand and its Treetracker software.
 
