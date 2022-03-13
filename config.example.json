@@ -1,0 +1,26 @@
+{
+  "hostName":"localhost",
+  "homeDir":"/home/yourname/GreenDocs",
+  "password":"clone",
+  "webRootDir":"greenorg",
+  "SSL":false,
+  "ports":{
+    "http":"8082",
+    "ssl":"8442"
+  },
+  "logs":{
+    "level":3,
+    "toConsole":true,
+    "logpath":"/home/yourname/GreenDocs/logs.d/log"
+  },
+  "clientlogs":{
+    "loglevel":1,
+    "toserver":false,
+    "tobrowser":false
+  },
+  "ssl":{
+    "key":"/path/key.pem",
+    "cert":"/path/cert.pem"
+  }  
+}
+

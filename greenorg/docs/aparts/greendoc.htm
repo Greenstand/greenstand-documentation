@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang='en-US'><head><meta charset='UTF-8'/>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'/>
+<script src='./greendoc.js'></script>
+<link rel='stylesheet' href='./greendoc.css'></link>
+</head>
+<body id='grnd'>body
+<div id='grnd' class='grnd'>div#grnd div.grnd
+<h1>h1 Greendoc style</h1>
+<p>This document describes specs for <c>greenstand.org/docs</c>.<p>
+<p>Mostly, it demonstrates the style sheet <a href='./greendoc.css'>greendoc.css</p>
+<p>div#grnd means <c>&lt;div id='grnd'&gt;</c> div.grnd means <c>&lt;div class='grnd'&gt;</c></p>
+<p>The style sheet applies to anything inside of div#grnd</p>
+<p>To understand more, look at this page's source code.</p>
+
+
+<div id='top' class='sect'>div.sect#top
+<div id='contents'>
+  <p><i>div#contents:</i> &nbsp;<br/>
+    <a href='#mid'>Link to #mid</a>, &nbsp;
+    <a href='#end'>link to #end</a>
+  </p>
+</div>
+</div>
+
+<div class='sect'>div.sect
+<h2>h2 Misc. rules:</h2>
+<p class='hang1'>1. <c>greenstand.org/*.php</c> does not understand relative links.<br/>
+All links must be relative to the root, or absolute:</br>
+<c>/docs/*</c> or <c>https://greenstand.org/docs</c>
+</div>
+
+<div class='sect'>div.sect
+<h2>h2 In Production, use *.php</h2>
+<p>A web page in greenstand.org/docs is named <c>*.php</c> and begins like this:<p>
+<div class='code'>&lt;?php 
+  // GREENS TOP NAV
+  $funs=$_SERVER['DOCUMENT_ROOT'].'docs/aparts/funs.php';
+  require($funs);
+  insertFile('docs/aparts/north.htm');
+?>
+&lt;!-- ----------------------------- -->
+&lt;link rel='stylesheet' type='text/css' href='/docs/aparts/greendoc.css'/>
+&lt;script src='/docs/aparts/greendoc.js'/>
+&lt;div id='grnd' class='grnd'></div>
+<p>The unique content of pages goes after that.</p>
+<p>Then the page ends like this:<p>
+<div class='code'>&lt;/div>
+&lt;!-- ----------------------------- -->
+&lt;?php 
+  // GREENS FOOTER
+  insertFile('docs/aparts/south.htm');
+?></div>
+</div>
+
+
+<div class='sect'>div.sect
+<h2>h2 Style classes illustrated:</h2>
+<p>paragraph</p>
+<p>paragraph with a <a>link</a></p>
+<p>paragraph</p>
+<p class='code'>p.code</p>
+<p>paragraph</p>
+<p>paragraph with <c>c tag: &lt;c&gt;</c> and <span class='code'>span.code</span> period.</p>
+<p>paragraph</p>
+<code>code tag: &lt;code&gt;</code>
+<p>paragraph</p>
+<p class='in1'>paragraph.in1<br/>
+means indented</p>
+<p>paragraph</p>
+<p class='hang1'>This paragraph.hang1<br/>has a hanging indent</p>
+<p>paragraph</p>
+<h3>h3 is a paragraph with extra line-space above</h3>
+<p class='tight'>paragraph.tight is a paragraph with no line space above it.</p>
+<p class='tight'>paragraph.tight</p>
+<p class='fine'>paragraph.fine means fine print</p>
+<p class='fine'>paragraph.fine means fine print</p>
+<p>paragraph: the next line says &lt;p class='pb'&gt;&amp;npsp;&lt;/p&gt;. It inserts blank space.<br/>
+(Called 'lead' in the old days, as in a strip of metal. Pb is the element lead).</p>
+<p class='pb'>&nbsp;</p>
+<p>paragraph</p>
+
+
+<div id='mid' class='sect'>div.sect#mid
+<div class='more' onclick='deltaShow(this);'><span class='plus'>+ </span>
+div.more &lt;span&gt;+&lt;/span&gt; means click to expand the following &lt;div&gt;
+<div class='code'>hidden code
+more hidden code
+hidden code line 3</div></div>
+
+<p>paragraph</p>
+<p>paragraph</p>
+<p class='note'>paragraph.note</p>
+<p class='note'>paragraph.git</p>
+<p class='title'>p.title</p>
+<p>paragraph</p>
+<p class='subhd'>p.subhd</p>
+<p class='list'>p.list</p>
+<p class='list'>p.list</p>
+<p class='list'>p.list</p>
+<p id='end'>paragraph#end <a href='#top'>link to top</a></p>
+</div>
+<!-- -------------------------------------------------------------- -->
+<!-- -------------------------------------------------------------- -->
+<!-- -------------------------------------------------------------- -->
+<!-- -------------------------------------------------------------- -->
+<!-- -------------------------------------------------------------- -->
+</div></body></html>
+
+
+

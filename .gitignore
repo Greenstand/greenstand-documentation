@@ -1,0 +1,10 @@
+.git
+a.*
+logs.d/*
+kill
+*test
+test*
+*test*
+*greendoc.php
+config.json
+
