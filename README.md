@@ -5,8 +5,8 @@ Documentation, how-to, guides, references for Greenstand and its Treetracker sof
 This repo populates ```https://greenstand.org/docs/```.
 That website is the central, reliable, up-to-date directory to Greenstand documentation.
 
-The files in ```./greenorg/docs``` deploy to ```https://greenstand.org/docs/```
-Files outside of ```./greenorg/docs``` are only there to support local installation and development.
+The repo files in ```./greenorg/docs``` deploy to ```https://greenstand.org/docs/```
+Repo files outside of ```./greenorg/docs``` are only there to support local installation and development.
 
 ```./greenorg/docs/*index.php``` files provide annotated lists of links.
 Those links point to Greenstand documentation at most any accessible address, 
@@ -46,17 +46,17 @@ between two &lt;pre> &lt;/pre> tags.</pre>
 ```https://greenstand.org/docs/``` depends on ```*.php``` files to provide 
 the headers and footers that are standard to ```https://greenstand.org```
 
-This repo provides a ```node.js``` server for development purposes.
+This repo provides a ```node.js``` server for local development purposes.
 
 Using PHP on node.js is an odd arrangement. 
-The node.js server does not process PHP.
-It reads the PHP files and copies HTML code from them.
+The node.js server cannot process PHP.
+Instead, it reads the PHP files and copies HTML code from them.
 
 If you have a better idea, please let us know. Submit an issue.
 
 ## Local Installation:
 
-The installation is tested on Linux Ubuntu. 
+The local installation is tested on Linux Ubuntu. 
 If you discover problems on other platforms, please submit an issue.
 
 1. Fork the repo from ```https://github.com/Greenstand/greenstand-documentation```
@@ -71,10 +71,10 @@ If you discover problems on other platforms, please submit an issue.
 
 ## Authorization: 
 
-Any file or directory with a name that includes an _underscore_
-is private and password protected.
+Any file or directory with a name that includes an \_underscore\_
+is private and password-protected.
 
-The password is in the file https://greenstand.org/docs/aparts/greendoc.php
+The password is in the file ```https://greenstand.org/docs/aparts/greendoc.php```
 That file is **not** part of this repo.
 To change the password, you need read-write access to that server's file system.
 
