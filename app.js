@@ -1,6 +1,6 @@
 // 210515
 'use strict';
-const CONFIG=require('./pnconfig.json');
+const CONFIG=require('./config.json');
 const pn=require('./pnnode.js');
 const routes=require('./routes.js');
 var express = require('express');
