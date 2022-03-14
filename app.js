@@ -12,7 +12,6 @@ var bodyParser = require('body-parser');
   app.use(bodyParser.json());
 var cookieParser=require('cookie-parser');
   app.use(cookieParser());  
-const auth=require('./auth.js');
 
 app.all('*',function(req,res,next){pn.log('i90001 app.js input: '+req.method+' '+req.url); next();})
 ///docs/contributor-docs/?loginto=%2Fdocs%2Fcontributor-docs%2F_swagger%2F
