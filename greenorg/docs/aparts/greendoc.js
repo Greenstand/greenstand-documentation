@@ -22,8 +22,10 @@ window.onload=(e)=>{
     }//if
   }//for
   
-  // IF LOCAL, NO TOP MARGIN
-  if(document.getElementById('northtxt'))document.getElementById('grnd').style.margin='24px'; 
+  // IF LOCAL, NO TOP MARGIN, NO BASE URL
+  if(document.getElementById('northtxt')){
+    document.getElementById('grnd').style.margin='24px'; 
+  }//if
 
   // RUN OPTIONAL DOC-UNIQUE LOADER
   try{if(loader)loader();} catch(e){}

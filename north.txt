@@ -13,7 +13,7 @@
 <link rel='stylesheet' type='text/css' href='/docs/aparts/greendoc.css?'/>
 <script src='/docs/aparts/greendoc.js'></script>
 </head><body id='northtxt'>
-<div id='grnd' class='grnd' style='margin-top:140px'>
+<div id='grnd' class='grnd container' style='margin-top:140px'>
 
 <!-- END NORTH.TXT -------------------------------------- -->
 

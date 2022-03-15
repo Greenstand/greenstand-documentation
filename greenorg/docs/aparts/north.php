@@ -3,6 +3,10 @@ echo ("<!-- NORTH.PHP ------------------------------------------ -->");
 $std = file_get_contents("https://greenstand.org/devbox");
 $x=strpos($std,'</nav>');
 $north=substr($std,0,$x+6);
+// <base href="https://greenstand.org/">
+if($_SERVER['HTTP_HOST']!='greenstand.org'){
+  $north=str_replace('<base','<xbase',$north);
+}//if  
 echo $north;
 ?>
 
@@ -27,7 +31,7 @@ echo $north;
 ?>
 
 <!-- GREENDOC DIV -->
-<div id='grnd' class='grnd' style='margin-top:140px'>
+<div id='grnd' class='grnd container' style='margin-top:140px'>
 
 <!-- END NORTH.PHP -------------------------------------- -->
 

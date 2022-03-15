@@ -16,11 +16,17 @@
  div#grnd2 button   {font-family:monospace;padding:2px;font-size:90%;line-height:90%;}
  div#grnd2 input    {width:90%;font-family:monospace;}
  div#grnd3 div.info {margin-bottom:0 !important;}
- div#grnd3 div.scheme-container {padding:0 !important;box-shadow:none !important;}
+ div#grnd3 section.scheme-container {padding:0 !important;box-shadow:none !important;}
+ div#grnd3 section.models.is-open {padding:0 !important;box-shadow:none !important;}
+ div#grnd3 section.block.col-12 {min-height:0px !important;}
+ div#grnd3 section.models.is-open {min-height:0px !important;}
+ div#grnd3 section.response-controls {min-height:0px !important;}
+ div#grnd3 xsection {min-height:0px !important;}
  
  /* SWAGGER'S STYLE ------------------------------- */ 
+ div#grnd3 div {margin-top:6px !important;padding:0 !important;}
  div#grnd3 *  {box-sizing: border-box;overflow:-moz-scrollbars-vertical;overflow-y: scroll;}
- div#grnd3 *, div#grnd2 *:before, div#grnd2 *:after{box-sizing:inherit;}
+ div#grnd3 *, div#grnd3 *:before, div#grnd3 *:after{box-sizing:inherit;}
  div#grnd3    {margin:0;background: #fafafa;}
  div#grnd3 form.download-url-wrapper {display:none !important;}
 </style>
@@ -54,8 +60,8 @@
 <!-- SWAGGER'S CODE ------------------------------------ -->
 <div id='grnd3'>
   <div id="swagger-ui"></div>
-  <script src="./swagger-ui-bundle.js" charset="UTF-8"> </script>
-  <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
+  <script src="/docs/contributor-docs/_swagger/swagger-ui-bundle.js" charset="UTF-8"> </script>
+  <script src="/docs/contributor-docs/_swagger/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
   <script>
     window.onload=function(){  //getSwagger();}
     //const getSwagger=function(){
