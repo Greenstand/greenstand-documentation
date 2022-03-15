@@ -24,34 +24,13 @@
 
 <div class='sect'>div.sect
 <h2>h2 Misc. rules:</h2>
-<p class='hang1'>1. <c>greenstand.org/*.php</c> does not understand relative links.<br/>
+<p class='hang1'>1. A web page in greenstand.org/docs is named <c>*.php</c>.
+It begins and ends with blocks of PHP code. For details, see
+<a href='/docs/aparts/template.php'>/docs/aparts/template.php</p>
+<p class='hang1'>2. <c>greenstand.org/*.php</c> does not understand relative links.<br/>
 All links must be relative to the root, or absolute:</br>
 <c>/docs/*</c> or <c>https://greenstand.org/docs</c>
 </div>
-
-<div class='sect'>div.sect
-<h2>h2 In Production, use *.php</h2>
-<p>A web page in greenstand.org/docs is named <c>*.php</c> and begins like this:<p>
-<div class='code'>&lt;?php 
-  // GREENS TOP NAV
-  $funs=$_SERVER['DOCUMENT_ROOT'].'docs/aparts/funs.php';
-  require($funs);
-  insertFile('docs/aparts/north.htm');
-?>
-&lt;!-- ----------------------------- -->
-&lt;link rel='stylesheet' type='text/css' href='/docs/aparts/greendoc.css'/>
-&lt;script src='/docs/aparts/greendoc.js'/>
-&lt;div id='grnd' class='grnd'></div>
-<p>The unique content of pages goes after that.</p>
-<p>Then the page ends like this:<p>
-<div class='code'>&lt;/div>
-&lt;!-- ----------------------------- -->
-&lt;?php 
-  // GREENS FOOTER
-  insertFile('docs/aparts/south.htm');
-?></div>
-</div>
-
 
 <div class='sect'>div.sect
 <h2>h2 Style classes illustrated:</h2>
