@@ -39,7 +39,7 @@ Put your content here.
 between two &lt;pre> &lt;/pre> tags.</pre>
 
 For details about the style sheet, see 
-```https://greenstand.org/docs/aparts/greendoc.htm```
+https://greenstand.org/docs/aparts/greendoc.htm
 
 <!-- STANDARD PHP FOOTER --------------- -->
 <?php require($_SERVER['DOCUMENT_ROOT'].'/docs/aparts/south.php');?>
