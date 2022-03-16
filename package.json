@@ -39,7 +39,7 @@
     "nodemon": "^1.19.4"
   },
   "engines": {"node": ">=8.11.1"},
-  "repository": {
+  "xrepository": {
     "type": "git",
     "url": "git+https://github.com/philnorc/greenstand-documentation.git"
   },
