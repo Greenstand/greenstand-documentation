@@ -1,6 +1,7 @@
 // -----------------------------------------------------
 // -----------------------------------------------------
 window.onload=(e)=>{
+  alert('greendoc.js onload');  
 
   // SHOW NOTES
   if(location.search.includes('notes')){
@@ -30,7 +31,29 @@ window.onload=(e)=>{
   // RUN OPTIONAL DOC-UNIQUE LOADER
   try{if(loader)loader();} catch(e){}
   
+  // BREADCRUMBS
+  setCrumbs();
 };//load
+
+// -----------------------------------------------------
+const setCrumbs=function(){
+  // /docs/project-design /contributor-docs /user-guides
+  let ara=location.pathname;
+  if(ara.slice(0,1)=='/')ara=ara.slice(1);
+  if(ara.slice(-1)=='/')ara=ara.slice(0,-1);
+  ara=ara.split('/');
+  if(ara.length==1)return;
+  let crumbsd=document.getElementById('crumbsd');
+  if(!crumbsd)return;
+  let crumba="<a id='docs' href='/docs'>Documentation</a> -> ";
+  if(ara.length==2){ crumbsd.innerHTML=crumba; return; }  
+  let crumbh='/'+ara[0]+'/'+ara[1];
+  let crumbt='Contributor';
+    if(crumbh.includes('project'))crumbt='Project';
+    if(crumbh.includes('user'))crumbt='User';
+  crumba+="<a id='crumb2' href='"+crumbh+"'>"+crumbt+"</a> ->";
+  crumbsd.innerHTML=crumba;
+}//setCrumbs
 
 // -----------------------------------------------------
 const deltaShow=function(elm){

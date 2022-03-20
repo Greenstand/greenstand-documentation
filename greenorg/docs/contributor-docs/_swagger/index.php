@@ -11,10 +11,11 @@
 <style>
 
  /* PHIL'S STYLE ------------------------------- */ 
- div#grnd2          {margin:12px;}
- div#grnd2 p        {font-family:sans-serif;margin:0;padding:0;font-size:90%;}
+ div#grnd2          {margin:12px; border:0px solid green;}
+ div#grnd2 p        {font-family:sans-serif;margin:0;padding:0;font-size:90%; border:0px solid red;}
  div#grnd2 button   {font-family:monospace;padding:2px;font-size:90%;line-height:90%;}
- div#grnd2 input    {width:90%;font-family:monospace;}
+ div#grnd2 p#inp    {width:90%;font-family:monospace;}
+ div#grnd2 input    {width:90% !important;font-family:monospace;border:1px solid #666;background:#fff;}
  div#grnd3 div.info {margin-bottom:0 !important;}
  div#grnd3 section.scheme-container {padding:0 !important;box-shadow:none !important;}
  div#grnd3 section.models.is-open {padding:0 !important;box-shadow:none !important;}
@@ -35,9 +36,8 @@
 <div id='grnd2'>
   <p>Provide the URL of a *.yaml file in a Greenstand repository, 
      then <button onclick='getYaml();'>&nbsp;Submit&nbsp;</button></p>
-  <p><input id='yaml' class='txt' type='text' onchange='getYaml();' 
-     placeholder='https://raw.githubusercontent.com/Greenstand/&lt;name-of-api>
-     /main/docs/api/spec/query-api.yaml'></input></p>
+  <p id='inp'><input id='yaml' class='txt' type='text' onchange='getYaml();' 
+     placeholder='https://raw.githubusercontent.com/Greenstand/&lt;name-of-api&gt;/main/docs/api/spec/query-api.yaml'></input></p>
   <!-- https://raw.githubusercontent.com/Greenstand/treetracker-query-api/main/docs/api/spec/query-api.yaml -->
   <script>
     const getYaml=function(init){
@@ -63,7 +63,7 @@
   <script src="/docs/contributor-docs/_swagger/swagger-ui-bundle.js" charset="UTF-8"> </script>
   <script src="/docs/contributor-docs/_swagger/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
   <script>
-    window.onload=function(){  //getSwagger();}
+    const loader=function(){  //getSwagger();}
     //const getSwagger=function(){
       // Begin Swagger UI call region
       let yml=getYaml(true); //if(!yml)return;
