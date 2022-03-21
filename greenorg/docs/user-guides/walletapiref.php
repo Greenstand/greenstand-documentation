@@ -37,6 +37,9 @@
 const loader=function(){
   // OVERRIDE DIV#GRND & greendoc.css
   document.getElementById('grnd').id='grnd0';
+  document.getElementById('crumbsd').style.fontFamily='sans-serif';
+  document.getElementById('crumbsd').style.marginTop='160px';
+
   // FIX T.O.C. LINKS
   var elms=document.getElementById('contents').getElementsByTagName('span');
   for(let i=0;i<elms.length;i++){

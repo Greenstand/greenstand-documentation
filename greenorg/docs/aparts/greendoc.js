@@ -1,7 +1,16 @@
 // -----------------------------------------------------
 // -----------------------------------------------------
 window.onload=(e)=>{
-  alert('greendoc.js onload');  
+  //alert('greendoc.js onload');  
+
+  // FOOTER IS DOES NOT DISPLAY UNTIL PAGE LOADED
+  document.getElementsByTagName('footer')[0].style.display='block';
+
+  // RUN OPTIONAL DOC-UNIQUE LOADER
+  try{if(loader)loader();} catch(e){}
+
+  // BREADCRUMBS
+  setCrumbs();
 
   // SHOW NOTES
   if(location.search.includes('notes')){
@@ -26,13 +35,9 @@ window.onload=(e)=>{
   // IF LOCAL, NO TOP MARGIN, NO BASE URL
   if(document.getElementById('northtxt')){
     document.getElementById('grnd').style.margin='24px'; 
+    document.getElementById('grnd0').style.margin='24px'; 
   }//if
 
-  // RUN OPTIONAL DOC-UNIQUE LOADER
-  try{if(loader)loader();} catch(e){}
-  
-  // BREADCRUMBS
-  setCrumbs();
 };//load
 
 // -----------------------------------------------------

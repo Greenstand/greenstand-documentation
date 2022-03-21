@@ -33,6 +33,9 @@
 const loader=function(){
   // OVERRIDE DIV#GRND & greendoc.css
   document.getElementById('grnd').id='grnd0';
+  document.getElementById('crumbsd').style.fontFamily='sans-serif';
+  document.getElementById('crumbsd').style.marginTop='160px';
+
 }//loader
 //<!-- ----------------------------------------------------------------- -->l
 //<!-- ----------------------------------------------------------------- -->

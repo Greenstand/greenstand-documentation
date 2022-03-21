@@ -5,7 +5,7 @@
 <!-- https://github.com/swagger-api/swagger-ui/realeases/latest -->
 <!-- Phil Norcross, 220118 -->
 
-<link rel="stylesheet" type="text/css" href="/docs/contributor-docs/_swagger/swagger-ui.css" />
+<link rel="stylesheet" type="text/css" href="/docs/contributor-docs/_swagger/swagger-ui.cssx" />
 <link rel="icon" type="image/png" href="/docs/contributor-docs/_swagger/favicon-32x32.png" sizes="32x32" />
 <link rel="icon" type="image/png" href="/docs/contributor-docs/_swagger/favicon-16x16.png" sizes="16x16" />
 <style>
@@ -38,6 +38,7 @@
      then <button onclick='getYaml();'>&nbsp;Submit&nbsp;</button></p>
   <p id='inp'><input id='yaml' class='txt' type='text' onchange='getYaml();' 
      placeholder='https://raw.githubusercontent.com/Greenstand/&lt;name-of-api&gt;/main/docs/api/spec/query-api.yaml'></input></p>
+  <!-- https://raw.githubusercontent.com/Greenstand/treetracker-wallet-api/master/docs/api/spec/treetracker-wallet-api.yaml -->
   <!-- https://raw.githubusercontent.com/Greenstand/treetracker-query-api/main/docs/api/spec/query-api.yaml -->
   <script>
     const getYaml=function(init){
