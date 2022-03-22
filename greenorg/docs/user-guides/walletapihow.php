@@ -29,17 +29,7 @@
                     padding:6px;color:#080;white-space:pre;}
   div#grnd2 p.note:before {content:'??? ';}
 </style>
-<script>
-const loader=function(){
-  // OVERRIDE DIV#GRND & greendoc.css
-  document.getElementById('grnd').id='grnd0';
-  document.getElementById('crumbsd').style.fontFamily='sans-serif';
-  document.getElementById('crumbsd').style.marginTop='160px';
-
-}//loader
-//<!-- ----------------------------------------------------------------- -->l
-//<!-- ----------------------------------------------------------------- -->
-</script>
+<script>const loader=function(){override();}</script>
 
 <div id='grnd2' class='grnd2'>
 <h1>How to Use the Treetracker Wallet API</h2>

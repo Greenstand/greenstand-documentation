@@ -5,3 +5,4 @@
   $south=substr($std,$x+7);
   $south='<footer style="display:none"'.$south;
   echo $south;
+?>

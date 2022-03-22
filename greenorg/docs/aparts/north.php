@@ -7,7 +7,7 @@
   // <base href="https://greenstand.org/">
   if($_SERVER['HTTP_HOST']!='greenstand.org'){
     $north=str_replace('<base','<xbase',$north);
-  }//if  
+  }//if
   echo $north;
 ?>
 
@@ -28,11 +28,11 @@
 
   // AUTHORIZED?
   $authd=false;
-    if( ($_COOKIE) && ($_COOKIE['authorized']) && ($_COOKIE['authorized']=='OK') )$authd=true;
+  if( ($_COOKIE) && ($_COOKIE['authorized']) && ($_COOKIE['authorized']=='OK') )$authd=true;
   $path=$_SERVER['REQUEST_URI'];
     if(strpos($path,'?'))$path=substr($path,0,strpos($path,'?'));
   if((strpos($path,'_'))&&(!$authd)){
-    require($_SERVER['DOCUMENT_ROOT'].'/docs/aparts/isloggedin.php');
+  //  require($_SERVER['DOCUMENT_ROOT'].'/docs/aparts/isloggedin.php');
   }//if
 
 ?>

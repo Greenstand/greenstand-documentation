@@ -10,6 +10,7 @@
   div#grnd2 p     {margin:8px 0 0 0;}
   div#grnd2 code, c {font-family:monospace;font-size:13px;line-height:16px;}
   div#grnd2 a     {text-decoration:none;color:#86c232;}
+  div#grnd2 i     {font-size:inherit;line-height:inherit;}
 
   div#grnd2 div#contents {}
   div#grnd2 div#contents p {margin:0;}
@@ -35,11 +36,7 @@
 <!-- ----------------------------- -->
 <script>
 const loader=function(){
-  // OVERRIDE DIV#GRND & greendoc.css
-  document.getElementById('grnd').id='grnd0';
-  document.getElementById('crumbsd').style.fontFamily='sans-serif';
-  document.getElementById('crumbsd').style.marginTop='160px';
-
+  //override();
   // FIX T.O.C. LINKS
   var elms=document.getElementById('contents').getElementsByTagName('span');
   for(let i=0;i<elms.length;i++){
@@ -89,10 +86,10 @@ const loader=function(){
 <!-- ----------------------------- -->
 <!-- ----------------------------- -->
 <div class='resource' id='intro'>
-  <p>API requests need three headers:<br/>
-    <code>- TREETRACKER-API-KEY:&lt;<i>api-key</i>&gt;<br/>
-    - Authorization:Bearer &lt;<i>token</i>&gt;<br/>
-    - Content-Type:application/json</code></p>
+  <p>API requests need three headers:</p>
+<p class='code'>- TREETRACKER-API-KEY:&lt;<i>api-key</i>&gt;
+- Authorization:Bearer &lt;<i>token</i>&gt;
+- Content-Type:application/json</p>
   <p>Every user's first request to the API is <a href='#authenticate'>Authenticate</a>.
      That returns a Bearer token good for about one year.</p>
   <p>Do not confuse the <i>Bearer &lt;token&gt;</i> with the other use of <i>token</i> in the API.<br/>
@@ -136,7 +133,7 @@ const loader=function(){
 <p class='code'>422: Unprocessable Entity
 422: "wallet" is required
 422: "password" is required
-<p class='fix'>Provide the request body: <code>{"wallet": "name", "password": "value"}</p>
+<p class='fix'>Provide the request body: <code>{"wallet": "name", "password": "value"}</code></p>
 
 <p class='code'>401: Unauthorized
 401: Invalid credentials</p>
@@ -182,9 +179,9 @@ const loader=function(){
 <p class='note git'>issue 276 At
 GET /wallet/wallets?limit=n&start=n
 GET /wallet/tokens?limit=n&start=n
-GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
+GET /wallet/tokens/&lt;token_id>/transactions?limit=n&start=n
 GET /wallet/transfers?limit=n&start=n
-GET /wallet/transfers/<transfer_id>/tokens?limit=n&start=n
+GET /wallet/transfers/&lt;transfer_id>/tokens?limit=n&start=n
 GET /wallet/trust_relationships?limit=n&start=n
 
 ?limit=n&start=n produces unexpected results.
@@ -201,16 +198,16 @@ is hard to understand if you don't know the length of the array.
 And because if start>limit, it returns nothing:
 ?limit=4&start=5 returns []
 
-And limit < 1 should return the same error as start < 1:
+And limit &lt; 1 should return the same error as start &lt; 1:
 422: "limit" must be greater than or equal to 1.</p>
 </div>
 </div>
 <!-- ----------------------------- -->
 <div class='resource' id='postWallets'>
 <p class='title'>Post Wallet</p>
-<p class='abs'>Create a new wallet that is managed by this session's authenticated wallet.</p></p>
-<p class='code path'>POST /wallet/wallets</p></p>
-<p class='subhd'>Request body: </p></p>
+<p class='abs'>Create a new wallet that is managed by this session's authenticated wallet.</p>
+<p class='code path'>POST /wallet/wallets</p>
+<p class='subhd'>Request body: </p>
 <p class='code reqb'>{"wallet": "nameOrID"}</p>
 <p class='subhd'>Response:</p>
 <p class='code'>200: OK
@@ -266,7 +263,7 @@ And limit < 1 should return the same error as start < 1:
 
 <p class='code'>422: Unprocessable Entity
 422: "wallet" is not allowed to be empty</p>
-<p class='fix'>The path need not include <c>wallet=</c>, but if it does, wallet must have a value: <c>wallet=&lt;value></p>
+<p class='fix'>The path need not include <c>wallet=</c>, but if it does, wallet must have a value: <c>wallet=&lt;value></c></p>
 
 <p class='code'>403: Forbidden
 403: Wallet do not belongs to wallet logged in</p>
@@ -397,7 +394,7 @@ tokens may move towards the originator, or away from the originator.</p>
 <p class='note'>The property transfer.claim is not yet implemented. Right?
 It's value now is always false? 
 When it is implemented, a POST /wallet/transfers request with claim:true 
-means the tokens cannot be further transferred after the current transfer completes.</p></p>
+means the tokens cannot be further transferred after the current transfer completes.</p>
 </div>
 
 <!-- ----------------------------- -->
@@ -448,7 +445,7 @@ means the tokens cannot be further transferred after the current transfer comple
 
 <p class='code'>422: Unprocessable Entity
 422: "wallet" is not allowed to be empty</p>
-<p class='fix'>The path need not include <c>wallet=</c>, but if it does, wallet must have a value: <c>wallet=&lt;value></p>
+<p class='fix'>The path need not include <c>wallet=</c>, but if it does, wallet must have a value: <c>wallet=&lt;value></c></p>
 
 <p class='note'>Is this resource working as intended?
 It shows me transfers between strangers, transfers that I had nothing to do with. 
@@ -543,7 +540,7 @@ I see, for example, a transfer from Sebastion to TraditionalDreamFactory.</p>
 202: Accepted</p>
 <p><c>Created</c> means the transfer is complete.<br/>
 <c>Accepted</c> means it awaits an accept or fulfill request from the target.</p>
-<p class='note'>Accepted? That's confusing. We still need the destination to POST /wallet/transfers/<transfer_id>/<b>accept</b>. 
+<p class='note'>Accepted? That's confusing. We still need the destination to POST /wallet/transfers/&lt;transfer_id>/<b>accept</b>. 
 So it's easy to think "It was accepted. Why to we need to accept again?"
 In the same situation POST /wallet/trust_relationships returns 200: OK.
 Let's do that here.</p>
@@ -718,7 +715,7 @@ The target destination can either accept or decline. It cannot fulfill.</p>
 
 <p class='code'>422: Unprocessable Entity
 422: "implicit" is required</p>
-<p class='fix'>Add the missing message body, probably: <c>{"implicit":"true"}</p>
+<p class='fix'>Add the missing message body, probably: <c>{"implicit":"true"}</c></p>
 <p class='note git'>issue #273 Implicit is not required. An array of token IDs will also work in some cases. 
 So we might say "A message body is required"</p>
 
@@ -902,25 +899,14 @@ I can't transfer requestee's tokens to some other wallet that the requestee mana
 
 <p class='code'>         Origin gets to transfer this way:
 send:         origin's token ---> requestee's wallet
-deduct:      origin's wallet <--- requestee's token
+deduct:      origin's wallet &lt;--- requestee's token
 manage:      both send and deduct
 
          Requestee gets to transfer this way:
-receive:    origin's wallet <--- requestee's token
+receive:    origin's wallet &lt;--- requestee's token
 release:     origin's token ---> requestee's wallet
 yield:      both receive and release
 </p>
-
-<!-- div class='code'>         Originator/requester gets to transfer this way:
-send:         origin's token ---> requestee's wallet
-manage:       origin's token ---> requestee's wallet
-              origin's wallet <--- requestee's token
-
-         Requestee/target gets to transfer this way:
-receive:    origin's wallet <--- requestee's token
-yield:      origin's wallet <--- requestee's token
-             origin's token ---> requestee's wallet
-</div -->
 
 <!-- req_type vs type:
 send     send
@@ -1038,10 +1024,10 @@ Or you can DELETE it.</p>
 <p class='fix'>Revise the message body to use a valid request type.</p>
 <p class='code'>500: Internal Server Error
 500: Unknown error (Class constructor HttpError cannot be invoked without 'new')</p>
-<p class-'fix'>Request types <c>deduct</c> and <c>release</c> are not yet implemented. 
+<p class='fix'>Request types <c>deduct</c> and <c>release</c> are not yet implemented. 
 Use <c>manage</c> or <c>yield</c>.</p>
 <p class='code'>404: Not Found
-404: Could not find entity by wallet name: <wallet_name></p>
+404: Could not find entity by wallet name: &lt;wallet_name></p>
 <p class='fix'>In the message body, fix the value of <c>requestee_wallet</c>.</p>
 </div></div>
 
@@ -1147,6 +1133,7 @@ Or you are not this trust's originator. Only the originator can DELETE a trust r
 <p class='note'>v. 0.9 adds 1 more resource: GET /events</p>
 
 <!-- ----------------------------- -->
+<!--
 <div class='gloss' id='gloss'>
   Query parameters:
     limit
@@ -1184,7 +1171,8 @@ Or you are not this trust's originator. Only the originator can DELETE a trust r
     yield: Opposite of a manage request. Allow some other wallet to move tokens to any wallet the originator 
  
 </div>
-
+-->
+<p>bottomx</p>
 <!-- STANDARD PHP FOOTER --------------- -->
-<?php require($_SERVER['DOCUMENT_ROOT'].'docs/aparts/south.php');?>
+<?php require($_SERVER['DOCUMENT_ROOT'].'/docs/aparts/south.php'); ?>
 
