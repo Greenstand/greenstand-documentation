@@ -17,8 +17,8 @@
     $fname=$fname.'?loginto='.urlencode($path); 
 
     header('Location: '.$fname);
-    //$reply="<!DOCTYPE html><html><head><meta http-equiv='refresh' content='3; url=".$fname."'/></head><body></body></html>";
-    //echo $reply;
+    $reply="<!DOCTYPE html><html><head><meta http-equiv='refresh' content='3; url=".$fname."'/></head><body></body></html>";
+    echo $reply;
     exit;
   }//if
 

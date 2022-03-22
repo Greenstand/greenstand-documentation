@@ -2,13 +2,16 @@
 <!-- END STANDARD PHP HEADER --------------- -->
 
 <style>
- div#grnd2 div.box {border:2px solid #86c232; border-radius:4%; 
-                   padding:18px; margin:18px; float:left; width:210px;}
+ div#grnd2           {margin-top:0 !important; padding-top:0 !important;}
+ div#grnd2 div#intro {margin-top:0 !important; padding-top:0 !important;}
+ div#grnd2 div.box   {border:2px solid #86c232; border-radius:4%; 
+                      padding:18px; margin:18px; float:left; width:210px;}
  div#grnd2 div.box a {color:#474B4F;}
 </style>
 
 <div id='grnd2' class='grnd'>
-<div class=''><h1>Documentation and Help</h1>
+
+<div id='intro'><h1>Documentation and Help</h1>
  <p>Welcome to the Greenstand's Documentation Hub.</p>
  <p>Here is an annotated index of links to how-to's, guides, references, and tutorials regarding Greenstand and its Treetracker software.</p>
  <p>To contribute, comment, or question these documents, please submit an issue or pull request at our <a href='https://github.com/Greenstand/greenstand-documentation'>github repository</a>. 
