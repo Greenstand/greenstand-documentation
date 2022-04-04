@@ -28,6 +28,8 @@
   div#grnd2 p.note {display:none;border:1px solid green;margin:6px 0;
                     padding:6px;color:#080;white-space:pre;}
   div#grnd2 p.note:before {content:'??? ';}
+  footer#page-footer {position:static !important;}
+
 </style>
 <script>const loader=function(){override();}</script>
 
@@ -589,6 +591,8 @@ Path: /wallet/trust_relationships/&lt;trust_relationship_id>/decline</div>
 <div class='code'>state: cancelled_by_target</div>
 
 <p id='end'><a href='#grnd2'>^ back to top ^</a></p>
+
+</div><!-- end of div#grnd2 -->
 
 <!-- STANDARD PHP FOOTER --------------- -->
 <?php require($_SERVER['DOCUMENT_ROOT'].'/docs/aparts/south.php');?>

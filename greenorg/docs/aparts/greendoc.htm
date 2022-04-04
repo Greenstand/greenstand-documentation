@@ -26,7 +26,7 @@
 <h2>h2 Misc. rules:</h2>
 <p class='hang1'>1. A web page in greenstand.org/docs is named <c>*.php</c>.
 It begins and ends with blocks of PHP code. For details, see
-<a href='/docs/aparts/template.php'>/docs/aparts/template.php</p>
+<a href='/docs/aparts/template.php'>/docs/aparts/template.php</a></p>
 <p class='hang1'>2. <c>greenstand.org/*.php</c> does not understand relative links.<br/>
 All links must be relative to the root, or absolute:</br>
 <c>/docs/*</c> or <c>https://greenstand.org/docs</c>
@@ -37,16 +37,15 @@ All links must be relative to the root, or absolute:</br>
 <p>paragraph</p>
 <p>paragraph with a <a>link</a></p>
 <p>paragraph</p>
-<p class='code'>p.code</p>
-<p>paragraph</p>
-<p>paragraph with <c>c tag: &lt;c&gt;</c> and <span class='code'>span.code</span> period.</p>
-<p>paragraph</p>
-<code>code tag: &lt;code&gt;</code>
-<p>paragraph</p>
+<p class='code'>p.code or div.code
+Line-breaks match the source code</p>
+<p>paragraph: <code>code tags &lt;code&gt;</code>, 
+and <c>c tags &lt;c&gt;</c>, 
+and <span class='code'>&lt;span class='code'></span> 
+do the same, but inside of &lt;p>&lt;/p> or &lt;div>&lt;/div> blocks</p>
 <p class='in1'>paragraph.in1<br/>
 means indented</p>
-<p>paragraph</p>
-<p class='hang1'>This paragraph.hang1<br/>has a hanging indent</p>
+<p class='hang1'>Paragraph.hang1<br/>means a hanging indent</p>
 <p>paragraph</p>
 <h3>h3 is a paragraph with extra line-space above</h3>
 <p class='tight'>paragraph.tight is a paragraph with no line space above it.</p>
@@ -60,22 +59,21 @@ means indented</p>
 
 
 <div id='mid' class='sect'>div.sect#mid
+<p class='title'>p.title</p>
+<p>paragraph</p>
 <div class='more' onclick='deltaShow(this);'><span class='plus'>+ </span>
 div.more &lt;span&gt;+&lt;/span&gt; means click to expand the following &lt;div&gt;
 <div class='code'>hidden code
 more hidden code
 hidden code line 3</div></div>
-
-<p>paragraph</p>
-<p>paragraph</p>
-<p class='note'>paragraph.note</p>
-<p class='note'>paragraph.git</p>
-<p class='title'>p.title</p>
 <p>paragraph</p>
 <p class='subhd'>p.subhd</p>
 <p class='list'>p.list</p>
 <p class='list'>p.list</p>
 <p class='list'>p.list</p>
+<p>paragraph</p>
+<p class='note'>paragraph.note</p>
+<p class='git'>paragraph.git</p>
 <p id='end'>paragraph#end <a href='#top'>link to top</a></p>
 </div>
 <!-- -------------------------------------------------------------- -->
