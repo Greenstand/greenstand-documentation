@@ -13,8 +13,9 @@
   div#grnd2 h1   {font-size:24px;font-weight:bold;padding:8px 0 0 0;margin:0 0 16px 0;}
   div#grnd2 h2   {font-size:20px;font-weight:bold;padding:8px 0 0 0;margin:16px 0 0 0;
                  border:0px solid #333; border-width:2px 0 0 0;} 
-  div#grnd2 code, div#grnd2 c, div#grnd2 *.code {font-size:90%;font-family:monospace;white-space:pre !important;}
-  div#grnd2 .code    {background:#eee;padding:2px;margin-top:0px;}
+  div#grnd2 code, div#grnd2 c, div#grnd2 *.code {
+                 font-size:90%;font-family:monospace;white-space:pre !important;background:#eee;}
+  div#grnd2 .code    {padding:2px;margin-top:0px;}
   div#grnd2 div.code {margin:0px 44px 0px 12px;}
 
   div#grnd2 div#contents     {white-space:nowrap;}
@@ -80,20 +81,22 @@
 <p>These instructions assume you are familiar with those languages, and with the basics of sending and receiving HTTP requests and parsing JSON data.</p>
 
 <h2 id='keys'>Your API Keys</h2>
-<p>To use the API you need to get three keys from Greenstand:
-<c>&nbsp; - TREETRACKER-API-KEY
-&nbsp; - wallet</c> <c>name
-&nbsp; - wallet</c> <c>password</c></p>
+<p>To use the API you need to get three keys from Greenstand:</p>
+<div class='code'>&nbsp; - TREETRACKER-API-KEY
+&nbsp; - wallet name
+&nbsp; - wallet password</div>
 
-<p>All API requests need two headers:
-<code>&nbsp; - TREETRACKER-API-KEY:&lt;<i>api-key</i>&gt;
-&nbsp; - Content-Type:application/json</code></p>
+<p>All API requests need two headers:</p>
+<div class='code'>&nbsp; - TREETRACKER-API-KEY:&lt;<i>api-key</i>&gt;
+&nbsp; - Content-Type:application/json</div>
 
-<p>Your first API request--your <a href='#authentication'>authentication</a> request--uses your <c>wallet</c> <c>name</c> and <c>password</c> to get another key:
-<br/><c>&nbsp; - bearer</c> <c>token</c></p>
+<p>Your first API request--your <a href='#authentication'>authentication</a> request--uses your 
+<c>wallet name</c> and <c>password</c> to get another key:</p>
+<div class='code'>&nbsp; - bearer token</div>
 
-<p>All subsequent requests need the bearer token in a third header:
-<br/><code>&nbsp; - Authorization:Bearer &lt;<i>token</i>&gt;</code></p>
+<p>All subsequent requests need the bearer token in a third header:</p>
+<div class='code'>&nbsp; - Authorization:Bearer &lt;<i>token</i>&gt;</div>
+
 <!-- --------------------------------------------------------------------------------------- -->
 <h2 id='sampleJavaScript'>Sample JavaScript</h2>
 <p>These instructions describe HTTP methods, URL paths, and HTTP message bodies. For example, send an authentication request like this:</p>
