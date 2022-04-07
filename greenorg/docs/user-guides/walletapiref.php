@@ -1174,6 +1174,7 @@ Or you are not this trust's originator. Only the originator can DELETE a trust r
  
 </div>
 -->
+<p id='end'><a href='#grnd2'>^ back to top ^</a></p>
 </div><!-- end of div#grnd2 -->
 <!-- STANDARD PHP FOOTER --------------- -->
 <?php require($_SERVER['DOCUMENT_ROOT'].'/docs/aparts/south.php'); ?>

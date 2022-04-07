@@ -1,12 +1,13 @@
 div#grnd      {margin:24px;}
-div#grnd *    {font-family:sans-serif;font-size:16px;line-height:22px;
-               color:#474B4F;margin:0;padding:0; }
+div#grnd *    {font-family:sans-serif;font-size:16px;font-weight:300;letter-spacing:.06em;
+               line-height:22px;color:#474B4F;margin:0;padding:0;}
 div#grnd div  {margin:12px 12px 0 0;padding:8px 0 0 0;}
 div#grnd h1   {font-size:24px;font-weight:bold;padding:12px 0 0 0;margin:0;
                border:0px solid #333; border-width:0px 0 0 0;} 
 div#grnd h2   {font-size:18px;font-weight:bold;padding:10px 0 0 0;margin:0;}
 div#grnd h3   {margin:16px 0 0 0;font-weight:normal;}
 div#grnd p    {margin:8px 0 0 0;}
+div#grnd b    {font-weight:bold;}
 div#grnd a    {text-decoration:none;color:#86c232;cursor:pointer;}
 div#grnd code, div#grnd c, div#grnd .code {
                font-family:monospace;font-size:13px;padding:2px;margin:4px 0 0 0;
@@ -15,8 +16,8 @@ div#grnd input.txt {width:520px;font-family:monospace;background:#eeeeee;border:
                font-size:16px;line-height:20px;margin:6px; }
 div#grnd button{padding:2px 8px;}
 
-div#grnd p.in1   {margin-left:12px;}
-div#grnd p.hang1 {margin-left:12px;text-indent:-12px;}
+div#grnd *.in1   {margin-left:20px;}
+div#grnd p.hang1 {margin-left:20px;text-indent:-20px;}
 div#grnd p.tight {margin:0;padding:0;}
 div#grnd p.fine  {margin:0;padding:0;font-size:8px;line-height:8px;font-style:italic;color:#666;}
 div#grnd p.pb {font-size:8px;line-height:8px;margin:0;padding:0;color:#fff;}
@@ -36,5 +37,5 @@ div#grnd p.git         {display:none; color:#008}
 div#grnd div.sect {margin-top:24px;padding-top:2px;border:0px solid #666; border-width:2px 0 0 0;}
 div#grnd p.title  {font-size:24px;line-height:22px;font-weight:bold;}
 div#grnd p.subhd  {font-weight:bold;}
-div#grnd p.list   {margin-left:12px;text-indent:-8px;}
+div#grnd p.list   {margin-left:12px;text-indent:-11px;}
 div#grnd p.list:before {content:"- ";}

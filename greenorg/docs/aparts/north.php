@@ -9,6 +9,16 @@
   if($_SERVER['HTTP_HOST']!='greenstand.org'){
     $north=str_replace('<base','<xbase',$north);
   }//if
+
+  // SET TITLE TO FNAME
+  $url=$_SERVER['REQUEST_URI'];
+  $ara=pathinfo($url);
+  $fname=$ara['basename'];
+  $north=str_replace('devbox | ',$fname,$north);
+  
+  // MISC
+  $north=str_replace('Contact Us','Contact&nbsp;Us',$north);
+
   echo $north;
 ?>
 
