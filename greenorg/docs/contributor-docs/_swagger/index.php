@@ -28,7 +28,7 @@ https://raw.githubusercontent.com/Greenstand/treetracker-query-api/main/docs/api
 <div id='grnd2'>
   <p>To see API spec's, provide the URL of a *.yaml file in a Greenstand repository, 
      then <button onclick='getYaml();'>&nbsp;Submit&nbsp;</button></p>
-  <p id='inp'><input id='yaml' class='txt' type='text' onchange='' 
+  <p id='inp'><input id='yaml' class='txt' type='text' onchange='getYaml();' 
      placeholder='https://raw.githubusercontent.com/Greenstand/&lt;name-of-api&gt;/main/docs/api/spec/query-api.yaml'></input></p>
   <p>In some cases, the spec's specify a server URL for handling trial requests</p>
 </div>

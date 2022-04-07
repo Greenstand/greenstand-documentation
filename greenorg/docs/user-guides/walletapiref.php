@@ -31,12 +31,14 @@
   div#grnd2 p.git {display:none; color:#008}
   div#grnd2 div.notyet{display:none;}
   div#grnd2 div.gloss{display:none;}
+  footer#page-footer {position:static !important;}
+
 </style>
 
 <!-- ----------------------------- -->
 <script>
 const loader=function(){
-  //override();
+  override();
   // FIX T.O.C. LINKS
   var elms=document.getElementById('contents').getElementsByTagName('span');
   for(let i=0;i<elms.length;i++){
@@ -1172,7 +1174,8 @@ Or you are not this trust's originator. Only the originator can DELETE a trust r
  
 </div>
 -->
-<p>bottomx</p>
+<p id='end'><a href='#grnd2'>^ back to top ^</a></p>
+</div><!-- end of div#grnd2 -->
 <!-- STANDARD PHP FOOTER --------------- -->
 <?php require($_SERVER['DOCUMENT_ROOT'].'/docs/aparts/south.php'); ?>
 

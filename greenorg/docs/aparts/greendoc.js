@@ -1,8 +1,8 @@
 // -----------------------------------------------------
 // -----------------------------------------------------
 window.onload=(e)=>{
-try{
-  //alert('greendoc.js onload');  
+ try{
+  //alert('greendoc.js onload');
 
   // BREADCRUMBS
   setCrumbs();
@@ -38,13 +38,15 @@ try{
 
   // FOOTER DOES NOT DISPLAY UNTIL PAGE LOADED
   try{document.getElementsByTagName('footer')[0].style.display='block';} catch(e){}
+
   //alert('green.js load end')
-}//try   
-catch(e){}//alert('greendoc.js win.load error: '+e);}
+ }//try
+ catch(e){}//alert('greendoc.js win.load error: '+e);}
 };//load
 
 // -----------------------------------------------------
 // LET A PAGE OVERRIDE div#grnd & greendoc.css
+// const loader=function(){override();}
 const override=function(){
   document.getElementById('grnd').id='grnd0';
   document.getElementById('crumbsd').style.fontFamily='sans-serif';

@@ -1,4 +1,3 @@
-
 <?php require($_SERVER['DOCUMENT_ROOT'].'/docs/aparts/north.php');?>
 <!-- END STANDARD PHP HEADER --------------- -->
 
