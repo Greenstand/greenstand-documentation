@@ -65,6 +65,8 @@
 <h2>Export/Import Fields</h2>
 <p>When you export a set of records from the Earnings table, the first line of the file lists the field names described below.</p>
 <p>Values in uploaded data must represent the same fields, in the same order.</p>
+<p>Write one record per line. Separate values with commas. Normal practice is to surround values with quotation marks. 
+Use full quotation marks: <c>"value"</c>, never single quotes: <c>'value'</c>. If no values include commas, the quotation marks are not necessary.
 <p><b>earnings_id</b>: See <a href='#rid'>Record ID</a>, above.</p> 
 <p><b>worker_id</b>: A unique identifier for a grower.</p>
 <p><b>phone</b>: Another unique identifier for a grower.</p>
@@ -74,21 +76,26 @@
 <p><b>payment_confirmation_id</b>: See <a href='#pid'>Payment Confirmation ID</a>, above.</p>
 <p><b>payment_method</b>: See <a href='#mtd'>Payment Method</a>, above.</p>
 <p><b>paid_at</b>: A <u>date</u>; see <a href='#pdt'>Payment Date</a>, above.</p>
+
+<p><i>Example of file to upload</i></p>
+<p class=' code'>"earnings_id","worker_id","phone","currency","amount","captures_count","payment_confirmation_id","payment_method","paid_at"
+"b86f5e05-4277-4221-8111-d7a7cfb5da2f","3257d56f-c4a9-484f-9658-0776efe5331b","123-123-1234","SLL","200","61","payID01","Visa","2022-04-05"
+"433361ba-2f71-4f84-9d4b-4d1b75e581c9","3257d56f-c4a9-484f-9658-0776efe5333b","123-123-1234","SLL","260","63","payID02","Visa","2022-04-05"
+"c9ae6b11-cecd-4f4d-800d-9772c9209cdf","3257d56f-c4a9-484f-9658-0776efe5334b","123-123-1234","SLL","320","64","payID03","Visa","2022-04-05"</p>
 </div>
 
 <!-- ---------------------------------------------- -->
 <div class='sect' id='iface'>
 <h2>User Interface Controls</h2>
-<p><b>EXPORT</b>: Save to a file on your machine the records now selected in the Earnings table.</p>
-<p>The export will include records selected but not displayed on the current page of the table.</p>
+<p><b>EXPORT</b>: Save to a file on your machine the records now selected in the Earnings table. The export will include records selected but not displayed on the current page of the table.</p>
 <p><b>UPLOAD</b>: Send a file of updated records to the Greenstand database.</p>
 <p><b>Date Range, Start Date, End Date</b>: Select records by their <i>Effective Date</i>. The earliest records
   in the table will be from the Start Date or later. The latest records will from on or before the End Date.</p>
 <p><b>Filter</b>: Select records to display in the table by...</p>
 <p class='in1'><b>Payment Status</b>: Display records in all states, records awaiting payment (<i>calculated</i>), or records already <i>paid</i>.</p>
 <p class='in1'>This filter is for the Earnings table only. The Payments table displays <i>paid</i> records only.<p>
-<p class='in1'><b>Organization</b>: To limit the table to growers managed by a single organization, enter its name.</p>
-<p class='in1'><b>Grower Phone Number, Grower Name</b>: To limit the table to a single grower, enter a name or phone number.</p>
+<p class='in1'><b>Organization</b>: To limit the table to growers managed by a single organization, select its name.</p>
+<p class='in1'><b>Grower Phone Number, Name</b>: To limit the table to a single grower, enter all or part of a phone number or name. If you enter both number and name, the filter selects by name only. It ignores the phone number.</p>
 <p><b>&#x25B2; &#x25BC;</b>: Some of the column headings include a sort icon. Click on the column heading to 
   alphabetize table rows in ascending &#x25B2; or descending &#x25BC; order. The sort applies to all the selected
   records, not just those on the current page.</p>
