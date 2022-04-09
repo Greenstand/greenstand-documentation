@@ -13,12 +13,12 @@ regarding Greenstand's Treetracker software.</p>
 <p class='list'><a href='https://greenstand.org/devbox/privacy-policy-for-the-app'>GreenStand - Privacy Policy</a>: Unless otherwise authorized we will not disclose sensitive user information, such as contact information. Our primary data collection is focused around scientific research related to the survival processes of trees as well as systematic harvesting of tree-related products. <a href='https://greenstand.org/devbox/privacy-policy-for-the-app'><i>more...</i></a></p>
 
 <h3><b>Administration Panel: </b>Tools for managing Greenstand data and users.</h3>
-<p class='list'><a href='https://greenstand.org/devbox/admin-panel-proccess'>Administrative panel process</a>: How Greenstand tags new tree tokens regarding the tree's age, quality, species, and acceptability.</p>
+<p class='list'><a href='/docs/user-guides/earningshow.php'>How to Record Earnings and Payments</a>: Instructions for getting and updating records of debts and payments to growers.</p>
+<p class='list'><a href='/docs/user-guides/earningsref.php'>Greenstand Earnings Reference</a>: Complete details regarding the tool for getting and updating records of debts and payments to growers.</p>
 
 <h3><b>The Wallet API: </b>The the application for managing and moving Greenstand tree tokens.</h3>
 <p class='list'><a href='/docs/user-guides/walletapihow.php'>How to Use the Treetracker Wallet API</a>: Tutorials and sample code to guide users through common tasks.</p>
-<p class='list'><a href='/docs/user-guides/walletapiref.php'>Treetracker Wallet API Reference</a>: Complete detail regarding the production
-API's resources, requests, and data format.</p>
+<p class='list'><a href='/docs/user-guides/walletapiref.php'>Treetracker Wallet API Reference</a>: Complete detail regarding the production API's resources, requests, and data format.</p>
 <p class='list'><a href='https://greenstand.org/devbox/wallet-api-postman-setup'>Wallet API Postman setup</a>: The wallet API is a tool for moving Greenstand tree tokens from one owner to another. Postman provides a graphic interface.</p>
 <p class='list'><a href='https://www.loom.com/share/a9428383796140568f4c6fb965259588'>Tutorial to Set Up Postman</a>: Video instructions for communicating with the wallet API via Postman</p>
 

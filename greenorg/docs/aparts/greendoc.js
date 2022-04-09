@@ -66,9 +66,10 @@ const setCrumbs=function(){
   let crumba="<a id='docs' href='/docs'>Documentation</a> -> ";
   if(ara.length==2){ crumbsd.innerHTML=crumba; return; }  
   let crumbh='/'+ara[0]+'/'+ara[1];
-  let crumbt='Contributor';
-    if(crumbh.includes('project'))crumbt='Project';
-    if(crumbh.includes('user'))crumbt='User';
+  let crumbt=ara[1];
+    if(crumbt.includes('contributor'))crumbt='Contributors';
+    if(crumbt.includes('project'))crumbt='Project';
+    if(crumbt.includes('user'))crumbt='Users';
   crumba+="<a id='crumb2' href='"+crumbh+"'>"+crumbt+"</a> ->";
   crumbsd.innerHTML=crumba;
 }//setCrumbs
