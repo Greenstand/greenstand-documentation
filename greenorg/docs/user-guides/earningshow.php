@@ -41,15 +41,17 @@
 <p class='hang1'>1. Direct your web browser to the <a href='https://admin.treetracker.org/earnings'>Earnings</a> tool and log in with the name and password you received from Greenstand.</p>
 <p class='hang1'>2. Select a subset of records.</p>
 <p class='in1'>Typically, you want only records that await your payment: Click on <c>Filter</c> Select <c>Payment Status</c> > <c>Calculated</c>. 
-<p class='in1'>You can also select records by the name of the managing organization, a grower's name, and/or a grower's phone number.</p>
+<p class='in1'>You can also select records by the name of the managing organization, or by grower.</p>
+<p class='in1 list'>Organization: Select a name from the menu.</p>
+<p class='in1 list'>Grower Phone Number, Name: Enter all or part of a number or name. If you enter both, the filter ignores the number and sorts by the name only.</p>
 <p class='hang1'>3. Click <c>Apply</c>. The data table now shows only records that match your selection.
 <p class='hang1'>4. Select records by date, if you wish: Click on <c>Date Range</c>. Enter start and end dates. Click <c>Apply</c></p>
 <p class='in1'>Date selection works on the table's <c>Effective Date</c>. That is the date a given record was created.
 Records are created when the number or time-span of tree captures reaches the threshold specified in the contract between 
 grower and funder.</p>
 <p class='hang1'>5. Copy the data to your machine: Click <c>EXPORT</c>.</p>
-<p class='in1'>The data displayed in the table is saved to a local file.
-  Exactly where, with what name, varies with your machine and your browser configuration.</p>
+<p class='in1'>The selected data is saved to a local file. That's <u>all</u> the selected data, not just the rows displayed on the current page.
+  Exactly where data is saved, with what name, varies with your machine and your browser configuration.</p>
 <p class='in1'>Most likely, the files automatically goes to a <c>Downloads</c> folder,
   or a prompt lets you specify a file name and location.</p>
 <p class='hang1'>6. Process that data as you see fit.</p>
