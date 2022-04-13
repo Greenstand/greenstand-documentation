@@ -2,7 +2,7 @@
 <p>div#grnd div.grnd</p>
 <h1>h1 Greendoc style</h1>
 <p>This document describes specs for <c>greenstand.org/docs</c>.</p>
-<p>Mostly, it demonstrates the style sheet <a href='./greendoc.css'>greendoc.css</p>
+<p>Mostly, it demonstrates the style sheet <a href='/docs/aparts/greendoc.css'>greendoc.css</p>
 
 <div id='top' class='sect'>div.sect#top
 <div id='contents'>
