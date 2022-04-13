@@ -7,7 +7,7 @@ div#grnd h1   {font-size:24px;font-weight:bold;padding:12px 0 0 0;margin:0;
 div#grnd h2   {font-size:18px;font-weight:bold;padding:10px 0 0 0;margin:0;}
 div#grnd h3   {margin:16px 0 0 0;font-weight:300;}
 div#grnd p    {margin:8px 0 0 0;}
-div#grnd b    {font-weight:bolder;}
+div#grnd b    {font-weight:700 !important;}
 div#grnd a    {text-decoration:none;color:#86c232;cursor:pointer;}
 div#grnd code, div#grnd c, div#grnd .code {
                font-family:monospace;font-size:13px;padding:2px;margin:4px 0 0 0;
