@@ -17,7 +17,7 @@ jobs:
         local-dir: greenorg/docs/
         server-dir: /
         state-name: .deployHistory
-        dry-run: true
+        dry-run: false
         log-level: standard
         security: loose
         password: ${{ secrets.philftp }}
