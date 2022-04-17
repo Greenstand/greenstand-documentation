@@ -8,4 +8,5 @@ test*
 *greendoc.php
 config.json
 *(copy)*
-*.yaml
+example*.yaml
+*.bash*
