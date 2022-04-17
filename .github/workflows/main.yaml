@@ -1,0 +1,27 @@
+
+on: push
+name: Deploy website on push
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get latest code
+      uses: actions/checkout@v2    
+    - name: Sync files
+      uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      with:
+        server: philnorcross.com
+        username: green
+        password: ${{ secrets.philftp }}
+        port:21
+        protocol:ftps
+        local-dir:./greenorg/docs/
+        server-dir:./
+        state-name:./.deployHistory
+        dry-run:true
+        exclude:**/.git*
+        log-level:standard
+        security:loose
+        
+
