@@ -12,15 +12,15 @@ jobs:
       with:
         server: philnorcross.com
         username: green
-        port:21
-        protocol:ftps
-        local-dir:greenorg/docs/
-        server-dir:/
-        state-name:.deployHistory
-        dry-run:true
-        exclude:**/.git*
-        log-level:standard
-        security:loose
+        port: 21
+        protocol: ftps
+        local-dir: greenorg/docs/
+        server-dir: /
+        state-name: .deployHistory
+        dry-run: true
+        exclude: **/.git*
+        log-level: standard
+        security: loose
         password: ${{ secrets.philftp }}
         
 
