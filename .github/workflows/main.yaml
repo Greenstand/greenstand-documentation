@@ -18,7 +18,6 @@ jobs:
         server-dir: /
         state-name: .deployHistory
         dry-run: true
-        exclude: **/.git*
         log-level: standard
         security: loose
         password: ${{ secrets.philftp }}
