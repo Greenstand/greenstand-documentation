@@ -20,9 +20,9 @@ jobs:
         username: green
         port: 21
         protocol: ftps
-        local-dir: greenorg/docs/user-guides/
+        local-dir: greenorg/docs/user-guides/pix
         server-dir: /
-        state-name: ./.deployHistory
+        state-name: deployHistory
         dry-run: false
         log-level: standard
         security: loose
