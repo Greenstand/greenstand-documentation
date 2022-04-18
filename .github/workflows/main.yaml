@@ -19,9 +19,9 @@ jobs:
         port: 21
         protocol: ftps
         local-dir: greenorg/docs/ttxt/
-        server-dir: /ttxt
+        server-dir: /ttxt/
         state-name: .deployHistory
-        dry-run: true
+        dry-run: false
         log-level: standard
         security: loose
         password: ${{ secrets.philftp }}
