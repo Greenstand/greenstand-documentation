@@ -1,8 +1,6 @@
 on:
   workflow_dispatch:
-
 permissions: read-all
-
 env:
   project-directory: ./
 name: Deploy website
@@ -20,7 +18,7 @@ jobs:
         username: green
         port: 21
         protocol: ftp
-        local-dir: greenorg/docs/user-guides/pix/
+        local-dir: greenorg/docs/ttxt/
         server-dir: /
         state-name: deployHistory
         dry-run: false
