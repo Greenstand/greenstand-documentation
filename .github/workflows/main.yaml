@@ -17,7 +17,7 @@ jobs:
         server: philnorcross.com
         username: green
         port: 21
-        protocol: ftp
+        protocol: ftps
         local-dir: greenorg/docs/ttxt/
         server-dir: /
         state-name: deployHistory
