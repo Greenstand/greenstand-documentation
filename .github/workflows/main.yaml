@@ -16,7 +16,7 @@ jobs:
       with:
         server: philnorcross.com
         username: green
-        protocol: ftps-legacy
+        protocol: ftp
         security: loose
         local-dir: greenorg/docs/ttxt/
         server-dir: /ttxt/
