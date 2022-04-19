@@ -16,14 +16,14 @@ jobs:
       with:
         server: philnorcross.com
         username: green
-        port: 21
-        protocol: ftp
+        protocol: ftps
+        security: loose
         local-dir: greenorg/docs/ttxt/
         server-dir: /ttxt/
-        state-name: .deployHistory
         dry-run: false
         log-level: verbose
-        security: loose
         password: ${{ secrets.philftp }}
+        state-name: .deployHistory
+        port: 21
         
 
