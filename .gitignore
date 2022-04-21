@@ -1,6 +1,7 @@
 .git
 .github
 */main.yaml
+.github/workflows/main.yaml
 a.*
 logs.d/*
 kill
