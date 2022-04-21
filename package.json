@@ -11,7 +11,7 @@
     ],
     "watch": [
       "*.js",
-      "pnconfig.json"
+      "config.json"
     ],
     "ignore": [
       "a.*",
@@ -41,9 +41,9 @@
   "engines": {"node": ">=8.11.1"},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/philnorc/greenstand-documentation.git"
+    "url": "git+https://github.com/Greenstand/greenstand-documentation.git"
   },
   "keywords": ["Greenstand","documentation"],
-  "bugs": {"url": "https://github.com/philnorc/greenstand-documentation/issues"},
-  "homepage": "https://github.com/philnorc/greenstand-documentation#readme"
+  "bugs": {"url": "https://github.com/Greenstand/greenstand-documentation/issues"},
+  "homepage": "https://github.com/Greenstand/greenstand-documentation#readme"
 }
