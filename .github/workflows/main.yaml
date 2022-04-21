@@ -20,7 +20,7 @@ jobs:
         security: loose
         local-dir: greenorg/docs/ttxt/
         server-dir: /ttxt/
-        dry-run: true
+        dry-run: false
         log-level: verbose
         password: ${{ secrets.FTP_PASSWORD }}
         state-name: .deployHistory
