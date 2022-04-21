@@ -10,7 +10,7 @@ Repo files outside of ```./greenorg/docs``` are only there to support local inst
 
 ```./greenorg/docs/*index.php``` files provide annotated lists of links.
 Those links point to Greenstand documentation at most any accessible address, 
-typically ```greenstand.com```, Greenstand's gitbook, and Greenstand's github.
+typically ```greenstand.org```, Greenstand's gitbook, and Greenstand's github.
 
 ## Contributing
 
