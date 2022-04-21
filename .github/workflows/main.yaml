@@ -14,15 +14,15 @@ jobs:
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
-        server: 156.67.236.37
-        username: p366052f3
+        server: philnorcross.com
+        username: green
         protocol: ftp
         security: loose
         local-dir: greenorg/docs/ttxt/
         server-dir: /ttxt/
         dry-run: false
         log-level: verbose
-        password: ${{ secrets.FTP_PASSWORD }}
+        password: ${{ secrets.philftp }}
         state-name: .deployHistory
         port: 21
         
