@@ -1,5 +1,6 @@
 .git
 .github
+*/main.yaml
 a.*
 logs.d/*
 kill
