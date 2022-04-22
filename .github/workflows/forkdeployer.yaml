@@ -22,7 +22,7 @@ jobs:
         server-dir: /ttxt/
         dry-run: false
         log-level: verbose
-        password: ${{ secrets.philftp }}
+        password: ${{ secrets.PHILFTP }}
         state-name: .deployHistory
         port: 21
         
