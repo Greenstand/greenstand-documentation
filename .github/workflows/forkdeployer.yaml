@@ -1,0 +1,29 @@
+on:
+  workflow_dispatch:
+permissions: read-all
+env:
+  project-directory: ./
+name: Deploy website
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get latest code
+      uses: actions/checkout@v2    
+    - name: Sync files
+      uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      with:
+        server: philnorcross.com
+        username: green
+        protocol: ftp
+        security: loose
+        local-dir: greenorg/docs/ttxt/
+        server-dir: /ttxt/
+        dry-run: false
+        log-level: verbose
+        password: ${{ secrets.PHILFTP }}
+        state-name: .deployHistory
+        port: 21
+        
+
