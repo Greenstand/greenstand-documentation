@@ -36,7 +36,7 @@
 <div class='sect' id='getearn'>
 <h2>Get Earnings Data</h2>
 <p><i><a href='https://admin.treetracker.org/earnings'>figure 1: Earnings administration: https://admin.treetracker.org/earnings</a></i></p>
-<p><a href='https://admin.treetracker.org/earnings'><img class='scrn' src='/docs/user-guides/pix/admin-earns-760.png'/></a></p>
+<p><a href='https://admin.treetracker.org/earnings'><img class='scrn' src='pix/admin-earns-760.png'/></a></p>
 <p>Here is how to export a typical selection of growers' earnings data:</p>
 <p class='hang1'>1. Direct your web browser to the <a href='https://admin.treetracker.org/earnings'>Earnings</a> tool and log in with the name and password you received from Greenstand.</p>
 <p class='hang1'>2. Select a subset of records.</p>
@@ -71,7 +71,7 @@ grower and funder.</p>
 <div class='sect' id='postpay'>
  <h2>Post a Payment</h2>
  <p>You can use the Earnings display to record a payment made, as follows:</p>
- <img class='vert' src='/docs/user-guides/pix/admin-earns-details.png'/>
+ <img class='vert' src='pix/admin-earns-details.png'/>
  <div class='c2'>
   <p>&nbsp;</p>
   <p class='hang1'>1. Click on the record in question.</p>
@@ -92,7 +92,7 @@ grower and funder.</p>
 <div class='sect' id='postpays'>
  <h2>Post Multiple Payments</h2>
  <p>You can record multiple payments by uploading a file of CSV data.</p>
- <img class='vert' src='/docs/user-guides/pix/admin-menu.png'/>
+ <img class='vert' src='pix/admin-menu.png'/>
  <div class='c2'>
   <p>Provide all the same fields that occur in exported earnings data, in the same order.</p>  
   <p>Write one complete record per line. Surround values with "quotation marks." Separate values with commas.</p>
