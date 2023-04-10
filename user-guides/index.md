@@ -15,13 +15,13 @@ regarding Greenstand's Treetracker software.</p>
 <p class='list'>
 <a href='earningshow.md'>How to Record Earnings and Payments</a>: Instructions for getting and updating records of debts and payments to growers.</p>
 <p class='list'>
-<a href='earningsref.php'>Greenstand Earnings Reference</a>: Complete details regarding the tool for getting and updating records of debts and payments to growers.</p>
+<a href='earningsref.md'>Greenstand Earnings Reference</a>: Complete details regarding the tool for getting and updating records of debts and payments to growers.</p>
 
 <h3><b>The Wallet API: </b>The the application for managing and moving Greenstand tree tokens.</h3>
 <p class='list'>
-<a href='walletapihow.php'>How to Use the Treetracker Wallet API</a>: Tutorials and sample code to guide users through common tasks.</p>
+<a href='walletapihow.md'>How to Use the Treetracker Wallet API</a>: Tutorials and sample code to guide users through common tasks.</p>
 <p class='list'>
-<a href='walletapiref.php'>Treetracker Wallet API Reference</a>: Complete detail regarding the production API's resources, requests, and data format.</p>
+<a href='walletapiref.md'>Treetracker Wallet API Reference</a>: Complete detail regarding the production API's resources, requests, and data format.</p>
 <p class='list'>
 <a href='https://greenstand.org/devbox/wallet-api-postman-setup'>Wallet API Postman setup</a>: The wallet API is a tool for moving Greenstand tree tokens from one owner to another. Postman provides a graphic interface.</p>
 <p class='list'>
