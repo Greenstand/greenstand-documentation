@@ -20,16 +20,15 @@ to help those contributing to Treetracker software.</p>
 <p class='list'>
 <a href='https://greenstand.gitbook.io/engineering'>Engineer's Handbook</a>: Information about the teams building the Treetracker software, the tools we use, and how to contribute to the work.</p>
 <p class='list'>
-<a href='https://github.com/Greenstand/Development-Overview/blob/master/README.md'>Welcome to Greenstand's Treetracker project</a>: Introduction for prospective sofware developers.</p>
+<a href='https://github.com/Greenstand/Greenstand-Overview/blob/master/README.md'>Welcome to Greenstand's Treetracker project</a>: Introduction for prospective sofware developers.</p>
 
 <p><b>Greenstand APIs: </b></p>
 <p class='list'>
-<a href='/docs/contributor-docs/_swagger'>API Documentation</a>: Reference documentation generated from OpenAPI specifications in Greenstand repositories.</p>
+<a href='https://greenstand.org/docs/contributor-docs/_swagger'>API Documentation</a>: Reference documentation generated from OpenAPI specifications in Greenstand repositories.</p>
+
 <p><b>The Wallet API: </b>
 The the application for managing and moving Greenstand tree tokens.</p>
 <p class='list'>
 <a href='https://github.com/Greenstand/treetracker-wallet-api/blob/master/README.md'>github README: Getting Started</a>: How to download, install, and run the development version of the API server.</p>
 
-<!-- STANDARD PHP FOOTER --------------- -->
-<?php require($_SERVER['DOCUMENT_ROOT'].'/docs/aparts/south.php');?>
 
