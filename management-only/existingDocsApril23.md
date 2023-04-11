@@ -14,7 +14,7 @@ document status: Is a file up-to-date? Rewritten as an *.md file
 in this repo? Deleted? 
 
 This Repo
-https://github.com/Greenstand/greenstand-documentation/
+- https://github.com/Greenstand/greenstand-documentation/
 
 Greenstand-Overview Repo
 - https://github.com/Greenstand/Greenstand-Overview/blob/master/Documentation.md
