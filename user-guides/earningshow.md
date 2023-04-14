@@ -23,7 +23,7 @@ This document describes how to use and understand the various parts of Greenstan
 
 You may also find help in a more-detailed, less-procedural document: the Greenstand [Earnings Reference](earningsref.md).
 
-### Contents:
+#### Contents:
 
 - [Get Earnings Data](#get-earnings-data)
 
@@ -32,7 +32,6 @@ You may also find help in a more-detailed, less-procedural document: the Greenst
 - [Post Multiple Payments](#post-multiple-payments)
 
 ## Get Earnings Data
-------------------------
 
 *figure 1: Earnings administration*
 
@@ -77,12 +76,12 @@ Here is how to export a typical selection of growers' earnings data:
 ```
 
 ## Post a Payment
-----------------------
+
 You can use the Earnings display to record a payment made, as follows:
 
 *figure 2: Detail for one Earnings record*
 
-<img src='pix/admin-earns-details.png'/>
+<img src='pix/admin-earns-details.png' width='220px'/>
 
 1 Click on the record in question.
 > You see a details dialogue for that record.
@@ -95,12 +94,12 @@ You can use the Earnings display to record a payment made, as follows:
 > The dialogue closes. The `Status` of the record is now `Paid` and the `Payment Date` is today.
 
 ## Post Multiple Payments
-------------------------------
+
 You can record multiple payments by uploading a file of CSV data.
 
 *figure 3: Administration menu*
 
-<img src='pix/admin-menu.png'/>
+<img src='pix/admin-menu.png' width='220px'/>
 
 Provide all the same fields that occur in exported earnings data, in the same order.  
 
