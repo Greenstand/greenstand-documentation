@@ -29,7 +29,7 @@ Contents:
 - [Post a Payment](#postpay)
 - [Post Multiple Payments](#postpays)
 
-Get Earnings Data
+## Get Earnings Data
 ------------------------
 
 *figure 1: Earnings administration*
@@ -94,7 +94,7 @@ Write one complete record per line. Surround values with "quotation marks." Sepa
 Write the final value of each record, the `paid_at` date, in ISO 8601 format: `YYYY-MM-DD`.
 
 At its simplest, the process goes like this:
-1. Export a file of Greenstand earnings data, as described a href='#getearn'>above</a>.
+1. Export a file of Greenstand earnings data, as described [above](#get-earnings-data)</a>.
 2. Edit the file to supply the three values missing from end each record: 
 > - payment_confirmation_id`: Most any string of characters that serves your purpose.
 > - `payment_method`: A string of characters that describes how you paid the grower, "deposit" or "Visa" for example.
