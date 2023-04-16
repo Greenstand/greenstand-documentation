@@ -15,11 +15,11 @@ If the Earnings tool is new to you, you might find helpful the less-detailed, mo
 
 - [Record Details](#record-details)
 
-- [Export/Import Fields](#export/import-fields)
+- [Export-Import Fields](#export-import-fields)
 
 - [User Interface Controls](#user-interface-controls)
 
-**Data Table Columns
+## Data Table Columns
 
 The Earnings table and Payments table provide the same columns of data, with one exception: Payments > Payment Method.
 
@@ -48,8 +48,8 @@ The Earnings table can list records in all three states. The Payments table list
 **Payment Date**: The date a single payment was confirmed via the Earnings > Details tool.
   Or the date specified in data uploaded via the Payments table. In uploads, the dates must be in ISO 8601 format: `YYYY-MM-DD`.
 
-**Record Details
-<ins>In addition</ins> to the table fields described <a href='#cols'>above, the Details include these fields:
+## Record Details
+In <ins>addition</ins> to the table fields described <a href='#cols'>above, the details include these fields:
 
 **Organization**: In some cases, a third party works to manage relations between multiple growers and funders.
 
@@ -69,7 +69,7 @@ The Earnings table can list records in all three states. The Payments table list
 
 **Payment Confirmation ID**: A string of characters provided by the user who confirmed the payment.
 
-**Export/Import Fields
+## Export-Import Fields
 
 When you export a set of records from the Earnings table, the first line of the file lists the field names described below.
 
@@ -105,7 +105,7 @@ Use full quotation marks: `"value"`, never single quotes: `'value'`. If no value
 "433361ba-2f71-4f84-9d4b-4d1b75e581c9","3257d56f-c4a9-484f-9658-0776efe5333b","123-123-1234","SLL","260","63","payID02","Visa","2022-04-05"
 "c9ae6b11-cecd-4f4d-800d-9772c9209cdf","3257d56f-c4a9-484f-9658-0776efe5334b","123-123-1234","SLL","320","64","payID03","Visa","2022-04-05"
 ```
-** User Interface Controls
+## User Interface Controls
 
 **EXPORT**: Save to a file on your machine the records now selected in the Earnings table. The export will include records selected but not displayed on the current page of the table.
 
@@ -117,7 +117,7 @@ Use full quotation marks: `"value"`, never single quotes: `'value'`. If no value
 
 > **Payment Status**: Display records in all states, records awaiting payment (*calculated*), or records already *paid*.
 
-> This filter is for the Earnings table only. The Payments table displays *paid* records only.
+>> This filter is for the Earnings table only. The Payments table displays *paid* records only.
 
 > **Organization**: To limit the table to growers managed by a single organization, select its name.
 
