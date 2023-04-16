@@ -49,7 +49,7 @@ The Earnings table can list records in all three states. The Payments table list
   Or the date specified in data uploaded via the Payments table. In uploads, the dates must be in ISO 8601 format: `YYYY-MM-DD`.
 
 ## Record Details
-In <ins>addition</ins> to the table fields described <a href='#cols'>above, the details include these fields:
+In <ins>addition</ins> to the table fields described above, the details include these fields:
 
 **Organization**: In some cases, a third party works to manage relations between multiple growers and funders.
 
