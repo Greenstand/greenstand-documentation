@@ -7,7 +7,7 @@ For growers and funders, Greenstand's online [Earnings tool](https://admin.treet
 This document describes the control elements and data fields displayed in the Earnings tool.
 
 If the Earnings tool is new to you, you might find helpful the less-detailed, more procedural
-[How to Record Earnings and Payments](earningshow.dtd)
+[How to Record Earnings and Payments](earningshow.md)
 
 #### Contents:
 
