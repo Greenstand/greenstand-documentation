@@ -136,22 +136,23 @@ const sendRequest=function(){
       var chunks = [];
       reply.on("data",function(chunk){chunks.push(chunk);});
       reply.on("end",function(){
-      let code=parseInt(reply.statusCode);
-      let msg=reply.statusMessage;
-      let body=Buffer.concat(chunks).toString();
-      let obj=null;
-      try{obj=JSON.parse(body);} 
-      catch(e){handleError('JSON parse error',code,msg,body);return;}
-      if((code<200)||(code>299)){handleError('Reply code error',code,msg,obj);return;}
-      handleReply(code,msg,obj);
+        let code=parseInt(reply.statusCode);
+        let msg=reply.statusMessage;
+        let body=Buffer.concat(chunks).toString();
+        let obj=null;
+        try{obj=JSON.parse(body);} 
+        catch(e){handleError('JSON parse error',code,msg,body);return;}
+        if((code<200)||(code>299)){handleError('Reply code error',code,msg,obj);return;}
+        handleReply(code,msg,obj);
+      });
     });
-  });
-  //-- If request has a body, send it ---
-  if((config.body)&&(typeof config.body=='object')){
-    req.write(JSON.stringify(config.body));
-  }//if
-  //-- end ------------------------------
-  req.end();
+    //-- If request has a body, send it ---
+    if((config.body)&&(typeof config.body=='object')){
+      req.write(JSON.stringify(config.body));
+    }//if
+  
+    //-- end ------------------------------
+    req.end();
   }//try
   catch(err){handleError('sendRequest() error',499,err,null);}
 }// end sendRequest
