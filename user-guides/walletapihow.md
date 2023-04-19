@@ -57,7 +57,7 @@ To use the API you need to get three keys from Greenstand:
 - `wallet password`
 
 All API requests need two headers:
-- `TREETRACKER-API-KEY:\<*api-key*\>
+- `TREETRACKER-API-KEY:\<*api-key*\>`
 - `Content-Type:application/json`
 
 Your first API request--your [authentication](#authentication) request--uses your 
