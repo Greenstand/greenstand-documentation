@@ -24,10 +24,13 @@ You can read, write, download, and move your Greenstand tree data with Treetrack
 Send HTTP requests to the API server. The server replies with the results of your request.
 
 For example, send
-```GET https://prod-k8s.treetracker.org/wallet/tokens?limit=1```
+```
+GET https://prod-k8s.treetracker.org/wallet/tokens?limit=1
+```
 Treetracker returns data about the first tree token in your Treetracker wallet.
 
-```{ tokens: [ {
+```
+{ tokens: [ {
 id: "35ab365b-8864-42d4-8ba6-29700dfba334",
 capture_id: "e077293b-61e6-49ab-90d7-207d2f14e06f",
 wallet_id: "f2832ab6-cc58-4922-920a-568a3b63e247",
@@ -38,7 +41,8 @@ updated_at: "2021-08-26T20:19:06.089Z",
 origin: null,
 claim: false,
 links: { capture: "/webmap/tree?uuid=e077293b-61e6-49ab-90d7-207d2f14e06f" }
-} ] }```
+} ] }
+```
 
 Almost all Treetracker data moves in JSON objects, like the example above.
 
@@ -67,13 +71,16 @@ All subsequent requests need the bearer token in a third header:
 
 These instructions describe HTTP methods, URL paths, and HTTP message bodies. For example, send an authentication request like this:
 
-```Method: POST
+```
+Method: POST
 Path: /wallet/auth
-Body: {"wallet": "\<name\>", "password": "\<password\>"}```
+Body: {"wallet": "\<name\>", "password": "\<password\>"}
+```
 
 You can substitute those values into the following sample of JavaScript code for a NodeJS environment.
 
-```//-- JavaScript for NodeJS ----------------
+```
+//-- JavaScript for NodeJS ----------------
 // Set 5 variables below.
 // For the body, sometimes supply a JSON data object.
 //   Sometimes supply six characters: "null"
@@ -190,12 +197,16 @@ That request returns a "bearer token," a string of 852 characters that goes in t
 
 Send this request:
 
-```Method: POST
+```
+Method: POST
 Path: /wallet/auth
-Body: {"wallet": "\<nameOfYourTreetrackerWallet\>", "password": "\<yourWalletPassword\>"}</div\>
+Body: {"wallet": "\<nameOfYourTreetrackerWallet\>", "password": "\<yourWalletPassword\>"}
+```
+
 The API responds with:
 
-```200: OK
+```
+200: OK
 { token: "\<852characters\>" }</div\>
 In subsequent requests, include this header
 
