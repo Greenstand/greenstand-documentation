@@ -17,7 +17,7 @@ How to Use the Treetracker Wallet API
 
 You may also find help in a more-detailed, less-explanatory document, the [Treetracker API Reference](walletapiref.md).
 
-** Purpose
+## Purpose
 
 You can read, write, download, and move your Greenstand tree data with Treetracker's application programing interface (API).
 
@@ -46,7 +46,7 @@ These instructions explain typical uses of the wallet API, and they provide exam
 
 These instructions assume you are familiar with those languages, and with the basics of sending and receiving HTTP requests and parsing JSON data.
 
-** Your API Keys
+## Your API Keys
 To use the API you need to get three keys from Greenstand:
 - `TREETRACKER-API-KEY`
 - `wallet name`
@@ -63,7 +63,7 @@ Your first API request--your [authentication](#authentication) request--uses you
 All subsequent requests need the bearer token in a third header:
 - `Authorization:Bearer \<*token*\>`
 
-** Sample JavaScript
+## Sample JavaScript
 
 These instructions describe HTTP methods, URL paths, and HTTP message bodies. For example, send an authentication request like this:
 
@@ -150,7 +150,7 @@ sendRequest();
 //-- End JavaScript -----------------------
 //-----------------------------------------
 ```
-** Sample Bash and cURL
+## Sample Bash and cURL
 
 For Bash and cURL on Mac or Linux, here is sample code.
 
@@ -182,7 +182,7 @@ curl -L -X $method $host$path -H $apikey -H $type -H 'Authorization: Bearer '${b
 fi
 \#-- End Bash ------------------------------
 
-** Authentication
+## Authentication
 
 Every new user of the API needs to start with an authentication request.
 
@@ -207,7 +207,7 @@ Or simply:
 
 ```{"code":500,"message":"Unknown error (undefined)"}</div\>
 <!-- --------------------------------------------------------------------------------------- --\>
-** List Your Trees
+## List Your Trees
 
 Treetracker describes trees in data objects called <i\>tree tokens</i\>.
 
@@ -241,7 +241,7 @@ The links.capture value is the path to more complete data about the tree, for ex
 Note that the tree ID in the link is different than the token ID.
 
 <!-- --------------------------------------------------------------------------------------- --\>
-** Pass Trees to a Client or Friend
+## Pass Trees to a Client or Friend
 
 Suppose Alice runs a landscaping business, and she wants to encourage a favorite customer, Bob,
 by giving him some of her Greenstand trees.
@@ -289,7 +289,7 @@ Now Alice can direct Bob (or anyone else) to find his trees on the map:
 Note that Bob does not <i\>manage</i\> his wallet. Alice does. BobsWallet does not have its own password. Bob cannot use the API. Only Greenstand administrators can create a new user account with a new managed wallet.
 
 <!-- --------------------------------------------------------------------------------------- --\>
-** Send Trees to a New Manager
+## Send Trees to a New Manager
 
 Alice and Bob are generous people who support tree farmers. They use Treetracker tokens and wallets to measure their success.
 
@@ -367,7 +367,7 @@ source_wallet: 'AlicesWallet',
 destination_wallet: 'BobsWallet'
 }</div\>
 <!-- --------------------------------------------------------------------------------------- --\>
-** Ask for More Trees
+## Ask for More Trees
 
 Alice and Bob are generous people who support tree farmers. They use Treetracker tokens and wallets to measure their success.
 
@@ -446,7 +446,7 @@ source_wallet: 'AlicesWallet',
 destination_wallet: 'BobsWallet'
 }</div\>
 <!-- --------------------------------------------------------------------------------------- --\>
-** Trust Someone to Give You Tokens Anytime
+## Trust Someone to Give You Tokens Anytime
 
 Alice is Bob's business partner. She often transfers tokens to Bob's wallet. 
 So often, that it is a nuisance for Bob to explicitly accept each and every transfer.
@@ -519,7 +519,7 @@ Alice can <c\>POST /wallet/transfers</c\> and the tokens will immediately move t
 Bob does not need to find the transfer id and <c\>POST /wallet/transfers/\<transfer_id\>/accept</c\>.
 
 <!-- --------------------------------------------------------------------------------------- --\>
-** Ask for Trust to Give, Take, or Both
+## Ask for Trust to Give, Take, or Both
 
 In the instructions above, <a href='#trustSomeone'\>Trust Someone to Give You Tokens Anytime</a\>,
 Bob wanted to let Alice transfer tokens to Bob. So he sent:
@@ -553,7 +553,7 @@ send:         origin's token ---\> requestee's wallet
 manage:       origin's token ---\> requestee's wallet
 origin's wallet \<--- requestee's token</div\>
 <!-- --------------------------------------------------------------------------------------- --\>
-** Stop Trusting
+## Stop Trusting
 
 For a long time, Bob has trusted Alice to transfer tokens into his wallet whenever she wants. 
 But Alice and Bob have moved on to different businesses. They need to break that trust relationship.
