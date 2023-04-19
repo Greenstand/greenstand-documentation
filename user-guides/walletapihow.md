@@ -31,16 +31,16 @@ Treetracker returns data about the first tree token in your Treetracker wallet.
 
 ```
 { tokens: [ {
-id: "35ab365b-8864-42d4-8ba6-29700dfba334",
-capture_id: "e077293b-61e6-49ab-90d7-207d2f14e06f",
-wallet_id: "f2832ab6-cc58-4922-920a-568a3b63e247",
-transfer_pending: false,
-transfer_pending_id: null,
-created_at: "2021-08-26T20:19:06.089Z",
-updated_at: "2021-08-26T20:19:06.089Z",
-origin: null,
-claim: false,
-links: { capture: "/webmap/tree?uuid=e077293b-61e6-49ab-90d7-207d2f14e06f" }
+  id: "35ab365b-8864-42d4-8ba6-29700dfba334",
+  capture_id: "e077293b-61e6-49ab-90d7-207d2f14e06f",
+  wallet_id: "f2832ab6-cc58-4922-920a-568a3b63e247",
+  transfer_pending: false,
+  transfer_pending_id: null,
+  created_at: "2021-08-26T20:19:06.089Z",
+  updated_at: "2021-08-26T20:19:06.089Z",
+  origin: null,
+  claim: false,
+  links: { capture: "/webmap/tree?uuid=e077293b-61e6-49ab-90d7-207d2f14e06f" }
 } ] }
 ```
 
@@ -90,70 +90,75 @@ You can substitute those values into the following sample of JavaScript code for
 //
 // Modify 2 functions below to suit your need:
 //   handleReply() and handleError()
+
 //-- Set 5 variables ----------------------
 var config={
-method:"<Method>",
-path:"<Path>",
-body:<Body>,
-apikey:"<yourApiKeyFromGreenstand>",
-bearerToken:"<bearerToken>",
-host:"prod-k8s.treetracker.org"
+  method:"<Method>",
+  path:"<Path>",
+  body:<Body>,
+  apikey:"<yourApiKeyFromGreenstand>",
+  bearerToken:"<bearerToken>",
+  host:"prod-k8s.treetracker.org"
 } // end config
+
 //-- Handle reply -------------------------
 const handleReply=function(code,msg,obj){
-console.log(code+': '+msg);
-console.log(obj);
+  console.log(code+': '+msg);
+  console.log(obj);
 } // end handleReply
+
 //-- Handle error -------------------------
 const handleError=function(src,code,msg,body){
-console.log(src);
-console.log(code+': '+msg);
-console.log(body);
+  console.log(src);
+  console.log(code+': '+msg);
+  console.log(body);
 } // end handleError
+
 //-- Function to send request -------------
 const https=require('https');
 const sendRequest=function(){
-try{
-//-- Define request -------------------
-let options={
-"method":config.method,
-"hostname":config.host,
-"path":config.path,
-"headers":{ 
-"TREETRACKER-API-KEY":config.apikey,
-"Content-Type":"application/json",
-"Authorization":"Bearer "+config.bearerToken
-},
-"maxRedirects":20
-};
-var req = https.request(options,function(reply){
-//-- Handle response ----------------
-reply.on("error",function(err){handleError('Reply error',499,err,null);});
-var chunks = [];
-reply.on("data",function(chunk){chunks.push(chunk);});
-reply.on("end",function(){
-let code=parseInt(reply.statusCode);
-let msg=reply.statusMessage;
-let body=Buffer.concat(chunks).toString();
-let obj=null;
-try{obj=JSON.parse(body);} 
-catch(e){handleError('JSON parse error',code,msg,body);return;}
-if((code<200)||(code>299)){handleError('Reply code error',code,msg,obj);return;}
-handleReply(code,msg,obj);
-});
-});
-
-//-- If request has a body, send it ---
-if((config.body)&&(typeof config.body=='object')){
-req.write(JSON.stringify(config.body));
-}//if
-//-- end ------------------------------
-req.end();
-}//try
-catch(err){handleError('sendRequest() error',499,err,null);}
+  try{
+    //-- Define request -------------------
+    let options={
+      "method":config.method,
+      "hostname":config.host,
+      "path":config.path,
+      "headers":{ 
+        "TREETRACKER-API-KEY":config.apikey,
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+config.bearerToken
+      },
+      "maxRedirects":20
+    };
+    var req = https.request(options,function(reply){
+      //-- Handle response ----------------
+      reply.on("error",function(err){handleError('Reply error',499,err,null);});
+      var chunks = [];
+      reply.on("data",function(chunk){chunks.push(chunk);});
+      reply.on("end",function(){
+      let code=parseInt(reply.statusCode);
+      let msg=reply.statusMessage;
+      let body=Buffer.concat(chunks).toString();
+      let obj=null;
+      try{obj=JSON.parse(body);} 
+      catch(e){handleError('JSON parse error',code,msg,body);return;}
+      if((code<200)||(code>299)){handleError('Reply code error',code,msg,obj);return;}
+      handleReply(code,msg,obj);
+    });
+  });
+  //-- If request has a body, send it ---
+  if((config.body)&&(typeof config.body=='object')){
+    req.write(JSON.stringify(config.body));
+  }//if
+  //-- end ------------------------------
+  req.end();
+  }//try
+  catch(err){handleError('sendRequest() error',499,err,null);}
 }// end sendRequest
+
 //-- Execute ------------------------------
 sendRequest();
+
 //-- End JavaScript -----------------------
 //-----------------------------------------
 ```
@@ -161,33 +166,34 @@ sendRequest();
 
 For Bash and cURL on Mac or Linux, here is sample code.
 ```
-\#-- Bash and cURL -------------------------
-\# Set 5 variables below.
-\# Path values usually need 'quotes.' 
-\# For the body, sometimes supply a JSON-formatted string 
-\#   inside single quotes: '{"key":"value"}'
-\#   Sometimes supply four characters: null
-\#   Boolean values need quotes '{"name":"true"}'
-\# bearerToken is the value returned by your first request: 
-\#   POST /wallet/auth {"wallet": "<name>", "password": "<password>"}
-\#   A bearerToken remains valid for about one year.
-\#-- Set 5 variables -----------------------
+# -- Bash and cURL -------------------------
+# Set 5 variables below.
+# Path values usually need 'quotes.' 
+# For the body, sometimes supply a JSON-formatted string 
+#   inside single quotes: '{"key":"value"}'
+#   Sometimes supply four characters: null
+#   Boolean values need quotes '{"name":"true"}'
+# bearerToken is the value returned by your first request: 
+#   POST /wallet/auth {"wallet": "<name>", "password": "<password>"}
+#   A bearerToken remains valid for about one year.
+# -- Set 5 variables -----------------------
 method=<Method>
 path='<Path>'
 body='<Body>'
-\#body=null
+#body=null
 apikey='TREETRACKER-API-KEY:'<yourApiKeyFromGreenstand>
 bearerToken=<bearerToken>
 host='https://prod-k8s.treetracker.org'
 type='Content-Type:application/json'
-\#-- Send request --------------------------
+
+#-- Send request --------------------------
 if [[ $body == "null" ]]; then
-curl -L -X $method $host$path -H $apikey -H $type -H 'Authorization: Bearer '${bearerToken} 
+  curl -L -X $method $host$path -H $apikey -H $type -H 'Authorization: Bearer '${bearerToken} 
 fi
 if [[ $body != "null" ]]; then
-curl -L -X $method $host$path -H $apikey -H $type -H 'Authorization: Bearer '${bearerToken} -d $body
+  curl -L -X $method $host$path -H $apikey -H $type -H 'Authorization: Bearer '${bearerToken} -d $body
 fi
-\#-- End Bash ------------------------------
+#-- End Bash ------------------------------
 ```
 ## Authentication
 
