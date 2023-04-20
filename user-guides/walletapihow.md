@@ -13,7 +13,7 @@ How to Use the Treetracker Wallet API
 - [Send Trees to a New Manager](#send-trees-to-a-new-manager),
 - [Ask for More Trees](#ask-for-more-trees),
 - [Trust Someone to Give You Tokens Anytime](#trust-someone-to-give-you-tokens-anytime),
-- [Ask for Trust to Give, Take, or Both](#ask-for-trust-to-give,-take,-or-both),
+- [Ask for Trust to Give, Take, or Both](#ask-for-trust-to-give-take-or-both),
 - [Stop Trusting](#stop-trusting)
 
 You may also find help in a more-detailed, less-explanatory document, the [Treetracker API Reference](/docs/user-guides/walletapiref.php).
