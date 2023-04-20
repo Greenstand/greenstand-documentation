@@ -50,7 +50,7 @@ These instructions explain typical uses of the wallet API, and they provide exam
 
 These instructions assume you are familiar with those languages, and with the basics of sending and receiving HTTP requests and parsing JSON data.
 
-[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+[^ back to top ^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Your API Keys
 
@@ -70,7 +70,7 @@ Your first API request--your [authentication](#authentication) request--uses you
 All subsequent requests need the bearer token in a third header:
 - `Authorization:Bearer <token>`
 
-[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+[^ back to top ^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Sample JavaScript
 
@@ -166,7 +166,7 @@ sendRequest();
 //-----------------------------------------
 ```
 
-[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+[^ back to top ^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Sample Bash and cURL
 
@@ -204,7 +204,7 @@ fi
 # -- End Bash ------------------------------
 ```
 
-[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+[^ back to top ^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Authentication
 
@@ -240,7 +240,7 @@ Or simply:
 {"code":500,"message":"Unknown error (undefined)"}
 ```
 
-[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+[^ back to top ^](#how-to-use-the-treetracker-wallet-api)  
 
 ## List Your Trees
 
@@ -283,7 +283,7 @@ https://prod-k8s.treetracker.org/webmap/tree?uuid=6fdd1365-dae5-465c-af6d-4e87e3
 
 Note that the tree ID in the link is different than the token ID.
 
-[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+[^ back to top ^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Pass Trees to a Client or Friend
 
@@ -342,7 +342,7 @@ https://map.treetracker.org/?wallet=BobsWallet
 
 Note that Bob does not *manage* his wallet. Alice does. BobsWallet does not have its own password. Bob cannot use the API. Only Greenstand administrators can create a new user account with a new managed wallet.
 
-[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+[^ back to top ^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Send Trees to a New Manager
 
@@ -435,7 +435,7 @@ is now `completed`.
 }
 ```
 
-[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+[^ back to top ^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Ask for More Trees
 
@@ -529,7 +529,7 @@ The `state` is now `completed`.
 }
 ```
 
-[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+[^ back to top ^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Trust Someone to Give You Tokens Anytime
 
@@ -617,7 +617,7 @@ From now on, Alice can transfer tokens to Bob without Bob's explicit permission.
 Alice can `POST /wallet/transfers` and the tokens will immediately move to BobsWallet. 
 Bob does not need to find the transfer id and `POST /wallet/transfers/<transfer_id>/accept`.
 
-[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+[^ back to top ^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Ask for Trust to Give, Take, or Both
 
@@ -656,7 +656,7 @@ manage:       origin's token ---> requestee's wallet
              origin's wallet <--- requestee's token
 ```
 
-[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+[^ back to top ^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Stop Trusting
 
@@ -717,6 +717,6 @@ The API's response is a revised trust_relationship object. It says:
 state: cancelled_by_target
 ```
 
-[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+[^ back to top ^](#how-to-use-the-treetracker-wallet-api)  
 
 --- end ---
