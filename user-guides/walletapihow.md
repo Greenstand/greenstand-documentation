@@ -16,7 +16,7 @@ How to Use the Treetracker Wallet API
 - [Ask for Trust to Give, Take, or Both](#ask-for-trust-to-give-take-or-both),
 - [Stop Trusting](#stop-trusting)
 
-You may also find help in a more-detailed, less-explanatory document, the [Treetracker API Reference](/docs/user-guides/walletapiref.php).
+You may also find help in a more-detailed, less-explanatory document, the [Treetracker API Reference](walletapiref.md).
 
 ## Purpose
 
@@ -59,7 +59,7 @@ To use the API you need to get three keys from Greenstand:
 - `wallet password`
 
 All API requests need two headers:
-- `TREETRACKER-API-KEY:<*api-key*>`
+- `TREETRACKER-API-KEY:<api-key>`
 - `Content-Type:application/json`
 
 Your first API request--your [authentication](#authentication) request--uses your 
@@ -67,7 +67,7 @@ Your first API request--your [authentication](#authentication) request--uses you
 - `bearer token`
 
 All subsequent requests need the bearer token in a third header:
-- `Authorization:Bearer <*token*>`
+- `Authorization:Bearer <token>`
 
 ## Sample JavaScript
 
@@ -341,7 +341,7 @@ It's a two-stop process:
 1. Alice requests the transfer.
 2. Bob *accepts* it.
 
-1. First, Alice posts this request:
+First, Alice posts this request:
 ```
 Method: POST
 Path: /wallet/transfers
@@ -374,7 +374,7 @@ The API replies with a *transfer object*:
 Note the `state` of that transfer: `pending`. 
 The transfer is not complete, despite the response message: `Accepted`. Also note the `id` of that transfer.
 
-2. Second, Bob reads that same transfer object with this request:
+Second, Bob reads that same transfer object with this request:
 ```
 Method: GET
 Path: /wallet/transfers?limit=1&wallet=BobsWallet&state=pending
@@ -432,7 +432,7 @@ It's a two-stop process:
 1. Bob requests the transfer.
 2. Alice *fulfills* it.
 
-1. First, Bob posts this request:
+First, Bob posts this request:
 ```
 Method: POST
 Path: /wallet/transfers
@@ -465,7 +465,7 @@ The API replies with a *transfer object*:
 Note the `state` of that transfer: `requested`. 
 The transfer is not complete, despite the response message: `Accepted`. Also note the `id` of that transfer.
 
-2. Second, Alice reads that same transfer object with this request:
+Second, Alice reads that same transfer object with this request:
 ```
 Method: GET
 Path: /wallet/transfers?limit=1&wallet=AlicesWallet&state=requested
@@ -521,7 +521,7 @@ So often, that it is a nuisance for Bob to explicitly accept each and every tran
 
 So Alice and Bob create a *trust relationship*, as follows.
 
-1. Bob sends a request to create the trust:
+First, Bob sends a request to create the trust:
 ```
 Method: POST
 Path: /wallet/trust_relationships
@@ -550,7 +550,7 @@ The API replies with a *trust relationship object*:
 
 Note the `state` of that trust: `requested`. Also note the `id` of that trust.
 
-2. Alice reads that same trust object with this request:
+Second, Alice reads that same trust object with this request:
 ```
 Method: GET
 Path: /wallet/trust_relationships?limit=99&state=requested
@@ -626,7 +626,7 @@ There are four `trust_request_types`. They allow transfers in either direction o
 
 `yield`: The requester (Bob) allows the requestee (Alice) to both give tokens to him and take tokens from him.
 ```
-**What trust_request_types mean:**
+What trust_request_types mean:
 Requestee/target gets to transfer tokens this way:
 receive:    origin's wallet <--- requestee's token
 yield:      origin's wallet <--- requestee's token
@@ -644,7 +644,7 @@ But Alice and Bob have moved on to different businesses. They need to break that
 
 Either of them can do so:
 
-1. Either of them finds the necessary trust relationship ID:
+Either of them finds the necessary trust relationship ID:
 ```
 Method: GET
 Path: /wallet/trust_relationships?limit=99&state=trusted
