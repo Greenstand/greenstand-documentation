@@ -1,19 +1,18 @@
 
-How to Use the Treetracker Wallet API
-=======================================
-  
+# How to Use the Treetracker Wallet API
+
 *Contents:*
-- [Purpose](#purpose),
-- [Your API Keys](#your-api-keys),
-- [Sample JavaScript](#sample-javascript),
-- [Sample Bash and cURL](#sample-bash-and-curl),
-- [Authentication](#authentication),
-- [List Your Trees](#list-your-trees),
-- [Pass Trees to a Client](#pass-trees-to-a-client),
-- [Send Trees to a New Manager](#send-trees-to-a-new-manager),
-- [Ask for More Trees](#ask-for-more-trees),
-- [Trust Someone to Give You Tokens Anytime](#trust-someone-to-give-you-tokens-anytime),
-- [Ask for Trust to Give, Take, or Both](#ask-for-trust-to-give-take-or-both),
+- [Purpose](#purpose)
+- [Your API Keys](#your-api-keys)
+- [Sample JavaScript](#sample-javascript)
+- [Sample Bash and cURL](#sample-bash-and-curl)
+- [Authentication](#authentication)
+- [List Your Trees](#list-your-trees)
+- [Pass Trees to a Client](#pass-trees-to-a-client)
+- [Send Trees to a New Manager](#send-trees-to-a-new-manager)
+- [Ask for More Trees](#ask-for-more-trees)
+- [Trust Someone to Give You Tokens Anytime](#trust-someone-to-give-you-tokens-anytime)
+- [Ask for Trust to Give, Take, or Both](#ask-for-trust-to-give-take-or-both)
 - [Stop Trusting](#stop-trusting)
 
 You may also find help in a more-detailed, less-explanatory document, the [Treetracker API Reference](walletapiref.md).
@@ -51,6 +50,8 @@ These instructions explain typical uses of the wallet API, and they provide exam
 
 These instructions assume you are familiar with those languages, and with the basics of sending and receiving HTTP requests and parsing JSON data.
 
+[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+
 ## Your API Keys
 
 To use the API you need to get three keys from Greenstand:
@@ -68,6 +69,8 @@ Your first API request--your [authentication](#authentication) request--uses you
 
 All subsequent requests need the bearer token in a third header:
 - `Authorization:Bearer <token>`
+
+[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Sample JavaScript
 
@@ -163,6 +166,8 @@ sendRequest();
 //-----------------------------------------
 ```
 
+[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+
 ## Sample Bash and cURL
 
 For Bash and cURL on Mac or Linux, here is sample code.
@@ -199,6 +204,8 @@ fi
 # -- End Bash ------------------------------
 ```
 
+[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+
 ## Authentication
 
 Every new user of the API needs to start with an authentication request.
@@ -232,6 +239,8 @@ Or simply:
 ```
 {"code":500,"message":"Unknown error (undefined)"}
 ```
+
+[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
 
 ## List Your Trees
 
@@ -273,6 +282,8 @@ https://prod-k8s.treetracker.org/webmap/tree?uuid=6fdd1365-dae5-465c-af6d-4e87e3
 ```
 
 Note that the tree ID in the link is different than the token ID.
+
+[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Pass Trees to a Client or Friend
 
@@ -331,6 +342,8 @@ https://map.treetracker.org/?wallet=BobsWallet
 
 Note that Bob does not *manage* his wallet. Alice does. BobsWallet does not have its own password. Bob cannot use the API. Only Greenstand administrators can create a new user account with a new managed wallet.
 
+[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+
 ## Send Trees to a New Manager
 
 Alice and Bob are generous people who support tree farmers. They use Treetracker tokens and wallets to measure their success.
@@ -357,10 +370,10 @@ The API replies with a *transfer object*:
 ```
 202: Accepted
 {
-  id: '**47c3e3b6-b2be-41e4-8264-37df44df66a6**',
+  id: '47c3e3b6-b2be-41e4-8264-37df44df66a6',
   type: 'send',
   parameters: { bundle: { bundleSize: 200 } },
-  state: '**pending**',
+  state: 'pending',
   created_at: '2021-11-01T12:27:17.940Z',
   closed_at: '2021-11-01T12:27:17.940Z',
   active: true,
@@ -388,11 +401,11 @@ The API replies with an array of transfer objects.
 
 In that array, Bob finds the transfer request that originated with Alice:
 ```
-id: '**47c3e3b6-b2be-41e4-8264-37df44df66a6**',
+id: '47c3e3b6-b2be-41e4-8264-37df44df66a6',
 ...
-state: **pending**,
+state: pending,
 ...
-**originating_wallet: 'AlicesWallet'**,
+originating_wallet: 'AlicesWallet',
 source_wallet: 'AlicesWallet',
 destination_wallet: 'BobsWallet'
 ```
@@ -400,7 +413,7 @@ destination_wallet: 'BobsWallet'
 Bob completes the transfer by copying the id and sending this request:
 ```
 Method: POST
-Path: /wallet/transfers/47c3e3b6-b2be-41e4-8264-37df44df66a6/**accept**
+Path: /wallet/transfers/47c3e3b6-b2be-41e4-8264-37df44df66a6/accept
 ```
 
 The API responds with a revised transfer request object. The `state` 
@@ -411,7 +424,7 @@ is now `completed`.
   id: '47c3e3b6-b2be-41e4-8264-37df44df66a6',
   type: 'send',
   parameters: { bundle: { bundleSize: 200 } },
-  state: '**completed**',
+  state: 'completed',
   created_at: '2021-11-01T22:27:17.940Z',
   closed_at: '2021-11-01T22:27:17.940Z',
   active: true,
@@ -421,6 +434,8 @@ is now `completed`.
   destination_wallet: 'BobsWallet'
 }
 ```
+
+[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Ask for More Trees
 
@@ -448,10 +463,10 @@ The API replies with a *transfer object*:
 ```
 202: Accepted
 {
-  id: '**47c3e3b6-b2be-41e4-8264-37df44df66a6**',
+  id: '47c3e3b6-b2be-41e4-8264-37df44df66a6',
   type: 'send',
   parameters: { bundle: { bundleSize: 200 } },
-  state: '**requested**',
+  state: 'requested',
   created_at: '2021-11-01T12:27:17.940Z',
   closed_at: '2021-11-01T12:27:17.940Z',
   active: true,
@@ -479,11 +494,11 @@ The API replies with an array of transfer objects.
 
 In that array, Alice finds the transfer request that originated with Bob:
 ```
-id: '**47c3e3b6-b2be-41e4-8264-37df44df66a6**',
+id: '47c3e3b6-b2be-41e4-8264-37df44df66a6',
 ...
-state: **requested**,
+state: requested,
 ...
-**originating_wallet: 'BobsWallet'**,
+originating_wallet: 'BobsWallet',
 source_wallet: 'AlicesWallet',
 destination_wallet: 'BobsWallet'
 ```
@@ -491,7 +506,7 @@ destination_wallet: 'BobsWallet'
 Alice completes the transfer by copying the id and sending this request:
 ```
 Method: POST
-Path: /wallet/transfers/47c3e3b6-b2be-41e4-8264-37df44df66a6/**fulfill**
+Path: /wallet/transfers/47c3e3b6-b2be-41e4-8264-37df44df66a6/fulfill
 Body: {"implicit":true}
 ```
 
@@ -503,7 +518,7 @@ The `state` is now `completed`.
   id: '47c3e3b6-b2be-41e4-8264-37df44df66a6',
   type: 'send',
   parameters: { bundle: { bundleSize: 200 } },
-  state: '**completed**',
+  state: 'completed',
   created_at: '2021-11-01T22:27:17.940Z',
   closed_at: '2021-11-01T22:27:17.940Z',
   active: true,
@@ -513,6 +528,8 @@ The `state` is now `completed`.
   destination_wallet: 'BobsWallet'
 }
 ```
+
+[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Trust Someone to Give You Tokens Anytime
 
@@ -536,10 +553,10 @@ The API replies with a *trust relationship object*:
 ```
 200: OK
 {
-  id: **b6b9ed89-5bd4-4b53-9b60-609fb78dc119**
+  id: b6b9ed89-5bd4-4b53-9b60-609fb78dc119
   type: send
   request_type: receive
-  state: **requested**
+  state: requested
   created_at: 2021-11-24T14:59:38.783Z
   updated_at: 2021-11-24T14:59:38.783Z
   originating_wallet: BobsWallet
@@ -564,10 +581,10 @@ The API replies with an array of trust objects.
 
 In that array, Alice finds the trust request that originated with Bob:
 ```
-id: '**b6b9ed89-5bd4-4b53-9b60-609fb78dc119**',
+id: 'b6b9ed89-5bd4-4b53-9b60-609fb78dc119',
 ...
 request_type: receive
-state: **requested**,
+state: requested,
 ...
 originating_wallet: BobsWallet
 actor_wallet: BobsWallet
@@ -577,17 +594,17 @@ target_wallet: AlicesWallet
 Alice creates the trust relationship by copying the id and sending this request:
 ```
 Method: POST
-Path: /wallet/trust_relationships/b6b9ed89-5bd4-4b53-9b60-609fb78dc119/**accept**
+Path: /wallet/trust_relationships/b6b9ed89-5bd4-4b53-9b60-609fb78dc119/accept
 ```
 
 The API responds with a revised trust object. The `state` is now `trusted`.
 ```
 200: OK
 {
-  id: **b6b9ed89-5bd4-4b53-9b60-609fb78dc119**
+  id: b6b9ed89-5bd4-4b53-9b60-609fb78dc119
   type: send
   request_type: receive
-  state: **trusted**
+  state: trusted
   created_at: 2021-11-24T14:59:38.783Z
   updated_at: 2021-11-24T14:59:38.783Z
   originating_wallet: BobsWallet
@@ -599,6 +616,8 @@ The API responds with a revised trust object. The `state` is now `trusted`.
 From now on, Alice can transfer tokens to Bob without Bob's explicit permission. 
 Alice can `POST /wallet/transfers` and the tokens will immediately move to BobsWallet. 
 Bob does not need to find the transfer id and `POST /wallet/transfers/<transfer_id>/accept`.
+
+[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
 
 ## Ask for Trust to Give, Take, or Both
 
@@ -637,6 +656,8 @@ manage:       origin's token ---> requestee's wallet
              origin's wallet <--- requestee's token
 ```
 
+[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
+
 ## Stop Trusting
 
 For a long time, Bob has trusted Alice to transfer tokens into his wallet whenever she wants. 
@@ -660,10 +681,10 @@ In that array, they find the trust that let's Bob receive transfers from Alice:
 ```
 
 {
-  id: **b6b9ed89-5bd4-4b53-9b60-609fb78dc119**
+  id: b6b9ed89-5bd4-4b53-9b60-609fb78dc119
   type: send
   request_type: receive
-  state: **trusted**
+  state: trusted
   created_at: 2021-11-24T14:59:38.783Z
   updated_at: 2021-11-24T14:59:38.783Z
   originating_wallet: BobsWallet
@@ -695,5 +716,7 @@ The API's response is a revised trust_relationship object. It says:
 ```
 state: cancelled_by_target
 ```
+
+[^ back to top^](#how-to-use-the-treetracker-wallet-api)  
 
 --- end ---
