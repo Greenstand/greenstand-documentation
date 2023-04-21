@@ -68,7 +68,6 @@ POST /wallet/auth
 {token: string}
 ```
 
-
 #### Errors:
 
 ```
@@ -163,7 +162,6 @@ GET /wallet/wallets?limit=n&start=n
 ]}
 ```
 
-
 #### Errors:
 
 ```
@@ -198,7 +196,6 @@ POST /wallet/wallets
 200: OK
 {"wallet": "nameOrID"}
 ```
-
 
 #### Errors:
 
@@ -254,7 +251,6 @@ GET /wallet/tokens?limit=n&start=n&wallet=name
   }
 ]}
 ```
-
 
 > links.capture: Path to tree data
 
@@ -321,7 +317,6 @@ GET /wallet/tokens/<token_id>
 }
 ```
 
-
 > links.capture: Path to tree data
 
 #### Errors:
@@ -375,7 +370,6 @@ GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
   }
 ] }
 ```
-
 
 #### Errors:
 
@@ -496,7 +490,6 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 
 #### Errors:
 
-
 ```
 422: Unprocessable Entity
 422: "state" must be one of [requested, pending, completed, cancelled, failed]
@@ -562,7 +555,6 @@ GET /wallet/transfers/<transfer_id>
   destination_wallet: walletNameOrID
 }
 ```
-
 
 #### Errors:
 
@@ -868,7 +860,6 @@ The target destination can either accept or decline. It cannot fulfill.
 
 > Add the missing message body, probably: `{"implicit":"true"}`
 
-
 ```
 422: Unprocessable Entity
 422: "implicit" is not allowed
@@ -884,14 +875,12 @@ and the implicit property. Use one or the other, most likely `implicit:true`
 
 > In the message body, write `implicit:true`, not a list of token IDs. The transfer request already specifies token IDs. The API does not allow them to be specified again.
 
-
 ```
 404: Not Found
 404: can not found token by id:<token_id>
 ```
 
 > In the message body, revise the list of token IDs, or write `implicit:true`.
-
 
 ```
 403: Forbidden
@@ -1035,12 +1024,10 @@ It can let Alice transfer tokens to Bob, for example, without Bob posting his ac
 
 #### Who Trusts Who?
 
-
 GET [`/wallet/trust_relationships`](#get-trusts) lists the trust 
 relationships that your wallets are party to.
 
 #### Request and Accept Trust
-
 
 To create a trust relationship, the `originating` wallet posts a message 
 that specifies the other party to the relationship, called the `requestee`. Then the
@@ -1059,13 +1046,11 @@ have the same value. A trust takes effect when the requestee accepts it.
 
 #### Decline or Delete a Trust
 
-
 The originator can cancel a trust at any time--before or after acceptance--with a `DELETE` request.
 
 The requestee can refuse at any time--before or after acceptance--with a `decline` request.
 
 #### Trust Request Types
-
 
 Four kinds of trust request allow tokens to move to or from either party, under the control of either party, as follows:
 
