@@ -32,7 +32,6 @@
 ## Introduction
 
 API requests need three headers:
-
 ```
 - TREETRACKER-API-KEY:<*api-key*>
 - Authorization:Bearer <*token*>
@@ -50,53 +49,45 @@ Do not confuse the *Bearer <token>* with the other use of *token* in the API.
 ## Authenticate
 
 Provide a wallet's name or ID, and its password. Receive a bearer token to go in the header of subsequent API requests. Without the bearer token, requests return `403: ERROR: Authentication, token not verified.`
-
 ```
 POST /wallet/auth
 ```
 
 #### Request body: 
-
 ```
 {"wallet": "nameOrID", "password": "string"}
 ```
 
 #### Response:
-
 ```
 200: OK
 {token: string}
 ```
 
 #### Errors:
-
 ```
 200: OK: 1.10.3
 ```
 
 > Use `POST`, not `GET`
-
 ```
 404: Not Found
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Error</title></head><body><pre>Cannot POST /authnot</pre></body></html>
 ```
 
 > Post your request to `https://prod-k8s.treetracker.org/wallet/auth`
-
 ```
 404: Not Found
 404: Could not find entity by wallet name: <name>
 ```
 
 > Correct the value of `wallet` in the request body.
-
 ```
 415: Unsupported Media Type
 415: Invalid content type. API only supports application/json
 ```
 
 > Provide the header: `Content-Type:application/json`
-
 ```
 401: Unauthorized
 401: Invalid access - no API key
@@ -104,7 +95,6 @@ POST /wallet/auth
 ```
 
 > Provide a correct header: `'TREETRACKER-API-KEY:<api-key>'`
-
 ```
 422: Unprocessable Entity
 422: "wallet" is required
@@ -112,7 +102,6 @@ POST /wallet/auth
 ```
 
 > Provide the request body: `{"wallet": "name", "password": "value"}`
-
 ```
 401: Unauthorized
 401: Invalid credentials
@@ -121,7 +110,6 @@ POST /wallet/auth
 > Correct the value of `password` in the request body.
 
 #### Authorization errors in subsequent requests:
-
 ```
 500: Internal Server Error
 500: Unknown error (undefined)
@@ -136,7 +124,6 @@ POST /wallet/auth
 ## Get Wallets
 
 Get information regarding this session's authenticated wallet and the wallets it manages.
-
 ```
 GET /wallet/wallets?limit=n&start=n
 ```
@@ -146,7 +133,6 @@ GET /wallet/wallets?limit=n&start=n
 > start: Optional integer, defaults to 1, the beginning. Of the tokens in the wallet, the one to start the list. But the precise order of wallet records is unpredictable.
 
 #### Response, an array of wallet objects: 
-
 ```
 200: OK
 { wallets: [
@@ -163,7 +149,6 @@ GET /wallet/wallets?limit=n&start=n
 ```
 
 #### Errors:
-
 ```
 422: Unprocessable Entity
 422: "limit" is required
@@ -179,36 +164,30 @@ GET /wallet/wallets?limit=n&start=n
 ## Post Wallet
 
 Create a new wallet that is managed by this session's authenticated wallet.
-
 ```
 POST /wallet/wallets
 ```
 
 #### Request body: 
-
 ```
 {"wallet": "nameOrID"}
 ```
 
 #### Response:
-
 ```
 200: OK
 {"wallet": "nameOrID"}
 ```
 
 #### Errors:
-
 ```
 500: Unknown error (Unexpected token *c* in JSON at position *n*)}
 ```
 
 > Provide valid JSON format in the request body.
-
 ```
 400: invalid wallet name:<badname>
 ```
-
 ```
 403: Forbidden
 403: The wallet '<duplicateName>' has been existed
@@ -221,7 +200,6 @@ POST /wallet/wallets
 ## Get Tokens by Wallet
 
 Get a list of the tokens in this session's authenticated wallet or any wallet it manages.
-
 ```
 GET /wallet/tokens?limit=n&start=n&wallet=name
 ```
@@ -233,7 +211,6 @@ GET /wallet/tokens?limit=n&start=n&wallet=name
 > wallet: Optional name or ID, defaults to this session's authenticated wallet.
 
 #### Response, an array of token objects:
-
 ```
 200: OK
 { tokens: [
@@ -255,28 +232,24 @@ GET /wallet/tokens?limit=n&start=n&wallet=name
 > links.capture: Path to tree data
 
 #### Errors:
-
 ```
 404: Not Found
 404: Could not find entity by wallet name: <badName>
 ```
 
 > The wallet you specified does not exist. See [Get Wallets](#get-wallets), above, for a list of existing wallets.
-
 ```
 422: Unprocessable Entity
 422: "wallet" is not allowed to be empty
 ```
 
 > The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<value>`
-
 ```
 403: Forbidden
 403: Wallet do not belongs to wallet logged in
 ```
 
 > You can only view tokens in wallets that you manage. See [Get Wallets](#get-wallets), above, for a list.
-
 ```
 422: Unprocessable Entity
 422: "limit" is required
@@ -292,7 +265,6 @@ GET /wallet/tokens?limit=n&start=n&wallet=name
 ## Get Token by ID
 
 Get details about one specified token in this session's authenticated wallet or a wallet it manages.
-
 ```
 GET /wallet/tokens/<token_id>
 ```
@@ -300,7 +272,6 @@ GET /wallet/tokens/<token_id>
 > <token_id>: Replace with a token ID.
 
 #### Response, a token object:
-
 ```
 200: OK
 {
@@ -320,21 +291,18 @@ GET /wallet/tokens/<token_id>
 > links.capture: Path to tree data
 
 #### Errors:
-
 ```
 500: Internal Server Error
 500: Unknown error (select * from "token" ... invalid input syntax for type uuid: "<bad_token_id")
 ```
 
 > Copy the <token_id> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
-
 ```
 404: Not Found
 404: can not found token by id:<token_id>
 ```
 
 > The specified token_id does not exist.
-
 ```
 401: Unauthorized
 401: Have no permission to visit this token
@@ -347,7 +315,6 @@ GET /wallet/tokens/<token_id>
 ## Get Transactions by Token ID
 
 For a specified token, get a history of all transfers.
-
 ```
 GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 ```
@@ -359,7 +326,6 @@ GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 > start: Optional integer, defaults to 1, the beginning. Of the transfer objects in the wallet, the one to start the list. But the order of transfer records is unpredictable.
 
 #### Response, an array of history objects: 
-
 ```
 200: OK
 { history: [
@@ -372,28 +338,24 @@ GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 ```
 
 #### Errors:
-
 ```
 500: Internal Server Error
 500: Unknown error (select * from "token" ... invalid input syntax for type uuid: "<bad_token_id")
 ```
 
 > Copy the <token_id> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
-
 ```
 404: Not Found
 404: can not found token by id:<token_id>
 ```
 
 > The specified token_id does not exist.
-
 ```
 401: Unauthorized
 401: Have no permission to visit this token
 ```
 
 > You can only read the history of tokens that reside in wallets that you manage.
-
 ```
 422: Unprocessable Entity
 422: "limit" is required
@@ -450,7 +412,6 @@ Every transfer data object includes a `state` property. Here's what it means:
 ## Get Transfers by Wallet
 
 For a specified wallet, get a list of the transfers in a specified state. The transfers available are those for which the origin, source, or destination is the currently authenticated wallet or any wallet it manages.
-
 ```
 GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 ```
@@ -464,7 +425,6 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 > state: Optional string, defaults to * (all). Possible values: `requested, pending cancelled, failed, completed`.
 
 #### Response, an array of transfer objects:
-
 ```
 200: OK
 { transfers: [
@@ -489,14 +449,12 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 ```
 
 #### Errors:
-
 ```
 422: Unprocessable Entity
 422: "state" must be one of [requested, pending, completed, cancelled, failed]
 ```
 
 > Fix the value of `state` in the request.
-
 ```
 422: Unprocessable Entity
 422: "limit" is required
@@ -506,14 +464,12 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 ```
 
 > The path must include `?limit=*n*` or `?limit=n&start=n`, where *n* is an integer
-
 ```
 404: Not Found
 404: Could not find entity by wallet name: <badName>
 ```
 
 > The wallet you specified does not exist. See [Get Wallets](#get-wallets), above, for a list of existing wallets.
-
 ```
 422: Unprocessable Entity
 422: "wallet" is not allowed to be empty
@@ -526,7 +482,6 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 ## Get Transfer Details by ID
 
 Get details for one specific transfer.
-
 ```
 GET /wallet/transfers/<transfer_id>
 ```
@@ -534,7 +489,6 @@ GET /wallet/transfers/<transfer_id>
 > <transfer_id>: Replace with a transfer ID.
 
 #### Response, a transfer object: 
-
 ```
 200: OK
 {
@@ -557,14 +511,12 @@ GET /wallet/transfers/<transfer_id>
 ```
 
 #### Errors:
-
 ```
 404: Not Found
 404: Can not find this transfer or it is related to this wallet
 ```
 
 > You can only read details of transfers to or from the wallets you manage.
-
 ```
 422: Unprocessable Entity
 422: "transfer_id" must be a valid GUID
@@ -577,7 +529,6 @@ GET /wallet/transfers/<transfer_id>
 ## Get Tokens by Transfer
 
 Get a list of the tokens moved by a given transfer.
-
 ```
 GET /wallet/transfers/<transfer_id>/tokens?limit=n&start=n
 ```
@@ -589,7 +540,6 @@ GET /wallet/transfers/<transfer_id>/tokens?limit=n&start=n
 > start: Optional integer, defaults to 1, the beginning. Of the tokens in the transfer, the one to start the list. But the precise order of token records is unpredictable.
 
 #### Response:
-
 ```
 500: Internal Server Error
 {
@@ -611,13 +561,11 @@ The other party to the request is the *requestee* or *target*.
 Tokens are *debited* from from the *sender_wallet* and *credited* to the *receiver_wallet*.
 
 If the wallets share the right [*trust relationship*](#trusts-explained), transfers take place immediately and automatically. Otherwise, the server stores the request and waits for the requestee to accept or decline it.
-
 ```
 POST /wallet/transfers
 ```
 
 #### Request body: 
-
 ```
 {
   "sender_wallet": "nameOrID",
@@ -627,7 +575,6 @@ POST /wallet/transfers
 ```
 
 #### or
-
 ```
 {
   "sender_wallet": "nameOrID",
@@ -647,7 +594,6 @@ POST /wallet/transfers
 `Accepted` means it awaits an accept or fulfill request from the target.
 
 #### Response body, a transfer object:
-
 ```
 200: OK
 {
@@ -670,7 +616,6 @@ POST /wallet/transfers
 ```
 
 #### Errors
-
 ```
 404: Not Found
 404: Could not find entity by wallet name:<wallet_name>
@@ -678,14 +623,12 @@ POST /wallet/transfers
 ```
 
 > Fix the wallet names and/or token IDs in the request body.
-
 ```
 403: Forbidden
 403: Do not have enough tokens to send
 ```
 
 > Decrease the value of `bundle_size` in the request body.
-
 ```
 403: Forbidden
 403: The token <token_id> can not be transfer for some reason, 
@@ -699,7 +642,6 @@ request to [get transactions by token ID](#get-transactions-by-token-id).
 When a transfer request asks you to send tokens, 
 respond by posting a request to [fulfill the transfer](#fulfill-transfer), 
 not by posting a new transfer.
-
 ```
 403: Forbidden
 403: The token <token_id> do not belongs to sender wallet
@@ -709,14 +651,12 @@ not by posting a new transfer.
 Or write `bundle: { bundle_size: *n* }`. 
 You can get a list of the tokens you own with a request to 
 [get tokens by wallet](#get-tokens-by-wallet).
-
 ```
 422: Unprocessable Entity
 422:"tokens[*n*]" contains a duplicate value
 ```
 
 > Do not list the same token twice in the request body.
-
 ```
 422: Unprocessable Entity
 422: "bundle.bundle_size" must be a number
@@ -731,7 +671,6 @@ with or without quotes.
 ## Accept Transfer
 
 A destination wallet completes a pending transfer by accepting in-coming tokens.
-
 ```
 POST /wallet/transfers/<transfer_id>/accept
 ```
@@ -739,7 +678,6 @@ POST /wallet/transfers/<transfer_id>/accept
 > <transfer_id>: Replace with a transfer ID.
 
 #### Response, a transfer object:
-
 ```
 200: OK
 {
@@ -762,14 +700,12 @@ POST /wallet/transfers/<transfer_id>/accept
 ```
 
 #### Errors:
-
 ```
 403: Forbidden
 403: Current account has no permission to accept this transfer
 ```
 
 > Only the target destination can accept a transfer. The originating wallet is not allowed to.
-
 ```
 403: Forbidden
 403: The transfer state is not pending
@@ -784,7 +720,6 @@ The target source can either fulfill or decline. It cannot accept.
 Fulfill Transfer
 
 A source wallet completes a requested transfer by sending out-going tokens to their destination.
-
 ```
 POST /wallet/transfers/<transfer_id>/fulfill
 ```
@@ -792,7 +727,6 @@ POST /wallet/transfers/<transfer_id>/fulfill
 > <transfer_id>: Replace with a transfer ID.
 
 #### Request body:
-
 ```
 {"implicit":true}
 ```
@@ -800,13 +734,11 @@ POST /wallet/transfers/<transfer_id>/fulfill
 > `implicit` sends the tokens requested, whether the transfer specifies
  a bundle size or literal token IDs. When a transfer specifies a bundle size, the fulfill request may 
  instead specify literal token IDs with a message body like this:
-
 ```
 { tokens: [ token_id, token_id, token_id ] }
 ```
 
 #### Response, a transfer object:
-
 ```
 200: OK
 {
@@ -829,14 +761,12 @@ POST /wallet/transfers/<transfer_id>/fulfill
 ```
 
 #### Errors:
-
 ```
 404: Not Found
 <!DOCTYPE html><html lang="en">Error ... Cannot POST /transfers/<transfer_id>/fullfill
 ```
 
 > In the path, spell fulfill with 3 ells, not 4.
-
 ```
 403: Forbidden
 403: Current account has no permission to fulfill this transfer
@@ -845,21 +775,18 @@ POST /wallet/transfers/<transfer_id>/fulfill
 > The transfer asks the target wallet to *receive* tokens, not send them.
 The transfer state is `pending`, not `requested`. 
 The target destination can either accept or decline. It cannot fulfill.
-
 ```
 403: Forbidden
 403: Operation forbidden, the transfer state is wrong
 ```
 
 > The transfer has already been completed, declined, or cancelled
-
 ```
 422: Unprocessable Entity
 422: "implicit" is required
 ```
 
 > Add the missing message body, probably: `{"implicit":"true"}`
-
 ```
 422: Unprocessable Entity
 422: "implicit" is not allowed
@@ -867,21 +794,18 @@ The target destination can either accept or decline. It cannot fulfill.
 
 > In the message body, do not write *both* literal token IDs 
 and the implicit property. Use one or the other, most likely `implicit:true`
-
 ```
 403: Forbidden
 403: No need to specify tokens
 ```
 
 > In the message body, write `implicit:true`, not a list of token IDs. The transfer request already specifies token IDs. The API does not allow them to be specified again.
-
 ```
 404: Not Found
 404: can not found token by id:<token_id>
 ```
 
 > In the message body, revise the list of token IDs, or write `implicit:true`.
-
 ```
 403: Forbidden
 403: Too few tokens to transfer, please provide *n* tokens for this transfer
@@ -889,7 +813,6 @@ and the implicit property. Use one or the other, most likely `implicit:true`
 ```
 
 > You provided fewer or more token IDs than the transfer requested in the `bundle_size` property. In the message body, write `implicit:true`. Or provide an array with the correct number of valid token IDs.
-
 ```
 500 Internal Server Error
 500: Unknown error (... invalid input syntax for type uuid: "$tokenid")
@@ -901,7 +824,6 @@ Or provide an array of valid token IDs.
 ## Decline Transfer
 
 The target wallet of a transfer--whether its the source or destination--refuses to complete the transfer.
-
 ```
 POST /wallet/transfers/<transfer_id>/decline
 ```
@@ -909,7 +831,6 @@ POST /wallet/transfers/<transfer_id>/decline
 > <transfer_id>: Replace with a transfer ID.
 
 #### Response, a transfer object:
-
 ```
 200: OK
 {
@@ -932,14 +853,12 @@ POST /wallet/transfers/<transfer_id>/decline
 ```
 
 #### Errors:
-
 ```
 403: Forbidden
 403: The transfer state is not pending and requested
 ```
 
 > The transfer has already been either completed, deleted, or declined.
-
 ```
 403: Forbidden
 403: Current account has no permission to decline this transfer
@@ -947,7 +866,6 @@ POST /wallet/transfers/<transfer_id>/decline
 
 > Only the target wallet can decline a transfer. 
 The originating wallet can only `DELETE`.
-
 ```
 404: Not Found
 404: Can not found transfer by id:<transfer_id>
@@ -960,7 +878,6 @@ The originating wallet can only `DELETE`.
 ## Delete Transfer
 
 The originator cancels a transfer before target accepts or fulfills it.
-
 ```
 DELETE /wallet/transfers/<transfer_id>
 ```
@@ -968,7 +885,6 @@ DELETE /wallet/transfers/<transfer_id>
 > <transfer_id>: Replace with a transfer ID.
 
 #### Response, a transfer object:
-
 ```
 200: OK
 {
@@ -991,14 +907,12 @@ DELETE /wallet/transfers/<transfer_id>
 ```
 
 #### Errors:
-
 ```
 403 Forbidden
 403:The transfer state is not pending and requested
 ```
 
 > The transfer has already been either completed, deleted, or declined.
-
 ```
 403: Forbidden
 403: Current account has no permission to cancel this transfer
@@ -1006,7 +920,6 @@ DELETE /wallet/transfers/<transfer_id>
 
 > Only the originating wallet can delete a transfer. 
 The target wallet can accept, fulfill, or decline.
-
 ```
 404: Not Found
 404: Can not found transfer by id:<transfer_id>
@@ -1063,7 +976,6 @@ The originating wallet can also transfer the requestee's tokens to itself.
 
 `yield`: The requestee wallet can transfer its tokens to the originating wallet.
 The requestee wallet can also transfer the originator's tokens to itself.
-
 ```
 Origin gets to transfer this way:
 send:         origin's token ---> requestee's wallet
@@ -1080,7 +992,6 @@ yield:      both receive and release
 ## Get Trusts
 
 Get a list of requested, established, and/or cancelled trust relationships related to the currently authorized wallet and any wallets it manages.
-
 ```
 GET /wallet/trust_relationships?limit=n&start=n&state=string&request_type=string&type=string
 ```
@@ -1118,7 +1029,6 @@ The requestee wallet can also transfer the originator's tokens to itself.
 - `manage`: One wallet can both give and take tokens to and from the other.
 
 #### Response, an array of trust relationship objects:
-
 ```
 200: OK
 { trust_relationships: [
@@ -1137,7 +1047,6 @@ The requestee wallet can also transfer the originator's tokens to itself.
 ```
 
 #### Errors:
-
 ```
 500: Internal Server Error
 500: Unknown error (...invalid input value for...trust_<b>state</b>_type: "<value>")
@@ -1146,7 +1055,6 @@ The requestee wallet can also transfer the originator's tokens to itself.
 ```
 
 > In the request path, provide a value for `state`, `request_type`, or `type` from the list above.
-
 ```
 422: Unprocessable Entity
 422: "limit" is required
@@ -1162,13 +1070,11 @@ The requestee wallet can also transfer the originator's tokens to itself.
 ## Post Trust Request
 
 Request a new trust relationship from another wallet.
-
 ```
 POST /wallet/trust_relationships
 ```
 
 #### Request body:
-
 ```
 {
   "trust_request_type": "string",
@@ -1189,7 +1095,6 @@ The originating wallet can also transfer the requestee's tokens to itself.
 The requestee wallet can also transfer the originator's tokens to itself.
 
 #### Response, a trust relationship object:
-
 ```
 200: OK
 {
@@ -1206,7 +1111,6 @@ The requestee wallet can also transfer the originator's tokens to itself.
 ```
 
 #### Errors:
-
 ```
 403: Forbidden
 403: The trust relationship has been requested or trusted
@@ -1217,14 +1121,12 @@ Use [`GET /wallet/trust_relationships`](#get-trusts) to get the ID of
 the existing trust relationship (the state is `requested` or `trusted`) 
 that matches your request. 0Then the requestee can accept or decline it. 
 Or you can DELETE it.
-
 ```
 422: Unprocessable Entity
 422 "trust_request_type" must be one of [send, receive, manage, yield, deduct, release]
 ```
 
 > Revise the message body to use a valid request type.
-
 ```
 500: Internal Server Error
 500: Unknown error (Class constructor HttpError cannot be invoked without 'new')
@@ -1232,7 +1134,6 @@ Or you can DELETE it.
 
 > Request types `deduct` and `release` are not yet implemented. 
 Use `manage` or `yield`.
-
 ```
 404: Not Found
 404: Could not find entity by wallet name: <wallet_name>
@@ -1246,7 +1147,6 @@ Use `manage` or `yield`.
 
 With the accept message, the requestee allows a trust to take effect.
 The accept message will re-instate a trust relationship that was previously declined or DELETEd
-
 ```
 POST /wallet/trust_relationships/<trust_relationship_id>/accept
 ```
@@ -1254,7 +1154,6 @@ POST /wallet/trust_relationships/<trust_relationship_id>/accept
 > <trust_relationship_id>: Replace with a trust relationship ID.
 
 #### Response, a trust relationship object:
-
 ```
 200: OK
 {
@@ -1271,7 +1170,6 @@ POST /wallet/trust_relationships/<trust_relationship_id>/accept
 ```
 
 #### Errors:
-
 ```
 403: Forbidden
 403: Have no permission to accept this relationship.
@@ -1286,7 +1184,6 @@ Or you are not this trust's requestee. Only the requestee can accept a trust req
 
 With the decline message, the requestee cancels a previously accepted trust relationship, or refuses to 
 let a new one take effect.
-
 ```
 POST /wallet/trust_relationships/<trust_relationship_id>/decline
 ```
@@ -1294,7 +1191,6 @@ POST /wallet/trust_relationships/<trust_relationship_id>/decline
 > <trust_relationship_id>: Replace with a trust relationship ID.
 
 #### Response, a trust relationship object:
-
 ```
 200: OK
 {
@@ -1311,7 +1207,6 @@ POST /wallet/trust_relationships/<trust_relationship_id>/decline
 ```
 
 #### Errors:
-
 ```
 403: Forbidden
 403: Have no permission to decline this relationship.
@@ -1326,7 +1221,6 @@ Or you are not this trust's requestee. Only the requestee can decline a trust re
 
 With the DELETE message, the originator of a trust relationship cancels it,
 regardless of whether the requestee has already accepted it.
-
 ```
 DELETE /wallet/trust_relationships/<trust_relationship_id>
 ```
@@ -1334,7 +1228,6 @@ DELETE /wallet/trust_relationships/<trust_relationship_id>
 > <trust_relationship_id>: Replace with a trust relationship ID.
 
 #### Response, a trust relationship object:
-
 ```
 200: OK
 {
@@ -1351,7 +1244,6 @@ DELETE /wallet/trust_relationships/<trust_relationship_id>
 ```
 
 #### Errors:
-
 ```
 404: Not Found
 404: Can not found wallet_trust by id:<trust_relationship_id>
@@ -1360,7 +1252,6 @@ DELETE /wallet/trust_relationships/<trust_relationship_id>
 ```
 
 > In your request path, provide the correct trust ID.
-
 ```
 403: Forbidden
 403: Have no permission to cancel this relationship
