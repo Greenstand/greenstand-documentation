@@ -55,13 +55,13 @@ Provide a wallet's name or ID, and its password. Receive a bearer token to go in
 POST /wallet/auth
 ```
 
-**** Request body: 
+#### Request body: 
 
 ```
 {"wallet": "nameOrID", "password": "string"}
 ```
 
-**** Response:
+#### Response:
 
 ```
 200: OK
@@ -69,11 +69,10 @@ POST /wallet/auth
 ```
 
 
-**** Errors:
+#### Errors:
 
 ```
 200: OK: 1.10.3
-
 ```
 
 > Use `POST`, not `GET`
@@ -122,7 +121,7 @@ POST /wallet/auth
 
 > Correct the value of `password` in the request body.
 
-**** Authorization errors in subsequent requests:
+#### Authorization errors in subsequent requests:
 
 ```
 500: Internal Server Error
@@ -147,7 +146,7 @@ GET /wallet/wallets?limit=n&start=n
 
 > start: Optional integer, defaults to 1, the beginning. Of the tokens in the wallet, the one to start the list. But the precise order of wallet records is unpredictable.
 
-**** Response, an array of wallet objects: 
+#### Response, an array of wallet objects: 
 
 ```
 200: OK
@@ -165,7 +164,7 @@ GET /wallet/wallets?limit=n&start=n
 ```
 
 
-**** Errors:
+#### Errors:
 
 ```
 422: Unprocessable Entity
@@ -187,13 +186,13 @@ Create a new wallet that is managed by this session's authenticated wallet.
 POST /wallet/wallets
 ```
 
-**** Request body: 
+#### Request body: 
 
 ```
 {"wallet": "nameOrID"}
 ```
 
-**** Response:
+#### Response:
 
 ```
 200: OK
@@ -201,7 +200,7 @@ POST /wallet/wallets
 ```
 
 
-**** Errors:
+#### Errors:
 
 ```
 500: Unknown error (Unexpected token *c* in JSON at position *n*)}
@@ -236,7 +235,7 @@ GET /wallet/tokens?limit=n&start=n&wallet=name
 
 > wallet: Optional name or ID, defaults to this session's authenticated wallet.
 
-**** Response, an array of token objects:
+#### Response, an array of token objects:
 
 ```
 200: OK
@@ -259,7 +258,7 @@ GET /wallet/tokens?limit=n&start=n&wallet=name
 
 > links.capture: Path to tree data
 
-**** Errors:
+#### Errors:
 
 ```
 404: Not Found
@@ -304,7 +303,7 @@ GET /wallet/tokens/<token_id>
 
 > <token_id>: Replace with a token ID.
 
-**** Response, a token object:
+#### Response, a token object:
 
 ```
 200: OK
@@ -325,7 +324,7 @@ GET /wallet/tokens/<token_id>
 
 > links.capture: Path to tree data
 
-**** Errors:
+#### Errors:
 
 ```
 500: Internal Server Error
@@ -364,7 +363,7 @@ GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 
 > start: Optional integer, defaults to 1, the beginning. Of the transfer objects in the wallet, the one to start the list. But the order of transfer records is unpredictable.
 
-**** Response, an array of history objects: 
+#### Response, an array of history objects: 
 
 ```
 200: OK
@@ -378,7 +377,7 @@ GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 ```
 
 
-**** Errors:
+#### Errors:
 
 ```
 500: Internal Server Error
@@ -417,14 +416,14 @@ GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 
 A *transfer* moves tokens from one wallet to another by a variety of paths. It is easy to confuse them. This section explains the process and terminology.
 
-**** Post a transfer:
+#### Post a transfer:
 
 The `originating` user or wallet posts the initial transfer request.
 That request asks to move tokens from the `source` wallet to the `destination` wallet. 
 Understand that the originator can be either the source or destination. In other words,
 tokens may move towards the originator, or away from the originator.
 
-**** Accept or fulfill a transfer:
+#### Accept or fulfill a transfer:
 
 The `target` is the other party to the transfer. The target may be the source or destination of the tokens, depending on the request.
 
@@ -432,13 +431,13 @@ In some cases, the origin and target wallets are `managed` (belong to) the same 
 
 But when the origin and target are relative strangers, the transfer does not complete until the target agrees to it. If the target is the destination, the target posts an `accept` request to the API. If the target is the source, the target posts a `fulfill` request to the API.
 
-**** Decline or delete a transfer:
+#### Decline or delete a transfer:
 
 In the event that a target objects to a transfer, the target can post a `decline` request to the API.
 
 The originator may withdraw a request before the target accepts, fulfills, or declines. To do that, the originator sends a `DELETE` request to the API.
 
-**** Transfer states:
+#### Transfer states:
 
 Every transfer data object includes a `state` property. Here's what it means:
 
@@ -470,7 +469,7 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 
 > state: Optional string, defaults to * (all). Possible values: `requested, pending cancelled, failed, completed`.
 
-**** Response, an array of transfer objects:
+#### Response, an array of transfer objects:
 
 ```
 200: OK
@@ -495,7 +494,7 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 ] }
 ```
 
-**** Errors:
+#### Errors:
 
 
 ```
@@ -541,7 +540,7 @@ GET /wallet/transfers/<transfer_id>
 
 > <transfer_id>: Replace with a transfer ID.
 
-**** Response, a transfer object: 
+#### Response, a transfer object: 
 
 ```
 200: OK
@@ -565,7 +564,7 @@ GET /wallet/transfers/<transfer_id>
 ```
 
 
-**** Errors:
+#### Errors:
 
 ```
 404: Not Found
@@ -597,7 +596,7 @@ GET /wallet/transfers/<transfer_id>/tokens?limit=n&start=n
 
 > start: Optional integer, defaults to 1, the beginning. Of the tokens in the transfer, the one to start the list. But the precise order of token records is unpredictable.
 
-**** Response:
+#### Response:
 
 ```
 500: Internal Server Error
@@ -625,7 +624,7 @@ If the wallets share the right [*trust relationship*](#trusts-explained), transf
 POST /wallet/transfers
 ```
 
-**** Request body: 
+#### Request body: 
 
 ```
 {
@@ -635,7 +634,7 @@ POST /wallet/transfers
 }
 ```
 
-**** or
+#### or
 
 ```
 {
@@ -645,7 +644,7 @@ POST /wallet/transfers
 }
 ```
 
-**** Response: 
+#### Response: 
   
 ```
 201: Created
@@ -655,7 +654,7 @@ POST /wallet/transfers
 `Created` means the transfer is complete.
 `Accepted` means it awaits an accept or fulfill request from the target.
 
-**** Response body, a transfer object:
+#### Response body, a transfer object:
 
 ```
 200: OK
@@ -678,7 +677,7 @@ POST /wallet/transfers
 }
 ```
 
-**** Errors
+#### Errors
 
 ```
 404: Not Found
@@ -747,7 +746,7 @@ POST /wallet/transfers/<transfer_id>/accept
 
 > <transfer_id>: Replace with a transfer ID.
 
-**** Response, a transfer object:
+#### Response, a transfer object:
 
 ```
 200: OK
@@ -770,7 +769,7 @@ POST /wallet/transfers/<transfer_id>/accept
 }
 ```
 
-**** Errors:
+#### Errors:
 
 ```
 403: Forbidden
@@ -800,7 +799,7 @@ POST /wallet/transfers/<transfer_id>/fulfill
 
 > <transfer_id>: Replace with a transfer ID.
 
-**** Request body:
+#### Request body:
 
 ```
 {"implicit":true}
@@ -814,7 +813,7 @@ POST /wallet/transfers/<transfer_id>/fulfill
 { tokens: [ token_id, token_id, token_id ] }
 ```
 
-**** Response, a transfer object:
+#### Response, a transfer object:
 
 ```
 200: OK
@@ -837,7 +836,7 @@ POST /wallet/transfers/<transfer_id>/fulfill
 }
 ```
 
-**** Errors:
+#### Errors:
 
 ```
 404: Not Found
@@ -920,7 +919,7 @@ POST /wallet/transfers/<transfer_id>/decline
 
 > <transfer_id>: Replace with a transfer ID.
 
-**** Response, a transfer object:
+#### Response, a transfer object:
 
 ```
 200: OK
@@ -943,7 +942,7 @@ POST /wallet/transfers/<transfer_id>/decline
 }
 ```
 
-**** Errors:
+#### Errors:
 
 ```
 403: Forbidden
@@ -979,7 +978,7 @@ DELETE /wallet/transfers/<transfer_id>
 
 > <transfer_id>: Replace with a transfer ID.
 
-**** Response, a transfer object:
+#### Response, a transfer object:
 
 ```
 200: OK
@@ -1002,7 +1001,7 @@ DELETE /wallet/transfers/<transfer_id>
 }
 ```
 
-**** Errors:
+#### Errors:
 
 ```
 403 Forbidden
@@ -1034,13 +1033,13 @@ A *trust relationship* allows one wallet to move tokens
 to or from another without getting permission for each individual transfer.
 It can let Alice transfer tokens to Bob, for example, without Bob posting his acceptance.
 
-**** Who Trusts Who?
+#### Who Trusts Who?
 
 
 GET [`/wallet/trust_relationships`](#get-trusts) lists the trust 
 relationships that your wallets are party to.
 
-**** Request and Accept Trust
+#### Request and Accept Trust
 
 
 To create a trust relationship, the `originating` wallet posts a message 
@@ -1049,7 +1048,7 @@ requestee either accepts or declines the arrangement.
 
 Once accepted, a trust remains in effect indefinitely, until either party cancels it.
 
-**** Trust Relationship Roles
+#### Trust Relationship Roles
 
 `Originator, requester, actor`: These three terms mean the same 
 thing and have the same value. A trust relaionship begins with the origin's
@@ -1058,14 +1057,14 @@ request to create it.
 `Requestee, target`: These two terms mean the same thing and
 have the same value. A trust takes effect when the requestee accepts it.
 
-**** Decline or Delete a Trust
+#### Decline or Delete a Trust
 
 
 The originator can cancel a trust at any time--before or after acceptance--with a `DELETE` request.
 
 The requestee can refuse at any time--before or after acceptance--with a `decline` request.
 
-**** Trust Request Types
+#### Trust Request Types
 
 
 Four kinds of trust request allow tokens to move to or from either party, under the control of either party, as follows:
@@ -1133,7 +1132,7 @@ The requestee wallet can also transfer the originator's tokens to itself.
 
 - `manage`: One wallet can both give and take tokens to and from the other.
 
-**** Response, an array of trust relationship objects:
+#### Response, an array of trust relationship objects:
 
 ```
 200: OK
@@ -1152,7 +1151,7 @@ The requestee wallet can also transfer the originator's tokens to itself.
 ] }
 ```
 
-**** Errors:
+#### Errors:
 
 ```
 500: Internal Server Error
@@ -1183,7 +1182,7 @@ Request a new trust relationship from another wallet.
 POST /wallet/trust_relationships
 ```
 
-**** Request body:
+#### Request body:
 
 ```
 {
@@ -1204,7 +1203,7 @@ The originating wallet can also transfer the requestee's tokens to itself.
 - `yield`: The requestee wallet can transfer its tokens to the originating wallet.
 The requestee wallet can also transfer the originator's tokens to itself.
 
-**** Response, a trust relationship object:
+#### Response, a trust relationship object:
 
 ```
 200: OK
@@ -1221,7 +1220,7 @@ The requestee wallet can also transfer the originator's tokens to itself.
 }
 ```
 
-**** Errors:
+#### Errors:
 
 ```
 403: Forbidden
@@ -1269,7 +1268,7 @@ POST /wallet/trust_relationships/<trust_relationship_id>/accept
 
 > <trust_relationship_id>: Replace with a trust relationship ID.
 
-**** Response, a trust relationship object:
+#### Response, a trust relationship object:
 
 ```
 200: OK
@@ -1286,7 +1285,7 @@ POST /wallet/trust_relationships/<trust_relationship_id>/accept
 }
 ```
 
-**** Errors:
+#### Errors:
 
 ```
 403: Forbidden
@@ -1309,7 +1308,7 @@ POST /wallet/trust_relationships/<trust_relationship_id>/decline
 
 > <trust_relationship_id>: Replace with a trust relationship ID.
 
-**** Response, a trust relationship object:
+#### Response, a trust relationship object:
 
 ```
 200: OK
@@ -1326,7 +1325,7 @@ POST /wallet/trust_relationships/<trust_relationship_id>/decline
 }
 ```
 
-**** Errors:
+#### Errors:
 
 ```
 403: Forbidden
@@ -1349,7 +1348,7 @@ DELETE /wallet/trust_relationships/<trust_relationship_id>
 
 > <trust_relationship_id>: Replace with a trust relationship ID.
 
-**** Response, a trust relationship object:
+#### Response, a trust relationship object:
 
 ```
 200: OK
@@ -1366,7 +1365,7 @@ DELETE /wallet/trust_relationships/<trust_relationship_id>
 }
 ```
 
-**** Errors:
+#### Errors:
 
 ```
 404: Not Found
