@@ -141,7 +141,7 @@ GET /wallet/wallets?limit=n&start=n
 422: "start" must be a number
 422: "start" must be greater than or equal to 1
 ```
-> The path must end with `?limit=*n*` or `?limit=n&start=n`, where *n* is an integer
+> The path must end with `?limit=`*`n`* or `?limit=`*`n`*`&start=`*`n`*, where *`n`* is an integer
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
