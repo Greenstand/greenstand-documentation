@@ -32,15 +32,14 @@
 ## Introduction
 
 API requests need three headers:
-```
-- TREETRACKER-API-KEY:<*api-key*>
-- Authorization:Bearer <*token*>
-- Content-Type:application/json
-```
+- `TREETRACKER-API-KEY:<`*`api-key`*`>
+- `Authorization:Bearer <`*`token`*`>`
+- `Content-Type:application/json`
+
 Every user's first request to the API is [Authenticate](#authenticate).
      That returns a Bearer token good for about one year.
   
-Do not confuse the *Bearer <token>* with the other use of *token* in the API.
+Do not confuse the `Bearer <`*`token`*`>` with the other use of *token* in the API.
     In all other cases, a *token* is a data object that describes a tree.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
@@ -395,7 +394,7 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
     type: send, deduct, or managed
     parameters: {
       tokens: [token_id,token_id,token_id]
-|or|
+      |or|
       bundle: { bundle_size: integer }
     }
     state: requested, pending, completed, cancelled, or failed
@@ -452,7 +451,7 @@ GET /wallet/transfers/<transfer_id>
   type: send, deduct, or managed
   parameters: {
     tokens: [token_id,token_id,token_id]
-|or|
+    |or|
     bundle: { bundle_size: integer }
   }
   state: requested, pending, completed, cancelled, or failed
@@ -548,7 +547,7 @@ POST /wallet/transfers
   type: send, deduct, or managed
   parameters: {
     tokens: [token_id,token_id,token_id]
-|or|
+    |or|
     bundle: { bundle_size: integer }
   }
   state: completed, requested, or pending
@@ -624,7 +623,7 @@ POST /wallet/transfers/<transfer_id>/accept
   type: send, deduct, or managed
   parameters: {
     tokens: [token_id,token_id,token_id]
-|or|
+    |or|
     bundle: { bundle_size: integer }
   }
   state: <b>completed</b>
@@ -679,7 +678,7 @@ POST /wallet/transfers/<transfer_id>/fulfill
   type: send, deduct, or managed
   parameters: {
     tokens: [token_id,token_id,token_id]
-|or|
+    |or|
     bundle: { bundle_size: integer }
   }
   state: <b>completed</b>
@@ -702,9 +701,9 @@ POST /wallet/transfers/<transfer_id>/fulfill
 403: Forbidden
 403: Current account has no permission to fulfill this transfer
 ```
-> The transfer asks the target wallet to *receive* tokens, not send them.
+> The target destination can either accept or decline. It cannot fulfill.
+The transfer asks the target wallet to *receive* tokens, not send them.
 The transfer state is `pending`, not `requested`. 
-The target destination can either accept or decline. It cannot fulfill.
 ```
 403: Forbidden
 403: Operation forbidden, the transfer state is wrong
@@ -760,7 +759,7 @@ POST /wallet/transfers/<transfer_id>/decline
   type: send, deduct, or managed
   parameters: {
     tokens: [token_id,token_id,token_id]
-|or|
+    |or|
     bundle: { bundle_size: integer }
   }
   state: <b>cancelled</b>
@@ -809,7 +808,7 @@ DELETE /wallet/transfers/<transfer_id>
   type: send, deduct, or managed
   parameters: {
     tokens: [token_id,token_id,token_id]
-|or|
+    |or|
     bundle: { bundle_size: integer }
   }
   state: <b>cancelled</b>
