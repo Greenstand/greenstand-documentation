@@ -308,17 +308,17 @@ GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 500: Internal Server Error
 500: Unknown error (select * from "token" ... invalid input syntax for type uuid: "<bad_token_id")
 ```
-> Copy the <token_id> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
+> *fix:* Copy the <token_id> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
 ```
 404: Not Found
 404: can not found token by id:<token_id>
 ```
-> The specified token_id does not exist.
+> *cause:* The specified token_id does not exist.
 ```
 401: Unauthorized
 401: Have no permission to visit this token
 ```
-> You can only read the history of tokens that reside in wallets that you manage.
+> *cause:* You can only read the history of tokens that reside in wallets that you manage.
 ```
 422: Unprocessable Entity
 422: "limit" is required
@@ -326,7 +326,7 @@ GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 422: "start" must be a number
 422: "start" must be greater than or equal to 1
 ```
-> The path must include `limit=n`. It may include `start=n`. In either case, `n` must be an integer
+> *fix:* The path must include `limit=n`. It may include `start=n`. In either case, `n` must be an integer
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -421,17 +421,17 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 422: "start" must be a number
 422: "start" must be greater than or equal to 1
 ```
-> The path must include `?limit=n` or `?limit=n&start=n`, where `n` is an integer
+> *fix:* The path must include `?limit=n` or `?limit=n&start=n`, where `n` is an integer
 ```
 404: Not Found
 404: Could not find entity by wallet name: <badName>
 ```
-> The wallet you specified does not exist. See [Get Wallets](#get-wallets), above, for a list of existing wallets.
+> *fix:* The wallet you specified does not exist. See [Get Wallets](#get-wallets), above, for a list of existing wallets.
 ```
 422: Unprocessable Entity
 422: "wallet" is not allowed to be empty
 ```
-> The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<value>`
+> *fix:* The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<value>`
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -474,7 +474,7 @@ GET /wallet/transfers/<transfer_id>
 422: Unprocessable Entity
 422: "transfer_id" must be a valid GUID
 ```
-> Copy the <transfer_id> accurately. Transfer IDs comform to the rules of *globally unique identifiers (GUIDs)*: 32 hex digits and 4 hyphens in a specific pattern.
+> *fix:* Copy the <transfer_id> accurately. Transfer IDs comform to the rules of *globally unique identifiers (GUIDs)*: 32 hex digits and 4 hyphens in a specific pattern.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -646,7 +646,7 @@ POST /wallet/transfers/<transfer_id>/accept
 403: Forbidden
 403: The transfer state is not pending
 ```
-> The transfer state is `requested`.
+> *cause:* The transfer state is `requested`.
 The transfer asks the target wallet to *send* tokens, not receive them.
 The target source can either fulfill or decline. It cannot accept.
 
@@ -701,14 +701,14 @@ POST /wallet/transfers/<transfer_id>/fulfill
 403: Forbidden
 403: Current account has no permission to fulfill this transfer
 ```
-> The target destination can either accept or decline. It cannot fulfill.
+> *cause:* The target destination can either accept or decline. It cannot fulfill.
 The transfer asks the target wallet to *receive* tokens, not send them.
 The transfer state is `pending`, not `requested`. 
 ```
 403: Forbidden
 403: Operation forbidden, the transfer state is wrong
 ```
-> The transfer has already been completed, declined, or cancelled
+> *cause:* The transfer has already been completed, declined, or cancelled
 ```
 422: Unprocessable Entity
 422: "implicit" is required
@@ -777,18 +777,18 @@ POST /wallet/transfers/<transfer_id>/decline
 403: Forbidden
 403: The transfer state is not pending and requested
 ```
-> The transfer has already been either completed, deleted, or declined.
+> *cause:* The transfer has already been either completed, deleted, or declined.
 ```
 403: Forbidden
 403: Current account has no permission to decline this transfer
 ```
-> Only the target wallet can decline a transfer. 
+> *cause:* Only the target wallet can decline a transfer. 
 The originating wallet can only `DELETE`.
 ```
 404: Not Found
 404: Can not found transfer by id:<transfer_id>
 ```
-> Fix the transfer ID in the path.
+> *fix:* Fix the transfer ID in the path.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -826,18 +826,18 @@ DELETE /wallet/transfers/<transfer_id>
 403 Forbidden
 403:The transfer state is not pending and requested
 ```
-> The transfer has already been either completed, deleted, or declined.
+> *cause:* The transfer has already been either completed, deleted, or declined.
 ```
 403: Forbidden
 403: Current account has no permission to cancel this transfer
 ```
-> Only the originating wallet can delete a transfer. 
+> *cause:* Only the originating wallet can delete a transfer. 
 The target wallet can accept, fulfill, or decline.
 ```
 404: Not Found
 404: Can not found transfer by id:<transfer_id>
 ```
-> Fix the transfer ID in the path.
+> *fix:* Fix the transfer ID in the path.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -962,7 +962,7 @@ The requestee wallet can also transfer the originator's tokens to itself.
 500: Unknown error (...invalid input value for...trust_request_type: "<value>")
 500: Unknown error (...invalid input value for...trust_type: "<value>")
 ```
-> In the request path, provide a value for `state`, `request_type`, or `type` from the list above.
+> *fix:* In the request path, provide a value for `state`, `request_type`, or `type` from the list above.
 ```
 422: Unprocessable Entity
 422: "limit" is required
@@ -970,7 +970,7 @@ The requestee wallet can also transfer the originator's tokens to itself.
 422: "start" must be a number
 422: "start" must be greater than or equal to 1
 ```
-> The path must include `?limit=n` or `?limit=n&start=n`, where `n` is an integer
+> *fix:* The path must include `?limit=n` or `?limit=n&start=n`, where `n` is an integer
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -1019,27 +1019,27 @@ The requestee wallet can also transfer the originator's tokens to itself.
 403: Forbidden
 403: The trust relationship has been requested or trusted
 ```
-> Trust relationship requests cannot be duplicated. 
+> *fix:* Trust relationship requests cannot be duplicated. 
 Use [`GET /wallet/trust_relationships`](#get-trusts) to get the ID of
 the existing trust relationship (the state is `requested` or `trusted`) 
-that matches your request. 0Then the requestee can accept or decline it. 
+that matches your request. Then the requestee can accept or decline it. 
 Or you can DELETE it.
 ```
 422: Unprocessable Entity
 422 "trust_request_type" must be one of [send, receive, manage, yield, deduct, release]
 ```
-> Revise the message body to use a valid request type.
+> *fix:* Revise the message body to use a valid request type.
 ```
 500: Internal Server Error
 500: Unknown error (Class constructor HttpError cannot be invoked without 'new')
 ```
-> Request types `deduct` and `release` are not yet implemented. 
+> *fix:* Request types `deduct` and `release` are not yet implemented. 
 Use `manage` or `yield`.
 ```
 404: Not Found
 404: Could not find entity by wallet name: <wallet_name>
 ```
-> In the message body, fix the value of `requestee_wallet`.
+> *fix:* In the message body, fix the value of `requestee_wallet`.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -1072,7 +1072,7 @@ POST /wallet/trust_relationships/<trust_relationship_id>/accept
 403: Forbidden
 403: Have no permission to accept this relationship.
 ```
-> Check the `trust_relationship_id` in your request. You may have provided the wrong one.
+> *fix:* Check the `trust_relationship_id` in your request. You may have provided the wrong one.
 Or you are not this trust's requestee. Only the requestee can accept a trust request.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
@@ -1106,7 +1106,7 @@ POST /wallet/trust_relationships/<trust_relationship_id>/decline
 403: Forbidden
 403: Have no permission to decline this relationship.
 ```
-> Check the `trust_relationship_id` in your request. You may have provided the wrong one.
+> *fix:* Check the `trust_relationship_id` in your request. You may have provided the wrong one.
 Or you are not this trust's requestee. Only the requestee can decline a trust request.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
@@ -1142,12 +1142,12 @@ DELETE /wallet/trust_relationships/<trust_relationship_id>
 500: Internal Server Error
 500: Unknown error (...invalid input syntax for type uuid: "<trust_relationship_id>")
 ```
-> In your request path, provide the correct trust ID.
+> *fix:* In your request path, provide the correct trust ID.
 ```
 403: Forbidden
 403: Have no permission to cancel this relationship
 ```
-> Check the `trust_relationship_id` in your request. You may have provided the wrong one.
+> *fix:* Check the `trust_relationship_id` in your request. You may have provided the wrong one.
 Or you are not this trust's originator. Only the originator can DELETE a trust request.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
