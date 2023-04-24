@@ -413,7 +413,7 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 422: Unprocessable Entity
 422: "state" must be one of [requested, pending, completed, cancelled, failed]
 ```
-> Fix the value of `state` in the request.
+> *fix:* Fix the value of `state` in the request.
 ```
 422: Unprocessable Entity
 422: "limit" is required
@@ -469,7 +469,7 @@ GET /wallet/transfers/<transfer_id>
 404: Not Found
 404: Can not find this transfer or it is related to this wallet
 ```
-> You can only read details of transfers to or from the wallets you manage.
+> *cause:* You can only read details of transfers to or from the wallets you manage.
 ```
 422: Unprocessable Entity
 422: "transfer_id" must be a valid GUID
