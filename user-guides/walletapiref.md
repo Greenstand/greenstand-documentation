@@ -32,14 +32,14 @@
 ## Introduction
 
 API requests need three headers:
-- `TREETRACKER-API-KEY:<`*`api-key`*`>`
-- `Authorization:Bearer <`*`token`*`>`
+- `TREETRACKER-API-KEY:<api-key>`
+- `Authorization:Bearer <token>`
 - `Content-Type:application/json`
 
 Every user's first request to the API is [Authenticate](#authenticate).
      That returns a Bearer token good for about one year.
   
-Do not confuse the `Bearer <`*`token`*`>` with the other use of *token* in the API.
+Do not confuse the `Bearer <token>` with the other use of *token* in the API.
     In all other cases, a *token* is a data object that describes a tree.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
@@ -84,7 +84,7 @@ POST /wallet/auth
 401: Invalid access - no API key
 401: Invalid API access
 ```
-> Provide a correct header: `'TREETRACKER-API-KEY:<`*`api-key`*`>'`
+> Provide a correct header: `'TREETRACKER-API-KEY:<api-key>'`
 ```
 422: Unprocessable Entity
 422: "wallet" is required
@@ -104,7 +104,7 @@ POST /wallet/auth
 403: Forbidden
 403: ERROR: Authentication, token not verified
 ```
-> Provide a correct header: `Authorization: Bearer <`*`bearerToken`*`>`
+> Provide a correct header: `Authorization: Bearer <bearerToken>`
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -141,7 +141,7 @@ GET /wallet/wallets?limit=n&start=n
 422: "start" must be a number
 422: "start" must be greater than or equal to 1
 ```
-> The path must end with `?limit=`*`n`* or `?limit=`*`n`*`&start=`*`n`*, where *`n`* is an integer
+> The path must end with `?limit=n` or `?limit=n&start=n`, where `n` is an integer
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -162,7 +162,7 @@ POST /wallet/wallets
 ```
 #### Errors:
 ```
-500: Unknown error (Unexpected token *c* in JSON at position *n*)}
+500: Unknown error (Unexpected token c in JSON at position n)}
 ```
 > Provide valid JSON format in the request body.
 ```
@@ -218,7 +218,7 @@ GET /wallet/tokens?limit=n&start=n&wallet=name
 422: Unprocessable Entity
 422: "wallet" is not allowed to be empty
 ```
-> The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<`*`value`*`>`
+> The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<value>`
 ```
 403: Forbidden
 403: Wallet do not belongs to wallet logged in
@@ -231,7 +231,7 @@ GET /wallet/tokens?limit=n&start=n&wallet=name
 422: "start" must be a number
 422: "start" must be greater than or equal to 1
 ```
-> The path must include `limit=*n*`. It may include `start=*n*`. In either case, *n* must be an integer
+> The path must include `limit=n`. It may include `start=n`. In either case, `n` must be an integer
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -266,7 +266,7 @@ GET /wallet/tokens/<token_id>
 500: Internal Server Error
 500: Unknown error (select * from "token" ... invalid input syntax for type uuid: "<bad_token_id")
 ```
-> Copy the <*token_id*> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
+> Copy the <token_id> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
 ```
 404: Not Found
 404: can not found token by id:<token_id>
@@ -286,7 +286,7 @@ For a specified token, get a history of all transfers.
 ```
 GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 ```
-> <*token_id*>: Replace with a token ID.
+> <token_id>: Replace with a token ID.
 
 > limit: Required integer. The maximum number of transfer objects to return.
 
@@ -308,7 +308,7 @@ GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 500: Internal Server Error
 500: Unknown error (select * from "token" ... invalid input syntax for type uuid: "<bad_token_id")
 ```
-> Copy the <*token_id*> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
+> Copy the <token_id> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
 ```
 404: Not Found
 404: can not found token by id:<token_id>
@@ -326,7 +326,7 @@ GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 422: "start" must be a number
 422: "start" must be greater than or equal to 1
 ```
-> The path must include `limit=*n*`. It may include `start=*n*`. In either case, *n* must be an integer
+> The path must include `limit=n`. It may include `start=n`. In either case, `n` must be an integer
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -421,7 +421,7 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 422: "start" must be a number
 422: "start" must be greater than or equal to 1
 ```
-> The path must include `?limit=*n*` or `?limit=n&start=n`, where *n* is an integer
+> The path must include `?limit=n` or `?limit=n&start=n`, where `n` is an integer
 ```
 404: Not Found
 404: Could not find entity by wallet name: <badName>
@@ -431,7 +431,7 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 422: Unprocessable Entity
 422: "wallet" is not allowed to be empty
 ```
-> The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<`*`value`*`>`
+> The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<value>`
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -441,7 +441,7 @@ Get details for one specific transfer.
 ```
 GET /wallet/transfers/<transfer_id>
 ```
-> <*transfer_id*>: Replace with a transfer ID.
+> <transfer_id>: Replace with a transfer ID.
 
 #### Response, a transfer object: 
 ```
@@ -474,7 +474,7 @@ GET /wallet/transfers/<transfer_id>
 422: Unprocessable Entity
 422: "transfer_id" must be a valid GUID
 ```
-> Copy the <*transfer_id*> accurately. Transfer IDs comform to the rules of *globally unique identifiers (GUIDs)*: 32 hex digits and 4 hyphens in a specific pattern.
+> Copy the <transfer_id> accurately. Transfer IDs comform to the rules of *globally unique identifiers (GUIDs)*: 32 hex digits and 4 hyphens in a specific pattern.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -484,7 +484,7 @@ Get a list of the tokens moved by a given transfer.
 ```
 GET /wallet/transfers/<transfer_id>/tokens?limit=n&start=n
 ```
-> <*transfer_id*>: Replace with a transfer ID.
+> <transfer_id>: Replace with a transfer ID.
 
 > limit: Required integer. The maximum number of tokens to return.
 
@@ -510,7 +510,7 @@ The other party to the request is the *requestee* or *target*.
 
 Tokens are *debited* from from the *sender_wallet* and *credited* to the *receiver_wallet*.
 
-If the wallets share the right [*trust relationship*](#trusts-explained), transfers take place immediately and automatically. Otherwise, the server stores the request and waits for the requestee to accept or decline it.
+If the wallets share the right [*trust relationship*](#trust-relationships-explained), transfers take place immediately and automatically. Otherwise, the server stores the request and waits for the requestee to accept or decline it.
 ```
 POST /wallet/transfers
 ```
@@ -578,7 +578,7 @@ POST /wallet/transfers
      for example, it's been pending for another transfer
 ```
 > Change the list of token IDs in the request body. 
-Or replace the list with bundle: { bundle_size: *n* }.
+Or replace the list with `bundle: { bundle_size: n }`.
 If you own the token, you can learn what has happened by posting a
 request to [get transactions by token ID](#get-transactions-by-token-id). 
 When a transfer request asks you to send tokens, 
@@ -589,12 +589,12 @@ not by posting a new transfer.
 403: The token <token_id> do not belongs to sender wallet
 ```
 > Fix the list of token IDs in the request body. 
-Or write `bundle: { bundle_size: *n* }`. 
+Or write `bundle: { bundle_size: n }`. 
 You can get a list of the tokens you own with a request to 
 [get tokens by wallet](#get-tokens-by-wallet).
 ```
 422: Unprocessable Entity
-422:"tokens[*n*]" contains a duplicate value
+422:"tokens[n]" contains a duplicate value
 ```
 > Do not list the same token twice in the request body.
 ```
@@ -613,7 +613,7 @@ A destination wallet completes a pending transfer by accepting in-coming tokens.
 ```
 POST /wallet/transfers/<transfer_id>/accept
 ```
-> <*transfer_id*>: Replace with a transfer ID.
+> <transfer_id>: Replace with a transfer ID.
 
 #### Response, a transfer object:
 ```
@@ -646,8 +646,8 @@ POST /wallet/transfers/<transfer_id>/accept
 403: Forbidden
 403: The transfer state is not pending
 ```
-> The transfer asks the target wallet to *send* tokens, not receive them.
-The transfer state is `requested`. 
+> The transfer state is `requested`.
+The transfer asks the target wallet to *send* tokens, not receive them.
 The target source can either fulfill or decline. It cannot accept.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
@@ -658,7 +658,7 @@ A source wallet completes a requested transfer by sending out-going tokens to th
 ```
 POST /wallet/transfers/<transfer_id>/fulfill
 ```
-> <*transfer_id*>: Replace with a transfer ID.
+> <transfer_id>: Replace with a transfer ID.
 
 #### Request body:
 ```
@@ -732,8 +732,8 @@ and the implicit property. Use one or the other, most likely `implicit:true`
 > In the message body, revise the list of token IDs, or write `implicit:true`.
 ```
 403: Forbidden
-403: Too few tokens to transfer, please provide *n* tokens for this transfer
-403: Too many tokens to transfer, please provide *n* tokens for this transfer
+403: Too few tokens to transfer, please provide n tokens for this transfer
+403: Too many tokens to transfer, please provide n tokens for this transfer
 ```
 > You provided fewer or more token IDs than the transfer requested in the `bundle_size` property. In the message body, write `implicit:true`. Or provide an array with the correct number of valid token IDs.
 ```
@@ -749,7 +749,7 @@ The target wallet of a transfer--whether its the source or destination--refuses 
 ```
 POST /wallet/transfers/<transfer_id>/decline
 ```
-> <*transfer_id*>: Replace with a transfer ID.
+> <transfer_id>: Replace with a transfer ID.
 
 #### Response, a transfer object:
 ```
@@ -798,7 +798,7 @@ The originator cancels a transfer before target accepts or fulfills it.
 ```
 DELETE /wallet/transfers/<transfer_id>
 ```
-> <*transfer_id*>: Replace with a transfer ID.
+> <transfer_id>: Replace with a transfer ID.
 
 #### Response, a transfer object:
 ```
@@ -970,7 +970,7 @@ The requestee wallet can also transfer the originator's tokens to itself.
 422: "start" must be a number
 422: "start" must be greater than or equal to 1
 ```
-> The path must include `?limit=*n*` or `?limit=n&start=n`, where *n* is an integer
+> The path must include `?limit=n` or `?limit=n&start=n`, where `n` is an integer
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -1050,7 +1050,7 @@ The accept message will re-instate a trust relationship that was previously decl
 ```
 POST /wallet/trust_relationships/<trust_relationship_id>/accept
 ```
-> <*trust_relationship_id*>: Replace with a trust relationship ID.
+> <trust_relationship_id>: Replace with a trust relationship ID.
 
 #### Response, a trust relationship object:
 ```
@@ -1084,7 +1084,7 @@ let a new one take effect.
 ```
 POST /wallet/trust_relationships/<trust_relationship_id>/decline
 ```
-> <*trust_relationship_id*>: Replace with a trust relationship ID.
+> <trust_relationship_id>: Replace with a trust relationship ID.
 
 #### Response, a trust relationship object:
 ```
@@ -1118,7 +1118,7 @@ regardless of whether the requestee has already accepted it.
 ```
 DELETE /wallet/trust_relationships/<trust_relationship_id>
 ```
-> <*trust_relationship_id*>: Replace with a trust relationship ID.
+> <trust_relationship_id>: Replace with a trust relationship ID.
 
 #### Response, a trust relationship object:
 ```
