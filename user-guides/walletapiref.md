@@ -22,7 +22,7 @@
 - [Fulfill Transfer](#fulfill-transfer)
 - [Delete Transfer](#delete-transfer)
   
-- [Trusts Explained](#trusts-explained)
+- [Trust Relationships Explained](#trust-relationships-explained)
 - [Get Trusts](#get-trusts)
 - [Post Trust Request](#post-trust-request)
 - [Accept Trust](#accept-trust)
@@ -32,7 +32,7 @@
 ## Introduction
 
 API requests need three headers:
-- `TREETRACKER-API-KEY:<`*`api-key`*`>
+- `TREETRACKER-API-KEY:<`*`api-key`*`>`
 - `Authorization:Bearer <`*`token`*`>`
 - `Content-Type:application/json`
 
@@ -84,7 +84,7 @@ POST /wallet/auth
 401: Invalid access - no API key
 401: Invalid API access
 ```
-> Provide a correct header: `'TREETRACKER-API-KEY:<api-key>'`
+> Provide a correct header: `'TREETRACKER-API-KEY:<`*api-key*`>'`
 ```
 422: Unprocessable Entity
 422: "wallet" is required
@@ -104,7 +104,7 @@ POST /wallet/auth
 403: Forbidden
 403: ERROR: Authentication, token not verified
 ```
-> Provide a correct header: `Authorization: Bearer <bearerToken>`
+> Provide a correct header: `Authorization: Bearer <`*bearerToken*`>`
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -218,7 +218,7 @@ GET /wallet/tokens?limit=n&start=n&wallet=name
 422: Unprocessable Entity
 422: "wallet" is not allowed to be empty
 ```
-> The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<value>`
+> The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<`*`value`*`>`
 ```
 403: Forbidden
 403: Wallet do not belongs to wallet logged in
@@ -266,7 +266,7 @@ GET /wallet/tokens/<token_id>
 500: Internal Server Error
 500: Unknown error (select * from "token" ... invalid input syntax for type uuid: "<bad_token_id")
 ```
-> Copy the <token_id> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
+> Copy the <*token_id*> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
 ```
 404: Not Found
 404: can not found token by id:<token_id>
@@ -286,7 +286,7 @@ For a specified token, get a history of all transfers.
 ```
 GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 ```
-> <token_id>: Replace with a token ID.
+> <*token_id*>: Replace with a token ID.
 
 > limit: Required integer. The maximum number of transfer objects to return.
 
@@ -308,7 +308,7 @@ GET /wallet/tokens/<token_id>/transactions?limit=n&start=n
 500: Internal Server Error
 500: Unknown error (select * from "token" ... invalid input syntax for type uuid: "<bad_token_id")
 ```
-> Copy the <token_id> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
+> Copy the <*token_id*> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
 ```
 404: Not Found
 404: can not found token by id:<token_id>
@@ -431,7 +431,7 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
 422: Unprocessable Entity
 422: "wallet" is not allowed to be empty
 ```
-> The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<value>`
+> The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<`*`value`*`>`
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -441,7 +441,7 @@ Get details for one specific transfer.
 ```
 GET /wallet/transfers/<transfer_id>
 ```
-> <transfer_id>: Replace with a transfer ID.
+> <*transfer_id*>: Replace with a transfer ID.
 
 #### Response, a transfer object: 
 ```
@@ -474,7 +474,7 @@ GET /wallet/transfers/<transfer_id>
 422: Unprocessable Entity
 422: "transfer_id" must be a valid GUID
 ```
-> Copy the <transfer_id> accurately. Transfer IDs comform to the rules of *globally unique identifiers (GUIDs)*: 32 hex digits and 4 hyphens in a specific pattern.
+> Copy the <*transfer_id*> accurately. Transfer IDs comform to the rules of *globally unique identifiers (GUIDs)*: 32 hex digits and 4 hyphens in a specific pattern.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -484,7 +484,7 @@ Get a list of the tokens moved by a given transfer.
 ```
 GET /wallet/transfers/<transfer_id>/tokens?limit=n&start=n
 ```
-> <transfer_id>: Replace with a transfer ID.
+> <*transfer_id*>: Replace with a transfer ID.
 
 > limit: Required integer. The maximum number of tokens to return.
 
@@ -613,7 +613,7 @@ A destination wallet completes a pending transfer by accepting in-coming tokens.
 ```
 POST /wallet/transfers/<transfer_id>/accept
 ```
-> <transfer_id>: Replace with a transfer ID.
+> <*transfer_id*>: Replace with a transfer ID.
 
 #### Response, a transfer object:
 ```
@@ -626,7 +626,7 @@ POST /wallet/transfers/<transfer_id>/accept
     |or|
     bundle: { bundle_size: integer }
   }
-  state: <b>completed</b>
+  state: completed
   created_at: date
   closed_at: date
   active:true
@@ -658,7 +658,7 @@ A source wallet completes a requested transfer by sending out-going tokens to th
 ```
 POST /wallet/transfers/<transfer_id>/fulfill
 ```
-> <transfer_id>: Replace with a transfer ID.
+> <*transfer_id*>: Replace with a transfer ID.
 
 #### Request body:
 ```
@@ -681,7 +681,7 @@ POST /wallet/transfers/<transfer_id>/fulfill
     |or|
     bundle: { bundle_size: integer }
   }
-  state: <b>completed</b>
+  state: completed
   created_at: date
   closed_at: date
   active:true
@@ -749,7 +749,7 @@ The target wallet of a transfer--whether its the source or destination--refuses 
 ```
 POST /wallet/transfers/<transfer_id>/decline
 ```
-> <transfer_id>: Replace with a transfer ID.
+> <*transfer_id*>: Replace with a transfer ID.
 
 #### Response, a transfer object:
 ```
@@ -762,7 +762,7 @@ POST /wallet/transfers/<transfer_id>/decline
     |or|
     bundle: { bundle_size: integer }
   }
-  state: <b>cancelled</b>
+  state: cancelled
   created_at: date
   closed_at: date
   active:true
@@ -798,7 +798,7 @@ The originator cancels a transfer before target accepts or fulfills it.
 ```
 DELETE /wallet/transfers/<transfer_id>
 ```
-> <transfer_id>: Replace with a transfer ID.
+> <*transfer_id*>: Replace with a transfer ID.
 
 #### Response, a transfer object:
 ```
@@ -811,7 +811,7 @@ DELETE /wallet/transfers/<transfer_id>
     |or|
     bundle: { bundle_size: integer }
   }
-  state: <b>cancelled</b>
+  state: cancelled
   created_at: date
   closed_at: date
   active:true
@@ -958,9 +958,9 @@ The requestee wallet can also transfer the originator's tokens to itself.
 #### Errors:
 ```
 500: Internal Server Error
-500: Unknown error (...invalid input value for...trust_<b>state</b>_type: "<value>")
-500: Unknown error (...invalid input value for...trust_<b>request_type</b>: "<value>")
-500: Unknown error (...invalid input value for...trust_<b>type</b>: "<value>")
+500: Unknown error (...invalid input value for...trust_state_type: "<value>")
+500: Unknown error (...invalid input value for...trust_request_type: "<value>")
+500: Unknown error (...invalid input value for...trust_type: "<value>")
 ```
 > In the request path, provide a value for `state`, `request_type`, or `type` from the list above.
 ```
@@ -1006,7 +1006,7 @@ The requestee wallet can also transfer the originator's tokens to itself.
   id: uuid
   type: string
   request_type: string
-  state: <b>requested</b>
+  state: requested
   created_at: date
   updated_at: date
   orginating_wallet: <currently logged-in wallet>
@@ -1050,7 +1050,7 @@ The accept message will re-instate a trust relationship that was previously decl
 ```
 POST /wallet/trust_relationships/<trust_relationship_id>/accept
 ```
-> <trust_relationship_id>: Replace with a trust relationship ID.
+> <*trust_relationship_id*>: Replace with a trust relationship ID.
 
 #### Response, a trust relationship object:
 ```
@@ -1084,7 +1084,7 @@ let a new one take effect.
 ```
 POST /wallet/trust_relationships/<trust_relationship_id>/decline
 ```
-> <trust_relationship_id>: Replace with a trust relationship ID.
+> <*trust_relationship_id*>: Replace with a trust relationship ID.
 
 #### Response, a trust relationship object:
 ```
@@ -1118,7 +1118,7 @@ regardless of whether the requestee has already accepted it.
 ```
 DELETE /wallet/trust_relationships/<trust_relationship_id>
 ```
-> <trust_relationship_id>: Replace with a trust relationship ID.
+> <*trust_relationship_id*>: Replace with a trust relationship ID.
 
 #### Response, a trust relationship object:
 ```
