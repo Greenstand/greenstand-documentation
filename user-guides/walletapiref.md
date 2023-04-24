@@ -395,7 +395,7 @@ GET /wallet/transfers?limit=n&start=n&wallet=nameOrID&state=value
     type: send, deduct, or managed
     parameters: {
       tokens: [token_id,token_id,token_id]
-      *or*
+|or|
       bundle: { bundle_size: integer }
     }
     state: requested, pending, completed, cancelled, or failed
@@ -452,7 +452,7 @@ GET /wallet/transfers/<transfer_id>
   type: send, deduct, or managed
   parameters: {
     tokens: [token_id,token_id,token_id]
-    *or*
+|or|
     bundle: { bundle_size: integer }
   }
   state: requested, pending, completed, cancelled, or failed
@@ -548,7 +548,7 @@ POST /wallet/transfers
   type: send, deduct, or managed
   parameters: {
     tokens: [token_id,token_id,token_id]
-    *or*
+|or|
     bundle: { bundle_size: integer }
   }
   state: completed, requested, or pending
@@ -624,7 +624,7 @@ POST /wallet/transfers/<transfer_id>/accept
   type: send, deduct, or managed
   parameters: {
     tokens: [token_id,token_id,token_id]
-    *or*
+|or|
     bundle: { bundle_size: integer }
   }
   state: <b>completed</b>
@@ -653,7 +653,7 @@ The target source can either fulfill or decline. It cannot accept.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
-Fulfill Transfer
+## Fulfill Transfer
 
 A source wallet completes a requested transfer by sending out-going tokens to their destination.
 ```
@@ -679,7 +679,7 @@ POST /wallet/transfers/<transfer_id>/fulfill
   type: send, deduct, or managed
   parameters: {
     tokens: [token_id,token_id,token_id]
-    *or*
+|or|
     bundle: { bundle_size: integer }
   }
   state: <b>completed</b>
@@ -697,7 +697,7 @@ POST /wallet/transfers/<transfer_id>/fulfill
 404: Not Found
 <!DOCTYPE html><html lang="en">Error ... Cannot POST /transfers/<transfer_id>/fullfill
 ```
-> In the path, spell fulfill with 3 ells, not 4.
+> In the path, spell *fulfill* with 3 ells, not 4.
 ```
 403: Forbidden
 403: Current account has no permission to fulfill this transfer
@@ -760,7 +760,7 @@ POST /wallet/transfers/<transfer_id>/decline
   type: send, deduct, or managed
   parameters: {
     tokens: [token_id,token_id,token_id]
-    *or*
+|or|
     bundle: { bundle_size: integer }
   }
   state: <b>cancelled</b>
@@ -809,7 +809,7 @@ DELETE /wallet/transfers/<transfer_id>
   type: send, deduct, or managed
   parameters: {
     tokens: [token_id,token_id,token_id]
-    *or*
+|or|
     bundle: { bundle_size: integer }
   }
   state: <b>cancelled</b>
