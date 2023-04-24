@@ -566,18 +566,18 @@ POST /wallet/transfers
 404: Could not find entity by wallet name:<wallet_name>
 404: can not found token by id:<token_id>
 ```
-> Fix the wallet names and/or token IDs in the request body.
+> *fix:* Fix the wallet names and/or token IDs in the request body.
 ```
 403: Forbidden
 403: Do not have enough tokens to send
 ```
-> Decrease the value of `bundle_size` in the request body.
+> *fix:* Decrease the value of `bundle_size` in the request body.
 ```
 403: Forbidden
 403: The token <token_id> can not be transfer for some reason, 
      for example, it's been pending for another transfer
 ```
-> Change the list of token IDs in the request body. 
+> *fix:* Change the list of token IDs in the request body. 
 Or replace the list with `bundle: { bundle_size: n }`.
 If you own the token, you can learn what has happened by posting a
 request to [get transactions by token ID](#get-transactions-by-token-id). 
@@ -588,7 +588,7 @@ not by posting a new transfer.
 403: Forbidden
 403: The token <token_id> do not belongs to sender wallet
 ```
-> Fix the list of token IDs in the request body. 
+> *fix:* Fix the list of token IDs in the request body. 
 Or write `bundle: { bundle_size: n }`. 
 You can get a list of the tokens you own with a request to 
 [get tokens by wallet](#get-tokens-by-wallet).
@@ -596,13 +596,13 @@ You can get a list of the tokens you own with a request to
 422: Unprocessable Entity
 422:"tokens[n]" contains a duplicate value
 ```
-> Do not list the same token twice in the request body.
+> *fix:* Do not list the same token twice in the request body.
 ```
 422: Unprocessable Entity
 422: "bundle.bundle_size" must be a number
 422: "bundle.bundle_size" must be greater than or equal to 1
 ```
-> For the value of `bundle_size`, provide a positive integer,
+> *fix:* For the value of `bundle_size`, provide a positive integer,
 with or without quotes.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
@@ -641,7 +641,7 @@ POST /wallet/transfers/<transfer_id>/accept
 403: Forbidden
 403: Current account has no permission to accept this transfer
 ```
-> Only the target destination can accept a transfer. The originating wallet is not allowed to.
+> *cause:* Only the target destination can accept a transfer. The originating wallet is not allowed to.
 ```
 403: Forbidden
 403: The transfer state is not pending
@@ -696,7 +696,7 @@ POST /wallet/transfers/<transfer_id>/fulfill
 404: Not Found
 <!DOCTYPE html><html lang="en">Error ... Cannot POST /transfers/<transfer_id>/fullfill
 ```
-> In the path, spell *fulfill* with 3 ells, not 4.
+> *fix:* In the path, spell *fulfill* with 3 ells, not 4.
 ```
 403: Forbidden
 403: Current account has no permission to fulfill this transfer
@@ -713,34 +713,34 @@ The transfer state is `pending`, not `requested`.
 422: Unprocessable Entity
 422: "implicit" is required
 ```
-> Add the missing message body, probably: `{"implicit":"true"}`
+> *fix:* Add the missing message body, probably: `{"implicit":"true"}`
 ```
 422: Unprocessable Entity
 422: "implicit" is not allowed
 ```
-> In the message body, do not write *both* literal token IDs 
+> *fix:* In the message body, do not write *both* literal token IDs 
 and the implicit property. Use one or the other, most likely `implicit:true`
 ```
 403: Forbidden
 403: No need to specify tokens
 ```
-> In the message body, write `implicit:true`, not a list of token IDs. The transfer request already specifies token IDs. The API does not allow them to be specified again.
+> *fix:* In the message body, write `implicit:true`, not a list of token IDs. The transfer request already specifies token IDs. The API does not allow them to be specified again.
 ```
 404: Not Found
 404: can not found token by id:<token_id>
 ```
-> In the message body, revise the list of token IDs, or write `implicit:true`.
+> *fix:* In the message body, revise the list of token IDs, or write `implicit:true`.
 ```
 403: Forbidden
 403: Too few tokens to transfer, please provide n tokens for this transfer
 403: Too many tokens to transfer, please provide n tokens for this transfer
 ```
-> You provided fewer or more token IDs than the transfer requested in the `bundle_size` property. In the message body, write `implicit:true`. Or provide an array with the correct number of valid token IDs.
+> *fix:* You provided fewer or more token IDs than the transfer requested in the `bundle_size` property. In the message body, write `implicit:true`. Or provide an array with the correct number of valid token IDs.
 ```
 500 Internal Server Error
 500: Unknown error (... invalid input syntax for type uuid: "$tokenid")
 ```
-> You probably wrote a bad token ID. In the message body, write `implicit:true`. 
+> *fix:* You probably wrote a bad token ID. In the message body, write `implicit:true`. 
 Or provide an array of valid token IDs.
 
 ## Decline Transfer
