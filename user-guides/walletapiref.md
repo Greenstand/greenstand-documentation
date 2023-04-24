@@ -84,7 +84,7 @@ POST /wallet/auth
 401: Invalid access - no API key
 401: Invalid API access
 ```
-> Provide a correct header: `'TREETRACKER-API-KEY:<`*api-key*`>'`
+> Provide a correct header: `'TREETRACKER-API-KEY:<`*`api-key`*`>'`
 ```
 422: Unprocessable Entity
 422: "wallet" is required
@@ -104,7 +104,7 @@ POST /wallet/auth
 403: Forbidden
 403: ERROR: Authentication, token not verified
 ```
-> Provide a correct header: `Authorization: Bearer <`*bearerToken*`>`
+> Provide a correct header: `Authorization: Bearer <`*`bearerToken`*`>`
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
