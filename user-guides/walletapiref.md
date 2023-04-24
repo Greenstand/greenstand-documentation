@@ -63,39 +63,39 @@ POST /wallet/auth
 ```
 200: OK: 1.10.3
 ```
-> Use `POST`, not `GET`
+> *fix:* Use `POST`, not `GET`
 ```
 404: Not Found
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Error</title></head><body><pre>Cannot POST /authnot</pre></body></html>
 ```
-> Post your request to `https://prod-k8s.treetracker.org/wallet/auth`
+> *fix:* Post your request to `https://prod-k8s.treetracker.org/wallet/auth`
 ```
 404: Not Found
 404: Could not find entity by wallet name: <name>
 ```
-> Correct the value of `wallet` in the request body.
+> *fix:* Correct the value of `wallet` in the request body.
 ```
 415: Unsupported Media Type
 415: Invalid content type. API only supports application/json
 ```
-> Provide the header: `Content-Type:application/json`
+> *fix:* Provide the header: `Content-Type:application/json`
 ```
 401: Unauthorized
 401: Invalid access - no API key
 401: Invalid API access
 ```
-> Provide a correct header: `'TREETRACKER-API-KEY:<api-key>'`
+> *fix:* Provide a correct header: `'TREETRACKER-API-KEY:<api-key>'`
 ```
 422: Unprocessable Entity
 422: "wallet" is required
 422: "password" is required
 ```
-> Provide the request body: `{"wallet": "name", "password": "value"}`
+> *fix:* Provide the request body: `{"wallet": "name", "password": "value"}`
 ```
 401: Unauthorized
 401: Invalid credentials
 ```
-> Correct the value of `password` in the request body.
+> *fix:* Correct the value of `password` in the request body.
 
 #### Authorization errors in subsequent requests:
 ```
@@ -104,7 +104,7 @@ POST /wallet/auth
 403: Forbidden
 403: ERROR: Authentication, token not verified
 ```
-> Provide a correct header: `Authorization: Bearer <bearerToken>`
+> *fix:* Provide a correct header: `Authorization: Bearer <bearerToken>`
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -141,7 +141,7 @@ GET /wallet/wallets?limit=n&start=n
 422: "start" must be a number
 422: "start" must be greater than or equal to 1
 ```
-> The path must end with `?limit=n` or `?limit=n&start=n`, where `n` is an integer
+> *fix:* The path must end with `?limit=n` or `?limit=n&start=n`, where `n` is an integer
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -164,7 +164,7 @@ POST /wallet/wallets
 ```
 500: Unknown error (Unexpected token c in JSON at position n)}
 ```
-> Provide valid JSON format in the request body.
+> *fix:* Provide valid JSON format in the request body.
 ```
 400: invalid wallet name:<badname>
 ```
@@ -172,7 +172,7 @@ POST /wallet/wallets
 403: Forbidden
 403: The wallet '<duplicateName>' has been existed
 ```
-> A new wallet name must be unique to Greenstand. We suggest an email address.
+> *fix:* A new wallet name must be unique to Greenstand. We suggest an email address.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -213,17 +213,17 @@ GET /wallet/tokens?limit=n&start=n&wallet=name
 404: Not Found
 404: Could not find entity by wallet name: <badName>
 ```
-> The wallet you specified does not exist. See [Get Wallets](#get-wallets), above, for a list of existing wallets.
+>  *fix:* The wallet you specified does not exist. See [Get Wallets](#get-wallets), above, for a list of existing wallets.
 ```
 422: Unprocessable Entity
 422: "wallet" is not allowed to be empty
 ```
-> The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<value>`
+> *fix:* The path need not include `wallet=`, but if it does, wallet must have a value: `wallet=<value>`
 ```
 403: Forbidden
 403: Wallet do not belongs to wallet logged in
 ```
-> You can only view tokens in wallets that you manage. See [Get Wallets](#get-wallets), above, for a list.
+> *fix:* You can only view tokens in wallets that you manage. See [Get Wallets](#get-wallets), above, for a list.
 ```
 422: Unprocessable Entity
 422: "limit" is required
@@ -231,7 +231,7 @@ GET /wallet/tokens?limit=n&start=n&wallet=name
 422: "start" must be a number
 422: "start" must be greater than or equal to 1
 ```
-> The path must include `limit=n`. It may include `start=n`. In either case, `n` must be an integer
+> *fix:* The path must include `limit=n`. It may include `start=n`. In either case, `n` must be an integer
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
@@ -266,17 +266,17 @@ GET /wallet/tokens/<token_id>
 500: Internal Server Error
 500: Unknown error (select * from "token" ... invalid input syntax for type uuid: "<bad_token_id")
 ```
-> Copy the <token_id> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
+> *fix:* Copy the <token_id> accurately. Token IDs comform to the rules of *universally unique identifiers (UUIDs)*: 32 hex digits and 4 hyphens in a specific pattern. Though the request will work if any or all of the hyphens are removed.
 ```
 404: Not Found
 404: can not found token by id:<token_id>
 ```
-> The specified token_id does not exist.
+> *cause:* The specified token_id does not exist.
 ```
 401: Unauthorized
 401: Have no permission to visit this token
 ```
-> You can only read tokens that reside in wallets that you manage.
+> *cause:* You can only read tokens that reside in wallets that you manage.
 
 [^ back to top ^](#treetracker-wallet-api-reference)
 
