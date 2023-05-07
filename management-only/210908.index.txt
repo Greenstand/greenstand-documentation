@@ -1,5 +1,3 @@
-ToDo: website.txt gitbook.txt
-
 What We Do:
   Slide shows, OMDTZ, Oct 2020
     greenstand.org/devbox, 
