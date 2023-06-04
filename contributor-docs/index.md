@@ -16,6 +16,11 @@ to help those contributing to Treetracker software.</p>
 <p class='list'>
 <a href='https://greenstand.org/devbox/admin-panel-proccess'>Administrative panel process</a>: How Greenstand tags new tree tokens regarding the tree's age, quality, species, and acceptability.</p>
 
+<p><b>Policies: </b></p>
+<p class='list'>
+<a href='https://docs.google.com/document/d/1OXcHTF2hTu-b3h5jbDP-uNaBOKgBogEB-C8aIRvmOP0/edit?usp=share_link'>Contributor Covenant Code Of Conduct</a></p>
+</p>
+
 <p><b>How Greenstand Software Engineers Work: </b></p>
 <p class='list'>
 <a href='https://greenstand.gitbook.io/engineering'>Engineer's Handbook</a>: Information about the teams building the Treetracker software, the tools we use, and how to contribute to the work.</p>
