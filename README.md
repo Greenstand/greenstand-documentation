@@ -1,5 +1,5 @@
-Greenstand Documentation, Index
-===============================
+Greenstand Documentation
+========================
 
 ## Project Design
 [Introduction to the purpose and design of Greenstand](project-design/index.md)
