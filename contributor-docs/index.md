@@ -4,6 +4,8 @@ to help those contributing to Treetracker software.</p>
 <p>To contribute, comment, or question the documentation, please submit an issue or pull request at the 
 <a href='https://github.com/Greenstand/greenstand-documentation'>github repository</a>.
 
+### More information can also be found in [Overview-contributing to the cause](https://github.com/Greenstand/Greenstand-Overview#contributing-to-the-cause)
+
 <H3>Libraries:</h3>
 <p class='list'>
 <a href='https://github.com/Greenstand'>Repositories</a>: </b>Greenstand organizes and publishes its open-source Treetracker software platform in multiple github repositories, most of them public.</p>
@@ -39,3 +41,6 @@ The the application for managing and moving Greenstand tree tokens.</p>
 <a href='https://github.com/Greenstand/treetracker-wallet-api/blob/master/README.md'>github README: Getting Started</a>: How to download, install, and run the development version of the API server.</p>
 
 
+<h3>Greenstand's Slack/h3>
+<p class='list'>
+<a href='link'</a>: [Slack Basics](https://github.com/Greenstand/Greenstand-Overview#slack-basics)</p>
