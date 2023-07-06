@@ -1,3 +1,10 @@
+---
+layout: default
+title: Github
+parent: Contribute
+nav_order: 1
+---
+
 ## Basic Git Hub skills required!
 If you have not heard of a **pull request** it is time for you to join over 27 million developers and learn this version control platform. There are lots of cool articles to get you up to speed: [Github Introduction](https://guides.github.com/introduction/flow/) [Forking a Repository in Github](https://help.github.com/articles/fork-a-repo/), [Synicing a Fork in Github](https://help.github.com/articles/syncing-a-fork/)
 

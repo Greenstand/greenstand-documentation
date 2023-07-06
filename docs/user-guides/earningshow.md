@@ -1,3 +1,10 @@
+---
+title: Earnings
+layout: default
+parent: User Guides
+nav_order: 1
+---
+
 How to Record Earnings and Payments
 ==============================
 
@@ -35,7 +42,7 @@ You may also find help in a more-detailed, less-procedural document: the Greenst
 
 *figure 1: Earnings administration*
 
-<img src='pix/admin-earns-760.png'/>
+<img src='../pix/admin-earns-760.png'/>
 
 Here is how to export a typical selection of growers' earnings data:
 
@@ -81,7 +88,7 @@ You can use the Earnings display to record a payment made, as follows:
 
 *figure 2: Detail for one Earnings record*
 
-<img src='pix/admin-earns-details.png' width='220px'/>
+<img src='../pix/admin-earns-details.png' width='220px'/>
 
 1 Click on the record in question.
 > You see a details dialogue for that record.
@@ -99,7 +106,7 @@ You can record multiple payments by uploading a file of CSV data.
 
 *figure 3: Administration menu*
 
-<img src='pix/admin-menu.png' width='220px'/>
+<img src='../pix/admin-menu.png' width='220px'/>
 
 Provide all the same fields that occur in exported earnings data, in the same order.  
 

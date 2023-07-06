@@ -1,33 +1,65 @@
+---
+title: Wallet API Reference
+layout: default
+parent: User Guides
+nav_order: 4
+---
+
 
 # Treetracker Wallet API Reference
 
 *Contents:*
-- [Introduction](#introduction)
-- [Authenticate](#authenticate)
-- [Get Wallets](#get-wallets)
-- [Post Wallet](#post-wallet)
-  
-- [Get Tokens by Wallet](#get-tokens-by-wallet)
-- [Get Token by ID](#get-token-by-id)
-- [Get Transactions by Token ID](#get-transactions-by-token-id)
-  
-- [Transfers Explained](#transfers-explained)
-- [Get Transfers by Wallet](#get-transfers-by-wallet)
-- [Get Transfer Details by ID](#get-transfer-details-by-id)
-- [Get Tokens by Transfer](#get-tokens-by-transfer)
-  
-- [Post Transfers](#post-transfers)
-- [Accept Transfer](#accept-transfer)
-- [Decline Transfer](#decline-transfer)
-- [Fulfill Transfer](#fulfill-transfer)
-- [Delete Transfer](#delete-transfer)
-  
-- [Trust Relationships Explained](#trust-relationships-explained)
-- [Get Trusts](#get-trusts)
-- [Post Trust Request](#post-trust-request)
-- [Accept Trust](#accept-trust)
-- [Decline Trust](#decline-trust)
-- [Delete Trust](#delete-trust)
+
+- 
+{:toc }
+
+[//]: # (- [Introduction]&#40;#introduction&#41;)
+
+[//]: # (- [Authenticate]&#40;#authenticate&#41;)
+
+[//]: # (- [Get Wallets]&#40;#get-wallets&#41;)
+
+[//]: # (- [Post Wallet]&#40;#post-wallet&#41;)
+
+[//]: # (  )
+[//]: # (- [Get Tokens by Wallet]&#40;#get-tokens-by-wallet&#41;)
+
+[//]: # (- [Get Token by ID]&#40;#get-token-by-id&#41;)
+
+[//]: # (- [Get Transactions by Token ID]&#40;#get-transactions-by-token-id&#41;)
+
+[//]: # (  )
+[//]: # (- [Transfers Explained]&#40;#transfers-explained&#41;)
+
+[//]: # (- [Get Transfers by Wallet]&#40;#get-transfers-by-wallet&#41;)
+
+[//]: # (- [Get Transfer Details by ID]&#40;#get-transfer-details-by-id&#41;)
+
+[//]: # (- [Get Tokens by Transfer]&#40;#get-tokens-by-transfer&#41;)
+
+[//]: # (  )
+[//]: # (- [Post Transfers]&#40;#post-transfers&#41;)
+
+[//]: # (- [Accept Transfer]&#40;#accept-transfer&#41;)
+
+[//]: # (- [Decline Transfer]&#40;#decline-transfer&#41;)
+
+[//]: # (- [Fulfill Transfer]&#40;#fulfill-transfer&#41;)
+
+[//]: # (- [Delete Transfer]&#40;#delete-transfer&#41;)
+
+[//]: # (  )
+[//]: # (- [Trust Relationships Explained]&#40;#trust-relationships-explained&#41;)
+
+[//]: # (- [Get Trusts]&#40;#get-trusts&#41;)
+
+[//]: # (- [Post Trust Request]&#40;#post-trust-request&#41;)
+
+[//]: # (- [Accept Trust]&#40;#accept-trust&#41;)
+
+[//]: # (- [Decline Trust]&#40;#decline-trust&#41;)
+
+[//]: # (- [Delete Trust]&#40;#delete-trust&#41;)
 
 ## Introduction
 

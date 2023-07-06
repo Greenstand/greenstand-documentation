@@ -1,6 +1,15 @@
+---
+title: Earnings Reference
+layout: default
+parent: User Guides
+nav_order: 2
+---
+
 
 Greenstand Earnings Reference
 ================================================
+
+{% last_modified_at %}
 
 For growers and funders, Greenstand's online [Earnings tool](https://admin.treetracker.org/earnings) records payments due and payments made.
 
