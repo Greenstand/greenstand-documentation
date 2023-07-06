@@ -4,7 +4,7 @@ layout: home
 nav_order: 1
 ---
 
-# Greenstand Documentation, Index 
+# Greenstand Documentation, Index
 
 ## Project Design
 [Introduction to the purpose and design of Greenstand](project-design/)
