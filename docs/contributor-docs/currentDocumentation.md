@@ -1,11 +1,3 @@
----
-title: Current Documentation
-layout: default
-nav_order: 1
-parent: Documentation
-grand_parent: Contribute
----
-
 # Current Documentation
 
 ### Website

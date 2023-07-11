@@ -1,10 +1,3 @@
----
-title: Glossary
-layout: default
-parent: Project Design
-nav_order: 1
----
-
 [Also See System-design-docs](https://github.com/Greenstand/system-design-docs)
 
 [See Domain Model](https://github.com/Greenstand/system-design-docs/blob/master/domain-model/domain_model.md)

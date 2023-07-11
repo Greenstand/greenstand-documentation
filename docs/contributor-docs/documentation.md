@@ -1,11 +1,3 @@
----
-title: Documentation
-layout: default
-nav_order: 2
-parent: Contribute
-has_children: true
----
-
 # Documentation
 
 ## Legacy

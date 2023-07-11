@@ -1,11 +1,3 @@
----
-title: Project Design
-layout: default
-has_children: true
-nav_order: 2
----
-
-
 # Greenstand Project Design
 
 An annotated index of links to overviews and descriptions for introducing Greenstand and its Treetracker software to newcomers, allies, and supporters.

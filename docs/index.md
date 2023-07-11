@@ -1,9 +1,3 @@
----
-title: Home
-layout: home
-nav_order: 1
----
-
 # Greenstand Documentation, Index
 
 ## Project Design

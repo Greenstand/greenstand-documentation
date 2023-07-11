@@ -1,10 +1,3 @@
----
-title: User Guides
-layout: default
-has_children: true
-nav_order: 3
----
-
 # Greenstand User Guides
 
 An annotated index of links to how-to's, guides, references, and tutorials regarding Greenstand's Treetracker software.

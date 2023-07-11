@@ -1,11 +1,3 @@
----
-title: Wallet API Reference
-layout: default
-parent: User Guides
-nav_order: 4
----
-
-
 # Treetracker Wallet API Reference
 
 *Contents:*

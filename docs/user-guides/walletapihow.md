@@ -1,10 +1,3 @@
----
-title: Wallet API
-layout: default
-parent: User Guides
-nav_order: 3
----
-
 # How to Use the Treetracker Wallet API
 
 *Contents:*
