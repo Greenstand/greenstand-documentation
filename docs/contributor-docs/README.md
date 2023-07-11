@@ -1,5 +1,4 @@
-Contributor Documentation
-=========================
+# Contributor Documentation
 
 An annotated index of links to how-to's, guides, references, and tutorials to help those contributing to Treetracker software.
 
@@ -19,7 +18,7 @@ To contribute, comment, or question the documentation, please submit an issue or
 
 **Policies:**
 
-[Contributor Covenant Code Of Conduct](https://docs.google.com/document/d/1OXcHTF2hTu-b3h5jbDP-uNaBOKgBogEB-C8aIRvmOP0/edit?usp=share_link)
+[Contributor Covenant Code Of Conduct](https://docs.google.com/document/d/1OXcHTF2hTu-b3h5jbDP-uNaBOKgBogEB-C8aIRvmOP0/edit?usp=share\_link)
 
 **How Greenstand Software Engineers Work:**
 
@@ -29,7 +28,7 @@ To contribute, comment, or question the documentation, please submit an issue or
 
 **Greenstand APIs:**
 
-[API Documentation](https://greenstand.org/docs/contributor-docs/_swagger): Reference documentation generated from OpenAPI specifications in Greenstand repositories.
+[API Documentation](https://greenstand.org/docs/contributor-docs/\_swagger): Reference documentation generated from OpenAPI specifications in Greenstand repositories.
 
 **The Wallet API:** The the application for managing and moving Greenstand tree tokens.
 

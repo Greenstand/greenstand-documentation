@@ -1,0 +1,18 @@
+# Table of contents
+
+* [Greenstand Documentation, Index](README.md)
+* [Greenstand Project Design](project-design/README.md)
+  * [Glossary](project-design/glossary.md)
+* [Contributor Documentation](contributor-docs/README.md)
+  * [Current Documentation](contributor-docs/currentDocumentation.md)
+  * [Github Pages Proposal](contributor-docs/documentation.md)
+  * [Basic Git Hub skills required!](contributor-docs/githubBasics.md)
+* [Management](management-only/README.md)
+  * [docPlan](management-only/docPlan.md)
+  * [Documentation Inventory](management-only/existingDocsApril23.md)
+* [User Guides](user-guides/README.md)
+  * [How to Record Earnings and Payments](user-guides/earningshow.md)
+  * [Greenstand Earnings Reference](user-guides/earningsref.md)
+  * [Greenstand User Guides](user-guides/index.md)
+  * [How to Use the Treetracker Wallet API](user-guides/walletapihow.md)
+  * [Treetracker Wallet API Reference](user-guides/walletapiref.md)
