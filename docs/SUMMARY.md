@@ -10,6 +10,7 @@
 * [Management](management-only/README.md)
   * [docPlan](management-only/docPlan.md)
   * [Documentation Inventory](management-only/existingDocsApril23.md)
+  * [210908.index](management-only/210908.index.md)
 * [User Guides](user-guides/README.md)
   * [How to Record Earnings and Payments](user-guides/earningshow.md)
   * [Greenstand Earnings Reference](user-guides/earningsref.md)
