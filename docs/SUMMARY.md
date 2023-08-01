@@ -17,3 +17,7 @@
   * [Greenstand User Guides](user-guides/index.md)
   * [How to Use the Treetracker Wallet API](user-guides/walletapihow.md)
   * [Treetracker Wallet API Reference](user-guides/walletapiref.md)
+
+## Organizational Policies
+
+* [Index of Policies](organizational-policies/index-of-policies.md)
