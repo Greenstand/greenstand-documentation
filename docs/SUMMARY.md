@@ -1,16 +1,29 @@
 # Table of contents
 
-* [Greenstand Documentation, Index](README.md)
-* [Greenstand Project Design](project-design/README.md)
-  * [Glossary](project-design/glossary.md)
-* [Contributor Documentation](contributor-docs/README.md)
-  * [Current Documentation](contributor-docs/currentDocumentation.md)
-  * [Github Pages Proposal](contributor-docs/documentation.md)
-  * [Basic Git Hub skills required!](contributor-docs/githubBasics.md)
-* [Management](management-only/README.md)
-  * [docPlan](management-only/docPlan.md)
-  * [Documentation Inventory](management-only/existingDocsApril23.md)
-  * [210908.index](management-only/210908.index.md)
+## Introduction
+
+* [Welcome](README.md)
+* [Overview](introduction/overview/README.md)
+  * [Glossary](introduction/overview/glossary.md)
+  * [White Paper](introduction/overview/white-paper.md)
+
+## Who You Are
+
+* [End User](who-you-are/end-user.md)
+* [Contributor](who-you-are/contributor/README.md)
+  * [Collaboration](who-you-are/contributor/collaboration.md)
+  * [Basic Git Hub skills required!](who-you-are/contributor/githubbasics.md)
+* [Third Party Integrator](who-you-are/third-party-integrator.md)
+
+## Legal
+
+* [Bylaws of Greenstand](legal/bylaws-of-greenstand.md)
+* [Privacy Policy](legal/privacy-policy/README.md)
+  * [Swahili Policy](legal/privacy-policy/swahili-policy.md)
+
+***
+
+* [Contributor Documentation](contributor-docs.md)
 * [User Guides](user-guides/README.md)
   * [How to Record Earnings and Payments](user-guides/earningshow.md)
   * [Greenstand Earnings Reference](user-guides/earningsref.md)
