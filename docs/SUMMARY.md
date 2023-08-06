@@ -4,7 +4,7 @@
 
 * [Welcome](README.md)
 * [Overview](introduction/overview/README.md)
-  * [Glossary](introduction/overview/glossary.md)
+  * [Glossary](project-design/glossary.md)
   * [White Paper](introduction/overview/white-paper.md)
 
 ## Who You Are
@@ -23,7 +23,7 @@
 
 ***
 
-* [Contributor Documentation](contributor-docs.md)
+* [Contributor Documentation](contributor-docs/README.md)
 * [User Guides](user-guides/README.md)
   * [How to Record Earnings and Payments](user-guides/earningshow.md)
   * [Greenstand Earnings Reference](user-guides/earningsref.md)
