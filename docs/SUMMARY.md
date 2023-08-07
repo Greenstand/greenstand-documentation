@@ -6,6 +6,7 @@
 * [Overview](introduction/overview/README.md)
   * [Glossary](project-design/glossary.md)
   * [White Paper](introduction/overview/white-paper.md)
+* [Products](introduction/products.md)
 
 ## Who You Are
 
