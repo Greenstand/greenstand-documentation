@@ -2,8 +2,6 @@
 
 [Also See System-design-docs](https://github.com/Greenstand/system-design-docs)
 
-[See Domain Model](https://github.com/Greenstand/system-design-docs/blob/master/domain-model/domain\_model.md)
-
 ## Terminology for the project. Please revise as you see fit
 
 * **Active** = A true/false database field that displays or hides a data point on the treetracker.org treemaps

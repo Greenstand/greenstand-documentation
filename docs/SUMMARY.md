@@ -2,11 +2,13 @@
 
 ## Introduction
 
-* [Welcome](README.md)
-* [Overview](introduction/overview/README.md)
-  * [Glossary](project-design/glossary.md)
-  * [White Paper](introduction/overview/white-paper.md)
+* [Overview](README.md)
+* [The Model](introduction/the-model/README.md)
+  * [White Paper](introduction/the-model/white-paper.md)
 * [Products](introduction/products.md)
+* [Glossary](introduction/glossary.md)
+* [Domain Model](introduction/domain-model.md)
+* [Welcome](<README (1).md>)
 
 ## Who You Are
 
