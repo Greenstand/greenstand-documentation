@@ -1,0 +1,53 @@
+# Proposed Scaffolding
+
+
+
+```
+/github
+/storybook
+/docs
+/node_modules
+/public
+/cypress
+/scripts
+/src
+	/tests
+		/__data__
+		/__mocks__
+	/assets
+	/components
+		/tests
+			./MyComponent.test.tsx
+		/MyComponent
+			./MyComponent.tsx
+			./MyComponent.styled.tsx
+	/views
+		/tests
+		/MyView
+			./MyView.tsx
+			./MyView.styled.tsx
+	/services
+		/connect
+		/auth0
+	/typings
+		./myType.ts
+	/data
+		./myData.json
+	/store
+		/actions
+		/reducers
+		./index.ts
+	/context
+		./DefaultTheme.tsx
+	/utilities
+	/validations
+.index.tsx
+.app.tsx
+.config.ts
+.routing.ts
+.eslintrc.js
+.prettierrc
+.lintstagedrc.js
+.env
+.gitignore
+```
