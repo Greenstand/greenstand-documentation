@@ -1,0 +1,17 @@
+# Table of contents
+
+* [Table of Contents](README.md)
+* [Welcome Message](welcome-message.md)
+* [Greenstand Overview](greenstand-overview.md)
+* [The Greenstand Model](greenstands-model.md)
+* [Organizational Structure](organizational-structure.md)
+* [Team Directory](team-directory.md)
+* [People & Role Levels](people-and-role-levels.md)
+* [Contributor Benefits](contributor-benefits.md)
+* [How We Collaborate](how-we-collaborate.md)
+* [Project Design](project-design.md)
+* [Document Creation & Archiving](document-creation-and-archiving.md)
+* [Communicating the Project](communicating-the-project.md)
+* [Social Media](social-media.md)
+* [General Guidelines & Code of Conduct](general-guidelines-and-code-of-conduct.md)
+* [Next Steps](next-steps.md)
