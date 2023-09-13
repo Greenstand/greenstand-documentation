@@ -1,0 +1,7170 @@
+[
+  {
+	  "id" : "3NinjasKickBack1994[NA]",
+	  "year_i":"1994",
+	  "title":"3 Ninjas Kick Back",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Malibu Interactive",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "The7thSaga1993[NA]",
+	  "year_i":"1993",
+	  "title":"The 7th Saga",
+	  "publisher_s":"Enix",
+	  "developer_s":"Produce",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "90MinutesEuropeanPrimeGoal1995[PAL]",
+	  "year_i":"1995",
+	  "title":"90 Minutes European Prime Goal",
+	  "publisher_s":"Namco",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "A.S.P.AirStrikePatrol0",
+	  "year_i":0,
+	  "title":"A.S.P. Air Strike Patrol",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "DesertFighterEU1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Desert FighterEU",
+	  "publisher_s":"SETA",
+	  "developer_s":"SETA",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "AAAHH!!!RealMonsters1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"AAAHH!!! Real Monsters",
+	  "publisher_s":"Viacom New Media",
+	  "developer_s":"Realtime Associates",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ABCMondayNightFootball1993[NA]",
+	  "year_i":"1993",
+	  "title":"ABC Monday Night Football",
+	  "publisher_s":"Data East",
+	  "developer_s":"Data East",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "AcmeAnimationFactory1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Acme Animation Factory",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Sunsoft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ActRaiser1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"ActRaiser",
+	  "publisher_s":"Enix",
+	  "developer_s":"Quintet",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ActRaiser21993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"ActRaiser 2",
+	  "publisher_s":"Enix",
+	  "developer_s":"Quintet",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheAddamsFamily1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"The Addams Family",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheAddamsFamily:Pugsley'sScavengerHunt1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"The Addams Family: Pugsley's Scavenger Hunt",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "AddamsFamilyValues1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Addams Family Values",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheAdventuresofBatman&Robin1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"The Adventures of Batman & Robin",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheAdventuresofDr.Franken1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"The Adventures of Dr. Franken",
+	  "publisher_s":"DTMC",
+	  "developer_s":"MotiveTime",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheAdventuresofKidKleets0",
+	  "year_i":0,
+	  "title":"The Adventures of Kid Kleets",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SoccerKidEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Soccer KidEU",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Krisalis Software Ltd.",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheAdventuresofMightyMax1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"The Adventures of Mighty Max",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheAdventuresofRockyandBullwinkleandFriends1993[NA]",
+	  "year_i":"1993",
+	  "title":"The Adventures of Rocky and Bullwinkle and Friends",
+	  "publisher_s":"THQ",
+	  "developer_s":"Imagineering",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheAdventuresofTintin:PrisonersoftheSun1996[PAL]",
+	  "year_i":"1996",
+	  "title":"The Adventures of Tintin: Prisoners of the Sun",
+	  "publisher_s":"Infogrames Entertainment",
+	  "developer_s":"Herge",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "AdventuresofYogiBear1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Adventures of Yogi Bear",
+	  "publisher_s":"Cybersoft",
+	  "developer_s":"Empire Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "AeroFighters1994[NA]",
+	  "year_i":"1994",
+	  "title":"Aero Fighters",
+	  "publisher_s":"Video System",
+	  "developer_s":"Video System",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "AerotheAcro-Bat1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Aero the Acro-Bat",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "AerotheAcro-Bat21994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Aero the Acro-Bat 2",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Aerobiz1993[NA]",
+	  "year_i":"1993",
+	  "title":"Aerobiz",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "AerobizSupersonic1994[NA]",
+	  "year_i":"1994",
+	  "title":"Aerobiz Supersonic",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "AirCavalry1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Air Cavalry",
+	  "publisher_s":"Cybersoft",
+	  "developer_s":"Synergistic Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "AlUnserJr.'sRoadtotheTop1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Al Unser Jr.'s Road to the Top",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Radical Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "AlfredChicken1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Alfred Chicken",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Twilight Games",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Alien1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Alien",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Probe Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "AlienvsPredator1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Alien vs Predator",
+	  "publisher_s":"IGS / Activision",
+	  "developer_s":"Jorudan",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "AmericanGladiators1993[NA]",
+	  "year_i":"1993",
+	  "title":"American Gladiators",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Imagitec Design Inc.",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "AnAmericanTail:FievelGoesWest1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"An American Tail: Fievel Goes West",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "AndreAgassiTennis1994[NA]",
+	  "year_i":"1994",
+	  "title":"Andre Agassi Tennis",
+	  "publisher_s":"TecMagik",
+	  "developer_s":"Radiance Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Animaniacs1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Animaniacs",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Arcade'sGreatestHits:TheAtariCollection11997[NA,PAL]",
+	  "year_i":"1997",
+	  "title":"Arcade's Greatest Hits: The Atari Collection 1",
+	  "publisher_s":"Midway Games",
+	  "developer_s":"Digital Eclipse Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Arcana1992[NA]",
+	  "year_i":"1992",
+	  "title":"Arcana",
+	  "publisher_s":"HAL Laboratory",
+	  "developer_s":"HAL Laboratory",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ArdyLightfoot1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Ardy Lightfoot",
+	  "publisher_s":"Titus Software",
+	  "developer_s":"ASCII Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Arkanoid:DohItAgain1997[NA,PAL]",
+	  "year_i":"1997",
+	  "title":"Arkanoid: Doh It Again",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Taito",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ArtofFighting1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Art of Fighting",
+	  "publisher_s":"Takara",
+	  "developer_s":"SNK",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Asterix1993[PAL]",
+	  "year_i":"1993",
+	  "title":"Asterix",
+	  "publisher_s":"Infogrames",
+	  "developer_s":"Infogrames",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Asterix&Obelix1995[PAL]",
+	  "year_i":"1995",
+	  "title":"Asterix & Obelix",
+	  "publisher_s":"Infogrames",
+	  "developer_s":"Infogrames",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Axelay1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Axelay",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "B.O.B.1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"B.O.B.",
+	  "publisher_s":"Electronic Arts",
+	  "developer_s":"Gray Matter",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Ballz3D1994[NA]",
+	  "year_i":"1994",
+	  "title":"Ballz 3D",
+	  "publisher_s":"Accolade",
+	  "developer_s":"PF Magic",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BarbieSuperModel1993[NA]",
+	  "year_i":"1993",
+	  "title":"Barbie Super Model",
+	  "publisher_s":"Hi Tech Expressions",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Barbie:VacationAdventure1994[NA]",
+	  "year_i":"1994",
+	  "title":"Barbie: Vacation Adventure",
+	  "publisher_s":"Hi Tech Expressions",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BarkleyShutUpandJam!1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Barkley Shut Up and Jam!",
+	  "publisher_s":"Accolade",
+	  "developer_s":"Accolade",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BassMastersClassic1995[NA]",
+	  "year_i":"1995",
+	  "title":"Bass Masters Classic",
+	  "publisher_s":"Malibu Games",
+	  "developer_s":"Malibu Games",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BassMastersClassic:ProEdition1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Bass Masters Classic: Pro Edition",
+	  "publisher_s":"Black Pearl Software",
+	  "developer_s":"Black Pearl Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Bassin'sBlackBasswithHankParker1994[NA]",
+	  "year_i":"1994",
+	  "title":"Bassin's Black Bass with Hank Parker",
+	  "publisher_s":"Hot-B",
+	  "developer_s":"Starfish",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BatmanForever1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Batman Forever",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Probe Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BatmanReturns1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Batman Returns",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BattleBlaze1993[NA]",
+	  "year_i":"1993",
+	  "title":"Battle Blaze",
+	  "publisher_s":"American Sammy",
+	  "developer_s":"American Sammy",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BattleCars1993[NA]",
+	  "year_i":"1993",
+	  "title":"Battle Cars",
+	  "publisher_s":"Namco",
+	  "developer_s":"Namco",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BattleClash1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Battle Clash",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Intelligent Systems",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BattleGrandPrix1993[NA]",
+	  "year_i":"1993",
+	  "title":"Battle Grand Prix",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Battletoads&DoubleDragon1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Battletoads & Double Dragon",
+	  "publisher_s":"Tradewest",
+	  "developer_s":"Rare Ltd.",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BattletoadsinBattlemaniacs1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Battletoads in Battlemaniacs",
+	  "publisher_s":"Tradewest",
+	  "developer_s":"Rare Ltd.",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BazookaBlitzkrieg1992[NA]",
+	  "year_i":"1992",
+	  "title":"Bazooka Blitzkrieg",
+	  "publisher_s":"Bandai",
+	  "developer_s":"Bandai",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BeavisandButt-head1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Beavis and Butt-head",
+	  "publisher_s":"Viacom New Media",
+	  "developer_s":"Realtime Associates",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Bb'sKids1994[NA]",
+	  "year_i":"1994",
+	  "title":"Bb's Kids",
+	  "publisher_s":"Motown Software",
+	  "developer_s":"Radical Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Beethoven's2nd0",
+	  "year_i":0,
+	  "title":"Beethoven's 2nd",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "Beethoven:TheUltimateCanineCaperEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Beethoven: The Ultimate Canine CaperEU",
+	  "publisher_s":"Hi Tech Expressions",
+	  "developer_s":"Riedel Software Productions",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BestoftheBest:ChampionshipKarate1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Best of the Best: Championship Karate",
+	  "publisher_s":"Electro Brain",
+	  "developer_s":"Loriciel",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BigSkyTrooper1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Big Sky Trooper",
+	  "publisher_s":"JVC",
+	  "developer_s":"LucasArts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BikerMicefromMars1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Biker Mice from Mars",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BillLaimbeer'sCombatBasketball1991[NA]",
+	  "year_i":"1991",
+	  "title":"Bill Laimbeer's Combat Basketball",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BillWalshCollegeFootball1994[NA]",
+	  "year_i":"1994",
+	  "title":"Bill Walsh College Football",
+	  "publisher_s":"Visual Concepts",
+	  "developer_s":"EA Sports",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BioMetal1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"BioMetal",
+	  "publisher_s":"Activision",
+	  "developer_s":"Athena",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Blackthorne0",
+	  "year_i":0,
+	  "title":"Blackthorne",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "BlackhawkEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"BlackhawkEU",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Blizzard Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BlaZeon:TheBio-CyborgChallenge1992[NA]",
+	  "year_i":"1992",
+	  "title":"BlaZeon: The Bio-Cyborg Challenge",
+	  "publisher_s":"Atlus",
+	  "developer_s":"AI",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheBluesBrothers1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"The Blues Brothers",
+	  "publisher_s":"Titus Software",
+	  "developer_s":"Titus Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Boogerman:APickandFlickAdventure1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Boogerman: A Pick and Flick Adventure",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Interplay Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BoxingLegendsoftheRing0",
+	  "year_i":0,
+	  "title":"Boxing Legends of the Ring",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "ChavezIIMX1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Chavez IIMX",
+	  "publisher_s":"Electro Brain",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BrainLord1994[NA]",
+	  "year_i":"1994",
+	  "title":"Brain Lord",
+	  "publisher_s":"Enix",
+	  "developer_s":"Produce",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheBrainies1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"The Brainies",
+	  "publisher_s":"Titus Software",
+	  "developer_s":"Titus Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BramStoker'sDracula1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Bram Stoker's Dracula",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Psygnosis",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Brandish1995[NA]",
+	  "year_i":"1995",
+	  "title":"Brandish",
+	  "publisher_s":"Koei",
+	  "developer_s":"Nihon Falcom",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BrawlBrothers0",
+	  "year_i":0,
+	  "title":"Brawl Brothers",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "BrawlBrothers:RivalTurf!2EU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Brawl Brothers: Rival Turf! 2EU",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BreakThru!1994[NA]",
+	  "year_i":"1994",
+	  "title":"BreakThru!",
+	  "publisher_s":"Spectrum Holobyte",
+	  "developer_s":"Artech Digital Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BreathofFire1994[NA]",
+	  "year_i":"1994",
+	  "title":"Breath of Fire",
+	  "publisher_s":"Square",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BreathofFireII1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Breath of Fire II",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BrettHullHockey1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Brett Hull Hockey",
+	  "publisher_s":"Accolade",
+	  "developer_s":"Radical Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BrettHullHockey'951995[NA]",
+	  "year_i":"1995",
+	  "title":"Brett Hull Hockey '95",
+	  "publisher_s":"Accolade",
+	  "developer_s":"Radical Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BronkietheBronchiasaurus1995[NA]",
+	  "year_i":"1995",
+	  "title":"Bronkie the Bronchiasaurus",
+	  "publisher_s":"Raya Systems",
+	  "developer_s":"WaveQuest",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "BrunswickWorld:TournamentofChampions1997[NA]",
+	  "year_i":"1997",
+	  "title":"Brunswick World: Tournament of Champions",
+	  "publisher_s":"THQ",
+	  "developer_s":"Tiertex",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Brutal:PawsofFury1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Brutal: Paws of Fury",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Eurocom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BubsyinClawsEncountersoftheFurredKind1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Bubsy in Claws Encounters of the Furred Kind",
+	  "publisher_s":"Accolade",
+	  "developer_s":"Accolade",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Bubsy21994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Bubsy 2",
+	  "publisher_s":"Accolade",
+	  "developer_s":"Accolade",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BugsBunnyRabbitRampage1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Bugs Bunny Rabbit Rampage",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Sunsoft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "BullsversusBlazersandtheNBAPlayoffs1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Bulls versus Blazers and the NBA Playoffs",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Bust-a-Move0",
+	  "year_i":0,
+	  "title":"Bust-a-Move",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "PuzzleBobbleEU1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Puzzle BobbleEU",
+	  "publisher_s":"Taito",
+	  "developer_s":"Taito",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "C2:JudgmentClay1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"C2: Judgment Clay",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Interplay Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "CacomaKnightinBizyland1993[NA]",
+	  "year_i":"1993",
+	  "title":"Cacoma Knight in Bizyland",
+	  "publisher_s":"SETA",
+	  "developer_s":"SETA",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "CalRipkenJr.Baseball1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Cal Ripken Jr. Baseball",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Mindscape",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "CaliforniaGames21992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"California Games 2",
+	  "publisher_s":"DTMC",
+	  "developer_s":"Silicon Sorcery",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "CannonFodder1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Cannon Fodder",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Sensible Software",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Capcom'sMVPFootball1992[NA]",
+	  "year_i":"1992",
+	  "title":"Capcom's MVP Football",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Equilibrium",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Capcom'sSoccerShootout1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Capcom's Soccer Shootout",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "CaptainAmericaandTheAvengers1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Captain America and The Avengers",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Mindscape",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "CaptainCommando1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Captain Commando",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "CaptainNovolin1992[NA]",
+	  "year_i":"1992",
+	  "title":"Captain Novolin",
+	  "publisher_s":"Raya Systems",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "CarrierAces1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Carrier Aces",
+	  "publisher_s":"Cybersoft",
+	  "developer_s":"Synergistic Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Casper1997[NA,PAL]",
+	  "year_i":"1997",
+	  "title":"Casper",
+	  "publisher_s":"Natsume",
+	  "developer_s":"Absolute Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Castlevania:DraculaX0",
+	  "year_i":0,
+	  "title":"Castlevania: Dracula X",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "Castlevania:Vampire'sKissEU1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Castlevania: Vampire's KissEU",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ChampionsWorldClassSoccer1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Champions World Class Soccer",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Park Place Productions",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ChampionshipPool1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Championship Pool",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Bitmasters",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ChampionshipSoccer'940",
+	  "year_i":0,
+	  "title":"Championship Soccer '94",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SensibleSoccer:InternationalEditionEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Sensible Soccer: International EditionEU",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Sensible Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheChessmaster1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"The Chessmaster",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Mindscape",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ChesterCheetah:TooCooltoFool1993[NA]",
+	  "year_i":"1993",
+	  "title":"Chester Cheetah: Too Cool to Fool",
+	  "publisher_s":"Kaneko",
+	  "developer_s":"Kaneko",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ChesterCheetah:WildWildQuest1994[NA]",
+	  "year_i":"1994",
+	  "title":"Chester Cheetah: Wild Wild Quest",
+	  "publisher_s":"Kaneko",
+	  "developer_s":"Kaneko",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ChoplifterIII1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Choplifter III",
+	  "publisher_s":"Extreme Entertainment Group",
+	  "developer_s":"Beam Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ChronoTrigger1995[NA]",
+	  "year_i":"1995",
+	  "title":"Chrono Trigger",
+	  "publisher_s":"Square",
+	  "developer_s":"Square",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ChuckRock1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Chuck Rock",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Core Design",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Civilization1995[NA]",
+	  "year_i":"1995",
+	  "title":"Civilization",
+	  "publisher_s":"Koei",
+	  "developer_s":"Microprose",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ClayFighter1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"ClayFighter",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Visual Concepts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ClayFighter:TournamentEdition1994[NA]",
+	  "year_i":"1994",
+	  "title":"Clay Fighter: Tournament Edition",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Visual Concepts",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Claymates1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Claymates",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Visual Concepts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Cliffhanger1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Cliffhanger",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Sony Imagesoft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Clue1992[NA]",
+	  "year_i":"1992",
+	  "title":"Clue",
+	  "publisher_s":"Parker Brothers",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "CollegeFootballUSA'97:TheRoadtoNewOrleans1996[NA]",
+	  "year_i":"1996",
+	  "title":"College Football USA '97: The Road to New Orleans",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Black Pearl Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "CollegeSlam1996[NA]",
+	  "year_i":"1996",
+	  "title":"College Slam",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheCombatribes1993[NA]",
+	  "year_i":"1993",
+	  "title":"The Combatribes",
+	  "publisher_s":"American Techns",
+	  "developer_s":"Techns Japan",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Congo'sCaper1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Congo's Caper",
+	  "publisher_s":"Data East",
+	  "developer_s":"Data East",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ContraIII:TheAlienWars0",
+	  "year_i":0,
+	  "title":"Contra III: The Alien Wars",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperProbotector:AlienRebelsEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super Probotector: Alien RebelsEU",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "CoolSpot1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Cool Spot",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Virgin Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "CoolWorld1993[NA]",
+	  "year_i":"1993",
+	  "title":"Cool World",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "CutthroatIsland1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Cutthroat Island",
+	  "publisher_s":"Acclaim Entertainment / LJN",
+	  "developer_s":"Software Creations (UK)",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "CyberSpin1992[NA]",
+	  "year_i":"1992",
+	  "title":"Cyber Spin",
+	  "publisher_s":"Takara",
+	  "developer_s":"Takara",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Cybernator1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Cybernator",
+	  "publisher_s":"Konami",
+	  "developer_s":"NCS",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DaffyDuck:TheMarvinMissions1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Daffy Duck: The Marvin Missions",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"ICOM Simulations",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DariusTwin1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Darius Twin",
+	  "publisher_s":"Taito",
+	  "developer_s":"Taito",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DavidCrane'sAmazingTennis1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"David Crane's Amazing Tennis",
+	  "publisher_s":"Absolute Entertainment",
+	  "developer_s":"David Crane",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DazeBeforeChristmas1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Daze Before Christmas",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Funcom",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "TheDeathandReturnofSuperman1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"The Death and Return of Superman",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Blizzard Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DemolitionMan1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Demolition Man",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Virgin Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Demon'sCrest1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Demon's Crest",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DennistheMenace0",
+	  "year_i":0,
+	  "title":"Dennis the Menace",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "DennisEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"DennisEU",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DesertStrike:ReturntotheGulf1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Desert Strike: Return to the Gulf",
+	  "publisher_s":"Electronic Arts",
+	  "developer_s":"Visual Concepts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "D-Force1991[NA]",
+	  "year_i":"1991",
+	  "title":"D-Force",
+	  "publisher_s":"Asmik Ace Entertainment",
+	  "developer_s":"Asmik Ace Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Dig&SpikeVolleyball1993[NA]",
+	  "year_i":"1993",
+	  "title":"Dig & Spike Volleyball",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "DinoCity1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"DinoCity",
+	  "publisher_s":"Irem",
+	  "developer_s":"Irem",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DinoDini'sSoccer1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Dino Dini's Soccer",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Eurocom",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "DirtRacer1995[PAL]",
+	  "year_i":"1995",
+	  "title":"Dirt Racer",
+	  "publisher_s":"Elite Systems",
+	  "developer_s":"MotiveTime",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "DirtTraxFX1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Dirt Trax FX",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Disney'sAladdin1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Disney's Aladdin",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Disney'sBeautyandtheBeast1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Disney's Beauty and the Beast",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Disney'sBonkers1994[NA]",
+	  "year_i":"1994",
+	  "title":"Disney's Bonkers",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Disney'sGoofTroop1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Disney's Goof Troop",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Disney'sTheJungleBook1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Disney's The Jungle Book",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Virgin Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Disney'sTheLionKing1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Disney's The Lion King",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Virgin Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DonkeyKongCountry1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Donkey Kong Country",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Rare Ltd.",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DonkeyKongCountry2:Diddy'sKongQuest1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Donkey Kong Country 2: Diddy's Kong Quest",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Rare Ltd.",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DonkeyKongCountry3:DixieKong'sDoubleTrouble!1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Donkey Kong Country 3: Dixie Kong's Double Trouble!",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Rare Ltd.",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DonkeyKongCountry:CompetitionCartridge1994[NA]",
+	  "year_i":"1994",
+	  "title":"Donkey Kong Country: Competition Cartridge",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Rare Ltd.",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Doom1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Doom",
+	  "publisher_s":"Williams Entertainment",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DoomTroopers1995[NA]",
+	  "year_i":"1995",
+	  "title":"Doom Troopers",
+	  "publisher_s":"Playmates",
+	  "developer_s":"Adrenalin Interactive",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "DoomsdayWarrior1993[NA]",
+	  "year_i":"1993",
+	  "title":"Doomsday Warrior",
+	  "publisher_s":"Renovation Products",
+	  "developer_s":"Telenet",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "DoubleDragonV:TheShadowFalls1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Double Dragon V: The Shadow Falls",
+	  "publisher_s":"Tradewest",
+	  "developer_s":"Leland Interactive Media",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Dragon:TheBruceLeeStory1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Dragon: The Bruce Lee Story",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Virgin Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DragonBallZ1993[PAL]",
+	  "year_i":"1993",
+	  "title":"Dragon Ball Z",
+	  "publisher_s":"Bandai",
+	  "developer_s":"Bandai",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "DragonBallZ:HyperDimension1996[PAL]",
+	  "year_i":"1996",
+	  "title":"Dragon Ball Z: Hyper Dimension",
+	  "publisher_s":"Bandai",
+	  "developer_s":"Bandai",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "DragonBallZ:LaLegendeSaien1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Dragon Ball Z: La Legende Saien",
+	  "publisher_s":"Bandai",
+	  "developer_s":"Bandai",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "DragonBallZ:UltimeMenace1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Dragon Ball Z: Ultime Menace",
+	  "publisher_s":"Bandai",
+	  "developer_s":"Bandai",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "DragonView1994[NA]",
+	  "year_i":"1994",
+	  "title":"Dragon View",
+	  "publisher_s":"Kemco",
+	  "developer_s":"Infogrames",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Dragon'sLair1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Dragon's Lair",
+	  "publisher_s":"Data East",
+	  "developer_s":"MotiveTime",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Drakkhen1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Drakkhen",
+	  "publisher_s":"Kemco",
+	  "developer_s":"Infogrames",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DreamTV1993[NA]",
+	  "year_i":"1993",
+	  "title":"Dream TV",
+	  "publisher_s":"Triffix",
+	  "developer_s":"Triffix",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheDuel:TestDriveII1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"The Duel: Test Drive II",
+	  "publisher_s":"Accolade",
+	  "developer_s":"Distinctive Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "DungeonMaster1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Dungeon Master",
+	  "publisher_s":"JVC",
+	  "developer_s":"Software Heaven / FTL Games",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "E.V.O.:SearchforEden1993[NA]",
+	  "year_i":"1993",
+	  "title":"E.V.O.: Search for Eden",
+	  "publisher_s":"Enix",
+	  "developer_s":"Almanic",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "EarthDefenseForce1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Earth Defense Force",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "EarthBound1995[NA]",
+	  "year_i":"1995",
+	  "title":"EarthBound",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"HAL Laboratory/Ape, Inc.",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "EarthwormJim1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Earthworm Jim",
+	  "publisher_s":"Playmates",
+	  "developer_s":"Shiny Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "EarthwormJim21995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Earthworm Jim 2",
+	  "publisher_s":"Playmates",
+	  "developer_s":"Shiny Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Eek!TheCat1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Eek! The Cat",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"CTA Developments",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "EmmittSmithFootball1995[NA]",
+	  "year_i":"1995",
+	  "title":"Emmitt Smith Football",
+	  "publisher_s":"JVC",
+	  "developer_s":"Bitmasters",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Equinox1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Equinox",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ESPNBaseballTonight1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"ESPN Baseball Tonight",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Park Place Productions",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ESPNNationalHockeyNight1993[NA]",
+	  "year_i":"1993",
+	  "title":"ESPN National Hockey Night",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Sony Imagesoft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ESPNSpeedWorld1994[NA]",
+	  "year_i":"1994",
+	  "title":"ESPN Speed World",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Sony Imagesoft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ESPNSundayNightNFL1994[NA]",
+	  "year_i":"1994",
+	  "title":"ESPN Sunday Night NFL",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Absolute Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ExtraInnings1992[NA]",
+	  "year_i":"1992",
+	  "title":"Extra Innings",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Sony Imagesoft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "EyeoftheBeholder1994[NA]",
+	  "year_i":"1994",
+	  "title":"Eye of the Beholder",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Strategic Simulations, Inc. / Capcom",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "F-Zero1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"F-Zero",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "F1PolePosition1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"F1 Pole Position",
+	  "publisher_s":"Ubisoft",
+	  "developer_s":"Human Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "F1PolePosition21993[PAL]",
+	  "year_i":"1993",
+	  "title":"F1 Pole Position 2",
+	  "publisher_s":"Ubisoft",
+	  "developer_s":"Human Entertainment",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "F1ROC:RaceofChampions0",
+	  "year_i":0,
+	  "title":"F1 ROC: Race of Champions",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "ExhaustHeatEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Exhaust HeatEU",
+	  "publisher_s":"SETA",
+	  "developer_s":"SETA",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "F1ROCII:RaceofChampions1994[NA]",
+	  "year_i":"1994",
+	  "title":"F1 ROC II: Race of Champions",
+	  "publisher_s":"SETA",
+	  "developer_s":"SETA",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "F1WorldChampionshipEdition1995[PAL]",
+	  "year_i":"1995",
+	  "title":"F1 World Championship Edition",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Domark",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Faceball20001992[NA]",
+	  "year_i":"1992",
+	  "title":"Faceball 2000",
+	  "publisher_s":"Bullet Proof Software",
+	  "developer_s":"Xanth Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "FamilyDog1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Family Dog",
+	  "publisher_s":"Malibu Games",
+	  "developer_s":"Imagineering",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FamilyFeud1993[NA]",
+	  "year_i":"1993",
+	  "title":"Family Feud",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Imagineering",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "FatalFury:KingofFighters1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Fatal Fury: King of Fighters",
+	  "publisher_s":"Takara",
+	  "developer_s":"SNK",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FatalFury21994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Fatal Fury 2",
+	  "publisher_s":"Takara",
+	  "developer_s":"SNK",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FatalFurySpecial1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Fatal Fury Special",
+	  "publisher_s":"Takara",
+	  "developer_s":"SNK",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FIFAInternationalSoccer1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"FIFA International Soccer",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Extended Play Productions",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FIFASoccer'961995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"FIFA Soccer '96",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Extended Play Productions / Probe Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FIFA97:GoldEdition1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"FIFA 97: Gold Edition",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FIFA98:RoadtoWorldCup1997[PAL]",
+	  "year_i":"1997",
+	  "title":"FIFA 98: Road to World Cup",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Fighter'sHistory1994[NA]",
+	  "year_i":"1994",
+	  "title":"Fighter's History",
+	  "publisher_s":"Data East",
+	  "developer_s":"Data East",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "FinalFantasyII1991[NA]",
+	  "year_i":"1991",
+	  "title":"Final Fantasy II",
+	  "publisher_s":"Square",
+	  "developer_s":"Square",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "FinalFantasyIII1994[NA]",
+	  "year_i":"1994",
+	  "title":"Final Fantasy III",
+	  "publisher_s":"Square",
+	  "developer_s":"Square",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "FinalFantasyMysticQuest0",
+	  "year_i":0,
+	  "title":"Final Fantasy Mystic Quest",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "MysticQuestLegendEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Mystic Quest LegendEU",
+	  "publisher_s":"Square",
+	  "developer_s":"Square",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FinalFight1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Final Fight",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FinalFight21993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Final Fight 2",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FinalFight31995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Final Fight 3",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FinalFightGuy1992[NA]",
+	  "year_i":"1992",
+	  "title":"Final Fight Guy",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheFiremen1994[PAL]",
+	  "year_i":"1994",
+	  "title":"The Firemen",
+	  "publisher_s":"Human Entertainment",
+	  "developer_s":"Human Entertainment",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Firepower20000",
+	  "year_i":0,
+	  "title":"Firepower 2000",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperSwivEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super SwivEU",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Sales Curve Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Firestriker1994[NA]",
+	  "year_i":"1994",
+	  "title":"Firestriker",
+	  "publisher_s":"DTMC",
+	  "developer_s":"Axes Art Amuse",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "FirstSamurai1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"First Samurai",
+	  "publisher_s":"Kemco",
+	  "developer_s":"Kemco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Flashback:TheQuestforIdentity0",
+	  "year_i":0,
+	  "title":"Flashback: The Quest for Identity",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "FlashbackEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"FlashbackEU",
+	  "publisher_s":"U.S. Gold",
+	  "developer_s":"Delphine Software International",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheFlintstones1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"The Flintstones",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheFlintstones:TheTreasureofSierraMadrock1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"The Flintstones: The Treasure of Sierra Madrock",
+	  "publisher_s":"Taito",
+	  "developer_s":"Taito",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FootballFury1993[NA]",
+	  "year_i":"1993",
+	  "title":"Football Fury",
+	  "publisher_s":"American Sammy",
+	  "developer_s":"American Sammy",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ForemanForReal1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Foreman For Real",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FrankThomas'BigHurtBaseball1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Frank Thomas' Big Hurt Baseball",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "FranticFlea1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Frantic Flea",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Haus Teknikka",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Frogger1998[NA]",
+	  "year_i":"1998",
+	  "title":"Frogger",
+	  "publisher_s":"Majesco Games",
+	  "developer_s":"Morning Star Multimedia",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "FullThrottle:All-AmericanRacing1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Full Throttle: All-American Racing",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Gremlin Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Fun'nGames1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Fun 'n Games",
+	  "publisher_s":"Tradewest",
+	  "developer_s":"Leland Interactive Media",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Gemfire1992[NA]",
+	  "year_i":"1992",
+	  "title":"Gemfire",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "GenghisKhanII:ClanoftheGrayWolf1993[NA]",
+	  "year_i":"1993",
+	  "title":"Genghis Khan II: Clan of the Gray Wolf",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "GeorgeForeman'sKOBoxing1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"George Foreman's KO Boxing",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Beam Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "GhoulPatrol1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Ghoul Patrol",
+	  "publisher_s":"JVC",
+	  "developer_s":"LucasArts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Goal!0",
+	  "year_i":0,
+	  "title":"Goal!",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperGoal!EU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super Goal!EU",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Tose",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Gods1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Gods",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Bitmap Brothers",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "GP-11993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"GP-1",
+	  "publisher_s":"Atlus",
+	  "developer_s":"Atlus",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "GP-1:PartII1994[NA]",
+	  "year_i":"1994",
+	  "title":"GP-1: Part II",
+	  "publisher_s":"Atlus",
+	  "developer_s":"Atlus",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "GradiusIII1991[NA]",
+	  "year_i":"1991",
+	  "title":"Gradius III",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheGreatCircusMysteryStarringMickey&Minnie1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"The Great Circus Mystery Starring Mickey & Minnie",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheGreatWaldoSearch1993[NA]",
+	  "year_i":"1993",
+	  "title":"The Great Waldo Search",
+	  "publisher_s":"THQ",
+	  "developer_s":"Radiance Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "GunForce1992[NA]",
+	  "year_i":"1992",
+	  "title":"GunForce",
+	  "publisher_s":"Irem",
+	  "developer_s":"Bits Studios",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Hagane:TheFinalConflict1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Hagane: The Final Conflict",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Red Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Hal'sHoleinOneGolf1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Hal's Hole in One Golf",
+	  "publisher_s":"HAL Laboratory",
+	  "developer_s":"HAL Laboratory",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "HammerLockWrestling1994[NA]",
+	  "year_i":"1994",
+	  "title":"HammerLock Wrestling",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "HannaBarbera'sTurboToons1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Hanna Barbera's Turbo Toons",
+	  "publisher_s":"Entertainment International UK",
+	  "developer_s":"Empire Interactive",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "HardballIII1994[NA]",
+	  "year_i":"1994",
+	  "title":"Hardball III",
+	  "publisher_s":"Accolade",
+	  "developer_s":"Accolade",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Harley'sHumongousAdventure1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Harley's Humongous Adventure",
+	  "publisher_s":"Hi Tech Expressions",
+	  "developer_s":"Visual Concepts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "HarvestMoon1997[NA,PAL]",
+	  "year_i":"1997",
+	  "title":"Harvest Moon",
+	  "publisher_s":"Natsume",
+	  "developer_s":"Pack-In-Video",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Head-OnSoccer0",
+	  "year_i":0,
+	  "title":"Head-On Soccer",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "FeverPitchSoccerEU1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Fever Pitch SoccerEU",
+	  "publisher_s":"U.S. Gold",
+	  "developer_s":"U.S. Gold",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Hebereke'sPopoitto1995[PAL]",
+	  "year_i":"1995",
+	  "title":"Hebereke's Popoitto",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Sunsoft",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Hebereke'sPopoon1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Hebereke's Popoon",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Sunsoft",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "HittheIce1993[NA]",
+	  "year_i":"1993",
+	  "title":"Hit the Ice",
+	  "publisher_s":"Taito",
+	  "developer_s":"Taito",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "HomeAlone1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Home Alone",
+	  "publisher_s":"THQ",
+	  "developer_s":"Altron",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "HomeAlone2:LostinNewYork1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Home Alone 2: Lost in New York",
+	  "publisher_s":"THQ",
+	  "developer_s":"Imagineering",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "HomeImprovement:PowerToolPursuit!1994[NA]",
+	  "year_i":"1994",
+	  "title":"Home Improvement: Power Tool Pursuit!",
+	  "publisher_s":"Absolute Entertainment",
+	  "developer_s":"Absolute Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Hook1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Hook",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Ukiyotei",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheHumans1993[PAL]",
+	  "year_i":"1993",
+	  "title":"The Humans",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Imagitec Design",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "HungryDinosaurs1995[PAL]",
+	  "year_i":"1995",
+	  "title":"Hungry Dinosaurs",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Magical Company",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "TheHuntforRedOctober1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"The Hunt for Red October",
+	  "publisher_s":"Hi Tech Expressions",
+	  "developer_s":"Riedel Software Productions",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Hurricanes1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Hurricanes",
+	  "publisher_s":"U.S. Gold",
+	  "developer_s":"Probe Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "HyperV-Ball1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Hyper V-Ball",
+	  "publisher_s":"Video System",
+	  "developer_s":"Video System",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "HyperZone1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"HyperZone",
+	  "publisher_s":"HAL Laboratory",
+	  "developer_s":"HAL Laboratory",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheIgnitionFactor1995[NA]",
+	  "year_i":"1995",
+	  "title":"The Ignition Factor",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "IllusionofGaia0",
+	  "year_i":0,
+	  "title":"Illusion of Gaia",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "IllusionofTimeEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Illusion of TimeEU",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Quintet",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Imperium1992[NA]",
+	  "year_i":"1992",
+	  "title":"Imperium",
+	  "publisher_s":"Vic Tokai",
+	  "developer_s":"Vic Tokai",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Incantation1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Incantation",
+	  "publisher_s":"Titus Software",
+	  "developer_s":"Titus Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheIncredibleCrashDummies1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"The Incredible Crash Dummies",
+	  "publisher_s":"LJN",
+	  "developer_s":"Gray Matter",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheIncredibleHulk1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"The Incredible Hulk",
+	  "publisher_s":"U.S. Gold",
+	  "developer_s":"Probe Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "IndianaJones'GreatestAdventures1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Indiana Jones' Greatest Adventures",
+	  "publisher_s":"JVC",
+	  "developer_s":"Factor 5",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Inindo:WayoftheNinja1993[NA]",
+	  "year_i":"1993",
+	  "title":"Inindo: Way of the Ninja",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "InspectorGadget1993[NA]",
+	  "year_i":"1993",
+	  "title":"Inspector Gadget",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "InternationalSuperstarSoccer1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"International Superstar Soccer",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "InternationalSuperstarSoccerDeluxe1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"International Superstar Soccer Deluxe",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "InternationalTennisTour1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"International Tennis Tour",
+	  "publisher_s":"Taito",
+	  "developer_s":"Loriciel",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheIremSkinsGame0",
+	  "year_i":0,
+	  "title":"The Irem Skins Game",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "TheIremMajorTitleEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"The Irem Major TitleEU",
+	  "publisher_s":"Irem",
+	  "developer_s":"Irem",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheItchy&ScratchyGame1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"The Itchy & Scratchy Game",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Bits Studios",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Izzy'sQuestfortheOlympicRings1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Izzy's Quest for the Olympic Rings",
+	  "publisher_s":"U.S. Gold",
+	  "developer_s":"Alexandria",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "J.R.R.Tolkien'sTheLordoftheRings,Vol.I1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"J.R.R. Tolkien's The Lord of the Rings, Vol. I",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Interplay Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "JackNicklausGolf1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Jack Nicklaus Golf",
+	  "publisher_s":"Tradewest",
+	  "developer_s":"Tradewest",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "JamesBondJr.1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"James Bond Jr.",
+	  "publisher_s":"THQ",
+	  "developer_s":"Gray Matter",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "JamesPond3:OperationStarfish1993[PAL]",
+	  "year_i":"1993",
+	  "title":"James Pond 3: Operation Starfish",
+	  "publisher_s":"Electronic Arts",
+	  "developer_s":"Millennium Interactive",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Jammit1994[NA]",
+	  "year_i":"1994",
+	  "title":"Jammit",
+	  "publisher_s":"GTE Interactive Media",
+	  "developer_s":"GTE Interactive Media",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "JellyBoy1995[PAL]",
+	  "year_i":"1995",
+	  "title":"Jelly Boy",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Probe Entertainment",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Jeopardy!1992[NA]",
+	  "year_i":"1992",
+	  "title":"Jeopardy!",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Imagineering",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Jeopardy!DeluxeEdition1994[NA]",
+	  "year_i":"1994",
+	  "title":"Jeopardy! Deluxe Edition",
+	  "publisher_s":"GameTek",
+	  "developer_s":"GameTek",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Jeopardy!SportsEdition1994[NA]",
+	  "year_i":"1994",
+	  "title":"Jeopardy! Sports Edition",
+	  "publisher_s":"GameTek",
+	  "developer_s":"GameTek",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheJetsons:InvasionofthePlanetPirates1994[NA]",
+	  "year_i":"1994",
+	  "title":"The Jetsons: Invasion of the Planet Pirates",
+	  "publisher_s":"Taito",
+	  "developer_s":"Sting Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "JimLee'sWildC.A.T.S:CovertActionTeams1995[NA]",
+	  "year_i":"1995",
+	  "title":"Jim Lee's WildC.A.T.S: Covert Action Teams",
+	  "publisher_s":"Playmates",
+	  "developer_s":"Beam Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "JimPower:TheLostDimensionin3-D1993[NA]",
+	  "year_i":"1993",
+	  "title":"Jim Power: The Lost Dimension in 3-D",
+	  "publisher_s":"Electro Brain",
+	  "developer_s":"Loriciel",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "JimmyConnorsProTennisTour1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Jimmy Connors Pro Tennis Tour",
+	  "publisher_s":"Ubisoft",
+	  "developer_s":"Blue Byte Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "JimmyHouston'sBassTournamentU.S.A.1995[NA]",
+	  "year_i":"1995",
+	  "title":"Jimmy Houston's Bass Tournament U.S.A.",
+	  "publisher_s":"American Sammy",
+	  "developer_s":"American Sammy",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Joe&Mac0",
+	  "year_i":0,
+	  "title":"Joe & Mac",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "Joe&Mac:CavemanNinjaEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Joe & Mac: Caveman NinjaEU",
+	  "publisher_s":"Data East",
+	  "developer_s":"Data East",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Joe&Mac2:LostintheTropics0",
+	  "year_i":0,
+	  "title":"Joe & Mac 2: Lost in the Tropics",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "Joe&Mac3:LostintheTropicsEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Joe & Mac 3: Lost in the TropicsEU",
+	  "publisher_s":"Data East",
+	  "developer_s":"Data East",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "JohnMaddenFootball1991[NA]",
+	  "year_i":"1991",
+	  "title":"John Madden Football",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Park Place Productions",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "JohnMaddenFootball'931992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"John Madden Football '93",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"EA Canada",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "JudgeDredd1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Judge Dredd",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Probe Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "JungleStrike1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Jungle Strike",
+	  "publisher_s":"Electronic Arts",
+	  "developer_s":"Gremlin Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "JurassicPark1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Jurassic Park",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "JurassicPark2:TheChaosContinues1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Jurassic Park 2: The Chaos Continues",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "JusticeLeagueTaskForce1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Justice League Task Force",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Blizzard Entertainment / Sunsoft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Ka-Blooey1992[NA]",
+	  "year_i":"1992",
+	  "title":"Ka-Blooey",
+	  "publisher_s":"Kemco",
+	  "developer_s":"Mirrorsoft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "KawasakiCaribbeanChallenge1993[NA]",
+	  "year_i":"1993",
+	  "title":"Kawasaki Caribbean Challenge",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Park Place Productions",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "KawasakiSuperbikeChallenge1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Kawasaki Superbike Challenge",
+	  "publisher_s":"Time Warner Interactive",
+	  "developer_s":"Domark",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "KenGriffeyJr.PresentsMajorLeagueBaseball1994[NA]",
+	  "year_i":"1994",
+	  "title":"Ken Griffey Jr. Presents Major League Baseball",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "KenGriffeyJr.'sWinningRun1996[NA]",
+	  "year_i":"1996",
+	  "title":"Ken Griffey Jr.'s Winning Run",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Rare Ltd.",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "KendoRage1993[NA]",
+	  "year_i":"1993",
+	  "title":"Kendo Rage",
+	  "publisher_s":"SETA",
+	  "developer_s":"SETA",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "KevinKeegan'sPlayerManager0",
+	  "year_i":0,
+	  "title":"Kevin Keegan's Player Manager",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "K.H.Rummenigge'sPlayerManagerGER1993[PAL]",
+	  "year_i":"1993",
+	  "title":"K.H. Rummenigge's Player ManagerGER",
+	  "publisher_s":"Imagineer",
+	  "developer_s":"Anco",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "KickOff1993[PAL]",
+	  "year_i":"1993",
+	  "title":"Kick Off",
+	  "publisher_s":"Imagineer",
+	  "developer_s":"Anco",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "KickOff31994[PAL]",
+	  "year_i":"1994",
+	  "title":"Kick Off 3",
+	  "publisher_s":"Vic Tokai",
+	  "developer_s":"Anco",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "KidKlowninCrazyChase1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Kid Klown in Crazy Chase",
+	  "publisher_s":"Kemco",
+	  "developer_s":"Kemco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "KillerInstinct1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Killer Instinct",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Rare Ltd.",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "KingArthur&theKnightsofJustice1995[NA]",
+	  "year_i":"1995",
+	  "title":"King Arthur & the Knights of Justice",
+	  "publisher_s":"Enix",
+	  "developer_s":"Manley & Associates",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "KingArthur'sWorld1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"King Arthur's World",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Argonaut Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheKingofDragons1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"The King of Dragons",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "KingoftheMonsters1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"King of the Monsters",
+	  "publisher_s":"Takara",
+	  "developer_s":"SNK",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "KingoftheMonsters21994[NA]",
+	  "year_i":"1994",
+	  "title":"King of the Monsters 2",
+	  "publisher_s":"Takara",
+	  "developer_s":"SNK",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "KirbySuperStar0",
+	  "year_i":0,
+	  "title":"Kirby Super Star",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "Kirby'sFunPakEU1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Kirby's Fun PakEU",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"HAL Laboratory",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Kirby'sAvalanche0",
+	  "year_i":0,
+	  "title":"Kirby's Avalanche",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "Kirby'sGhostTrapEU1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Kirby's Ghost TrapEU",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Compile/HAL Laboratory",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Kirby'sDreamCourse1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Kirby's Dream Course",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"HAL Laboratory",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Kirby'sDreamLand31997[NA]",
+	  "year_i":"1997",
+	  "title":"Kirby's Dream Land 3",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"HAL Laboratory",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "KnightsoftheRound1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Knights of the Round",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Krusty'sSuperFunHouse1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Krusty's Super Fun House",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Audiogenic",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "KylePetty'sNoFearRacing1995[NA]",
+	  "year_i":"1995",
+	  "title":"Kyle Petty's No Fear Racing",
+	  "publisher_s":"Midway Games",
+	  "developer_s":"Williams Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Lagoon1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Lagoon",
+	  "publisher_s":"Kemco",
+	  "developer_s":"Zoom Inc.",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "LamborghiniAmericanChallenge1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Lamborghini American Challenge",
+	  "publisher_s":"Titus Software",
+	  "developer_s":"Titus Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "LastActionHero1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Last Action Hero",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Bits Studios",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheLawnmowerMan1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"The Lawnmower Man",
+	  "publisher_s":"THQ",
+	  "developer_s":"Sales Curve Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Legend1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Legend",
+	  "publisher_s":"Seika Corp.",
+	  "developer_s":"Arcade Zone",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheLegendoftheMysticalNinja1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"The Legend of the Mystical Ninja",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheLegendofZelda:ALinktothePast1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"The Legend of Zelda: A Link to the Past",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Lemmings1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Lemmings",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Psygnosis",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Lemmings2:TheTribes1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Lemmings 2: The Tribes",
+	  "publisher_s":"Psygnosis",
+	  "developer_s":"Psygnosis",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "LestertheUnlikely1994[NA]",
+	  "year_i":"1994",
+	  "title":"Lester the Unlikely",
+	  "publisher_s":"DTMC",
+	  "developer_s":"Visual Concepts",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "LethalEnforcers1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Lethal Enforcers",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "LethalWeapon1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Lethal Weapon",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "LibertyorDeath1994[NA]",
+	  "year_i":"1994",
+	  "title":"Liberty or Death",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "LockOn0",
+	  "year_i":0,
+	  "title":"Lock On",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperAirDiverEU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super Air DiverEU",
+	  "publisher_s":"Vic Tokai",
+	  "developer_s":"Vic Tokai",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "LooneyTunesB-Ball0",
+	  "year_i":0,
+	  "title":"Looney Tunes B-Ball",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "LooneyTunesBasketballEU1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Looney Tunes BasketballEU",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Sunsoft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheLostVikings1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"The Lost Vikings",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Silicon & Synapse",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheLostVikings21997[NA,PAL]",
+	  "year_i":"1997",
+	  "title":"The Lost Vikings 2",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Blizzard Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "LuckyLuke1997[PAL]",
+	  "year_i":"1997",
+	  "title":"Lucky Luke",
+	  "publisher_s":"Infogrames",
+	  "developer_s":"Infogrames",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Lufia&theFortressofDoom1993[NA]",
+	  "year_i":"1993",
+	  "title":"Lufia & the Fortress of Doom",
+	  "publisher_s":"Taito",
+	  "developer_s":"Neverland",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "LufiaII:RiseoftheSinistrals0",
+	  "year_i":0,
+	  "title":"Lufia II: Rise of the Sinistrals",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "LufiaEU1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"LufiaEU",
+	  "publisher_s":"Natsume",
+	  "developer_s":"Neverland",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "M.A.C.S.BasicRifleMarksmanship1993[NA]",
+	  "year_i":"1993",
+	  "title":"M.A.C.S. Basic Rifle Marksmanship",
+	  "publisher_s":"",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MaddenNFL'941993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Madden NFL '94",
+	  "publisher_s":"Electronic Arts",
+	  "developer_s":"Visual Concepts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MaddenNFL'951994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Madden NFL '95",
+	  "publisher_s":"Electronic Arts",
+	  "developer_s":"Visual Concepts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MaddenNFL'961995[NA]",
+	  "year_i":"1995",
+	  "title":"Madden NFL '96",
+	  "publisher_s":"Electronic Arts",
+	  "developer_s":"Tiburon Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MaddenNFL971996[NA]",
+	  "year_i":"1996",
+	  "title":"Madden NFL 97",
+	  "publisher_s":"Electronic Arts",
+	  "developer_s":"Tiburon Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MaddenNFL981997[NA]",
+	  "year_i":"1997",
+	  "title":"Madden NFL 98",
+	  "publisher_s":"THQ",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MagicBoy1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Magic Boy",
+	  "publisher_s":"JVC",
+	  "developer_s":"Empire Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MagicSword1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Magic Sword",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheMagicalQueststarringMickeyMouse1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"The Magical Quest starring Mickey Mouse",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ManchesterUnitedChampionshipSoccer0",
+	  "year_i":0,
+	  "title":"Manchester United Championship Soccer",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "LotharMatthusSuperSoccerGER1995[PAL]",
+	  "year_i":"1995",
+	  "title":"Lothar Matthus Super SoccerGER",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Krisalis Software",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "MarioisMissing!1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Mario is Missing!",
+	  "publisher_s":"The Software Toolworks",
+	  "developer_s":"The Software Toolworks",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MarioPaint1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Mario Paint",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Mario'sEarlyYears!FunwithLetters1994[NA]",
+	  "year_i":"1994",
+	  "title":"Mario's Early Years! Fun with Letters",
+	  "publisher_s":"The Software Toolworks",
+	  "developer_s":"The Software Toolworks",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Mario'sEarlyYears:FunwithNumbers1994[NA]",
+	  "year_i":"1994",
+	  "title":"Mario's Early Years: Fun with Numbers",
+	  "publisher_s":"The Software Toolworks",
+	  "developer_s":"The Software Toolworks",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Mario'sEarlyYears:PreschoolFun1994[NA]",
+	  "year_i":"1994",
+	  "title":"Mario's Early Years: Preschool Fun",
+	  "publisher_s":"The Software Toolworks",
+	  "developer_s":"The Software Toolworks",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Mario'sTimeMachine1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Mario's Time Machine",
+	  "publisher_s":"The Software Toolworks",
+	  "developer_s":"The Software Toolworks",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MarkDavis'TheFishingMaster1996[NA]",
+	  "year_i":"1996",
+	  "title":"Mark Davis' The Fishing Master",
+	  "publisher_s":"Natsume",
+	  "developer_s":"Natsume",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Marko'sMagicFootball1995[PAL]",
+	  "year_i":"1995",
+	  "title":"Marko's Magic Football",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Domark",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "MarvelSuperHeroes:WaroftheGems1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Marvel Super Heroes: War of the Gems",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MaryShelley'sFrankenstein1994[NA]",
+	  "year_i":"1994",
+	  "title":"Mary Shelley's Frankenstein",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Bits Studios",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheMask1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"The Mask",
+	  "publisher_s":"Black Pearl Software",
+	  "developer_s":"Black Pearl Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MathBlaster:Episode11994[NA]",
+	  "year_i":"1994",
+	  "title":"Math Blaster: Episode 1",
+	  "publisher_s":"Davidson & Associates",
+	  "developer_s":"Western Technologies",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MauiMallardinColdShadow''0",
+	  "year_i":0,
+	  "title":"Maui Mallard in Cold Shadow''",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "DonaldinMauiMallardEU1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Donald in Maui MallardEU",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Eurocom Entertainment Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MecarobotGolf1993[NA]",
+	  "year_i":"1993",
+	  "title":"Mecarobot Golf",
+	  "publisher_s":"Toho",
+	  "developer_s":"Toho",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MechWarrior1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"MechWarrior",
+	  "publisher_s":"Activision",
+	  "developer_s":"Beam Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MechWarrior30501995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"MechWarrior 3050",
+	  "publisher_s":"Activision",
+	  "developer_s":"Tiburon Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MegaLoMania1991[PAL]",
+	  "year_i":"1991",
+	  "title":"Mega Lo Mania",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Sensible Software",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "MegaMan71995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Mega Man 7",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MegaManSoccer1994[NA]",
+	  "year_i":"1994",
+	  "title":"Mega Man Soccer",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MegaManX1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Mega Man X",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MegaManX21995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Mega Man X2",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MegaManX31995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Mega Man X3",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MetalCombat:Falcon'sRevenge1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Metal Combat: Falcon's Revenge",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Intelligent Systems",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MetalMarines1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Metal Marines",
+	  "publisher_s":"Namco",
+	  "developer_s":"Namco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MetalMorph1994[NA]",
+	  "year_i":"1994",
+	  "title":"Metal Morph",
+	  "publisher_s":"FCI",
+	  "developer_s":"Origin Systems",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MetalWarriors1995[NA]",
+	  "year_i":"1995",
+	  "title":"Metal Warriors",
+	  "publisher_s":"Konami",
+	  "developer_s":"LucasArts",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MichaelAndretti'sIndyCarChallenge1994[NA]",
+	  "year_i":"1994",
+	  "title":"Michael Andretti's Indy Car Challenge",
+	  "publisher_s":"Bullet Proof Software",
+	  "developer_s":"Genki",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MichaelJordan:ChaosintheWindyCity1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Michael Jordan: Chaos in the Windy City",
+	  "publisher_s":"Electronic Arts",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MickeyMania:TheTimelessAdventuresofMickeyMouse1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Mickey Mania: The Timeless Adventures of Mickey Mouse",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Traveller's Tales",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Mickey'sUltimateChallenge1994[NA]",
+	  "year_i":"1994",
+	  "title":"Mickey's Ultimate Challenge",
+	  "publisher_s":"Hi Tech Expressions",
+	  "developer_s":"Designer Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MicroMachines1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Micro Machines",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Codemasters",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MicroMachines2:TurboTournament1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Micro Machines 2: Turbo Tournament",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Codemasters",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "MightandMagicII:GatestoAnotherWorld1993[PAL]",
+	  "year_i":"1993",
+	  "title":"Might and Magic II: Gates to Another World",
+	  "publisher_s":"Elite Systems",
+	  "developer_s":"New World Computing",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "MightandMagicIII:IslesofTerra1995[NA]",
+	  "year_i":"1995",
+	  "title":"Might and Magic III: Isles of Terra",
+	  "publisher_s":"FCI",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MightyMorphinPowerRangers1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Mighty Morphin Power Rangers",
+	  "publisher_s":"Bandai",
+	  "developer_s":"Natsume",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MightyMorphinPowerRangers:TheMovie1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Mighty Morphin Power Rangers: The Movie",
+	  "publisher_s":"Bandai",
+	  "developer_s":"Bandai",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MightyMorphinPowerRangersFightingEdition1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Mighty Morphin Power Rangers Fighting Edition",
+	  "publisher_s":"Bandai",
+	  "developer_s":"Bandai",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MiraclePiano1991[NA]",
+	  "year_i":"1991",
+	  "title":"Miracle Piano",
+	  "publisher_s":"The Software Toolworks",
+	  "developer_s":"The Software Toolworks",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MLBPABaseball1994[NA]",
+	  "year_i":"1994",
+	  "title":"MLBPA Baseball",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Visual Concepts",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Mohawk&HeadphoneJack1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Mohawk & Headphone Jack",
+	  "publisher_s":"THQ",
+	  "developer_s":"Black Pearl Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Monopoly1992[NA]",
+	  "year_i":"1992",
+	  "title":"Monopoly",
+	  "publisher_s":"Parker Brothers",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MortalKombat1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Mortal Kombat",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MortalKombatII1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Mortal Kombat II",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MortalKombat31995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Mortal Kombat 3",
+	  "publisher_s":"Williams Entertainment",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "MountainBikeRally0",
+	  "year_i":0,
+	  "title":"Mountain Bike Rally",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "CannondaleCup1994[NA]",
+	  "year_i":"1994",
+	  "title":"Cannondale Cup",
+	  "publisher_s":"Life Fitness Entertainment",
+	  "developer_s":"Radical Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "MountainBikeRally1994[NA]",
+	  "year_i":"1994",
+	  "title":"Mountain Bike Rally",
+	  "publisher_s":"Life Fitness Entertainment",
+	  "developer_s":"Radical Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Mr.Do!1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Mr. Do!",
+	  "publisher_s":"Black Pearl Software",
+	  "developer_s":"Imagineer",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Mr.Nutz1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Mr. Nutz",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Ms.Pac-Man1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Ms. Pac-Man",
+	  "publisher_s":"Williams Entertainment",
+	  "developer_s":"Digital Eclipse Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Musya1992[NA]",
+	  "year_i":"1992",
+	  "title":"Musya",
+	  "publisher_s":"SETA",
+	  "developer_s":"Jorudan",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "NatsumeChampionshipWrestling1994[NA]",
+	  "year_i":"1994",
+	  "title":"Natsume Championship Wrestling",
+	  "publisher_s":"Natsume",
+	  "developer_s":"Natsume",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "NBAAll-StarChallenge1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"NBA All-Star Challenge",
+	  "publisher_s":"LJN",
+	  "developer_s":"Beam Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NBAGive'nGo1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"NBA Give 'n Go",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NBAHangtime1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"NBA Hangtime",
+	  "publisher_s":"Midway Games",
+	  "developer_s":"Williams Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NBAJam1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"NBA Jam",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NBAJamTournamentEdition1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"NBA Jam Tournament Edition",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NBALive951994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"NBA Live 95",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NBALive961995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"NBA Live 96",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NBALive971996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"NBA Live 97",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NBALive981997[NA]",
+	  "year_i":"1997",
+	  "title":"NBA Live 98",
+	  "publisher_s":"THQ",
+	  "developer_s":"EA Sports / Tiertex",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "NBAShowdown'941993[NA]",
+	  "year_i":"1993",
+	  "title":"NBA Showdown '94",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "NCAABasketball0",
+	  "year_i":0,
+	  "title":"NCAA Basketball",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "WorldLeagueBasketballEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"World League BasketballEU",
+	  "publisher_s":"HAL Laboratory / Nintendo",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NCAAFinalFourBasketball1995[NA]",
+	  "year_i":"1995",
+	  "title":"NCAA Final Four Basketball",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Bitmasters",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "NCAAFootball1994[NA]",
+	  "year_i":"1994",
+	  "title":"NCAA Football",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"The Software Toolworks",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Newman/HaasIndyCarfeaturingNigelMansell1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Newman/Haas IndyCar featuring Nigel Mansell",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Gremlin Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NFLFootball1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"NFL Football",
+	  "publisher_s":"Konami",
+	  "developer_s":"Park Place Productions",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NFLQuarterbackClub1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"NFL Quarterback Club",
+	  "publisher_s":"LJN",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NFLQuarterbackClub'961995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"NFL Quarterback Club '96",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NHL'941993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"NHL '94",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NHL951994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"NHL 95",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Visual Concepts / High Score Productions",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NHL961995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"NHL 96",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"High Score Productions / Tiburon Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NHL971996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"NHL 97",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Black Pearl Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NHL981997[NA]",
+	  "year_i":"1997",
+	  "title":"NHL 98",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"THQ",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "NHLStanleyCup0",
+	  "year_i":0,
+	  "title":"NHL Stanley Cup",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperHockeyEU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super HockeyEU",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NHLPAHockey'931992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"NHLPA Hockey '93",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NickelodeonGuts1994[NA]",
+	  "year_i":"1994",
+	  "title":"Nickelodeon Guts",
+	  "publisher_s":"Viacom New Media",
+	  "developer_s":"Viacom New Media",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "NightmareBusters1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Nightmare Busters",
+	  "publisher_s":"Nichibutsu",
+	  "developer_s":"Arcade Zone",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NigelMansell'sWorldChampionshipRacing1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Nigel Mansell's World Championship Racing",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Gremlin Graphics",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NinjaGaidenTrilogy1995[NA]",
+	  "year_i":"1995",
+	  "title":"Ninja Gaiden Trilogy",
+	  "publisher_s":"Tecmo",
+	  "developer_s":"Tecmo",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "NinjaWarriors0",
+	  "year_i":0,
+	  "title":"Ninja Warriors",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "NinjaWarriors:TheNewGenerationEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Ninja Warriors: The New GenerationEU",
+	  "publisher_s":"Taito",
+	  "developer_s":"Natsume",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "NoEscape1994[NA]",
+	  "year_i":"1994",
+	  "title":"No Escape",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Bits Studios",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Nobunaga'sAmbition1993[NA]",
+	  "year_i":"1993",
+	  "title":"Nobunaga's Ambition",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Nobunaga'sAmbition:LordofDarkness1994[NA]",
+	  "year_i":"1994",
+	  "title":"Nobunaga's Ambition: Lord of Darkness",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "NolanRyan'sBaseball1992[NA]",
+	  "year_i":"1992",
+	  "title":"Nolan Ryan's Baseball",
+	  "publisher_s":"Romstar",
+	  "developer_s":"Romstar",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Nosferatu1995[NA]",
+	  "year_i":"1995",
+	  "title":"Nosferatu",
+	  "publisher_s":"SETA",
+	  "developer_s":"SETA",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Obitus1994[NA]",
+	  "year_i":"1994",
+	  "title":"Obitus",
+	  "publisher_s":"Bullet Proof Software",
+	  "developer_s":"Psygnosis",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "OgreBattle:MarchoftheBlackQueen1995[NA]",
+	  "year_i":"1995",
+	  "title":"Ogre Battle: March of the Black Queen",
+	  "publisher_s":"Enix",
+	  "developer_s":"Quest",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "OlympicSummerGames1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Olympic Summer Games",
+	  "publisher_s":"U.S. Gold",
+	  "developer_s":"Black Pearl Software / Tiertex",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "OntheBall1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"On the Ball",
+	  "publisher_s":"Taito",
+	  "developer_s":"Taito",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "OperationEurope:PathtoVictory1994[NA]",
+	  "year_i":"1994",
+	  "title":"Operation Europe: Path to Victory",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "OperationLogicBomb1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Operation Logic Bomb",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "OperationThunderbolt1994[NA]",
+	  "year_i":"1994",
+	  "title":"Operation Thunderbolt",
+	  "publisher_s":"Taito",
+	  "developer_s":"Aisystem Tokyo",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Oscar1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Oscar",
+	  "publisher_s":"Titus Software",
+	  "developer_s":"Flair Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "OutofThisWorld0",
+	  "year_i":0,
+	  "title":"Out of This World",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "AnotherWorldEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Another WorldEU",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Delphine Software International",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "OuttoLunch1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Out to Lunch",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Mindscape",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Outlander1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Outlander",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Mindscape",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "P.T.O.:PacificTheaterofOperations1993[NA]",
+	  "year_i":"1993",
+	  "title":"P.T.O.: Pacific Theater of Operations",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "P.T.O.II:PacificTheaterofOperations1995[NA]",
+	  "year_i":"1995",
+	  "title":"P.T.O. II: Pacific Theater of Operations",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Pac-Attack1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Pac-Attack",
+	  "publisher_s":"Namco",
+	  "developer_s":"Namco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Pac-In-Time1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Pac-In-Time",
+	  "publisher_s":"Namco",
+	  "developer_s":"Kalisto Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Pac-Man2:TheNewAdventures1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Pac-Man 2: The New Adventures",
+	  "publisher_s":"Namco",
+	  "developer_s":"Namco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PackyandMarlon1995[NA]",
+	  "year_i":"1995",
+	  "title":"Packy and Marlon",
+	  "publisher_s":"Raya Systems",
+	  "developer_s":"Wave Quest",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ThePagemaster1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"The Pagemaster",
+	  "publisher_s":"Fox Interactive",
+	  "developer_s":"Probe Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Paladin'sQuest1993[NA]",
+	  "year_i":"1993",
+	  "title":"Paladin's Quest",
+	  "publisher_s":"Enix",
+	  "developer_s":"Asmik Ace Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Paperboy21991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Paperboy 2",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Tengen",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Parodius:Non-SenseFantasy1992[PAL]",
+	  "year_i":"1992",
+	  "title":"Parodius: Non-Sense Fantasy",
+	  "publisher_s":"Palcom",
+	  "developer_s":"Konami",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "ThePeaceKeepers1994[NA]",
+	  "year_i":"1994",
+	  "title":"The Peace Keepers",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "PGAEuropeanTour1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"PGA European Tour",
+	  "publisher_s":"Black Pearl Software",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PGATour961996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"PGA Tour 96",
+	  "publisher_s":"Black Pearl Software",
+	  "developer_s":"Electronic Arts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PGATourGolf1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"PGA Tour Golf",
+	  "publisher_s":"EA Sports",
+	  "developer_s":"Polygames",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Phalanx1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Phalanx",
+	  "publisher_s":"Kemco",
+	  "developer_s":"Kemco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Phantom20401995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Phantom 2040",
+	  "publisher_s":"Viacom New Media",
+	  "developer_s":"Viacom New Media",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Pieces1994[NA]",
+	  "year_i":"1994",
+	  "title":"Pieces",
+	  "publisher_s":"Atlus",
+	  "developer_s":"Hori Electric",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Pilotwings1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Pilotwings",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PinballDreams1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Pinball Dreams",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Coconuts Japan",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PinballFantasies1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Pinball Fantasies",
+	  "publisher_s":"GameTek",
+	  "developer_s":"21st Century Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PinkGoestoHollywood1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Pink Goes to Hollywood",
+	  "publisher_s":"TecMagik",
+	  "developer_s":"Altron",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Pinocchio1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Pinocchio",
+	  "publisher_s":"Disney Interactive",
+	  "developer_s":"Virgin Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PiratesofDarkWater1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Pirates of Dark Water",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Sunsoft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Pitfall:TheMayanAdventure1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Pitfall: The Mayan Adventure",
+	  "publisher_s":"Activision",
+	  "developer_s":"Activision",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Pit-Fighter1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Pit-Fighter",
+	  "publisher_s":"THQ",
+	  "developer_s":"THQ",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Plok1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Plok",
+	  "publisher_s":"Tradewest",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Pocky&Rocky1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Pocky & Rocky",
+	  "publisher_s":"Natsume",
+	  "developer_s":"Natsume",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Pocky&Rocky21994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Pocky & Rocky 2",
+	  "publisher_s":"Natsume",
+	  "developer_s":"Natsume",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Pop'nTwinBee1992[PAL]",
+	  "year_i":"1992",
+	  "title":"Pop'n TwinBee",
+	  "publisher_s":"Palcom",
+	  "developer_s":"Konami",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Pop'nTwinBee:RainbowBellAdventures1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Pop'n TwinBee: Rainbow Bell Adventures",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Populous1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Populous",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Bullfrog Productions",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PopulousII:TrialsoftheOlympianGods1991[PAL]",
+	  "year_i":"1991",
+	  "title":"Populous II: Trials of the Olympian Gods",
+	  "publisher_s":"Imagineer",
+	  "developer_s":"Bullfrog Productions",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "PorkyPig'sHauntedHoliday1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Porky Pig's Haunted Holiday",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Phoenix Interactive Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PowerDrive1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Power Drive",
+	  "publisher_s":"Rage Software",
+	  "developer_s":"U.S. Gold",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "PowerInstinct1994[NA]",
+	  "year_i":"1994",
+	  "title":"Power Instinct",
+	  "publisher_s":"Atlus",
+	  "developer_s":"Atlus",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "PowerMoves1993[NA]",
+	  "year_i":"1993",
+	  "title":"Power Moves",
+	  "publisher_s":"Kaneko",
+	  "developer_s":"Kaneko",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "PowerPiggsoftheDarkAge1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Power Piggs of the Dark Age",
+	  "publisher_s":"Titus Software",
+	  "developer_s":"Radical Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PowerRangersZeo:BattleRacers1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Power Rangers Zeo: Battle Racers",
+	  "publisher_s":"Bandai",
+	  "developer_s":"Bandai",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Powermonger1993[PAL]",
+	  "year_i":"1993",
+	  "title":"Powermonger",
+	  "publisher_s":"Imagineer",
+	  "developer_s":"Bullfrog Productions",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "PrehistorikMan1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Prehistorik Man",
+	  "publisher_s":"Titus Software",
+	  "developer_s":"Titus Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PrimalRage1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Primal Rage",
+	  "publisher_s":"Time Warner Interactive",
+	  "developer_s":"Bitmasters",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PrinceofPersia1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Prince of Persia",
+	  "publisher_s":"Konami",
+	  "developer_s":"Arsys Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PrinceofPersia2:TheShadowandtheFlame1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Prince of Persia 2: The Shadow and the Flame",
+	  "publisher_s":"Titus Software",
+	  "developer_s":"Titus Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ProQuarterback1992[NA]",
+	  "year_i":"1992",
+	  "title":"Pro Quarterback",
+	  "publisher_s":"Tradewest",
+	  "developer_s":"Tradewest",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ProSportHockey1994[NA]",
+	  "year_i":"1994",
+	  "title":"Pro Sport Hockey",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Pushover1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Pushover",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Red Rat Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "PuttySquad1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Putty Squad",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"System 3",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Q*bert31992[NA]",
+	  "year_i":"1992",
+	  "title":"Q*bert 3",
+	  "publisher_s":"NTVIC",
+	  "developer_s":"Realtime Associates",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "RaceDrivin'1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Race Drivin'",
+	  "publisher_s":"THQ",
+	  "developer_s":"Argonaut Games",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "RadicalRex1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Radical Rex",
+	  "publisher_s":"Activision",
+	  "developer_s":"Laser Beam Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "RaidenTrad1992[NA]",
+	  "year_i":"1992",
+	  "title":"Raiden Trad",
+	  "publisher_s":"Electro Brain",
+	  "developer_s":"Seibu Kaihatsu/Toei Company/Micronics",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Rampart1992[NA]",
+	  "year_i":"1992",
+	  "title":"Rampart",
+	  "publisher_s":"Electronic Arts",
+	  "developer_s":"Bitmasters",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Ranma:HardBattle0",
+	  "year_i":0,
+	  "title":"Ranma : Hard Battle",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "RanmaEU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Ranma EU",
+	  "publisher_s":"DTMC",
+	  "developer_s":"Atelier Double",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "RapJam:VolumeOne1995[NA]",
+	  "year_i":"1995",
+	  "title":"Rap Jam: Volume One",
+	  "publisher_s":"Mandingo Entertainment",
+	  "developer_s":"Motown Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Realm1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Realm",
+	  "publisher_s":"Titus Software",
+	  "developer_s":"Titus Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "RedlineF-1Racer0",
+	  "year_i":0,
+	  "title":"Redline F-1 Racer",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "AguriSuzukiF-1SuperDrivingEU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Aguri Suzuki F-1 Super DrivingEU",
+	  "publisher_s":"Absolute Entertainment",
+	  "developer_s":"Absolute Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ReliefPitcher1994[NA]",
+	  "year_i":"1994",
+	  "title":"Relief Pitcher",
+	  "publisher_s":"Left Field Productions",
+	  "developer_s":"Left Field Productions",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheRen&StimpyShow:Buckaroo$!1995[NA]",
+	  "year_i":"1995",
+	  "title":"The Ren & Stimpy Show: Buckaroo$!",
+	  "publisher_s":"THQ",
+	  "developer_s":"Imagineering",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheRen&StimpyShow:FireDogs1994[NA]",
+	  "year_i":"1994",
+	  "title":"The Ren & Stimpy Show: Fire Dogs",
+	  "publisher_s":"THQ",
+	  "developer_s":"Argonaut Games",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheRen&StimpyShow:TimeWarp1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"The Ren & Stimpy Show: Time Warp",
+	  "publisher_s":"THQ",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheRen&StimpyShow:Veediots!1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"The Ren & Stimpy Show: Veediots!",
+	  "publisher_s":"THQ",
+	  "developer_s":"Gray Matter",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "RevolutionX1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Revolution X",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "RexRonan:ExperimentalSurgeon1994[NA]",
+	  "year_i":"1994",
+	  "title":"Rex Ronan: Experimental Surgeon",
+	  "publisher_s":"Raya Systems",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "RiddickBoweBoxing0",
+	  "year_i":0,
+	  "title":"Riddick Bowe Boxing",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "ChavezMX1994[NA]",
+	  "year_i":"1994",
+	  "title":"ChavezMX",
+	  "publisher_s":"Extreme Entertainment Group",
+	  "developer_s":"Malibu Interactive",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "RiseofthePhoenix1995[NA]",
+	  "year_i":"1995",
+	  "title":"Rise of the Phoenix",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "RiseoftheRobots1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Rise of the Robots",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Probe Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "RivalTurf!1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Rival Turf!",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "RoadRiot4WD1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Road Riot 4WD",
+	  "publisher_s":"THQ",
+	  "developer_s":"Equilibrium",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "RoadRunner'sDeathValleyRally0",
+	  "year_i":0,
+	  "title":"Road Runner's Death Valley Rally",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "LooneyTunes:RoadRunnerEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Looney Tunes: Road RunnerEU",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"ICOM Simulations",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "RoboCop31992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"RoboCop 3",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "RoboCopVersusTheTerminator1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"RoboCop Versus The Terminator",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Virgin Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Robotrek1994[NA]",
+	  "year_i":"1994",
+	  "title":"Robotrek",
+	  "publisher_s":"Enix",
+	  "developer_s":"Quintet",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Rockn'RollRacing1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Rock n' Roll Racing",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Blizzard Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheRocketeer1992[NA]",
+	  "year_i":"1992",
+	  "title":"The Rocketeer",
+	  "publisher_s":"IGS",
+	  "developer_s":"NovaLogic",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Rocko'sModernLife:Spunky'sDangerousDay1994[NA]",
+	  "year_i":"1994",
+	  "title":"Rocko's Modern Life: Spunky's Dangerous Day",
+	  "publisher_s":"Viacom New Media",
+	  "developer_s":"Viacom New Media",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "RockyRodent1993[NA]",
+	  "year_i":"1993",
+	  "title":"Rocky Rodent",
+	  "publisher_s":"Irem",
+	  "developer_s":"Irem",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "RogerClemens'MVPBaseball1992[NA]",
+	  "year_i":"1992",
+	  "title":"Roger Clemens' MVP Baseball",
+	  "publisher_s":"LJN",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "RomanceoftheThreeKingdomsII1992[NA]",
+	  "year_i":"1992",
+	  "title":"Romance of the Three Kingdoms II",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "RomanceoftheThreeKingdomsIII:DragonofDestiny1993[NA]",
+	  "year_i":"1993",
+	  "title":"Romance of the Three Kingdoms III: Dragon of Destiny",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "RomanceoftheThreeKingdomsIV:WallofFire1995[NA]",
+	  "year_i":"1995",
+	  "title":"Romance of the Three Kingdoms IV: Wall of Fire",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "RPMRacing1991[NA]",
+	  "year_i":"1991",
+	  "title":"RPM Racing",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Silicon & Synapse",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "R-TypeIII:TheThirdLightning1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"R-Type III: The Third Lightning",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Irem",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "RunSaber1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Run Saber",
+	  "publisher_s":"Atlus",
+	  "developer_s":"Hori Electric",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SailorMoon1993[PAL]",
+	  "year_i":"1993",
+	  "title":"Sailor Moon",
+	  "publisher_s":"Bandai",
+	  "developer_s":"Angel",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "SamuraiShodown1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Samurai Shodown",
+	  "publisher_s":"Takara",
+	  "developer_s":"Takara",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SaturdayNightSlamMasters1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Saturday Night Slam Masters",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Scooby-DooMystery1995[NA]",
+	  "year_i":"1995",
+	  "title":"Scooby-Doo Mystery",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Sunsoft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SeaQuestDSV1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"SeaQuest DSV",
+	  "publisher_s":"Malibu Games",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SecretofEvermore1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Secret of Evermore",
+	  "publisher_s":"Square",
+	  "developer_s":"Square",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SecretofMana1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Secret of Mana",
+	  "publisher_s":"Square",
+	  "developer_s":"Square",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SecretoftheStars1995[NA]",
+	  "year_i":"1995",
+	  "title":"Secret of the Stars",
+	  "publisher_s":"Tecmo",
+	  "developer_s":"Tecmo",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SensibleSoccer1992[PAL]",
+	  "year_i":"1992",
+	  "title":"Sensible Soccer",
+	  "publisher_s":"Renegade Software",
+	  "developer_s":"Sensible Software",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Shadowrun1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Shadowrun",
+	  "publisher_s":"Data East",
+	  "developer_s":"Beam Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ShanghaiII:Dragon'sEye1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Shanghai II: Dragon's Eye",
+	  "publisher_s":"Activision",
+	  "developer_s":"Hot-B",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ShaqFu1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Shaq Fu",
+	  "publisher_s":"Electronic Arts",
+	  "developer_s":"Delphine Software International",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Shien'sRevenge1994[NA]",
+	  "year_i":"1994",
+	  "title":"Shien's Revenge",
+	  "publisher_s":"Vic Tokai",
+	  "developer_s":"Almanic",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SidePocket1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Side Pocket",
+	  "publisher_s":"Data East",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SimAnt1993[NA]",
+	  "year_i":"1993",
+	  "title":"SimAnt",
+	  "publisher_s":"Maxis Software",
+	  "developer_s":"Tomcat System",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SimCity1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"SimCity",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo/Maxis",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SimCity20001996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"SimCity 2000",
+	  "publisher_s":"Black Pearl Software",
+	  "developer_s":"THQ",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SimEarth1993[NA]",
+	  "year_i":"1993",
+	  "title":"SimEarth",
+	  "publisher_s":"FCI",
+	  "developer_s":"Tomcat System",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheSimpsons:Bart'sNightmare1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"The Simpsons: Bart's Nightmare",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SinkorSwim1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Sink or Swim",
+	  "publisher_s":"Titus Software",
+	  "developer_s":"Zeppelin Games",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Skljagger:RevoltoftheWesticans1992[NA]",
+	  "year_i":"1992",
+	  "title":"Skljagger: Revolt of the Westicans",
+	  "publisher_s":"American Softworks",
+	  "developer_s":"Realtime Associates",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Skyblazer1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Skyblazer",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Ukiyotei",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SmartBall1992[NA]",
+	  "year_i":"1992",
+	  "title":"Smart Ball",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Game Freak, System Sacom",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SmashTennis1993[PAL]",
+	  "year_i":"1993",
+	  "title":"Smash Tennis",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Namco",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "TheSmurfs1994[PAL]",
+	  "year_i":"1994",
+	  "title":"The Smurfs",
+	  "publisher_s":"Infogrames",
+	  "developer_s":"Infogrames",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "TheSmurfsTravelTheWorld1996[PAL]",
+	  "year_i":"1996",
+	  "title":"The Smurfs Travel The World",
+	  "publisher_s":"Infogrames",
+	  "developer_s":"Infogrames",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "SnowWhite:HappilyEverAfter1994[NA]",
+	  "year_i":"1994",
+	  "title":"Snow White: Happily Ever After",
+	  "publisher_s":"American Softworks",
+	  "developer_s":"Imagitec Design",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SoldiersofFortune0",
+	  "year_i":0,
+	  "title":"Soldiers of Fortune",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "TheChaosEngineEU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"The Chaos EngineEU",
+	  "publisher_s":"Spectrum Holobyte",
+	  "developer_s":"Bitmap Brothers",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SonicBlastMan1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Sonic Blast Man",
+	  "publisher_s":"Taito",
+	  "developer_s":"Taito",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SonicBlastManII1994[NA]",
+	  "year_i":"1994",
+	  "title":"Sonic Blast Man II",
+	  "publisher_s":"Taito",
+	  "developer_s":"Taito",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SOS1994[NA]",
+	  "year_i":"1994",
+	  "title":"SOS",
+	  "publisher_s":"Vic Tokai",
+	  "developer_s":"Human Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SoulBlazer1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Soul Blazer",
+	  "publisher_s":"Enix",
+	  "developer_s":"Quintet",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SpaceAce1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Space Ace",
+	  "publisher_s":"Absolute Entertainment",
+	  "developer_s":"Entertainment International",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SpaceFootball:OneonOne1992[NA]",
+	  "year_i":"1992",
+	  "title":"Space Football: One on One",
+	  "publisher_s":"Triffix",
+	  "developer_s":"Bits Studios",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SpaceInvaders1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Space Invaders",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Taito",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SpaceMegaforce0",
+	  "year_i":0,
+	  "title":"Space Megaforce",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperAlesteEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super AlesteEU",
+	  "publisher_s":"Toho",
+	  "developer_s":"Compile",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Spanky'sQuest1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Spanky's Quest",
+	  "publisher_s":"Natsume",
+	  "developer_s":"Natsume",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Sparkster1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Sparkster",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Spectre1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Spectre",
+	  "publisher_s":"Cybersoft",
+	  "developer_s":"Synergistic Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SpeedRacerinMyMostDangerousAdventures1994[NA]",
+	  "year_i":"1994",
+	  "title":"Speed Racer in My Most Dangerous Adventures",
+	  "publisher_s":"Accolade",
+	  "developer_s":"Radical Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SpeedyGonzales:LosGatosBandidos1995[NA]",
+	  "year_i":"1995",
+	  "title":"Speedy Gonzales: Los Gatos Bandidos",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Sunsoft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Spider-Man:TheAnimatedSeries1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Spider-Man: The Animated Series",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Western Tech",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Spider-ManandVenom:MaximumCarnage1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Spider-Man and Venom: Maximum Carnage",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Spider-ManandVenom:SeparationAnxiety1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Spider-Man and Venom: Separation Anxiety",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Spider-Man/X-Men:Arcade'sRevenge1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Spider-Man/X-Men: Arcade's Revenge",
+	  "publisher_s":"LJN",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SpindizzyWorlds1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Spindizzy Worlds",
+	  "publisher_s":"ASCII Entertainment",
+	  "developer_s":"ASCII Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Spirou1995[PAL]",
+	  "year_i":"1995",
+	  "title":"Spirou",
+	  "publisher_s":"Infogrames",
+	  "developer_s":"Infogrames",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "TheSportingNews:PowerBaseball1995[NA]",
+	  "year_i":"1995",
+	  "title":"The Sporting News: Power Baseball",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SportsIllustrated:ChampionshipFootball&Baseball1994[NA]",
+	  "year_i":"1994",
+	  "title":"Sports Illustrated: Championship Football & Baseball",
+	  "publisher_s":"Malibu",
+	  "developer_s":"Malibu Games",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "StarFox0",
+	  "year_i":0,
+	  "title":"Star Fox",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "StarwingEU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"StarwingEU",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo/Argonaut Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "StarFox:SuperWeekend0",
+	  "year_i":0,
+	  "title":"Star Fox: Super Weekend",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "Starwing:CompetitionEU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Starwing: CompetitionEU",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo/Argonaut Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "StarTrek:DeepSpaceNine:TheCrossroadsofTime1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Star Trek: Deep Space Nine: The Crossroads of Time",
+	  "publisher_s":"Playmates",
+	  "developer_s":"Novotrade",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "StarTrek:StarfleetAcademyStarshipBridgeSimulator1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Star Trek: Starfleet Academy Starship Bridge Simulator",
+	  "publisher_s":"Interplay Entertainment",
+	  "developer_s":"Paramount Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "StarTrek:TheNextGeneration:Future'sPast1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Star Trek: The Next Generation: Future's Past",
+	  "publisher_s":"Spectrum Holobyte",
+	  "developer_s":"Spectrum Holobyte",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Stargate1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Stargate",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Probe Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SteelTalons1993[NA]",
+	  "year_i":"1993",
+	  "title":"Steel Talons",
+	  "publisher_s":"Left Field Productions",
+	  "developer_s":"Panoramic",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SterlingSharpe:End2End1995[NA]",
+	  "year_i":"1995",
+	  "title":"Sterling Sharpe: End 2 End",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "StoneProtectors1994[NA]",
+	  "year_i":"1994",
+	  "title":"Stone Protectors",
+	  "publisher_s":"Kemco",
+	  "developer_s":"Eurocom",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "StreetCombat1993[NA]",
+	  "year_i":"1993",
+	  "title":"Street Combat",
+	  "publisher_s":"Irem",
+	  "developer_s":"Irem",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "StreetFighterAlpha21996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Street Fighter Alpha 2",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "StreetFighterII:TheWorldWarrior1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Street Fighter II: The World Warrior",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "StreetFighterIITurbo:HyperFighting1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Street Fighter II Turbo: Hyper Fighting",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "StreetHockey'951994[NA]",
+	  "year_i":"1994",
+	  "title":"Street Hockey '95",
+	  "publisher_s":"GTE Interactive Media",
+	  "developer_s":"GTE Interactive Media",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "StreetRacer1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Street Racer",
+	  "publisher_s":"Ubisoft",
+	  "developer_s":"Vivid Image",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "StrikeGunnerS.T.G0",
+	  "year_i":0,
+	  "title":"Strike Gunner S.T.G",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperStrikeGunnerEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super Strike GunnerEU",
+	  "publisher_s":"NTVIC",
+	  "developer_s":"Athena",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "StuntRaceFX1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Stunt Race FX",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo/Argonaut Games",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SunsetRiders1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Sunset Riders",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Super3DNoah'sArk1994[NA]",
+	  "year_i":"1994",
+	  "title":"Super 3D Noah's Ark",
+	  "publisher_s":"Wisdom Tree",
+	  "developer_s":"Wisdom Tree",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperAdventureIsland1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super Adventure Island",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperAdventureIslandII1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Super Adventure Island II",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheSuperAquaticGamesStarringtheAquabats0",
+	  "year_i":0,
+	  "title":"The Super Aquatic Games Starring the Aquabats",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "JamesPond'sCrazySportsEU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"James Pond's Crazy SportsEU",
+	  "publisher_s":"Seika Corp.",
+	  "developer_s":"Millennium Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperBaseball20201993[NA]",
+	  "year_i":"1993",
+	  "title":"Super Baseball 2020",
+	  "publisher_s":"Tradewest",
+	  "developer_s":"SNK",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperBaseballSimulator1.0001991[NA]",
+	  "year_i":"1991",
+	  "title":"Super Baseball Simulator 1.000",
+	  "publisher_s":"Culture Brain",
+	  "developer_s":"Culture Brain",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperBasesLoaded1991[NA]",
+	  "year_i":"1991",
+	  "title":"Super Bases Loaded",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperBasesLoaded21994[NA]",
+	  "year_i":"1994",
+	  "title":"Super Bases Loaded 2",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperBasesLoaded3:LicensetoSteal1995[NA]",
+	  "year_i":"1995",
+	  "title":"Super Bases Loaded 3: License to Steal",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperBatterUp1992[NA]",
+	  "year_i":"1992",
+	  "title":"Super Batter Up",
+	  "publisher_s":"Namco",
+	  "developer_s":"Namco",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperBattleship1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super Battleship",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"World Builders Synergistic",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperBattletank:WarintheGulf0",
+	  "year_i":0,
+	  "title":"Super Battletank: War in the Gulf",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperBattletankEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super BattletankEU",
+	  "publisher_s":"Absolute Entertainment",
+	  "developer_s":"Absolute Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperBattletank21994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Super Battletank 2",
+	  "publisher_s":"Absolute Entertainment",
+	  "developer_s":"Absolute Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperBlackBass1993[NA]",
+	  "year_i":"1993",
+	  "title":"Super Black Bass",
+	  "publisher_s":"Hot-B",
+	  "developer_s":"Starfish",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperBomberman1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super Bomberman",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperBomberman21994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Super Bomberman 2",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperBomberman31995[PAL]",
+	  "year_i":"1995",
+	  "title":"Super Bomberman 3",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "SuperBonk0",
+	  "year_i":0,
+	  "title":"Super Bonk",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperB.C.KidEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Super B.C. KidEU",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperBowling1992[NA]",
+	  "year_i":"1992",
+	  "title":"Super Bowling",
+	  "publisher_s":"Technos",
+	  "developer_s":"Athena",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperBusterBros.0",
+	  "year_i":0,
+	  "title":"Super Buster Bros.",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperPangEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super PangEU",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperCaesarsPalace1993[NA]",
+	  "year_i":"1993",
+	  "title":"Super Caesars Palace",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Illusion Softworks",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperCastlevaniaIV1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Super Castlevania IV",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperChaseH.Q.1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super Chase H.Q.",
+	  "publisher_s":"Taito",
+	  "developer_s":"Taito",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperConflict1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super Conflict",
+	  "publisher_s":"Vic Tokai",
+	  "developer_s":"Vic Tokai",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperDoubleDragon1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super Double Dragon",
+	  "publisher_s":"Tradewest",
+	  "developer_s":"Technos",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperDany1998[PAL]",
+	  "year_i":"1998",
+	  "title":"Super Dany",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Cryo Interactive",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "SuperDropzone1995[PAL]",
+	  "year_i":"1995",
+	  "title":"Super Dropzone",
+	  "publisher_s":"Psygnosis",
+	  "developer_s":"Eurocom",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "SuperGhouls'nGhosts1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Super Ghouls'n Ghosts",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperGoal!21994[NA]",
+	  "year_i":"1994",
+	  "title":"Super Goal! 2",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperGodzilla1994[NA]",
+	  "year_i":"1994",
+	  "title":"Super Godzilla",
+	  "publisher_s":"Toho",
+	  "developer_s":"Toho",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperHighImpact1993[NA]",
+	  "year_i":"1993",
+	  "title":"Super High Impact",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperIceHockey1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Super Ice Hockey",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Sunsoft",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "SuperInternationalCricket1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Super International Cricket",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Beam Software",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "SuperJamesPond0",
+	  "year_i":0,
+	  "title":"Super James Pond",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperJamesPondIIEU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super James Pond IIEU",
+	  "publisher_s":"American Softworks",
+	  "developer_s":"American Softworks",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperMarioAll-Stars1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super Mario All-Stars",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperMarioAll-Stars+SuperMarioWorld1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Super Mario All-Stars + Super Mario World",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperMarioKart1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super Mario Kart",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperMarioRPG:LegendoftheSevenStars1996[NA]",
+	  "year_i":"1996",
+	  "title":"Super Mario RPG: Legend of the Seven Stars",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Square",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperMarioWorld1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Super Mario World",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperMarioWorld2:Yoshi'sIsland1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Super Mario World 2: Yoshi's Island",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperMetroid1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Super Metroid",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperMorph1993[PAL]",
+	  "year_i":"1993",
+	  "title":"Super Morph",
+	  "publisher_s":"Sony Imagesoft",
+	  "developer_s":"Millennium Interactive",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "SuperNinjaBoy1993[NA]",
+	  "year_i":"1993",
+	  "title":"Super Ninja Boy",
+	  "publisher_s":"Culture Brain",
+	  "developer_s":"Culture Brain",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperNova1993[NA]",
+	  "year_i":"1993",
+	  "title":"Super Nova",
+	  "publisher_s":"Taito",
+	  "developer_s":"Taito",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperOffRoad1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Super Off Road",
+	  "publisher_s":"Tradewest",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperOffRoad:TheBaja1993[NA]",
+	  "year_i":"1993",
+	  "title":"Super Off Road: The Baja",
+	  "publisher_s":"Tradewest",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperPinball:BehindtheMask1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Super Pinball: Behind the Mask",
+	  "publisher_s":"American Technos",
+	  "developer_s":"KaZe / Meldac",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperPlayActionFootball1992[NA]",
+	  "year_i":"1992",
+	  "title":"Super Play Action Football",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperPunch-Out!!1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Super Punch-Out!!",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperPutty1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super Putty",
+	  "publisher_s":"U.S. Gold",
+	  "developer_s":"System 3",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperRBIBaseball1995[NA]",
+	  "year_i":"1995",
+	  "title":"Super RBI Baseball",
+	  "publisher_s":"Time Warner Interactive",
+	  "developer_s":"Gray Matter",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperR-Type1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Super R-Type",
+	  "publisher_s":"Irem",
+	  "developer_s":"Irem",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperScope60",
+	  "year_i":0,
+	  "title":"Super Scope 6",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperNintendoScope6EU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super Nintendo Scope 6EU",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperSlamDunk1993[NA]",
+	  "year_i":"1993",
+	  "title":"Super Slam Dunk",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Virgin Interactive",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperSlapShot1993[NA]",
+	  "year_i":"1993",
+	  "title":"Super Slap Shot",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Ringler Studios",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperSmashTV1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super Smash TV",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Beam Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperSoccer1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super Soccer",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Human Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperSoccerChamp0",
+	  "year_i":0,
+	  "title":"Super Soccer Champ",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "EuroFootballChampEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Euro Football ChampEU",
+	  "publisher_s":"Taito",
+	  "developer_s":"Taito",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperSolitaire1994[NA]",
+	  "year_i":"1994",
+	  "title":"Super Solitaire",
+	  "publisher_s":"Extreme Entertainment Group",
+	  "developer_s":"Extreme Entertainment Group",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperStarWars1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Super Star Wars",
+	  "publisher_s":"JVC",
+	  "developer_s":"Sculptured Software/Lucas Arts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperStarWars:TheEmpireStrikesBack1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super Star Wars: The Empire Strikes Back",
+	  "publisher_s":"Lucasarts/JVC",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperStarWars:ReturnoftheJedi1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Super Star Wars: Return of the Jedi",
+	  "publisher_s":"Lucas Arts/JVC",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperStreetFighterII:TheNewChallengers1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Super Street Fighter II: The New Challengers",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperStrikeEagle1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super Strike Eagle",
+	  "publisher_s":"MicroProse",
+	  "developer_s":"MicroProse",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperTennis1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Super Tennis",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Tokyo Shoseki",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperTrollIslands1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Super Troll Islands",
+	  "publisher_s":"American Softworks",
+	  "developer_s":"Kemco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperTurrican1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super Turrican",
+	  "publisher_s":"Seika Corp.",
+	  "developer_s":"Factor 5",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperTurrican21995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Super Turrican 2",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Factor 5",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "SuperValisIV1993[NA]",
+	  "year_i":"1993",
+	  "title":"Super Valis IV",
+	  "publisher_s":"Atlus",
+	  "developer_s":"Telenet Japan",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SuperWidget1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Super Widget",
+	  "publisher_s":"Atlus",
+	  "developer_s":"Atlus",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Suzuka8Hours1994[NA]",
+	  "year_i":"1994",
+	  "title":"Suzuka 8 Hours",
+	  "publisher_s":"Namco",
+	  "developer_s":"Namco",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "SWATKats:TheRadicalSquadron1995[NA]",
+	  "year_i":"1995",
+	  "title":"SWAT Kats: The Radical Squadron",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Hudson Soft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Syndicate1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Syndicate",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Bullfrog Productions",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Syvalion1992[PAL]",
+	  "year_i":"1992",
+	  "title":"Syvalion",
+	  "publisher_s":"Toshiba EMI",
+	  "developer_s":"Taito",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "T2:TheArcadeGame1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"T2: The Arcade Game",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Probe Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Taz-Mania1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Taz-Mania",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Visual Concepts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TecmoSuperBaseball1994[NA]",
+	  "year_i":"1994",
+	  "title":"Tecmo Super Baseball",
+	  "publisher_s":"Tecmo",
+	  "developer_s":"Tecmo",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TecmoSuperBowl1993[NA]",
+	  "year_i":"1993",
+	  "title":"Tecmo Super Bowl",
+	  "publisher_s":"Tecmo",
+	  "developer_s":"Tecmo",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TecmoSuperBowlII:SpecialEdition1995[NA]",
+	  "year_i":"1995",
+	  "title":"Tecmo Super Bowl II: Special Edition",
+	  "publisher_s":"Tecmo",
+	  "developer_s":"Tecmo",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TecmoSuperBowlIII:FinalEdition1995[NA]",
+	  "year_i":"1995",
+	  "title":"Tecmo Super Bowl III: Final Edition",
+	  "publisher_s":"Tecmo",
+	  "developer_s":"Tecmo",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TecmoSuperNBABasketball1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Tecmo Super NBA Basketball",
+	  "publisher_s":"Tecmo",
+	  "developer_s":"Tecmo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TeenageMutantNinjaTurtlesIV:TurtlesinTime0",
+	  "year_i":0,
+	  "title":"Teenage Mutant Ninja Turtles IV: Turtles in Time",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "TeenageMutantHeroTurtlesIV:TurtlesinTimeEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Teenage Mutant Hero Turtles IV: Turtles in TimeEU",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TeenageMutantNinjaTurtles:TournamentFighters0",
+	  "year_i":0,
+	  "title":"Teenage Mutant Ninja Turtles: Tournament Fighters",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "TeenageMutantHeroTurtles:TournamentFightersEU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Teenage Mutant Hero Turtles: Tournament FightersEU",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheTerminator1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"The Terminator",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Mindscape",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Terminator2:JudgmentDay1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Terminator 2: Judgment Day",
+	  "publisher_s":"LJN",
+	  "developer_s":"Bits Studios",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Terranigma1996[PAL]",
+	  "year_i":"1996",
+	  "title":"Terranigma",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Quintet",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Tetris&Dr.Mario1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Tetris & Dr. Mario",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Tetris21994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Tetris 2",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Bullet Proof Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TetrisAttack1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Tetris Attack",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Intelligent Systems",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ThemePark1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Theme Park",
+	  "publisher_s":"Electronic Arts",
+	  "developer_s":"Bullfrog Productions",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "ThomastheTankEngine&Friends1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Thomas the Tank Engine & Friends",
+	  "publisher_s":"THQ",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ThunderSpirits1992[NA]",
+	  "year_i":"1992",
+	  "title":"Thunder Spirits",
+	  "publisher_s":"Seika Corp.",
+	  "developer_s":"Technosoft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TheTick1994[NA]",
+	  "year_i":"1994",
+	  "title":"The Tick",
+	  "publisher_s":"Fox Interactive",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TimeSlip1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Time Slip",
+	  "publisher_s":"Vic Tokai",
+	  "developer_s":"Sales Curve Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TimeTrax1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Time Trax",
+	  "publisher_s":"Malibu Games",
+	  "developer_s":"Malibu Games",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Timecop1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Timecop",
+	  "publisher_s":"JVC",
+	  "developer_s":"Cryo Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Timon&Pumbaa'sJungleGames1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Timon & Pumbaa's Jungle Games",
+	  "publisher_s":"THQ",
+	  "developer_s":"Tiertex",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TinStar1994[NA]",
+	  "year_i":"1994",
+	  "title":"Tin Star",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Software Creations",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TintininTibet1995[PAL]",
+	  "year_i":"1995",
+	  "title":"Tintin in Tibet",
+	  "publisher_s":"Infogrames",
+	  "developer_s":"Infogrames",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "TinyToonAdventures:BusterBustsLoose1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Tiny Toon Adventures: Buster Busts Loose",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TinyToonAdventures:WackySportsChallenge0",
+	  "year_i":0,
+	  "title":"Tiny Toon Adventures: Wacky Sports Challenge",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "TinyToonAdventures:Wild&WackySportsEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Tiny Toon Adventures: Wild & Wacky SportsEU",
+	  "publisher_s":"Konami",
+	  "developer_s":"Konami",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TKOSuperChampionshipBoxing1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"TKO Super Championship Boxing",
+	  "publisher_s":"Sofel",
+	  "developer_s":"Sting Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TNNBassTournamentofChampions1994[NA]",
+	  "year_i":"1994",
+	  "title":"TNN Bass Tournament of Champions",
+	  "publisher_s":"American Softworks",
+	  "developer_s":"American Softworks",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ToddMcFarlane'sSpawn:TheVideoGame1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Todd McFarlane's Spawn: The Video Game",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Ukiyotei",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TomandJerry1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Tom and Jerry",
+	  "publisher_s":"Hi Tech Expressions",
+	  "developer_s":"Riedel Software Productions",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TommyMoe'sWinterExtreme:Skiing&Snowboarding0",
+	  "year_i":0,
+	  "title":"Tommy Moe's Winter Extreme: Skiing & Snowboarding",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "Vald'IsereChampionshipEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Val d'Isere ChampionshipEU",
+	  "publisher_s":"Electro Brain",
+	  "developer_s":"Loriciel",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TonyMeola'sSidekickSoccer0",
+	  "year_i":0,
+	  "title":"Tony Meola's Sidekick Soccer",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "SuperCopaBRA0",
+	  "year_i":0,
+	  "title":"Super CopaBRA",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "WorldSoccerEU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"World SoccerEU",
+	  "publisher_s":"Electro Brain",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TopGear1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Top Gear",
+	  "publisher_s":"Kemco",
+	  "developer_s":"Gremlin Graphics",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TopGear21993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Top Gear 2",
+	  "publisher_s":"Kemco",
+	  "developer_s":"Gremlin Graphics",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TopGear30001995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Top Gear 3000",
+	  "publisher_s":"Kemco",
+	  "developer_s":"Gremlin Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TotalCarnage1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Total Carnage",
+	  "publisher_s":"Malibu Games",
+	  "developer_s":"Black Pearl Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ToyStory1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Toy Story",
+	  "publisher_s":"Disney Interactive",
+	  "developer_s":"Traveller's Tales",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Toys1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Toys",
+	  "publisher_s":"Absolute Entertainment",
+	  "developer_s":"Absolute Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Troddlers1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Troddlers",
+	  "publisher_s":"Seika Corp.",
+	  "developer_s":"Atod",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TroyAikmanNFLFootball1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Troy Aikman NFL Football",
+	  "publisher_s":"Tradewest",
+	  "developer_s":"Tradewest",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TrueGolf:Wicked181993[NA]",
+	  "year_i":"1993",
+	  "title":"True Golf: Wicked 18",
+	  "publisher_s":"Bullet Proof Software",
+	  "developer_s":"T&E Soft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TrueGolfClassics:PebbleBeachGolfLinks1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"True Golf Classics: Pebble Beach Golf Links",
+	  "publisher_s":"T&E Soft",
+	  "developer_s":"T&E Soft",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TrueGolfClassics:WaialaeCountryClub1991[NA]",
+	  "year_i":"1991",
+	  "title":"True Golf Classics: Waialae Country Club",
+	  "publisher_s":"T&E Soft",
+	  "developer_s":"T&E Soft",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "TrueLies1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"True Lies",
+	  "publisher_s":"LJN",
+	  "developer_s":"LJN",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TuffENuff1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Tuff E Nuff",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Jaleco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TurnandBurn:No-FlyZone1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Turn and Burn: No-Fly Zone",
+	  "publisher_s":"Absolute Entertainment",
+	  "developer_s":"Absolute Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheTwistedTalesofSpikeMcFang1994[NA]",
+	  "year_i":"1994",
+	  "title":"The Twisted Tales of Spike McFang",
+	  "publisher_s":"Bullet Proof Software",
+	  "developer_s":"Red Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "U.N.Squadron1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"U.N. Squadron",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Ultima:RunesofVirtueII1994[NA]",
+	  "year_i":"1994",
+	  "title":"Ultima: Runes of Virtue II",
+	  "publisher_s":"FCI",
+	  "developer_s":"Origin Systems",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "UltimaVI:TheFalseProphet1994[NA]",
+	  "year_i":"1994",
+	  "title":"Ultima VI: The False Prophet",
+	  "publisher_s":"FCI",
+	  "developer_s":"Origin Systems",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "UltimaVII:TheBlackGate1994[NA]",
+	  "year_i":"1994",
+	  "title":"Ultima VII: The Black Gate",
+	  "publisher_s":"FCI",
+	  "developer_s":"Origin Systems",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "UltimateFighter1994[NA]",
+	  "year_i":"1994",
+	  "title":"Ultimate Fighter",
+	  "publisher_s":"Culture Brain",
+	  "developer_s":"Culture Brain",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "UltimateMortalKombat31996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Ultimate Mortal Kombat 3",
+	  "publisher_s":"Midway Games",
+	  "developer_s":"Avalanche Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Ultraman:TowardstheFuture1991[NA,PAL]",
+	  "year_i":"1991",
+	  "title":"Ultraman: Towards the Future",
+	  "publisher_s":"Bandai",
+	  "developer_s":"Bandai",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "UnchartedWaters1993[NA]",
+	  "year_i":"1993",
+	  "title":"Uncharted Waters",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "UnchartedWaters:NewHorizons1994[NA]",
+	  "year_i":"1994",
+	  "title":"Uncharted Waters: New Horizons",
+	  "publisher_s":"Koei",
+	  "developer_s":"Koei",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Uniracers0",
+	  "year_i":0,
+	  "title":"Uniracers",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "UnirallyEU1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"UnirallyEU",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"DMA Design",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Untouchables1994[NA]",
+	  "year_i":"1994",
+	  "title":"Untouchables",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Ocean Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "UrbanStrike1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Urban Strike",
+	  "publisher_s":"Black Pearl Software",
+	  "developer_s":"Granite Bay Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Utopia:TheCreationofaNation1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Utopia: The Creation of a Nation",
+	  "publisher_s":"Jaleco",
+	  "developer_s":"Gremlin Graphics",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "VegasStakes1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Vegas Stakes",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"HAL Laboratory",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "VirtualBart1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Virtual Bart",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "VirtualSoccer1993[PAL]",
+	  "year_i":"1993",
+	  "title":"Virtual Soccer",
+	  "publisher_s":"Hudson Soft",
+	  "developer_s":"Probe Entertainment",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Vortex1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Vortex",
+	  "publisher_s":"Electro Brain",
+	  "developer_s":"Argonaut Games",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "War24101995[NA]",
+	  "year_i":"1995",
+	  "title":"War 2410",
+	  "publisher_s":"Advanced Productions",
+	  "developer_s":"Advanced Productions",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "War3010:TheRevolution1996[NA]",
+	  "year_i":"1996",
+	  "title":"War 3010: The Revolution",
+	  "publisher_s":"Advanced Productions",
+	  "developer_s":"Advanced Productions",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Wario'sWoods1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Wario's Woods",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Warlock1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Warlock",
+	  "publisher_s":"LJN",
+	  "developer_s":"Realtime Associates",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WarpSpeed1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"WarpSpeed",
+	  "publisher_s":"Accolade",
+	  "developer_s":"Accolade",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Waterworld1995[PAL]",
+	  "year_i":"1995",
+	  "title":"Waterworld",
+	  "publisher_s":"Ocean",
+	  "developer_s":"Ocean",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "WayneGretzkyandtheNHLPAAll-Stars1995[NA]",
+	  "year_i":"1995",
+	  "title":"Wayne Gretzky and the NHLPA All-Stars",
+	  "publisher_s":"Time Warner Interactive",
+	  "developer_s":"Time Warner Interactive",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Wayne'sWorld1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Wayne's World",
+	  "publisher_s":"THQ",
+	  "developer_s":"Gray Matter",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WCWSuperBrawlWrestling1994[NA]",
+	  "year_i":"1994",
+	  "title":"WCW SuperBrawl Wrestling",
+	  "publisher_s":"FCI",
+	  "developer_s":"Beam Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Weaponlord1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Weaponlord",
+	  "publisher_s":"Namco",
+	  "developer_s":"Visual Concepts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "We'reBack!ADinosaur'sStory1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"We're Back! A Dinosaur's Story",
+	  "publisher_s":"Hi Tech Expressions",
+	  "developer_s":"Visual Concepts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WheelofFortune:FeaturingVannaWhite1992[NA]",
+	  "year_i":"1992",
+	  "title":"Wheel of Fortune: Featuring Vanna White",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Imagitec Design",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "WheelofFortuneDeluxe!1994[NA]",
+	  "year_i":"1994",
+	  "title":"Wheel of Fortune Deluxe!",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Imagitec Design",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "WhereintheWorldIsCarmenSandiego?1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Where in the World Is Carmen Sandiego?",
+	  "publisher_s":"Hi Tech Expressions",
+	  "developer_s":"Broderbund",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WhereinTimeisCarmenSandiego?1993[NA]",
+	  "year_i":"1993",
+	  "title":"Where in Time is Carmen Sandiego?",
+	  "publisher_s":"Hi Tech Expressions",
+	  "developer_s":"Broderbund",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Whirlo1992[PAL]",
+	  "year_i":"1992",
+	  "title":"Whirlo",
+	  "publisher_s":"Namco",
+	  "developer_s":"Namco",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "Whizz1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Whizz",
+	  "publisher_s":"Titus Software",
+	  "developer_s":"Flair Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WildGuns1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"Wild Guns",
+	  "publisher_s":"Natsume",
+	  "developer_s":"Natsume",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WildSnake1994[NA]",
+	  "year_i":"1994",
+	  "title":"Wild Snake",
+	  "publisher_s":"Spectrum Holobyte",
+	  "developer_s":"Manley & Associates",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "WilliamsArcade'sGreatestHits1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Williams Arcade's Greatest Hits",
+	  "publisher_s":"Midway Games",
+	  "developer_s":"Digital Eclipse Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WingCommander1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Wing Commander",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Origin Systems",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WingCommander:TheSecretMissions1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Wing Commander: The Secret Missions",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"Origin Systems",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Wings2:AcesHigh0",
+	  "year_i":0,
+	  "title":"Wings 2: Aces High",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "BlazingSkiesEU1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"Blazing SkiesEU",
+	  "publisher_s":"Namco",
+	  "developer_s":"Namco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WinterGold1996[PAL]",
+	  "year_i":"1996",
+	  "title":"Winter Gold",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "WinterOlympicGames:Lillehammer'941994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Winter Olympic Games: Lillehammer '94",
+	  "publisher_s":"U.S. Gold",
+	  "developer_s":"U.S. Gold",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "TheWizardofOz1993[NA]",
+	  "year_i":"1993",
+	  "title":"The Wizard of Oz",
+	  "publisher_s":"SETA",
+	  "developer_s":"SETA",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "WizardryV:HeartoftheMaelstrom1994[NA]",
+	  "year_i":"1994",
+	  "title":"Wizardry V: Heart of the Maelstrom",
+	  "publisher_s":"Capcom",
+	  "developer_s":"ASCII Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Wolfchild1993[NA]",
+	  "year_i":"1993",
+	  "title":"Wolfchild",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Core Design",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "Wolfenstein3D1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Wolfenstein 3D",
+	  "publisher_s":"Imagineer",
+	  "developer_s":"Imagineer",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Wolverine:AdamantiumRage1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Wolverine: Adamantium Rage",
+	  "publisher_s":"LJN",
+	  "developer_s":"Bits Studios",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Wordtris1992[NA]",
+	  "year_i":"1992",
+	  "title":"Wordtris",
+	  "publisher_s":"Spectrum Holobyte",
+	  "developer_s":"Bullet-Proof Software",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "WorldClassRugby1993[PAL]",
+	  "year_i":"1993",
+	  "title":"World Class Rugby",
+	  "publisher_s":"Imagineer",
+	  "developer_s":"Audiogenic",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "WorldCupUSA'941994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"World Cup USA '94",
+	  "publisher_s":"U.S. Gold",
+	  "developer_s":"U.S. Gold",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WorldHeroes1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"World Heroes",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"SNK/ADK",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WorldHeroes21994[NA]",
+	  "year_i":"1994",
+	  "title":"World Heroes 2",
+	  "publisher_s":"Takara",
+	  "developer_s":"SNK/ADK",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "WorldLeagueSoccer1992[NA]",
+	  "year_i":"1992",
+	  "title":"World League Soccer",
+	  "publisher_s":"Mindscape",
+	  "developer_s":"ANCO",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "WorldMastersGolf1995[PAL]",
+	  "year_i":"1995",
+	  "title":"World Masters Golf",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Arc Developments",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "WorldSoccer'94:RoadtoGlory0",
+	  "year_i":0,
+	  "title":"World Soccer '94: Road to Glory",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "StrikerEU0",
+	  "year_i":0,
+	  "title":"StrikerEU",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "EricCantonaFootballChallengeFRA1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Eric Cantona Football ChallengeFRA",
+	  "publisher_s":"Elite",
+	  "developer_s":"Rage Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Worms1994[PAL]",
+	  "year_i":"1994",
+	  "title":"Worms",
+	  "publisher_s":"Ocean Software",
+	  "developer_s":"Team 17",
+	  "region_ss":"PAL"
+	},
+	{
+	  "id" : "WWFRAW1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"WWF RAW",
+	  "publisher_s":"LJN",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WWFRoyalRumble1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"WWF Royal Rumble",
+	  "publisher_s":"LJN",
+	  "developer_s":"Sculptured Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WWFSuperWrestleMania1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"WWF Super WrestleMania",
+	  "publisher_s":"LJN",
+	  "developer_s":"Acclaim Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "WWFWrestleMania:TheArcadeGame1995[NA,PAL]",
+	  "year_i":"1995",
+	  "title":"WWF WrestleMania: The Arcade Game",
+	  "publisher_s":"Acclaim Entertainment",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Xardion1992[NA]",
+	  "year_i":"1992",
+	  "title":"Xardion",
+	  "publisher_s":"Asmik Ace Entertainment",
+	  "developer_s":"Asmik Ace Entertainment",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "X-Kaliber20971994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"X-Kaliber 2097",
+	  "publisher_s":"Activision",
+	  "developer_s":"Toshiba Emi",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "X-Men:MutantApocalypse1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"X-Men: Mutant Apocalypse",
+	  "publisher_s":"Capcom",
+	  "developer_s":"Capcom",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "X-Zone1992[NA,PAL]",
+	  "year_i":"1992",
+	  "title":"X-Zone",
+	  "publisher_s":"Kemco",
+	  "developer_s":"Kemco",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Yoshi'sCookie1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Yoshi's Cookie",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Bullet Proof Software",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Yoshi'sSafari1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"Yoshi's Safari",
+	  "publisher_s":"Nintendo",
+	  "developer_s":"Nintendo",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "YoungMerlin1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Young Merlin",
+	  "publisher_s":"Virgin Interactive",
+	  "developer_s":"Westwood Studios",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "YsIII:WanderersfromYs1992[NA]",
+	  "year_i":"1992",
+	  "title":"Ys III: Wanderers from Ys",
+	  "publisher_s":"American Sammy",
+	  "developer_s":"Tonkin House",
+	  "region_ss":"NA"
+	},
+	{
+	  "id" : "ZerotheKamikazeSquirrel1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Zero the Kamikaze Squirrel",
+	  "publisher_s":"Sunsoft",
+	  "developer_s":"Iguana Entertainment",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "ZombiesAteMyNeighbors0",
+	  "year_i":0,
+	  "title":"Zombies Ate My Neighbors",
+	  "publisher_s":"",
+	  "developer_s":""
+	},
+	{
+	  "id" : "ZombiesEU1993[NA,PAL]",
+	  "year_i":"1993",
+	  "title":"ZombiesEU",
+	  "publisher_s":"Konami",
+	  "developer_s":"LucasArts",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Zool1994[NA,PAL]",
+	  "year_i":"1994",
+	  "title":"Zool",
+	  "publisher_s":"GameTek",
+	  "developer_s":"Gremlin Interactive",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	},
+	{
+	  "id" : "Zoop1996[NA,PAL]",
+	  "year_i":"1996",
+	  "title":"Zoop",
+	  "publisher_s":"Viacom New Media",
+	  "developer_s":"Hookstone",
+	  "region_ss":"NA",
+	  "region_ss":" PAL"
+	}
+]
