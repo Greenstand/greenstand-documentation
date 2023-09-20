@@ -13,8 +13,6 @@
 8. Sync data
 9. Confirm data reaches the cloud by:
     * checking that the images should appear on the map at test.treetracker.org
-    * logging into the Tree Tracker Admin URL, https://test-admin.treetracker.org/
-        * username: admin
-        * password: ZwovDoOxCo
+    * logging into the Tree Tracker Admin URL, https://test-admin.treetracker.org/ (login information is available in the Slack channel)
 10. You can submit any defects/suggestions here under the Issues tab. https://github.com/Greenstand/treetracker-ios
 11. If all checks ok, please report to the iOS Team
