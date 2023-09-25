@@ -20,7 +20,7 @@ Note that this rebuilding step will not erase/modify existing annotations, users
 
 Changes in the `docker-compose.override.yaml` file should follow a format similar to:
 
-![](../../.gitbook/assets/0.jpeg)
+{% embed url="https://drive.google.com/file/d/1nTc07L0ZT6cO56iiFEn4beZ9nIVVbc3S/view?usp=drive_link" %}
 
 **Known Issues and Bugs:**
 
@@ -40,6 +40,8 @@ Clone the`cvat` repo and use `./cli.py in cvat/utils/cli/`
 
 ### Filtering within the UI
 
-![An example of how to filter tasks on the page](../../.gitbook/assets/cvat\_filter\_commands.png)
+{% embed url="https://drive.google.com/file/d/1U9OOkEXbVyUH7NMR587rrJCWGfC2u-mR/view?usp=drive_link" %}
+An example of how to filter tasks on the page
+{% endembed %}
 
 Ex. you can use assignee:x AND status:validation to see what tasks from an individual need to be validated still.&#x20;

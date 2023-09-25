@@ -56,41 +56,39 @@ Now we’ll cover a full example. In this task, the goal is to label a few thing
 
 First, the initial menu after logging in will look like this. Tasks that you have been assigned are visible in this menu, and you can work on any of them.
 
-![](../.gitbook/assets/1.jpeg)
+{% embed url="https://drive.google.com/file/d/1oqLwxpcZ25qGAg_8V9_7OshmkdsWQ_0H/view?usp=drive_link" %}
 
 Click the “Open” button for that task will lead you to its page.&#x20;
 
-![](<../.gitbook/assets/0 (1).jpeg>)
+{% embed url="https://drive.google.com/file/d/1iUgEjhf1M_a2UUgMgWi6034SJisqoR6E/view?usp=drive_link" %}
 
 Click on the highlighted-blue Job # for the job you want to begin or resume. The top right "Assigned to:" should list you as the assigned annotator.
 
-![](../.gitbook/assets/1.png)
-
-
+{% embed url="https://drive.google.com/file/d/1s4TyHEeKUjCy5kz-wGVDqZhynUyBFZmG/view?usp=drive_link" %}
 
 Now, you will be able to click the rectangle on the left-side menu and create bounding boxes as specified in the User Guide. In this case, we draw a rectangle for the plant of interest. After referencing the herbarium, it seems that the plant belongs to the species _Terminalia catappa_ (code TERMCATA), so we choose that label. Make sure your rectangle completely encompasses the plant; i.e. expand it to the outermost points of the plant. In other words, create the smallest rectangle possible that includes every part of the plant (leaves, stem, etc.) as best you can. This is useful because machine learning models will want to leave out most information unrelated to the plant being focused on, but won't want to miss potentially useful information about that plant.
 
-![](<../.gitbook/assets/2 (1).png>)
+{% embed url="https://drive.google.com/file/d/1_LHMpDbh3aQhWxKccZ1cxQ2EujQvHpr_/view?usp=drive_link" %}
 
-![](../.gitbook/assets/3.png)
+{% embed url="https://drive.google.com/file/d/12VrG_DYKZN8iwoFOvhH0NZbzLCUPdsGg/view?usp=drive_link" %}
 
 You can draw the rectangle by clicking where the top-left and bottom-right corner would be. Try to include each point in the plant that you can identify within one rectangle, unless instructed otherwise.&#x20;
 
-![](../.gitbook/assets/4.png)
+{% embed url="https://drive.google.com/file/d/11wfI9Fa-li9llcU8G6B5RxwsUkbNPPef/view?usp=drive_link" %}
 
 You can also include a box for the presence of freshly dug earth (label SOIL).
 
-![](../.gitbook/assets/5.png)
+{% embed url="https://drive.google.com/file/d/1mvDjGxznx_vvoEaZhy052-O9ZoEt0aVn/view?usp=drive_link" %}
 
 You can delete a label and redo it by clicking on the 3 dots on the label on the right-hand menu and selecting "Remove". The boxes are also draggable and resizeable within the image.&#x20;
 
 When you are finished with the task, you can submit it for review. Please also use the workflow in #ml\_annotations with the the task # and name so that reviewers know to look out for your task.
 
-![](../.gitbook/assets/7.png)
+{% embed url="https://drive.google.com/file/d/1W5bim53yEvTUmEp90O2WG9GK3MNHiyRS/view?usp=drive_link" %}
 
 You can click on request a review when you're done.
 
-![](<../.gitbook/assets/Screen Shot 2022-01-09 at 4.27.18 PM (1).png>)
+{% embed url="https://drive.google.com/file/d/146_xUnExKKH-nhvNzuv1y1CKGO5bHgCu/view?usp=drive_link" %}
 
 and you can use the + sign at the bottom left to access the "Request task review" workflow, where you will enter the task ID number and name.&#x20;
 

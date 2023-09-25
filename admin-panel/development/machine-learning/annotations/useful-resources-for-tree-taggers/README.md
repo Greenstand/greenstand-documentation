@@ -6,9 +6,7 @@ description: >-
 
 # Useful Resources for Tree Taggers
 
-{% file src="../../.gitbook/assets/Plant Identification(2).pdf" %}
-A PowerPoint walkthrough of plant identification steps
-{% endfile %}
+{% embed url="https://drive.google.com/file/d/1Eke29H-E69bwmJGkiJMUpjXJDMowaWwk/view?usp=drive_link" %}
 
 {% embed url="https://www.youtube.com/watch?v=CYgBZxjeyGY" %}
 
