@@ -27,15 +27,13 @@ A huge gap exists between the good intentions of global reforestation efforts an
 \
 
 
-### **Treetracker Platform High Level Overview** 
+### **Treetracker Platform High Level Overview**
 
-![](<.gitbook/assets/Screen Shot 2021-04-07 at 6.53.52 PM.png>)
+{% embed url="https://drive.google.com/file/d/1deTvG92X-jBdgLqkPJWEEcJsv-HK4010/view?usp=sharing" %}
 
 A visual review of our technical capabilities is available here: &#x20;
 
-{% file src=".gitbook/assets/TechCapabilitiesWinter2021.pdf" %}
-
-###
+{% embed url="https://drive.google.com/file/d/11BXvwxqYev945YtulnFbnNq59kOfx7MQ/view?usp=drive_link" %}
 
 ### **Test Environment**
 
