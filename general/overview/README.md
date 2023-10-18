@@ -6,21 +6,17 @@ Greenstand’s mission is to create a global, open-source marketplace to digital
 
 ## **Goal and Vision**
 
-Our goal is to create a self-sustaining restoration platform that connects local communities in developing countries with socially- and environmentally-concerned global citizens. Restoration efforts are informed, and adjusted, based on the results of basic ecological research.
+Our goal is to create a self-sustaining restoration platform that connects local communities in developing countries with socially and environmentally-concerned global citizens. Restoration efforts are informed and adjusted based on the results of basic ecological research.
 
 We aim to enable communities to become stewards of their land while providing opportunities for gainful employment.
 
 ## **We envision a world where:**
 
-●       Once-disenfranchised people can support themselves and their families through afforestation and participate in the global environmental credit market.
-
-●       The global paradigm has shifted from tree planting to growing diverse and valuable forests.
-
-●       All individuals, organizations, and donors growing trees can track and trade their ecological impacts.
-
-●       Greenstand has created a standard for tree planting, growing, and reforestation value.
-
-●       We can verify and watch trillions of trees grow.
+* Once-disenfranchised people can support themselves and their families through afforestation and participate in the global environmental credit market.
+* The global paradigm shifts from tree planting to growing diverse and valuable forests.
+* All individuals, organizations, and donors growing trees can track and trade their ecological impacts.
+* Greenstand creates a standard for tree planting, growing, and reforestation value.
+* We can verify and watch trillions of trees grow.
 
 ## **Who we are**
 
@@ -31,11 +27,11 @@ Greenstand is a U.S.-based 501(c)(3) nonprofit organization developing open-sour
 
 ## **What we do**
 
-We create open-source technology to track and verify restoration efforts. Our Treetracker app allows tree growers around the world to practice environmental stewardship and earn a living wage. The Treetracker app verifies and tracks individual trees, thus creating transparency in the reforestation sphere. Organizations and donors can locate individual trees and trade their ecological impacts. By facilitating ownership of trees and their ecological services, Greenstand allows for tree-growing organizations to stay accountable and transparent about their impacts.
+We create open-source technology to track and verify restoration efforts. Our Treetracker app allows tree growers around the world to practice environmental stewardship and earn a living wage. The Treetracker app verifies and tracks individual trees, creating transparency in the reforestation sphere. Organizations and donors can locate individual trees and trade their ecological impacts. By facilitating ownership of trees and their ecological services, Greenstand allows for tree-growing organizations to stay accountable and transparent about their impacts.
 
 ## **Greenstand Diversity, Equity, and Inclusion Policy**
 
-Greenstand does not unlawfully discriminate internally (in its administrative and program operations) or externally (in its recipients of services) on the basis of race, political orientation, religion, sex, gender identity, sexual orientation, age, national or social origin, ancestry, economic or social status, place of residence, marital or family status, veteran status, health status, or mental or physical disability. Contributors of diverse backgrounds and life experiences are what makes Greenstand special; all you need is stable WIFI and a willingness to learn!
+Greenstand does not unlawfully discriminate internally (in its administrative and program operations) or externally (in its recipients of services) on the basis of race, political orientation, religion, sex, gender identity, sexual orientation, age, national or social origin, ancestry, economic or social status, place of residence, marital or family status, veteran status, health status, or mental or physical disability. Contributors of diverse backgrounds and life experiences are what makes Greenstand special; all someone needs is stable WIFI and a willingness to learn!
 
 
 
