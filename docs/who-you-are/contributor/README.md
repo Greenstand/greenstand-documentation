@@ -5,7 +5,7 @@ If you are here to contribute to the project the following documentation will ge
 
 # Contributor Porthole
 
-Our work here supports people and our planet. We are glad you want to contribute. You can learn more about what we are doing in the [overview](https://docs.greenstand.org/overview) 
+Our work here supports people and our planet. We are glad you want to contribute. You can learn more about what we are doing in the [Greenstand Overview](https://docs.greenstand.org/overview) 
 
 <details>
 <summary>A Welcome Message from a Greenstand Founder</summary>
@@ -31,11 +31,17 @@ _**Ezra Jay**_
 By joining the Greestand community you confirm that you are aware of and agree to the following polices.
 You must familiarize yourself with Greenstand's policies: [Code of Conduct](https://drive.google.com/file/d/1y8l17FWt7uCeOSRhkOoznU8iOPquvxtK/view?usp=sharing), [Non-Discrimination Policy](https://drive.google.com/file/d/1T9ZSzmWnRrzVYeXyOJ04GciXdPI6udNK/view?usp=sharing) [Code of Conduct](https://drive.google.com/file/d/1y8l17FWt7uCeOSRhkOoznU8iOPquvxtK/view?usp=sharing)
 
-To paraphrase these policies: Be a nice person and help others. You cannot harass, discriminate, or otherwise be mean to anyone here or you be removed from the community. It is also your responsibility to report any such behavior.
+To paraphrase these policies: 
 
-And if you are going publicly associate with Greenstand, you should read this [External Comunications Policy](https://drive.google.com/file/d/1Mdr8K_JDAsf8gUAHkotoICGQqgP7WBo4/view)
+Be a nice person and help others.
 
-[Other Greenstand's Policies can be found here](https://docs.google.com/document/d/1yfPh7CzkoImd-v14XLATzVKz_kKHk2DaPNCU-8PK2Cs/edit?usp=sharing)
+**You cannot harass, discriminate, or otherwise be mean to anyone here or you be removed from the community. It is also your responsibility to report any such behavior.**
+
+And if you are publicly associate with Greenstand, you should read this [External Comunications Policy](https://drive.google.com/file/d/1Mdr8K_JDAsf8gUAHkotoICGQqgP7WBo4/view)
+
+[Other Greenstand's Policies can be found here](https://drive.google.com/file/d/1XBqU8I5PW_5aSHKXRXnjUPWc1bh8iroP/view?usp=sharing)
+
+
 # Do you fit here? 
 You should be able to commit to the following or you do not belong here:
 - I commit to being nice to everyone I meet here and creating a warm, kind enviroment.
@@ -43,6 +49,11 @@ You should be able to commit to the following or you do not belong here:
 - I commit to not leaving a mess? This can be creating an empty folder, a poorly written line of code, a sting of junk pull requests, or a jumble of files that no one but you can understand. To add value here you should be careful to leave the world and things you touch cleaner and in better shape than before you arrived.
 - I commit to seeing whatever task I take through to completion in a timely manner, or if you are unable to complete the task, you will communitate this.
 
+# Benifits to Contributing 
+Link to Doc (TODO) 
+
+
+[Recommendation/Verifiction Letter link](https://drive.google.com/file/d/1VswhS3OctlDxZB58mkFErLawN_ZS0V89/view?usp=sharing) 
 # To Start
 
 You must be:
