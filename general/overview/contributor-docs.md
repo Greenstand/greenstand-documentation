@@ -9,10 +9,12 @@ To contribute, comment, or question the documentation, please submit an issue or
 * [Repositories](https://github.com/Greenstand): Greenstand organizes and publishes its open-source Treetracker software platform in multiple github repositories, most of them public.
 * [Greenstand Team Library](https://app.gitbook.com/@greenstand/spaces) Inside information for volunteers and staff, by invitation only.
 
-**Operations:**
+**Useful Links for Contributors:**
 
-* [Email signature template](https://greenstand.org/devbox/email-signature-template)
-* [Administrative panel process](https://greenstand.org/devbox/admin-panel-proccess): How Greenstand tags new tree tokens regarding the tree's _age_, _quality_, _species_, and _acceptability_.
+* [Contributor Satisfaction Form](https://forms.gle/FoAeGJaRcuCtR1zB8)
+* [Impact Token Wallet Requet Form](https://forms.gle/QRs4ij4rgD7jGHRh7)
+* [Recommendation and Verification Letter Form](https://drive.google.com/file/d/1VswhS3OctlDxZB58mkFErLawN_ZS0V89/view)
+* [Email signature template](https://greenstand.org/devbox/email-signature-template) 
 
 **Policies:**
 
