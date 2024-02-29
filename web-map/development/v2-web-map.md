@@ -10,7 +10,17 @@ GitHub project:
 
 Design
 
+The ERD
+
+
+
+<figure><img src=".gitbook/assets/treetracker-new-domain.drawio.png" alt=""><figcaption></figcaption></figure>
+
 {% embed url="https://www.figma.com/file/HGuyp2vaJmVNBYGifmmYyN/V2-web-map?node-id=0:1&t=8Zymzdo7hwpkTuc7-1" %}
+
+API:
+
+{% embed url="https://github.com/Greenstand/treetracker-query-api/blob/ebf9d2cf474fc5ed8479809d54140ce5f80e3170/docs/api/spec/query-api.yaml#L119-L284" %}
 
 Development tips:
 
