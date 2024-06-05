@@ -34,3 +34,9 @@ GreenStand - Privacy Policy: Unless otherwise authorized we will not disclose se
 #### [Procurement and Policy and Procedures]<a href="#docs-internal-guid-115d5ccb-7fff-4a33-a776-f3d3940ad044" id="docs-internal-guid-115d5ccb-7fff-4a33-a776-f3d3940ad044"></a>
 
 &#x20;
+
+## **Greenstand Diversity, Equity, and Inclusion Policy**
+
+Greenstand does not unlawfully discriminate internally (in its administrative and program operations) or externally (in its recipients of services) on the basis of race, political orientation, religion, sex, gender identity, sexual orientation, age, national or social origin, ancestry, economic or social status, place of residence, marital or family status, veteran status, health status, or mental or physical disability. Contributors of diverse backgrounds and life experiences are what makes Greenstand special; all you need is stable WIFI and a willingness to learn!
+
+
