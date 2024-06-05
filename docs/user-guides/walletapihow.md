@@ -1,5 +1,5 @@
 # How to Use the Treetracker Wallet API
-
+(duplicated link, in better format [here](https://greenstand.org/docs/user-guides/walletapihow.php)
 *Contents:*
 - [Purpose](#purpose)
 - [Your API Keys](#your-api-keys)

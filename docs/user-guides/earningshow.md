@@ -1,6 +1,8 @@
-How to Record Earnings and Payments
-==============================
 
+How to Record Earnings and Payments 
+==============================
+php based link to Earnings tool and images found [here](https://greenstand.org/docs/user-guides/earningshow.php)
+php based link to Earnings ref found [here](https://greenstand.org/docs/user-guides/earningsref.php)
 For growers and funders, Greenstand's online [Earnings tool](https://admin.treetracker.org/earnings) records payments due and payments made.
 
 In a typical case...

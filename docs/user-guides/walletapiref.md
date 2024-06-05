@@ -1,5 +1,6 @@
 # Treetracker Wallet API Reference
-
+Can also be found here: https://greenstand.org/docs/user-guides/walletapiref.php
+#TODO: reformat this page and remove old link
 *Contents:*
 
 - 
