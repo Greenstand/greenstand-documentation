@@ -18,16 +18,13 @@ We aim to enable communities to become stewards of their land while providing op
 
 ●       All individuals, organizations, and donors growing trees can track and trade their ecological impacts.
 
-●       Greenstand has created a standard for tree planting, growing, and reforestation value.
-
-●       We can verify and watch trillions of trees grow.
-
 ## **Who we are**
 
-Greenstand is a U.S.-based 501(c)(3) nonprofit organization developing open-source technology to address climate change and alleviate poverty through digitizing environmental goods and services. We are primarily a volunteer team. Our contributors are professionally skilled engineers, coders, data scientists, GIS specialists and operations associates from 6 continents. Since Greenstand was founded in 2015, we have amassed a global network of over 550 supporters in the form of past and present contributors, partners, and service users.
+Greenstand is a U.S.-based 501(c)(3) nonprofit organization developing open-source technology to address climate change and alleviate poverty through digitizing environmental goods and services. We are primarily a volunteer team. Our contributors are professionally skilled engineers, coders, data scientists, GIS specialists and operations associates from 6 continents. Since Greenstand was founded in 2015, we have amassed a global network of supporters in the form of past and present contributors, partners, and service users.
 
 
 ## **What we do**
 
-We create open-source technology to track and verify restoration efforts. Our Treetracker app allows tree growers around the world to practice environmental stewardship and earn a living wage. The Treetracker app verifies and tracks individual trees, thus creating transparency in the reforestation sphere. Organizations and donors can locate individual trees and trade their ecological impacts. By facilitating ownership of trees and their ecological services, Greenstand allows for tree-growing organizations to stay accountable and transparent about their impacts.
-
+We create open-source technology to track and verify restoration efforts, enabling tree-growing organizations and individuals to stay accountable and provide transparency.
+The Treetracker app enables the tracking and verification of individual trees, thus creating transparency in the reforestation sphere; organizations and donors use it to locate individual trees and trade their ecological impacts.
+The technical model is designed to support the green economy and direct farmer payments by facilitating 'claims of impact' from tree based ecological services and the trade and transfer of such claims as Greenstand Impact Tokens.
