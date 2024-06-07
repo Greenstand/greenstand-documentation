@@ -8,8 +8,6 @@ description: Resources and context for Greenstand Engineers
 
 ![](https://lh3.googleusercontent.com/t9i8Puyxha\_y1G3VibmyP7B3mMYrvIp4uROd8KH9x-9z13mzMR8HI4meNrkp-XL8GdMfONjfwbaMHMp2-11bcq\_WcA8HT2JbymGXanOFNd4dru0RH8-IRzSv\_xPAE9iYAZRjYIU)
 
-This is a “living document” and will continue to be updated! You can access the most recent version of this document at [https://app.gitbook.com/@greenstand/s/engineering/](https://app.gitbook.com/@greenstand/s/engineering/)
-
 ## **Welcome!**
 
 Thanks for volunteering as a Greenstand Engineer!  Greenstand Engineers build the treetracker platform, a powerful and integrated set of applications and software services that employs some of the world’s poorest people to regrow forests by paying them for the positive impacts they create.  This guide explains our motivations, organizational culture, software projects, and tools that we use to collaborate, build, and run our platform.  [https://greenstand.org](https://greenstand.org) \
