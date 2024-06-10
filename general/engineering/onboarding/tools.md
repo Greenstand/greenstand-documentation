@@ -7,9 +7,6 @@ description: >-
 
 # Tools
 
-## Gitbook
-
-You are looking at it!  Fantastic tool for knowledge base management.  We have spaces for several different projects, you can get access to our organization on Gitbook by following this invite link: [https://app.gitbook.com/invite/greenstand?invite=-MXNaeN3vcUYyQBElh\_c](https://app.gitbook.com/invite/greenstand?invite=-MXNaeN3vcUYyQBElh\_c)
 
 ## VSCode
 
@@ -114,3 +111,8 @@ We currently make extensive use of Google Meet for our weekly meetings. &#x20;
 The closed caption feature  ( \[CC] in bottom right controls panel) is a useful feature for non-native English speakers or those with poor network connections.&#x20;
 
 ##
+
+## Gitbook
+
+You are looking at it!  Fantastic tool for knowledge base management.  We have spaces for several different projects. You can edit all documentation via Github. If you need more access to our organization on Gitbook for documentaiton set up reach out to the leadership. 
+
