@@ -1,5 +1,7 @@
 # General Guidelines & Code of Conduct
 
+Please be familiar with all the policies and guidelines - the full list can be found here: [here](https://drive.google.com/file/d/1XBqU8I5PW_5aSHKXRXnjUPWc1bh8iroP/view)
+
 ### **Confidentiality Clause**
 
 Respecting the privacy of our clients, donors, members, staff, volunteers and of Greenstand itself is a basic value of Greenstand.
@@ -31,3 +33,7 @@ You can read Greenstand’s Safeguard and Whistleblower Protection Policy [**her
 ### **Abusive Comments**
 
 Abusive comments likely include spam, are off-topic, promote services or products, are false or misleading, are unsupported accusations, obscene, vulgar, defamatory, profane, libelous, threatening, bullying, harassing, abusive, hateful, incite violence, or are offensive terms that target specific ethnic, racial or religious groups based on gender or sexual identity or individuals because of membership in those groups. These kinds of comments should be documented and removed or reported. Repeat offenders may be blocked from engaging further with Greenstand on social media.
+
+## **Greenstand Diversity, Equity, and Inclusion Policy**
+
+Greenstand does not unlawfully discriminate internally (in its administrative and program operations) or externally (in its recipients of services) on the basis of race, political orientation, religion, sex, gender identity, sexual orientation, age, national or social origin, ancestry, economic or social status, place of residence, marital or family status, veteran status, health status, or mental or physical disability. Contributors of diverse backgrounds and life experiences are what makes Greenstand special; all you need is stable WIFI and a willingness to learn!
