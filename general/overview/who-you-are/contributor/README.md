@@ -48,7 +48,9 @@ By joining the Greenstand community you confirm that you are familiar with, awar
 
 To paraphrase these policies:&#x20;
 
-**Be a nice person and help others.** **You cannot harass, discriminate, or otherwise be mean to anyone here or you be removed from the community. It is also your responsibility to report any such behavior.**
+**Be a nice person and help others.** **You cannot harass, discriminate, or otherwise be mean to anyone here or you be removed from the community. 
+
+It is also your responsibility to report any such behavior.**
 
 If you are publicly associated with Greenstand, you should read this [External Communications Policy](https://drive.google.com/file/d/1Mdr8K\_JDAsf8gUAHkotoICGQqgP7WBo4/view) [Other Greenstand's Policies can be found here](https://drive.google.com/file/d/1XBqU8I5PW\_5aSHKXRXnjUPWc1bh8iroP/view?usp=sharing)
 
