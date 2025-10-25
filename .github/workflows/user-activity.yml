@@ -165,9 +165,21 @@ jobs:
               },
               generated_at: (now | todate)
             }' > user_activity.json
+      
+      # - name: Upload JSON report
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: user-activity-report
+      #     path: user_activity.json
 
-      - name: Upload JSON report
+      - name: Convert to CSV
+        run: |
+          jq -r '[.user,.repository,.commit.sha,.commit.date,.comment.type,.comment.date]
+                  | @csv' user_activity.json > user_activity.csv
+
+      - name: Upload CSV report
         uses: actions/upload-artifact@v4
         with:
-          name: user-activity-report
-          path: user_activity.json
+          name: user-activity-csv
+          path: user_activity.csv
+
