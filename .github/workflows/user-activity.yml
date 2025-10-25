@@ -7,7 +7,7 @@ on:
         description: "GitHub login to check (e.g., octocat)"
         required: true
       lookback_days:
-        description: "Only consider events updated in the last N days (comments)"
+        description: "Consider comments updated in the last N days"
         required: false
         default: "90"
 
@@ -19,95 +19,92 @@ permissions:
 jobs:
   user-activity:
     runs-on: ubuntu-latest
+
     steps:
+      - name: Debug inputs
+        run: |
+          echo "username='${{ github.event.inputs.username }}'"
+          echo "lookback_days='${{ github.event.inputs.lookback_days }}'"
+
       - name: Gather latest commit by user in this repo
         id: commits
         uses: actions/github-script@v7
+        env:
+          USERNAME: ${{ github.event.inputs.username }}
         with:
+          # Always set a token explicitly
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const username = core.getInput('username', { required: true });
+            const username = process.env.USERNAME?.trim();
+            if (!username) {
+              core.setFailed("USERNAME env var is empty. Did you provide the 'username' input?");
+            }
             const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
-            // Latest commit by author in this repo
-            // NOTE: only returns commits attributed to that GitHub user as author
-            const commits = await github.request(
-              "GET /repos/{owner}/{repo}/commits",
-              { owner, repo, author: username, per_page: 1 }
-            );
-            const latestCommit = commits.data[0] ?? null;
+            const res = await github.request("GET /repos/{owner}/{repo}/commits", {
+              owner, repo, author: username, per_page: 1
+            });
+            const latest = res.data?.[0] || null;
 
-            core.setOutput("commit_sha", latestCommit?.sha ?? "");
-            core.setOutput("commit_url", latestCommit?.html_url ?? "");
-            core.setOutput("commit_date", latestCommit?.commit?.author?.date ?? "");
-            core.setOutput("commit_message", latestCommit?.commit?.message ?? "");
+            core.setOutput("commit_sha", latest?.sha ?? "");
+            core.setOutput("commit_url", latest?.html_url ?? "");
+            core.setOutput("commit_date", latest?.commit?.author?.date ?? "");
+            core.setOutput("commit_message", latest?.commit?.message ?? "");
 
-      - name: Gather latest issue/PR comment by user in this repo
+      - name: Gather latest issue/PR/discussion comment by user
         id: comments
         uses: actions/github-script@v7
+        env:
+          USERNAME: ${{ github.event.inputs.username }}
+          LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days }}
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const username = core.getInput('username', { required: true });
-            const lookbackDays = parseInt(core.getInput('lookback_days') || "90", 10);
+            const username = process.env.USERNAME?.trim();
+            const lookbackDays = parseInt(process.env.LOOKBACK_DAYS || "90", 10);
             const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
-            const since = new Date(Date.now() - lookbackDays*24*60*60*1000).toISOString();
-
-            // We’ll check three streams and keep the newest:
-            // 1) Issue comments
-            // 2) PR review comments
-            // 3) Discussion comments (if enabled; ignore errors)
+            const sinceISO = new Date(Date.now() - lookbackDays*24*60*60*1000).toISOString();
 
             let best = null;
-            const consider = (item, type, url, createdAt, body) => {
+            const consider = (type, url, createdAt, body) => {
               const when = new Date(createdAt).getTime();
-              if (!best || when > best.when) {
-                best = { type, url, createdAt, body };
-              }
+              if (!best || when > best.when) best = { type, url, createdAt, excerpt: (body||"").slice(0,200), when };
             };
 
-            // 1) Issue comments (includes PR “conversation” comments too)
-            const issueComments = await github.paginate(
-              "GET /repos/{owner}/{repo}/issues/comments",
-              { owner, repo, since, per_page: 100 }
-            );
+            // Issue comments (includes PR “conversation” comments)
+            const issueComments = await github.paginate("GET /repos/{owner}/{repo}/issues/comments", {
+              owner, repo, since: sinceISO, per_page: 100
+            });
             issueComments
               .filter(c => c.user?.login?.toLowerCase() === username.toLowerCase())
-              .forEach(c => consider(c, "issue_comment", c.html_url, c.updated_at || c.created_at, c.body));
+              .forEach(c => consider("issue_comment", c.html_url, c.updated_at || c.created_at, c.body));
 
-            // 2) PR review comments
-            const reviewComments = await github.paginate(
-              "GET /repos/{owner}/{repo}/pulls/comments",
-              { owner, repo, since, per_page: 100 }
-            );
+            // PR review comments
+            const reviewComments = await github.paginate("GET /repos/{owner}/{repo}/pulls/comments", {
+              owner, repo, since: sinceISO, per_page: 100
+            });
             reviewComments
               .filter(c => c.user?.login?.toLowerCase() === username.toLowerCase())
-              .forEach(c => consider(c, "pr_review_comment", c.html_url, c.updated_at || c.created_at, c.body));
+              .forEach(c => consider("pr_review_comment", c.html_url, c.updated_at || c.created_at, c.body));
 
-            // 3) Discussions comments (best effort; may 404 if discussions disabled)
+            // Discussions (best effort)
             try {
-              const discComments = await github.paginate(
-                "GET /repos/{owner}/{repo}/discussions/comments",
-                { owner, repo, per_page: 100 }
-              );
+              const discComments = await github.paginate("GET /repos/{owner}/{repo}/discussions/comments", {
+                owner, repo, per_page: 100
+              });
               discComments
                 .filter(c =>
-                  c.updated_at >= since &&
+                  (c.updated_at || c.created_at) >= sinceISO &&
                   c.user?.login?.toLowerCase() === username.toLowerCase()
                 )
-                .forEach(c => consider(c, "discussion_comment", c.html_url, c.updated_at || c.created_at, c.body));
-            } catch(e) {
-              core.info("Discussions not enabled or API not available; skipping.");
+                .forEach(c => consider("discussion_comment", c.html_url, c.updated_at || c.created_at, c.body));
+            } catch {
+              core.info("Discussions not enabled or endpoint unavailable; skipping.");
             }
 
-            if (best) {
-              core.setOutput("comment_type", best.type);
-              core.setOutput("comment_url", best.url);
-              core.setOutput("comment_date", best.createdAt);
-              core.setOutput("comment_excerpt", (best.body || "").slice(0, 200));
-            } else {
-              core.setOutput("comment_type", "");
-              core.setOutput("comment_url", "");
-              core.setOutput("comment_date", "");
-              core.setOutput("comment_excerpt", "");
-            }
+            core.setOutput("comment_type", best?.type ?? "");
+            core.setOutput("comment_url", best?.url ?? "");
+            core.setOutput("comment_date", best?.createdAt ?? "");
+            core.setOutput("comment_excerpt", best?.excerpt ?? "");
 
       - name: Summarize
         run: |
@@ -124,7 +121,7 @@ jobs:
               echo "- Date: \`${{ steps.commits.outputs.commit_date }}\`";
               echo "- URL: ${{ steps.commits.outputs.commit_url }}";
             else
-              echo "_No commits found in this repo by that user in API results._";
+              echo "_No commits found in this repo by that user._";
             fi
             echo "";
             echo "#### Latest comment (issue/PR/discussion)";
