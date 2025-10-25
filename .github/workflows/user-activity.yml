@@ -134,3 +134,40 @@ jobs:
               echo "_No comments found for that user in the last ${{ github.event.inputs.lookback_days }} days._";
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Create JSON report
+        id: create_json
+        run: |
+          jq -n \
+            --arg username "${{ github.event.inputs.username }}" \
+            --arg repo "${{ github.repository }}" \
+            --arg commit_sha "${{ steps.commits.outputs.commit_sha || steps.scan.outputs.commit_sha }}" \
+            --arg commit_url "${{ steps.commits.outputs.commit_url || steps.scan.outputs.commit_url }}" \
+            --arg commit_date "${{ steps.commits.outputs.commit_date || steps.scan.outputs.commit_date }}" \
+            --arg commit_message "${{ steps.commits.outputs.commit_message || steps.scan.outputs.commit_message }}" \
+            --arg comment_type "${{ steps.comments.outputs.comment_type || steps.scan.outputs.comment_type }}" \
+            --arg comment_url "${{ steps.comments.outputs.comment_url || steps.scan.outputs.comment_url }}" \
+            --arg comment_date "${{ steps.comments.outputs.comment_date || steps.scan.outputs.comment_date }}" \
+            --arg comment_excerpt "${{ steps.comments.outputs.comment_excerpt || steps.scan.outputs.comment_excerpt }}" \
+            '{
+              user: $username,
+              repository: $repo,
+              commit: {
+                sha: $commit_sha,
+                url: $commit_url,
+                date: $commit_date,
+                message: $commit_message
+              },
+              comment: {
+                type: $comment_type,
+                url: $comment_url,
+                date: $comment_date,
+                excerpt: $comment_excerpt
+              },
+              generated_at: (now | todate)
+            }' > user_activity.json
+
+      - name: Upload JSON report
+        uses: actions/upload-artifact@v4
+        with:
+          name: user-activity-report
+          path: user_activity.json
