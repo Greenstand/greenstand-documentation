@@ -134,20 +134,27 @@ jobs:
               echo "_No comments found for that user in the last ${{ github.event.inputs.lookback_days }} days._";
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+# Create Report -------
       - name: Create JSON report
         id: create_json
         run: |
+          # Format dates (trim to YYYY-MM-DD)
+          commit_date=$(echo "${{ steps.commits.outputs.commit_date || steps.scan.outputs.commit_date }}" | cut -c1-10)
+          comment_date=$(echo "${{ steps.comments.outputs.comment_date || steps.scan.outputs.comment_date }}" | cut -c1-10)
+          generated_date=$(date +%Y-%m-%d)
+
           jq -n \
             --arg username "${{ github.event.inputs.username }}" \
             --arg repo "${{ github.repository }}" \
             --arg commit_sha "${{ steps.commits.outputs.commit_sha || steps.scan.outputs.commit_sha }}" \
             --arg commit_url "${{ steps.commits.outputs.commit_url || steps.scan.outputs.commit_url }}" \
-            --arg commit_date "${{ steps.commits.outputs.commit_date || steps.scan.outputs.commit_date }}" \
+            --arg commit_date "$commit_date" \
             --arg commit_message "${{ steps.commits.outputs.commit_message || steps.scan.outputs.commit_message }}" \
             --arg comment_type "${{ steps.comments.outputs.comment_type || steps.scan.outputs.comment_type }}" \
             --arg comment_url "${{ steps.comments.outputs.comment_url || steps.scan.outputs.comment_url }}" \
-            --arg comment_date "${{ steps.comments.outputs.comment_date || steps.scan.outputs.comment_date }}" \
+            --arg comment_date "$comment_date" \
             --arg comment_excerpt "${{ steps.comments.outputs.comment_excerpt || steps.scan.outputs.comment_excerpt }}" \
+            --arg generated_at "$generated_date" \
             '{
               user: $username,
               repository: $repo,
@@ -163,23 +170,38 @@ jobs:
                 date: $comment_date,
                 excerpt: $comment_excerpt
               },
-              generated_at: (now | todate)
+              generated_at: $generated_at
             }' > user_activity.json
-      
-      # - name: Upload JSON report
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: user-activity-report
-      #     path: user_activity.json
 
-      - name: Convert to CSV
+      - name: Convert JSON to CSV
         run: |
-          jq -r '[.user,.repository,.commit.sha,.commit.date,.comment.type,.comment.date]
-                  | @csv' user_activity.json > user_activity.csv
+          # Extract key fields into a readable CSV
+          jq -r '[
+            "user",
+            "repository",
+            "commit_sha",
+            "commit_date",
+            "commit_url",
+            "comment_type",
+            "comment_date",
+            "comment_url"
+          ],
+          [
+            .user,
+            .repository,
+            .commit.sha,
+            .commit.date,
+            .commit.url,
+            .comment.type,
+            .comment.date,
+            .comment.url
+          ] | @csv' user_activity.json > user_activity.csv
 
-      - name: Upload CSV report
+      - name: Upload reports
         uses: actions/upload-artifact@v4
         with:
-          name: user-activity-csv
-          path: user_activity.csv
+          name: user-activity-reports
+          path: |
+            user_activity.json
+            user_activity.csv
 
