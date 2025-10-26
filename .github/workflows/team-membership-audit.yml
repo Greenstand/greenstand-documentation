@@ -51,7 +51,7 @@ jobs:
           echo "Scanning org: $ORG"
 
       ### DEBUG CODE -----
-      - name: Preflight: check token, scopes, SSO, org access
+      - name: Preflight dEBUG
         env:
           ORG: ${{ steps.ctx.outputs.org }}
           TOKEN: ${{ env.GH_TOKEN }}
