@@ -76,6 +76,7 @@ jobs:
             }
 
             const members = await p("GET /orgs/{org}/members", { org });
+            echo $members
 
             let outsiders = [];
             if (includeOutsiders) {
