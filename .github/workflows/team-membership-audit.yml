@@ -26,6 +26,9 @@ on:
         description: "Comma-separated logins to exclude (e.g., bot-1,octocat)"
         required: false
         default: ""
+  # Uncomment to run weekly on Mondays 09:00 UTC
+  # schedule:
+  #   - cron: "0 9 * * 1"
 
 permissions:
   contents: read
@@ -70,15 +73,12 @@ jobs:
             const org = "${{ steps.ctx.outputs.org }}";
             const minTeams = parseInt(process.env.MIN_TEAMS || "1", 10);
             const requiredRe = (process.env.REQUIRED_TEAM_REGEX || "").trim();
-            const includeOutsiders = (process.env.INCLUDE_OUTSIDERS || "true").toLowerCase() === "true";
+            let includeOutsiders = (process.env.INCLUDE_OUTSIDERS || "true").toLowerCase() === "true";
             const skipAdmins = (process.env.SKIP_ADMINS || "true").toLowerCase() === "true";
             const excludeSet = new Set(
               (process.env.EXCLUDE_USERS_CSV || "")
-                .split(",")
-                .map(s => s.trim().toLowerCase())
-                .filter(Boolean)
+                .split(",").map(s => s.trim().toLowerCase()).filter(Boolean)
             );
-
             const reqTeam = requiredRe ? new RegExp(requiredRe, "i") : null;
 
             // Helper: paginate wrapper
@@ -86,28 +86,33 @@ jobs:
               return await github.paginate(route, { per_page: 100, ...params });
             }
 
-            // Fetch org members
-            const members = await p("GET /orgs/{org}/members", { org }); // requires read:org
-            // Optionally fetch outside collaborators
-            const outsiders = includeOutsiders
-              ? await p("GET /orgs/{org}/outside_collaborators", { org })
-              : [];
-
-            // Build quick role map (to skip admins if requested)
-            // For role info, we need memberships endpoint per user
-            const roleCache = new Map();
-            async function getRole(login) {
-              if (roleCache.has(login)) return roleCache.get(login);
+            // Who is this token?
+            try {
+              const me = (await github.request("GET /user")).data.login;
+              core.info(`Using token for: ${me}`);
               try {
-                const { data } = await github.request("GET /orgs/{org}/memberships/{username}", {
-                  org, username: login
-                });
-                roleCache.set(login, data.role); // "admin" or "member"
-                return data.role;
+                const { data: mem } = await github.request("GET /orgs/{org}/memberships/{username}", { org, username: me });
+                core.info(`Token org role: ${mem.role}`); // admin | member
               } catch (e) {
-                // If unknown, treat as member
-                roleCache.set(login, "member");
-                return "member";
+                core.info(`Could not resolve token's org membership: ${e.message}`);
+              }
+            } catch {}
+
+            // Fetch org members (needs read:org)
+            const members = await p("GET /orgs/{org}/members", { org });
+
+            // Try outside collaborators; if 403, skip and continue
+            let outsiders = [];
+            if (includeOutsiders) {
+              try {
+                outsiders = await p("GET /orgs/{org}/outside_collaborators", { org });
+              } catch (e) {
+                if (e.status === 403) {
+                  core.warning("403 listing outside collaborators. You must be an ORG OWNER with admin:org. Skipping outsiders.");
+                } else {
+                  core.warning(`Error listing outside collaborators: ${e.message}. Skipping outsiders.`);
+                }
+                includeOutsiders = false;
               }
             }
 
@@ -139,25 +144,38 @@ jobs:
               for (const login of set) addTeamToUser(login, { slug: t.slug, name: t.name });
             }
 
-            // Compose population to audit
+            // Role cache + helper
+            const roleCache = new Map();
+            async function getRole(login) {
+              const k = login.toLowerCase();
+              if (roleCache.has(k)) return roleCache.get(k);
+              try {
+                const { data } = await github.request("GET /orgs/{org}/memberships/{username}", { org, username: login });
+                roleCache.set(k, data.role); // "admin" | "member"
+                return data.role;
+              } catch {
+                roleCache.set(k, "member");
+                return "member";
+              }
+            }
+
+            // Compose population
             const population = [
               ...members.map(u => ({ login: u.login, type: "member" })),
-              ...outsiders.map(u => ({ login: u.login, type: "outside_collaborator" }))
+              ...(includeOutsiders ? outsiders.map(u => ({ login: u.login, type: "outside_collaborator" })) : [])
             ];
-
-            // Deduplicate (member beats outsider if overlap)
+            // Dedup: prefer member over outside_collaborator
             const seen = new Map();
             for (const p of population) {
-              if (!seen.has(p.login.toLowerCase())) seen.set(p.login.toLowerCase(), p);
-              else if (seen.get(p.login.toLowerCase()).type !== "member" && p.type === "member")
-                seen.set(p.login.toLowerCase(), p);
+              const k = p.login.toLowerCase();
+              if (!seen.has(k)) seen.set(k, p);
+              else if (seen.get(k).type !== "member" && p.type === "member") seen.set(k, p);
             }
 
             const rows = [];
             for (const { login, type } of seen.values()) {
               if (excludeSet.has(login.toLowerCase())) continue;
 
-              // Role (admin/member) for skip filter
               const role = await getRole(login);
               if (skipAdmins && role === "admin") continue;
 
@@ -165,9 +183,8 @@ jobs:
               const teamNames = teamsForUser.map(t => t.name);
               const teamSlugs = teamsForUser.map(t => t.slug);
 
-              // Checks
-              const hasMinTeams = teamsForUser.length >= minTeams;
-              const matchesRequired = reqTeam ? teamNames.some(n => reqTeam.test(n)) || teamSlugs.some(s => reqTeam.test(s)) : true;
+              const hasMinTeams = teamsForUser.length >= (isNaN(minTeams) ? 1 : minTeams);
+              const matchesRequired = reqTeam ? (teamNames.some(n => reqTeam.test(n)) || teamSlugs.some(s => reqTeam.test(s))) : true;
 
               const compliant = hasMinTeams && matchesRequired;
               const notes = [];
@@ -181,11 +198,11 @@ jobs:
                 team_count: teamsForUser.length,
                 teams: teamNames,  // human-friendly names
                 compliant,
-                notes: notes.join("; ") || ""
+                notes: notes.join("; ")
               });
             }
 
-            // Sort: non-compliant first
+            // Sort: non-compliant first, then login
             rows.sort((a,b) => (a.compliant === b.compliant) ? a.login.localeCompare(b.login) : (a.compliant ? 1 : -1));
 
             core.setOutput("json", JSON.stringify({
@@ -199,7 +216,7 @@ jobs:
               },
               results: rows
             }));
-      
+
       - name: Write JSON to file
         run: |
           echo '${{ steps.audit.outputs.json }}' > team_membership_audit.json
@@ -227,3 +244,118 @@ jobs:
           path: |
             team_membership_audit.json
             team_membership_audit.csv
+
+      # ---------- Visual summaries ----------
+      - name: Build visual summary (JSON)
+        id: build_summary
+        run: |
+          jq -r '
+            def pct(a;b): if b==0 then 0 else ((a*100.0)/b) end;
+
+            . as $root
+            | ($root.results // []) as $rows
+            | $rows | length as $total
+            | ($rows | map(select(.type=="member")) | length) as $members
+            | ($rows | map(select(.type=="outside_collaborator")) | length) as $outsiders
+            | ($rows | map(select(.compliant==true)) | length) as $ok
+            | ($total - $ok) as $bad
+            | ($rows | map(.team_count) | min // 0) as $min_tc
+            | ($rows | map(.team_count) | max // 0) as $max_tc
+            | ($rows | map(.team_count) | add // 0) as $sum_tc
+            | ($sum_tc / (if $total==0 then 1 else $total end)) as $avg_tc
+            | (
+                ($rows | map(.team_count) | sort) as $sorted
+                | (if $total==0 then 0
+                   else ($sorted[($total-1)/2|floor] + $sorted[$total/2|floor]) / 2
+                  end)
+              ) as $median_tc
+            | ($rows | map(select(.notes | test("requires >="))) | length) as $below_min
+            | ($rows | map(select(.notes | test("requires team matching"))) | length) as $missing_required
+            | ($rows
+                | map(.teams[])
+                | group_by(.) | map({team: .[0], users: length})
+                | sort_by(-.users)
+              ) as $per_team
+            | {
+                org: $root.org,
+                generated_at: $root.generated_at,
+                policy: $root.policy // {},
+                totals: {
+                  audited: $total,
+                  members: $members,
+                  outside_collaborators: $outsiders
+                },
+                compliance: {
+                  compliant: $ok,
+                  non_compliant: $bad,
+                  pct_compliant: (pct($ok;$total) | floor)
+                },
+                gaps: {
+                  below_min_teams: $below_min,
+                  missing_required_team: $missing_required
+                },
+                team_count_stats: {
+                  min: $min_tc,
+                  max: $max_tc,
+                  avg: ($avg_tc | tonumber | (. * 100 | floor) / 100),
+                  median: $median_tc
+                },
+                per_team_coverage: $per_team
+              }
+          ' team_membership_audit.json > audit_summary.json
+
+      - name: Export summary as key/value CSV
+        run: |
+          jq -r '
+            [
+              ["metric","value"],
+              ["org",              .org],
+              ["generated_at",     .generated_at],
+              ["audited",          .totals.audited],
+              ["members",          .totals.members],
+              ["outside_collab",   .totals.outside_collaborators],
+              ["compliant",        .compliance.compliant],
+              ["non_compliant",    .compliance.non_compliant],
+              ["pct_compliant",    .compliance.pct_compliant],
+              ["below_min_teams",  .gaps.below_min_teams],
+              ["missing_required", .gaps.missing_required_team],
+              ["team_count_min",   .team_count_stats.min],
+              ["team_count_max",   .team_count_stats.max],
+              ["team_count_avg",   .team_count_stats.avg],
+              ["team_count_median",.team_count_stats.median]
+            ] | map(@csv)[]' audit_summary.json > audit_summary_kv.csv
+
+      - name: Export per-team coverage CSV
+        run: |
+          jq -r '
+            ["team","users"],
+            (.per_team_coverage[] | [ .team, .users ]) | @csv
+          ' audit_summary.json > per_team_coverage.csv
+
+      - name: Append summary to run page
+        run: |
+          A=$(jq -r '.totals.audited' audit_summary.json)
+          C=$(jq -r '.compliance.compliant' audit_summary.json)
+          NC=$(jq -r '.compliance.non_compliant' audit_summary.json)
+          P=$(jq -r '.compliance.pct_compliant' audit_summary.json)
+          BM=$(jq -r '.gaps.below_min_teams' audit_summary.json)
+          MR=$(jq -r '.gaps.missing_required_team' audit_summary.json)
+          echo "## Team Membership Audit — Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---:|" >> $GITHUB_STEP_SUMMARY
+          echo "| Audited users | $A |" >> $GITHUB_STEP_SUMMARY
+          echo "| Compliant | $C |" >> $GITHUB_STEP_SUMMARY
+          echo "| Non-compliant | $NC |" >> $GITHUB_STEP_SUMMARY
+          echo "| % Compliant | ${P}% |" >> $GITHUB_STEP_SUMMARY
+          echo "| Below min teams | $BM |" >> $GITHUB_STEP_SUMMARY
+          echo "| Missing required team | $MR |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload summary artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: team-membership-audit-summary
+          path: |
+            audit_summary.json
+            audit_summary_kv.csv
+            per_team_coverage.csv
