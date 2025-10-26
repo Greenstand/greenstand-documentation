@@ -188,6 +188,15 @@ jobs:
           echo '${{ steps.audit.outputs.json }}' > team_membership_audit.json
           echo "Wrote team_membership_audit.json"
           jq '.results | length as $n | "Total audited: \($n)"' team_membership_audit.json
+          ## DEBUG MODE HERE------
+      - name: Show sample of users read
+        run: |
+          echo "Total users found:"
+          jq '.results | length' team_membership_audit.json
+          echo ""
+          echo "First 10 logins:"
+          jq -r '.results[0:10] | .[].login' team_membership_audit.json
+    
 
       - name: Convert audit JSON -> CSV (jq)
         run: |
