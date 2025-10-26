@@ -119,7 +119,7 @@ jobs:
             if [ -n "${{ steps.commits.outputs.commit_sha }}" ]; then
               echo "- SHA: \`${{ steps.commits.outputs.commit_sha }}\`";
               echo "- Message: ${{ steps.commits.outputs.commit_message }}";
-              echo "- Date: \ `{{$commit_date}}`";
+              echo "- Date: \ $commit_date";
               echo "- URL: ${{ steps.commits.outputs.commit_url }}";
             else
               echo "_No commits found in this repo by that user._";
