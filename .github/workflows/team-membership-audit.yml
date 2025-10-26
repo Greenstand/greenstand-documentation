@@ -1,0 +1,229 @@
+name: Team Membership Audit (org-wide)
+
+on:
+  workflow_dispatch:
+    inputs:
+      org:
+        description: "Org to scan (defaults to current repo owner)"
+        required: false
+      min_teams:
+        description: "Minimum number of teams each user must be in"
+        required: false
+        default: "1"
+      required_team_regex:
+        description: "Optional regex; at least one team must match (e.g., ^(Contributors|Maintainers)$)"
+        required: false
+        default: ""
+      include_outside_collaborators:
+        description: "Also audit outside collaborators"
+        required: false
+        default: "true"
+      skip_org_admins:
+        description: "Skip users with org admin/owner role"
+        required: false
+        default: "true"
+      exclude_users_csv:
+        description: "Comma-separated logins to exclude (e.g., bot-1,octocat)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.ORG_READ_TOKEN || secrets.GITHUB_TOKEN }}
+      ORG_INPUT: ${{ github.event.inputs.org }}
+      MIN_TEAMS: ${{ github.event.inputs.min_teams }}
+      REQUIRED_TEAM_REGEX: ${{ github.event.inputs.required_team_regex }}
+      INCLUDE_OUTSIDERS: ${{ github.event.inputs.include_outside_collaborators }}
+      SKIP_ADMINS: ${{ github.event.inputs.skip_org_admins }}
+      EXCLUDE_USERS_CSV: ${{ github.event.inputs.exclude_users_csv }}
+
+    steps:
+      - name: Resolve org
+        id: ctx
+        run: |
+          if [ -n "$ORG_INPUT" ]; then ORG="$ORG_INPUT"; else ORG="${{ github.repository_owner }}"; fi
+          echo "org=$ORG" >> $GITHUB_OUTPUT
+          echo "Scanning org: $ORG"
+
+      - name: Debug inputs
+        run: |
+          echo "MIN_TEAMS='$MIN_TEAMS'"
+          echo "REQUIRED_TEAM_REGEX='$REQUIRED_TEAM_REGEX'"
+          echo "INCLUDE_OUTSIDERS='$INCLUDE_OUTSIDERS'"
+          echo "SKIP_ADMINS='$SKIP_ADMINS'"
+          echo "EXCLUDE_USERS_CSV='$EXCLUDE_USERS_CSV'"
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Audit team membership
+        id: audit
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ env.GH_TOKEN }}
+          script: |
+            const org = "${{ steps.ctx.outputs.org }}";
+            const minTeams = parseInt(process.env.MIN_TEAMS || "1", 10);
+            const requiredRe = (process.env.REQUIRED_TEAM_REGEX || "").trim();
+            const includeOutsiders = (process.env.INCLUDE_OUTSIDERS || "true").toLowerCase() === "true";
+            const skipAdmins = (process.env.SKIP_ADMINS || "true").toLowerCase() === "true";
+            const excludeSet = new Set(
+              (process.env.EXCLUDE_USERS_CSV || "")
+                .split(",")
+                .map(s => s.trim().toLowerCase())
+                .filter(Boolean)
+            );
+
+            const reqTeam = requiredRe ? new RegExp(requiredRe, "i") : null;
+
+            // Helper: paginate wrapper
+            async function p(route, params) {
+              return await github.paginate(route, { per_page: 100, ...params });
+            }
+
+            // Fetch org members
+            const members = await p("GET /orgs/{org}/members", { org }); // requires read:org
+            // Optionally fetch outside collaborators
+            const outsiders = includeOutsiders
+              ? await p("GET /orgs/{org}/outside_collaborators", { org })
+              : [];
+
+            // Build quick role map (to skip admins if requested)
+            // For role info, we need memberships endpoint per user
+            const roleCache = new Map();
+            async function getRole(login) {
+              if (roleCache.has(login)) return roleCache.get(login);
+              try {
+                const { data } = await github.request("GET /orgs/{org}/memberships/{username}", {
+                  org, username: login
+                });
+                roleCache.set(login, data.role); // "admin" or "member"
+                return data.role;
+              } catch (e) {
+                // If unknown, treat as member
+                roleCache.set(login, "member");
+                return "member";
+              }
+            }
+
+            // Fetch all teams and their members
+            const teams = await p("GET /orgs/{org}/teams", { org });
+            const teamMembersMap = new Map(); // team_slug -> Set<login>
+            for (const t of teams) {
+              try {
+                const tMembers = await p("GET /orgs/{org}/teams/{team_slug}/members", {
+                  org, team_slug: t.slug
+                });
+                teamMembersMap.set(t.slug, new Set(tMembers.map(u => u.login.toLowerCase())));
+              } catch (e) {
+                core.warning(`Cannot list members for team ${t.slug}: ${e.message}`);
+                teamMembersMap.set(t.slug, new Set());
+              }
+            }
+
+            // Build user -> teams map
+            const userTeamsMap = new Map(); // login -> array of {slug, name}
+            function addTeamToUser(login, team) {
+              const k = login.toLowerCase();
+              const arr = userTeamsMap.get(k) || [];
+              arr.push({ slug: team.slug, name: team.name });
+              userTeamsMap.set(k, arr);
+            }
+            for (const t of teams) {
+              const set = teamMembersMap.get(t.slug) || new Set();
+              for (const login of set) addTeamToUser(login, { slug: t.slug, name: t.name });
+            }
+
+            // Compose population to audit
+            const population = [
+              ...members.map(u => ({ login: u.login, type: "member" })),
+              ...outsiders.map(u => ({ login: u.login, type: "outside_collaborator" }))
+            ];
+
+            // Deduplicate (member beats outsider if overlap)
+            const seen = new Map();
+            for (const p of population) {
+              if (!seen.has(p.login.toLowerCase())) seen.set(p.login.toLowerCase(), p);
+              else if (seen.get(p.login.toLowerCase()).type !== "member" && p.type === "member")
+                seen.set(p.login.toLowerCase(), p);
+            }
+
+            const rows = [];
+            for (const { login, type } of seen.values()) {
+              if (excludeSet.has(login.toLowerCase())) continue;
+
+              // Role (admin/member) for skip filter
+              const role = await getRole(login);
+              if (skipAdmins && role === "admin") continue;
+
+              const teamsForUser = userTeamsMap.get(login.toLowerCase()) || [];
+              const teamNames = teamsForUser.map(t => t.name);
+              const teamSlugs = teamsForUser.map(t => t.slug);
+
+              // Checks
+              const hasMinTeams = teamsForUser.length >= minTeams;
+              const matchesRequired = reqTeam ? teamNames.some(n => reqTeam.test(n)) || teamSlugs.some(s => reqTeam.test(s)) : true;
+
+              const compliant = hasMinTeams && matchesRequired;
+              const notes = [];
+              if (!hasMinTeams) notes.push(`requires >=${minTeams} teams`);
+              if (!matchesRequired && reqTeam) notes.push(`requires team matching /${requiredRe}/`);
+
+              rows.push({
+                login,
+                type,              // member | outside_collaborator
+                role,              // admin | member
+                team_count: teamsForUser.length,
+                teams: teamNames,  // human-friendly names
+                compliant,
+                notes: notes.join("; ") || ""
+              });
+            }
+
+            // Sort: non-compliant first
+            rows.sort((a,b) => (a.compliant === b.compliant) ? a.login.localeCompare(b.login) : (a.compliant ? 1 : -1));
+
+            core.setOutput("json", JSON.stringify({
+              org,
+              generated_at: new Date().toISOString().slice(0,10),
+              policy: {
+                min_teams: minTeams,
+                required_team_regex: requiredRe || null,
+                include_outside_collaborators: includeOutsiders,
+                skip_org_admins: skipAdmins
+              },
+              results: rows
+            }));
+      
+      - name: Write JSON to file
+        run: |
+          echo '${{ steps.audit.outputs.json }}' > team_membership_audit.json
+          cat team_membership_audit.json | jq '.results | length as $n | "Total audited: \($n)"'
+
+      - name: Convert JSON to CSV
+        run: |
+          jq -r '
+            ["login","type","role","team_count","teams","compliant","notes"],
+            (.results[] | [
+              .login,
+              .type,
+              .role,
+              .team_count,
+              (.teams | join("; ")),
+              (if .compliant then "true" else "false" end),
+              .notes
+            ]) | @csv
+          ' team_membership_audit.json > team_membership_audit.csv
+
+      - name: Upload audit artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: team-membership-audit
+          path: |
+            team_membership_audit.json
+            team_membership_audit.csv
