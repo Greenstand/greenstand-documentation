@@ -108,6 +108,7 @@ jobs:
 
       - name: Summarize
         run: |
+          commit_date=$(echo "${{ steps.commits.outputs.commit_date || steps.scan.outputs.commit_date }}" | cut -c1-10)
           {
             echo "### User activity summary";
             echo "";
@@ -118,7 +119,7 @@ jobs:
             if [ -n "${{ steps.commits.outputs.commit_sha }}" ]; then
               echo "- SHA: \`${{ steps.commits.outputs.commit_sha }}\`";
               echo "- Message: ${{ steps.commits.outputs.commit_message }}";
-              echo "- Date: \`${{ steps.commits.outputs.commit_date }}\`";
+              echo "- Date: \"$commit_date";
               echo "- URL: ${{ steps.commits.outputs.commit_url }}";
             else
               echo "_No commits found in this repo by that user._";
