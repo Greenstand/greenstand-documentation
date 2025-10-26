@@ -50,6 +50,67 @@ jobs:
           echo "org=$ORG" >> $GITHUB_OUTPUT
           echo "Scanning org: $ORG"
 
+      ### DEBUG CODE -----
+      - name: Preflight: check token, scopes, SSO, org access
+        env:
+          ORG: ${{ steps.ctx.outputs.org }}
+          TOKEN: ${{ env.GH_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          echo "==> 1) Who am I?"
+          curl -sS -D /tmp/h1 -H "Authorization: Bearer $TOKEN" https://api.github.com/user -o /tmp/user.json || true
+          echo "Status: $(head -n1 /tmp/h1)"
+          echo "x-oauth-scopes: $(grep -i '^x-oauth-scopes:' /tmp/h1 | sed 's/x-oauth-scopes: //I' || true)"
+          echo "X-GitHub-SSO:  $(grep -i '^x-github-sso:' /tmp/h1 | sed 's/x-github-sso: //I' || true)"
+          jq -r '"login=\(.login) | type=\(.type) | id=\(.id)"' /tmp/user.json 2>/dev/null || cat /tmp/user.json
+
+          echo ""
+          echo "==> 2) My role in org '$ORG' (admin/member)?"
+          curl -sS -D /tmp/h2 -H "Authorization: Bearer $TOKEN" "https://api.github.com/orgs/$ORG/memberships/$(jq -r .login /tmp/user.json)" -o /tmp/membership.json || true
+          echo "Status: $(head -n1 /tmp/h2)"
+          jq -r '.state as $s | .role as $r | "state=\($s) | role=\($r)"' /tmp/membership.json 2>/dev/null || cat /tmp/membership.json
+
+          echo ""
+          echo "==> 3) Can I list org members (first 5)?"
+          curl -sS -D /tmp/h3 -H "Authorization: Bearer $TOKEN" "https://api.github.com/orgs/$ORG/members?per_page=5" -o /tmp/members.json || true
+          echo "Status: $(head -n1 /tmp/h3)"
+          echo "SSO header (if 403): $(grep -i '^x-github-sso:' /tmp/h3 | sed 's/x-github-sso: //I' || true)"
+          jq -r 'if type=="array" then (length|tostring)+" users" else . end' /tmp/members.json 2>/dev/null || cat /tmp/members.json
+          echo "Logins:"
+          jq -r 'try .[].login | select(.)' /tmp/members.json 2>/dev/null | sed 's/^/  - /' || true
+
+          echo ""
+          echo "==> 4) Can I list teams and team members (fallback source)?"
+          curl -sS -D /tmp/h4 -H "Authorization: Bearer $TOKEN" "https://api.github.com/orgs/$ORG/teams?per_page=100" -o /tmp/teams.json || true
+          echo "Teams status: $(head -n1 /tmp/h4)"
+          jq -r '(length|tostring)+" teams"' /tmp/teams.json 2>/dev/null || cat /tmp/teams.json
+
+          # Pick the first team and try to list its members
+          FIRST_TEAM=$(jq -r '.[0].slug // empty' /tmp/teams.json)
+          if [ -n "$FIRST_TEAM" ]; then
+            echo "First team: $FIRST_TEAM — checking members (up to 10)"
+            curl -sS -D /tmp/h5 -H "Authorization: Bearer $TOKEN" "https://api.github.com/orgs/$ORG/teams/$FIRST_TEAM/members?per_page=10" -o /tmp/team_members.json || true
+            echo "Team members status: $(head -n1 /tmp/h5)"
+            jq -r 'if type=="array" then (length|tostring)+" users" else . end' /tmp/team_members.json 2>/dev/null || cat /tmp/team_members.json
+            echo "Team member logins:"
+            jq -r 'try .[].login | select(.)' /tmp/team_members.json 2>/dev/null | sed 's/^/  - /' || true
+          else
+            echo "No teams readable (or none exist)."
+          fi
+
+          echo ""
+          echo "==> 5) Outside collaborators (optional; requires org owner + admin:org)"
+          curl -sS -D /tmp/h6 -H "Authorization: Bearer $TOKEN" "https://api.github.com/orgs/$ORG/outside_collaborators?per_page=5" -o /tmp/outsiders.json || true
+          echo "Status: $(head -n1 /tmp/h6)"
+          echo "SSO header (if 403): $(grep -i '^x-github-sso:' /tmp/h6 | sed 's/x-github-sso: //I' || true)"
+          jq -r 'if type=="array" then (length|tostring)+" outsiders" else . end' /tmp/outsiders.json 2>/dev/null || cat /tmp/outsiders.json
+
+
+
+
+      ######
+
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
