@@ -50,7 +50,7 @@ jobs:
             core.setOutput("commit_date", latest?.commit?.author?.date ?? "");
             core.setOutput("commit_message", latest?.commit?.message ?? "");
 
-      - name: Gather latest issue/PR/discussion comment by user
+      - name: Gather the latest issue/PR/discussion comment by user
         id: comments
         uses: actions/github-script@v7
         env:
@@ -119,7 +119,7 @@ jobs:
             if [ -n "${{ steps.commits.outputs.commit_sha }}" ]; then
               echo "- SHA: \`${{ steps.commits.outputs.commit_sha }}\`";
               echo "- Message: ${{ steps.commits.outputs.commit_message }}";
-              echo "- Date: \"$commit_date";
+              echo "- Date: \"$commit_date"";
               echo "- URL: ${{ steps.commits.outputs.commit_url }}";
             else
               echo "_No commits found in this repo by that user._";
