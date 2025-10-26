@@ -26,7 +26,7 @@ jobs:
           echo "username='${{ github.event.inputs.username }}'"
           echo "lookback_days='${{ github.event.inputs.lookback_days }}'"
 
-      - name: Gather latest commit by user in this repo
+      - name: Gather the latest commit by the user in this repo
         id: commits
         uses: actions/github-script@v7
         env:
@@ -119,7 +119,7 @@ jobs:
             if [ -n "${{ steps.commits.outputs.commit_sha }}" ]; then
               echo "- SHA: \`${{ steps.commits.outputs.commit_sha }}\`";
               echo "- Message: ${{ steps.commits.outputs.commit_message }}";
-              echo "- Date: \"$commit_date"";
+              echo "- Date: \ `{{$commit_date}}`";
               echo "- URL: ${{ steps.commits.outputs.commit_url }}";
             else
               echo "_No commits found in this repo by that user._";
