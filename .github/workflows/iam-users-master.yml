@@ -53,15 +53,15 @@ jobs:
             echo "Adding new nested stack resource for User_${USER_NAME}"
 
             cat >> "$ROOT_TEMPLATE_PATH" <<EOF
-  User_${USER_NAME}:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: ${NESTED_TEMPLATE_URL}
-      Parameters:
-        UserName: ${USER_NAME}
-        Email: ${EMAIL}
-
-EOF
+            User_${USER_NAME}:
+              Type: AWS::CloudFormation::Stack
+              Properties:
+                TemplateURL: ${NESTED_TEMPLATE_URL}
+                Parameters:
+                  UserName: ${USER_NAME}
+                  Email: ${EMAIL}
+          
+          EOF
           fi
 
           echo "Resulting root template:"
