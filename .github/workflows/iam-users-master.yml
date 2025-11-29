@@ -1,0 +1,83 @@
+name: Update IAM Users Master Stack (Nested Stacks)
+
+on:
+  workflow_dispatch:
+    inputs:
+      user_name:
+        description: 'IAM username to create/update'
+        required: true
+        type: string
+      email:
+        description: 'Volunteer email address'
+        required: true
+        type: string
+
+jobs:
+  update_master_stack:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+
+    env:
+      AWS_REGION: us-east-1                     # change if needed
+      ROOT_TEMPLATE_PATH: infra/iam-users-root.yaml
+      MASTER_STACK_NAME: IamUsersMaster
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::155729781479:role/github-user
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Ensure nested stack entry for user exists in root template
+        env:
+          USER_NAME: ${{ github.event.inputs.user_name }}
+          EMAIL: ${{ github.event.inputs.email }}
+          ROOT_TEMPLATE_PATH: ${{ env.ROOT_TEMPLATE_PATH }}
+          NESTED_TEMPLATE_URL: ${{ secrets.IAM_USER_NESTED_TEMPLATE_URL }}  # S3 URL
+        run: |
+          set -e
+
+          echo "Updating root template at $ROOT_TEMPLATE_PATH for user $USER_NAME"
+
+          # Check if resource already exists
+          if grep -q "User_${USER_NAME}:" "$ROOT_TEMPLATE_PATH"; then
+            echo "Nested stack for User_${USER_NAME} already exists in template."
+            echo "Currently this script does not modify existing entries; it will just redeploy."
+          else
+            echo "Adding new nested stack resource for User_${USER_NAME}"
+
+            cat >> "$ROOT_TEMPLATE_PATH" <<EOF
+  User_${USER_NAME}:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ${NESTED_TEMPLATE_URL}
+      Parameters:
+        UserName: ${USER_NAME}
+        Email: ${EMAIL}
+
+EOF
+          fi
+
+          echo "Resulting root template:"
+          tail -n 40 "$ROOT_TEMPLATE_PATH"
+
+      - name: Deploy master stack with updated template
+        env:
+          ROOT_TEMPLATE_PATH: ${{ env.ROOT_TEMPLATE_PATH }}
+          MASTER_STACK_NAME: ${{ env.MASTER_STACK_NAME }}
+        run: |
+          aws cloudformation deploy \
+            --stack-name "$MASTER_STACK_NAME" \
+            --template-file "$ROOT_TEMPLATE_PATH" \
+            --parameter-overrides \
+                NestedTemplateUrl=${{ secrets.IAM_USER_NESTED_TEMPLATE_URL }} \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --no-fail-on-empty-changeset
+
+          echo "Ensured master stack $MASTER_STACK_NAME is up to date."
