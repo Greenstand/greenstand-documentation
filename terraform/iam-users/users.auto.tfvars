@@ -10,8 +10,8 @@ users = {
   }
 
   # add more users here
-  # "vol-someone" = {
-  #   email            = "someone@example.org"
-  #   permission_level = "Admin"
-  # }
+  "vol-someone" = {
+    email            = "someone@example.org"
+    permission_level = "Admin"
+  }
 }
