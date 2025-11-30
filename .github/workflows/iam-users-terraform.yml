@@ -40,7 +40,8 @@ jobs:
         working-directory: terraform/iam-users
         run: terraform plan -out=tfplan
 
+      # Only apply on manual run or non-PR events (for example push to main or workflow_dispatch)
       - name: Terraform Apply
-        if: github.event.inputs.auto_apply == 'true' || github.event_name == 'workflow_dispatch'
+        if: github.event_name != 'pull_request'
         working-directory: terraform/iam-users
         run: terraform apply -auto-approve tfplan
