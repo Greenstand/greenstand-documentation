@@ -1,0 +1,42 @@
+name: IAM Users – Terraform
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write      # needed for OIDC
+      contents: read
+
+    env:
+      AWS_REGION: us-east-1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::155729781479:role/GitHubCloudFormationRole  # or a GitHubTerraformRole if you create one
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.0
+
+      - name: Terraform Init
+        working-directory: terraform/iam-users
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: terraform/iam-users
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        if: github.event.inputs.auto_apply == 'true' || github.event_name == 'workflow_dispatch'
+        working-directory: terraform/iam-users
+        run: terraform apply -auto-approve tfplan
