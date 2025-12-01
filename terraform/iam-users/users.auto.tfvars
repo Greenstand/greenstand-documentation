@@ -4,10 +4,10 @@ users = {
     permission_level = "ReadOnly"
   }
 
-  "vol-jdoe" = {
-    email            = "jdoe@example.org"
-    permission_level = "PowerUser"
-  }
+  # "vol-jdoe" = {
+  #   email            = "jdoe@example.org"
+  #   permission_level = "PowerUser"
+  # }
 
   # add more users here
   # "vol-someone" = {
