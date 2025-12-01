@@ -1,0 +1,208 @@
+name: User Activity (repo)
+
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        description: "GitHub login to check (e.g., octocat)"
+        required: true
+      lookback_days:
+        description: "Consider comments updated in the last N days"
+        required: false
+        default: "90"
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  user-activity:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Debug inputs
+        run: |
+          echo "username='${{ github.event.inputs.username }}'"
+          echo "lookback_days='${{ github.event.inputs.lookback_days }}'"
+
+      - name: Gather the latest commit by the user in this repo
+        id: commits
+        uses: actions/github-script@v7
+        env:
+          USERNAME: ${{ github.event.inputs.username }}
+        with:
+          # Always set a token explicitly
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const username = process.env.USERNAME?.trim();
+            if (!username) {
+              core.setFailed("USERNAME env var is empty. Did you provide the 'username' input?");
+            }
+            const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
+            const res = await github.request("GET /repos/{owner}/{repo}/commits", {
+              owner, repo, author: username, per_page: 1
+            });
+            const latest = res.data?.[0] || null;
+
+            core.setOutput("commit_sha", latest?.sha ?? "");
+            core.setOutput("commit_url", latest?.html_url ?? "");
+            core.setOutput("commit_date", latest?.commit?.author?.date ?? "");
+            core.setOutput("commit_message", latest?.commit?.message ?? "");
+
+      - name: Gather the latest issue/PR/discussion comment by user
+        id: comments
+        uses: actions/github-script@v7
+        env:
+          USERNAME: ${{ github.event.inputs.username }}
+          LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const username = process.env.USERNAME?.trim();
+            const lookbackDays = parseInt(process.env.LOOKBACK_DAYS || "90", 10);
+            const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
+            const sinceISO = new Date(Date.now() - lookbackDays*24*60*60*1000).toISOString();
+
+            let best = null;
+            const consider = (type, url, createdAt, body) => {
+              const when = new Date(createdAt).getTime();
+              if (!best || when > best.when) best = { type, url, createdAt, excerpt: (body||"").slice(0,200), when };
+            };
+
+            // Issue comments (includes PR “conversation” comments)
+            const issueComments = await github.paginate("GET /repos/{owner}/{repo}/issues/comments", {
+              owner, repo, since: sinceISO, per_page: 100
+            });
+            issueComments
+              .filter(c => c.user?.login?.toLowerCase() === username.toLowerCase())
+              .forEach(c => consider("issue_comment", c.html_url, c.updated_at || c.created_at, c.body));
+
+            // PR review comments
+            const reviewComments = await github.paginate("GET /repos/{owner}/{repo}/pulls/comments", {
+              owner, repo, since: sinceISO, per_page: 100
+            });
+            reviewComments
+              .filter(c => c.user?.login?.toLowerCase() === username.toLowerCase())
+              .forEach(c => consider("pr_review_comment", c.html_url, c.updated_at || c.created_at, c.body));
+
+            // Discussions (best effort)
+            try {
+              const discComments = await github.paginate("GET /repos/{owner}/{repo}/discussions/comments", {
+                owner, repo, per_page: 100
+              });
+              discComments
+                .filter(c =>
+                  (c.updated_at || c.created_at) >= sinceISO &&
+                  c.user?.login?.toLowerCase() === username.toLowerCase()
+                )
+                .forEach(c => consider("discussion_comment", c.html_url, c.updated_at || c.created_at, c.body));
+            } catch {
+              core.info("Discussions not enabled or endpoint unavailable; skipping.");
+            }
+
+            core.setOutput("comment_type", best?.type ?? "");
+            core.setOutput("comment_url", best?.url ?? "");
+            core.setOutput("comment_date", best?.createdAt ?? "");
+            core.setOutput("comment_excerpt", best?.excerpt ?? "");
+
+      - name: Summarize
+        run: |
+          commit_date=$(echo "${{ steps.commits.outputs.commit_date || steps.scan.outputs.commit_date }}" | cut -c1-10)
+          {
+            echo "### User activity summary";
+            echo "";
+            echo "**User:** \`${{ github.event.inputs.username }}\`";
+            echo "**Repo:** \`${{ github.repository }}\`";
+            echo "";
+            echo "#### Latest commit";
+            if [ -n "${{ steps.commits.outputs.commit_sha }}" ]; then
+              echo "- SHA: \`${{ steps.commits.outputs.commit_sha }}\`";
+              echo "- Message: ${{ steps.commits.outputs.commit_message }}";
+              echo "- Date: \ $commit_date";
+              echo "- URL: ${{ steps.commits.outputs.commit_url }}";
+            else
+              echo "_No commits found in this repo by that user._";
+            fi
+            echo "";
+            echo "#### Latest comment (issue/PR/discussion)";
+            if [ -n "${{ steps.comments.outputs.comment_url }}" ]; then
+              echo "- Type: \`${{ steps.comments.outputs.comment_type }}\`";
+              echo "- Date: \`${{ steps.comments.outputs.comment_date }}\`";
+              echo "- URL: ${{ steps.comments.outputs.comment_url }}";
+              echo "- Excerpt: `${{ steps.comments.outputs.comment_excerpt }}`";
+            else
+              echo "_No comments found for that user in the last ${{ github.event.inputs.lookback_days }} days._";
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+# Create Report -------
+      - name: Create JSON report
+        id: create_json
+        run: |
+          # Format dates (trim to YYYY-MM-DD)
+          commit_date=$(echo "${{ steps.commits.outputs.commit_date || steps.scan.outputs.commit_date }}" | cut -c1-10)
+          comment_date=$(echo "${{ steps.comments.outputs.comment_date || steps.scan.outputs.comment_date }}" | cut -c1-10)
+          generated_date=$(date +%Y-%m-%d)
+
+          jq -n \
+            --arg username "${{ github.event.inputs.username }}" \
+            --arg repo "${{ github.repository }}" \
+            --arg commit_sha "${{ steps.commits.outputs.commit_sha || steps.scan.outputs.commit_sha }}" \
+            --arg commit_url "${{ steps.commits.outputs.commit_url || steps.scan.outputs.commit_url }}" \
+            --arg commit_date "$commit_date" \
+            --arg commit_message "${{ steps.commits.outputs.commit_message || steps.scan.outputs.commit_message }}" \
+            --arg comment_type "${{ steps.comments.outputs.comment_type || steps.scan.outputs.comment_type }}" \
+            --arg comment_url "${{ steps.comments.outputs.comment_url || steps.scan.outputs.comment_url }}" \
+            --arg comment_date "$comment_date" \
+            --arg comment_excerpt "${{ steps.comments.outputs.comment_excerpt || steps.scan.outputs.comment_excerpt }}" \
+            --arg generated_at "$generated_date" \
+            '{
+              user: $username,
+              repository: $repo,
+              commit: {
+                sha: $commit_sha,
+                url: $commit_url,
+                date: $commit_date,
+                message: $commit_message
+              },
+              comment: {
+                type: $comment_type,
+                url: $comment_url,
+                date: $comment_date,
+                excerpt: $comment_excerpt
+              },
+              generated_at: $generated_at
+            }' > user_activity.json
+
+      - name: Convert JSON to CSV
+        run: |
+          # Extract key fields into a readable CSV
+          jq -r '[
+            "user",
+            "repository",
+            "commit_sha",
+            "commit_date",
+            "commit_url",
+            "comment_type",
+            "comment_date",
+            "comment_url"
+          ],
+          [
+            .user,
+            .repository,
+            .commit.sha,
+            .commit.date,
+            .commit.url,
+            .comment.type,
+            .comment.date,
+            .comment.url
+          ] | @csv' user_activity.json > user_activity.csv
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: user-activity-reports
+          path: |
+            user_activity.json
+            user_activity.csv
+
