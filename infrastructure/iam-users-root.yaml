@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Master stack to manage all volunteer IAM users via nested stacks
+
+Parameters:
+  NestedTemplateUrl:
+    Type: String
+    Description: S3 URL of the iam-user-nested.yaml template
+
+Resources:
+  # Nested user stacks will be appended below by automation.
+  # Example of what will be added:
+  #
+  # User_jdoe:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     TemplateURL: !Ref NestedTemplateUrl
+  #     Parameters:
+  #       UserName: jdoe
+  #       Email: jdoe@example.com
+
+Outputs:
+  StackNote:
+    Description: This stack owns all volunteer IAM user nested stacks
+    Value: "IamUsersMaster"
