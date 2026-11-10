@@ -1,0 +1,481 @@
+{
+  "title": "The journey of a capture",
+  "legend": {
+    "guess": "No public source confirms this. A Greenstand maintainer will review it.",
+    "broken": "The code has it, but it does not work or does not run today.",
+    "dev": "The repo, the file, and the lines at the commit that this page describes."
+  },
+  "chapters": [
+    {
+      "subtitle": "From the grower’s phone to the grower’s reward",
+      "intro": [
+        "This page follows one capture through the Greenstand system. A capture is one photo of a tree, with its GPS point and some data. A grower takes it with the Treetracker app.",
+        "Chapter 1 follows the capture from the grower’s phone to the grower’s reward. This page says \"grower\". Older code and tables say \"planter\" for the same person."
+      ],
+      "stages": [
+        {
+          "id": "on-the-phone",
+          "short": "On the phone",
+          "title": "On the phone: the grower takes a capture",
+          "icon": "phone",
+          "story": [
+            "The grower opens the Treetracker app on an Android phone. On the first day, the grower signs up with a name, a phone number or an email, and a selfie. On later days, the grower picks a name from a list on the phone.",
+            "The grower walks to a young tree and taps TRACK. The app waits until the GPS point is stable. The grower takes a photo of the tree, checks it, and can add a note. The app keeps the photo and the GPS point on the phone, so the grower needs no network."
+          ],
+          "images": [
+            {"file": "sign-up.png", "frame": "phone", "alt": "The sign-up screen of the app, with test names", "caption": "Sign up once", "source": {"repo": "treetracker-android", "path": "app/src/test/snapshots/org.greenstand.android.TreeTracker.screenshot.SignUpScreenshotTest.signup_name_entry_with_names.png", "commit": "9b7fa40", "license": "AGPL-3.0"}},
+            {"file": "photo-review.png", "frame": "phone", "alt": "The photo review screen, with a note button, a reject button, an approve button, and an info button", "caption": "Check the photo", "source": {"repo": "treetracker-android", "path": "app/src/test/snapshots/org.greenstand.android.TreeTracker.screenshot.TreeImageReviewScreenshotTest.tree_image_review_default.png", "commit": "9b7fa40", "license": "AGPL-3.0"}}
+          ],
+          "evidence": [
+            {"repo": "treetracker-android", "path": "app/src/main/java/org/greenstand/android/TreeTracker/models/TreeCapturer.kt", "lines": "37-103", "commit": "9b7fa40", "names": ["pinLocation", "setNote", "saveTree"], "what": "takes the photo and the GPS point"},
+            {"repo": "treetracker-android", "path": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/CreateTreeUseCase.kt", "lines": "32-50", "commit": "9b7fa40", "names": ["TreeEntity", "insertTree"], "what": "saves the capture in the local table tree"},
+            {"repo": "treetracker-android", "path": "app/src/main/res/values/strings.xml", "lines": "99-101", "commit": "9b7fa40", "names": ["UPLOAD", "TRACK"], "what": "the button labels UPLOAD and TRACK"}
+          ]
+        },
+        {
+          "id": "the-upload",
+          "short": "The upload",
+          "title": "The upload: from the phone to cloud storage",
+          "icon": "upload",
+          "story": [
+            "Later, in a place with internet, the grower taps UPLOAD. The app sends each photo to cloud storage. Then it sends a small data file, a \"bundle\". A bundle lists up to 50 captures: where, when, and which photo.",
+            "The app then marks each capture as uploaded and deletes the photo from the phone."
+          ],
+          "images": [
+            {"file": "dashboard.png", "frame": "phone", "alt": "The home screen of the app: 146 trees, 51 to upload, and the UPLOAD button", "caption": "51 captures wait for UPLOAD", "source": {"repo": "treetracker-android", "path": "app/src/test/snapshots/org.greenstand.android.TreeTracker.screenshot.DashboardScreenshotTest.dashboard_with_trees.png", "commit": "9b7fa40", "license": "AGPL-3.0"}},
+            {"file": "tree-detail.png", "frame": "phone", "alt": "The tree detail screen with test data and Uploaded: Yes", "caption": "Uploaded: Yes", "source": {"repo": "treetracker-android", "path": "app/src/test/snapshots/org.greenstand.android.TreeTracker.screenshot.TreeDetailScreenshotTest.treeDetail_uploaded.png", "commit": "9b7fa40", "license": "AGPL-3.0"}}
+          ],
+          "evidence": [
+            {"repo": "treetracker-android", "path": "app/src/main/java/org/greenstand/android/TreeTracker/models/TreeUploader.kt", "lines": "62-71", "commit": "9b7fa40", "names": ["uploadTreeImages", "uploadTreeBundles", "deleteLocalImages"], "what": "uploads the photos, then the bundle, then deletes the photos"},
+            {"repo": "treetracker-android", "path": "app/src/main/java/org/greenstand/android/TreeTracker/models/TreeUploader.kt", "lines": "224", "commit": "9b7fa40", "names": ["TREE_BUNDLE_SIZE = 50"], "what": "a bundle holds up to 50 captures"},
+            {"repo": "treetracker-android", "path": "app/src/main/java/org/greenstand/android/TreeTracker/api/models/requests/UploadBundle.kt", "lines": "23-82", "commit": "9b7fa40", "names": ["pack_format_version", "createV2"], "what": "the bundle format, version 2"}
+          ]
+        },
+        {
+          "id": "the-bundle-chain",
+          "short": "The bundle chain",
+          "title": "The bundle chain: four small services open the bundle",
+          "icon": "chain",
+          "story": [
+            "Cloud storage tells a small Greenstand service that a new bundle arrives. That service keeps the bundle. Every 5 minutes, a second service opens the new bundles. A third service passes each capture on to the service that stores it. A fourth service, the older path, also gets each capture. It stores the older tree record itself, if that record is not there yet.",
+            "These four services are public Greenstand repos. They are not in the docs repo yet, so they have no viewer."
+          ],
+          "flags": [
+            {"kind": "guess", "text": "The second service still runs every 5 minutes today.", "question": "Does the bulk-pack-processor job still run every 5 minutes in production?"}
+          ],
+          "images": [
+            {"file": "bundle-chain.svg", "alt": "A drawing of the bundle chain", "caption": "A drawing of the bundle chain"}
+          ],
+          "evidence": [
+            {"repo": "bulk-pack-consumer", "path": "consumer.js", "lines": "19-62", "commit": "c7c5256", "names": ["handleMessage", "bulk_tree_upload"], "what": "keeps each bundle as one row"},
+            {"repo": "bulk-pack-processor", "path": "process-bulk-uploads.js", "lines": "69-181", "commit": "50e94bb", "names": ["processed = FALSE", "\"captures\""], "what": "opens each new bundle and sends each item on"},
+            {"repo": "bulk-pack-processor", "path": "deployment/base/bulk-pack-processor-deployment.yaml", "lines": "11", "commit": "50e94bb", "names": ["schedule", "*/5 * * * *"], "what": "the schedule: every 5 minutes"},
+            {"repo": "bulk-pack-transformer-v2", "path": "server/models/RawCapture.js", "lines": "99-103", "commit": "cf2f6f0", "names": ["/raw-captures", "treetrackerFieldDataUrl"], "what": "posts the capture to treetracker-field-data"},
+            {"repo": "bulk-pack-transformer", "path": "index.js", "lines": "137-178", "commit": "25d9667", "names": ["app.post('/v2/captures'", "processCapture"], "what": "gets the same capture (the older path)"},
+            {"repo": "bulk-pack-transformer", "path": "helper.js", "lines": "55-131", "commit": "25d9667", "names": ["checkForExistingTree", "config.useFieldDataService === 'true'", "data.createTree"], "what": "stores the older tree record itself, unless the setting is \"true\""},
+            {"repo": "bulk-pack-transformer", "path": "deployment/base/bulk-pack-transformer-deployment.yaml", "lines": "37-38", "commit": "25d9667", "names": ["USE_FIELD_DATA", "\"false\""], "what": "the setting is \"false\" in the base manifest; the production overlay keeps it"}
+          ]
+        },
+        {
+          "id": "the-record",
+          "short": "The record",
+          "title": "The record: the capture waits for verification",
+          "icon": "record",
+          "story": [
+            "The field data service stores the capture as a \"raw capture\" with the status \"unprocessed\". The capture now waits for verification.",
+            "On the public web map, the page of the tree can already show the badge \"Waiting for verification\"."
+          ],
+          "images": [
+            {"file": "web-map-badges.svg", "alt": "A drawing of the two badges of the web map tree page", "caption": "A drawing of the web map badges"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-field-data", "path": "server/services/RawCaptureService.js", "lines": "27-76", "commit": "8ffb53c", "names": ["createRawCapture", "createTreesInLegacyDB"], "what": "stores the raw capture and the tree row"},
+            {"repo": "treetracker-field-data", "path": "server/models/RawCapture.js", "lines": "84-101", "commit": "8ffb53c", "names": ["status: 'unprocessed'"], "what": "gives a new raw capture the status unprocessed"},
+            {"repo": "treetracker-web-map-client", "path": "src/pages/trees/[treeid].js", "lines": "192-198", "commit": "1529888", "names": ["Waiting for verification", "'Verified'"], "what": "shows the badge"}
+          ]
+        },
+        {
+          "id": "verification",
+          "short": "Verification",
+          "title": "Verification: an admin checks the photo",
+          "icon": "verify",
+          "story": [
+            "An admin signs in to the admin panel and opens the Verify page. The page shows a grid of photos that wait for verification. The admin looks at each photo.",
+            "The admin approves the photo, with the type of planting, the age of the tree, and the species if the admin knows it. Or the admin rejects it, with a reason, for example \"Not a tree\" or \"Blurry photo\". On the web map, an approved capture shows \"Verified\". A rejected capture is not active any more, so the map hides it."
+          ],
+          "flags": [
+            {"kind": "guess", "text": "An automatic job copies the decision into the newer tables.", "question": "Is the migrate-captures job on in production, how often does it run, and does it succeed?"}
+          ],
+          "images": [
+            {"file": "verify-page.svg", "alt": "A drawing of the Verify page", "caption": "A drawing of the Verify page (no public screenshot exists)"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-admin-client", "path": "src/api/treeTrackerApi.js", "lines": "71-121", "commit": "c2076e4", "names": ["approveCaptureImage", "rejectCaptureImage", "active: false"], "what": "sends the decision"},
+            {"repo": "treetracker-admin-client", "path": "src/components/SidePanel.js", "lines": "313-329", "commit": "c2076e4", "names": ["Not a tree", "Blurry photo"], "what": "the reasons to reject"},
+            {"repo": "treetracker-admin-api", "path": "src/controllers/trees.controller.ts", "lines": "200", "commit": "351db46", "names": ["treesRepository.updateById"], "what": "saves the decision in the tree row"},
+            {"repo": "treetracker-airflow-dags", "path": "migrate_captures_dag.py", "lines": "133-168", "commit": "6ede7fe", "names": ["migrate-raw-captures", "migrate-captures"], "what": "the steps of the copy job"}
+          ],
+          "moreRepos": [
+            {"repo": "images-api", "what": "resizes each photo for the admin panel"}
+          ]
+        },
+        {
+          "id": "the-reward",
+          "short": "The reward",
+          "title": "The reward: the grower earns money",
+          "icon": "reward",
+          "story": [
+            "In the code, one organization has a payment rule. An automatic job counts the approved captures of each of its growers. It pays in steps of 100 captures: 100 captures give 120,000 leones, and 1,000 captures or more give the maximum, 1,200,000 leones. The job writes an \"earning\" with the status \"calculated\".",
+            "Greenstand’s guide to earnings and payments gives the next steps for a typical case. In that case, a funder does them. A funder is the person or the organization that pays for the captures. The funder opens the Earnings page of the admin panel and downloads the list. Then the funder pays each grower outside the Greenstand system. Last, the funder logs the payments. The funder logs one earning in its detail panel, or many earnings with a file upload on the Payments page. Each logged earning becomes \"paid\". The guide says that the growers can see the payment data. But the Treetracker app and the wallet app have no earnings screen. So the grower learns about the money from the payment itself."
+          ],
+          "flags": [
+            {"kind": "guess", "text": "The organization is FCC, which we think is Freetown City Council. The job and the payments still run today. (The code shows no change since 2023.)", "question": "Is FCC the Freetown City Council, does the FCC earnings job still run, and do the funders still pay the growers and log the payments this way?"},
+            {"kind": "broken", "text": "The wallet app tells each new user \"we will gift you 1 token\". The token does not arrive today.", "issue": {"repo": "treetracker-wallet-app", "number": 914}}
+          ],
+          "note": "Tokens are not a grower reward today. An operator can start a job that puts one token for each approved capture of an organization’s growers into a wallet that the operator names. Greenstand’s white paper describes a goal, not the code of today. In that goal, each capture becomes a token in the wallet of the entity that is responsible for the tree. When claims conflict, the grower comes first. The token also holds a proof of the payment to the grower. The token job of today does not use the wallet of the grower, and no token holds payment data.",
+          "seeChapter": "token",
+          "images": [
+            {"file": "reward.svg", "alt": "A drawing of the reward steps", "caption": "A drawing of the reward steps"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-airflow-dags", "path": "lib/contracts_earnings_fcc.py", "lines": "71-133", "commit": "6ede7fe", "names": ["% 100", "maxPayout = 1200000", "'calculated'"], "what": "computes and writes the earnings"},
+            {"repo": "treetracker-admin-client", "path": "src/components/EarningsTable/EarningsTable.js", "lines": "252-253", "commit": "c2076e4", "names": ["actionButtonType=\"export\"", "getEarningsReal"], "what": "the download of the Earnings page"},
+            {"repo": "treetracker-admin-client", "path": "src/components/PaymentsTable/PaymentsTable.js", "lines": "163-180", "commit": "c2076e4", "names": ["uploadCsvFile", "batchPatchEarnings"], "what": "the upload of the Payments page"},
+            {"repo": "treetracker-admin-client", "path": "src/components/common/CustomTableItemDetails/CustomTableItemDetails.js", "lines": "121", "commit": "c2076e4", "names": ["LOG PAYMENT"], "what": "the payment log of the detail panel"},
+            {"repo": "treetracker-earnings-api", "path": "server/models/Earnings.js", "lines": "238-283", "commit": "7b89333", "names": ["earnings.status !== 'calculated'", "status: 'paid'"], "what": "marks an earning as paid"},
+            {"repo": "greenstand-documentation", "path": "docs/user-guides/earningshow.md", "lines": "14", "commit": "6f415de", "names": ["Funders download", "upload payment data"], "what": "Greenstand's guide: the funder downloads the earnings, pays the growers, and logs the payments"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/the-model/white-paper.md", "lines": "13", "commit": "6f415de", "names": ["THIS MODEL IS A GOAL"], "what": "the white paper: the model is a goal"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/the-model/white-paper.md", "lines": "114", "commit": "6f415de", "names": ["minted as a digital token"], "what": "the white paper: a token goes into the wallet of the responsible entity"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/the-model/white-paper.md", "lines": "214", "commit": "6f415de", "names": ["highest priority goes to the individual growers"], "what": "the white paper: the grower comes first"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/the-model/white-paper.md", "lines": "290", "commit": "6f415de", "names": ["Hash of proof-of-grower-payment"], "what": "the white paper: a token holds a proof of the payment"},
+            {"repo": "treetracker-wallet-app", "path": "apps/web/src/app/(protected)/wallet/page.tsx", "lines": "82", "commit": "2c11089", "names": ["we will gift you 1 token"], "what": "the gift message"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "web-map",
+      "subtitle": "The capture on the public web map",
+      "start": {"chapter": 1, "stage": "the-record"},
+      "intro": [
+        "This chapter follows one capture onto the public web map, map.treetracker.org. Anyone can open the map and see the trees that growers captured.",
+        "The web map shows a capture in two ways. Close up, it is a pin. From further away, it is a part of the number on a cluster. A click on a pin opens the tree page."
+      ],
+      "stages": [
+        {
+          "id": "the-pin",
+          "short": "The pin",
+          "title": "The pin: the capture is on the map before verification",
+          "icon": "pin",
+          "story": [
+            "When the field data service stores the capture (chapter 1, stage 4), the database also keeps an older tree record of it. This record is \"active\" at once. It is not \"approved\" yet.",
+            "The map is a set of small square images, the tiles. The browser asks the tile server for each tile. The mark \"active\" shows a capture on the map. So close up, the new capture is a pin at once, before an admin verifies it."
+          ],
+          "note": "Greenstand’s product page says that the web map shows verified trees. Today, the map shows each active capture, also before verification.",
+          "images": [
+            {"file": "map-pins.svg", "alt": "A drawing of the map close up: a pin for each active capture, and one new pin with the label \"New: not verified yet\"", "caption": "A drawing of the map close up"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-field-data", "path": "__tests__/legacy-table-creation.js", "lines": "5-25", "commit": "8ffb53c", "names": ["CREATE TABLE IF NOT EXISTS trees", "active boolean DEFAULT true"], "what": "the older trees table gives a new record \"active\" by default (the test copy of the table)"},
+            {"repo": "treetracker-database", "path": "main/migrations/20190511003640-AddApprovedToTrees.js", "lines": "18-22", "commit": "589e8e2", "names": ["approved", "defaultValue: false"], "what": "a new tree record is not approved"},
+            {"repo": "treetracker-web-map-core", "path": "src/Map.js", "lines": "259-262", "commit": "506a5db", "names": ["tileLayer", "{z}/{x}/{y}.png"], "what": "the map asks for the tiles"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/products.md", "lines": "18", "commit": "6f415de", "names": ["displays verified trees"], "what": "the product page says \"verified trees\""}
+          ],
+          "moreRepos": [
+            {"repo": "treetracker-tile-server", "what": "draws the tiles of the map from the database"}
+          ]
+        },
+        {
+          "id": "the-clusters",
+          "short": "The clusters",
+          "title": "The clusters: a job adds the capture to the counts",
+          "icon": "cluster",
+          "story": [
+            "From further away, the map groups the captures into round clusters. A cluster shows a number: the count of its captures.",
+            "An automatic job is set to run every 2 hours. It finds the active captures that are not in a cluster yet. Then it builds the clusters again. Until the next run, the new capture is a pin close up. It is not in the counts yet."
+          ],
+          "flags": [
+            {"kind": "guess", "text": "The job runs every 2 hours in production today.", "question": "Does the Airflow job assign_tree_to_cluster run and succeed in production today?"}
+          ],
+          "images": [
+            {"file": "map-clusters.svg", "alt": "A drawing of the map from further away: three clusters with their counts, and one count that goes up by 1 at the next run of the job", "caption": "A drawing of the map further away"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-airflow-dags", "path": "map/assign-new-trees-to-clusters.py", "lines": "40-50", "commit": "6ede7fe", "names": ["assign_tree_to_cluster", "0 */2 * * *"], "what": "the job is set to run every 2 hours"},
+            {"repo": "treetracker-airflow-dags", "path": "lib/assign_new_trees_to_cluster.py", "lines": "14-26", "commit": "6ede7fe", "names": ["trees.active = true", "trees.cluster_regions_assigned = false"], "what": "it finds the new active captures"},
+            {"repo": "treetracker-airflow-dags", "path": "lib/assign_new_trees_to_cluster.py", "lines": "103-134", "commit": "6ede7fe", "names": ["St_clusterwithin", "DELETE FROM clusters", "INSERT INTO clusters"], "what": "it builds the clusters again"},
+            {"repo": "treetracker-database", "path": "main/migrations/20190712210225-AddClusterRegionsAssignedToTrees.js", "lines": "18-22", "commit": "589e8e2", "names": ["cluster_regions_assigned", "defaultValue: false"], "what": "a new capture is not in a cluster yet"}
+          ],
+          "moreRepos": [
+            {"repo": "treetracker-tile-server", "what": "draws the clusters and their counts"}
+          ]
+        },
+        {
+          "id": "the-approval",
+          "short": "The approval",
+          "title": "The approval: only the tree page changes",
+          "icon": "verify",
+          "story": [
+            "An admin approves the capture (chapter 1, stage 5). The admin panel saves \"approved\" in the record. It also saves the age of the tree, the type of planting, and the species if the admin knows it. Nothing sends a message to the map. The pin and the counts stay the same.",
+            "Only the tree page changes. Its badge \"Waiting for verification\" becomes \"Verified\". If the admin rejects the capture, the record is not active any more. Then the map hides it."
+          ],
+          "images": [
+            {"file": "web-map-badges.svg", "alt": "A drawing of the two badges of the web map tree page", "caption": "Only the badge of the tree page changes"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-admin-client", "path": "src/components/SidePanel.js", "lines": "191-227", "commit": "c2076e4", "names": ["setMorphology", "new_tree", "over_two_years"], "what": "the admin sets the type of planting and the age"},
+            {"repo": "treetracker-admin-client", "path": "src/api/treeTrackerApi.js", "lines": "98-115", "commit": "c2076e4", "names": ["rejectCaptureImage", "active: false"], "what": "a rejection makes the record not active"},
+            {"repo": "treetracker-admin-api", "path": "src/controllers/trees.controller.ts", "lines": "200", "commit": "351db46", "names": ["treesRepository.updateById"], "what": "the service saves the decision"},
+            {"repo": "treetracker-web-map-client", "path": "src/pages/trees/[treeid].js", "lines": "191-199", "commit": "1529888", "names": ["Waiting for verification", "'Verified'", "Token not issued"], "what": "the badges of the tree page"}
+          ]
+        },
+        {
+          "id": "the-tree-page",
+          "short": "The tree page",
+          "title": "The tree page: what a visitor sees",
+          "icon": "page",
+          "story": [
+            "A visitor clicks a pin. The web map opens the tree page beside the map. The page shows the photo, the tree number, the badges, the date of the capture, the country, and the species. The photo comes straight from cloud storage.",
+            "The web map keeps each tree page for a time before it builds the page again. So \"Verified\" can show hours after the approval."
+          ],
+          "flags": [
+            {"kind": "guess", "text": "The web map keeps a tree page for some hours in production, on purpose.", "question": "Does the web map in production keep each tree page for some hours, and is that on purpose?"}
+          ],
+          "note": "The web map reads only the older tree records. The job of chapter 1 that copies the decision into the newer tables is not on this path.",
+          "images": [
+            {"file": "tree-page.svg", "alt": "A drawing of the tree page with made-up data: a tree photo, Tree #1234, the badges, the date, the country, the species, and a clock with \"Kept for some hours\"", "caption": "A drawing of the tree page"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-web-map-core", "path": "src/Map.js", "lines": "314-318", "commit": "506a5db", "names": ["layerUtfGrid.on('click'", "_clickMarker"], "what": "a click on a pin"},
+            {"repo": "treetracker-web-map-client", "path": "src/models/pathResolver.js", "lines": "80-82", "commit": "1529888", "names": ["/trees/${tree.id}"], "what": "the tree page opens"},
+            {"repo": "treetracker-web-map-client", "path": "src/pages/trees/[treeid].js", "lines": "474-492", "commit": "1529888", "names": ["tree.image_url", "Tree #{tree.id}"], "what": "the photo from its stored address, and the tree number"},
+            {"repo": "treetracker-web-map-client", "path": "src/pages/trees/[treeid].js", "lines": "631-660", "commit": "1529888", "names": ["Captured on", "Located in", "Species"], "what": "the date, the country, and the species"}
+          ],
+          "moreRepos": [
+            {"repo": "treetracker-query-api", "what": "gives the data of the tree page"},
+            {"repo": "images-api", "what": "makes the small photos in the lists of the web map"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "token",
+      "subtitle": "The capture as an impact token",
+      "start": {"chapter": 1, "stage": "verification"},
+      "intro": [
+        "This chapter follows one capture to an impact token. An impact token is a record in a wallet. It points to one capture. It is not money: it has no price, and it does not pay the grower.",
+        "Greenstand’s white paper and its model pages describe a goal for tokens. This chapter shows the code of today. A note at a stage says where the goal and the code differ."
+      ],
+      "stages": [
+        {
+          "id": "no-token-yet",
+          "short": "No token yet",
+          "title": "The approval: no token yet",
+          "icon": "verify",
+          "story": [
+            "An admin approves the capture (chapter 1, stage 5). The older tree record has a field for a token, but the field stays empty. Nothing makes a token at this step. An open issue in Greenstand’s wallet code asks for a token at the approval.",
+            "So the screens say that no token exists. In the admin panel, the capture detail says \"Impact token not issued\", and a filter of the Captures page shows \"Not Tokenized\". On the web map, the tree page shows the badge \"Token not issued\"."
+          ],
+          "images": [
+            {"file": "no-token.svg", "alt": "A drawing of the two screens after the approval, with made-up data: the admin panel shows Capture #1234 as \"Approved\" with \"Impact token not issued\", and the web map shows Tree #1234 as \"Verified\" with \"Token not issued\"", "caption": "A drawing of an approved capture with no token"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-admin-api", "path": "src/models/trees.model.ts", "lines": "380-384", "commit": "351db46", "names": ["columnName: 'token_id'"], "what": "the older tree record has a token field"},
+            {"repo": "treetracker-admin-client", "path": "src/components/CaptureDetailDialog.js", "lines": "386-394", "commit": "c2076e4", "names": ["getTokenStatus", "Impact token not issued"], "what": "the capture detail says that no token exists"},
+            {"repo": "treetracker-admin-client", "path": "src/common/variables.js", "lines": "9-12", "commit": "c2076e4", "names": ["Tokenized", "Not Tokenized"], "what": "the token filter of the Captures page"},
+            {"repo": "treetracker-web-map-client", "path": "src/pages/trees/[treeid].js", "lines": "196-199", "commit": "1529888", "names": ["Token issued", "Token not issued"], "what": "the token badge of the tree page"}
+          ],
+          "issues": [
+            {"repo": "treetracker-wallet-api", "number": 556, "what": "asks for a token at the approval"}
+          ]
+        },
+        {
+          "id": "the-mint",
+          "short": "The mint",
+          "title": "The mint: an operator makes the tokens",
+          "icon": "mint",
+          "story": [
+            "Later, a Greenstand operator starts a job by hand. No timer starts it. The operator names an organization and a wallet. The job finds each approved capture of the growers of that organization that has no token yet.",
+            "For each of these captures, the job makes one impact token in the named wallet. A token is a small record: it points to one capture and to one wallet. A capture can have only one token. The operator picks the wallet, not the grower."
+          ],
+          "flags": [
+            {"kind": "guess", "text": "An operator still starts this job today. The wallet is usually the wallet of the organization.", "question": "Does an operator still run the create_tokens job, when was the last run, for which organizations, and who picks the wallet?"}
+          ],
+          "note": "Greenstand’s white paper describes a goal. In that goal, a capture holds its first wallet, and the grower comes first. The system makes a token only when no other claim conflicts. Today, the field data service stores a target wallet with each session of the app, but the token job does not read it.",
+          "images": [
+            {"file": "token-mint.svg", "alt": "A drawing of the mint: an operator starts the job by hand, and the job makes one token for each approved capture in the named wallet, usually the organization’s wallet. The grower gets no token", "caption": "A drawing of the mint"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-airflow-dags", "path": "create-tokens.py", "lines": "40-48", "commit": "6ede7fe", "names": ["create_tokens", "None"], "what": "the job runs only when an operator starts it"},
+            {"repo": "treetracker-wallet-api", "path": "database/migrations/20200901213253-CreateTableToken.js", "lines": "18-21", "commit": "e95c15a", "names": ["capture_id", "wallet_id"], "what": "a token points to one capture and one wallet"},
+            {"repo": "treetracker-wallet-api", "path": "database/migrations/20210304014730-AddUniqueConstraintCaptureId.js", "lines": "18", "commit": "e95c15a", "names": ["create unique index capture_id_idx"], "what": "a capture has one token at most"},
+            {"repo": "treetracker-field-data", "path": "server/models/SessionModel.js", "lines": "13-14", "commit": "8ffb53c", "names": ["target_wallet"], "what": "each session of the app has a target wallet"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/the-model/white-paper.md", "lines": "204", "commit": "6f415de", "names": ["minting trigger"], "what": "the white paper: when a token is made"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/the-model/white-paper.md", "lines": "208-210", "commit": "6f415de", "names": ["initial wallet", "originating wallet"], "what": "the white paper: the first wallet comes from the capture"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/the-model/white-paper.md", "lines": "214", "commit": "6f415de", "names": ["highest priority goes to the individual growers"], "what": "the white paper: the grower comes first"}
+          ]
+        },
+        {
+          "id": "the-transfers",
+          "short": "Transfers",
+          "title": "Transfers: the holder sends tokens to other wallets",
+          "icon": "transfer",
+          "story": [
+            "The holder of a wallet can send tokens to another wallet, for example the wallet of a funder. If the holder controls both wallets, or the two wallets trust each other, the tokens move at once. Otherwise, the other side must accept the transfer first. The wallet service records each move of a token.",
+            "An organization uses the wallet admin panel to send a number of tokens. A person can use the newer wallet app. It shows the tokens, accepts transfers, and makes share links with a QR code. Anyone who opens a share link can claim its tokens into a new wallet. A transfer can also mark tokens as \"claimed\". A claimed token cannot move again."
+          ],
+          "flags": [
+            {"kind": "guess", "text": "The wallet admin panel and the wallet app both work in production today. They use two versions of the wallet service that share one set of wallets.", "question": "Which versions of treetracker-wallet-api run in production today, and which one does the wallet admin panel use?"}
+          ],
+          "note": "The white paper describes five token states and trade on a blockchain. The code has no blockchain. It marks a token only as \"in a transfer\" or \"claimed\". A claimed token is the nearest to a retired token of the white paper.",
+          "images": [
+            {"file": "token-transfer.svg", "alt": "A drawing of the transfers: with trust, or with one holder of both wallets, the tokens move from wallet A to wallet B at once. With no trust, they wait for Accept. A claimed token stays where it is, and the wallet service records each move of a token", "caption": "A drawing of the transfers"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-wallet-api", "path": "server/models/Transfer.js", "lines": "200-214", "commit": "e95c15a", "names": ["hasTrust", "TransferEnums.STATE.completed"], "what": "both wallets, or a trust: the transfer is complete at once"},
+            {"repo": "treetracker-wallet-api", "path": "server/models/Transfer.js", "lines": "222-237", "commit": "e95c15a", "names": ["hasControlOverSender", "TransferEnums.STATE.pending"], "what": "otherwise the transfer waits"},
+            {"repo": "treetracker-wallet-api", "path": "server/models/Transfer.js", "lines": "367-384", "commit": "e95c15a", "names": ["acceptTransfer", "TransferEnums.STATE.completed"], "what": "the receiver accepts"},
+            {"repo": "treetracker-wallet-api", "path": "server/models/Token.js", "lines": "55-75", "commit": "e95c15a", "names": ["completeTransfer", "batchCreate"], "what": "each token moves, and each move is recorded"},
+            {"repo": "treetracker-wallet-api", "path": "server/models/Transfer.js", "lines": "174-178", "commit": "e95c15a", "names": ["is claimed, cannot be transferred"], "what": "a claimed token cannot move"},
+            {"repo": "treetracker-wallet-admin-client", "path": "src/pages/SendTokens/SendTokens.js", "lines": "174-181", "commit": "81b71cb", "names": ["bundle_size", "receiver_wallet"], "what": "the wallet admin panel sends a number of tokens"},
+            {"repo": "treetracker-wallet-app", "path": "apps/web/src/app/(protected)/transfers/page.tsx", "lines": "68-80", "commit": "a7ea1cd", "names": ["onAccept", "Accept"], "what": "the wallet app accepts a transfer"},
+            {"repo": "treetracker-wallet-app", "path": "apps/web/src/app/(protected)/send/page.tsx", "lines": "138-152", "commit": "a7ea1cd", "names": ["can claim the tokens", "QRCodeSVG", "Share link"], "what": "the wallet app makes a share link with a QR code"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/the-model/white-paper.md", "lines": "157", "commit": "6f415de", "names": ["five distinct states"], "what": "the white paper: five token states"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/the-model/white-paper.md", "lines": "251", "commit": "6f415de", "names": ["Exporting tokens"], "what": "the white paper: trade on a blockchain"}
+          ]
+        },
+        {
+          "id": "the-token-page",
+          "short": "The token page",
+          "title": "The token page: anyone can see the token",
+          "icon": "token",
+          "story": [
+            "On the web map, the badge of the tree page now says \"Token issued\". The token page shows the token number, the date, the tree, and the wallet that holds the token. It also shows the claim status, and if the token can move. A timeline shows each transfer between wallets. The wallet app links to the same page.",
+            "A wallet page shows the name of the wallet and how many tokens it holds. No page shows a price. A token holds no money and no payment data."
+          ],
+          "note": "Greenstand’s product page says that investors and consumers can buy, sell, and trade impact tokens, and that this pays the grower. The white paper gives each token a value. The business model on Greenstand’s model page names an impact token fee of 3% of the uploaded captures. The code of today has none of these. A token has no price and no value, and it moves only by transfer. The token job takes no fee, and a token does not pay the grower.",
+          "seeLink": {"text": "Greenstand’s model page", "url": "https://docs.greenstand.org/overview/introduction/the-model"},
+          "images": [
+            {"file": "token-page.svg", "alt": "A drawing of the token page with made-up data: Token #a1b2, the date, the wallet Example Org, a tree, Not claimed yet, Can be transferred, and a timeline of 2 transfers. The grower is a plain block with no name and no face", "caption": "A drawing of the token page"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-wallet-app", "path": "apps/web/src/app/(protected)/token/details/page.tsx", "lines": "61-64", "commit": "a7ea1cd", "names": ["View on map", "/tokens/${id}"], "what": "the wallet app links the token page of the web map"},
+            {"repo": "treetracker-web-map-client", "path": "src/pages/tokens/[tokenid].js", "lines": "450-466", "commit": "1529888", "names": ["Created At", "Token ID"], "what": "the date and the token number"},
+            {"repo": "treetracker-web-map-client", "path": "src/pages/tokens/[tokenid].js", "lines": "486-503", "commit": "1529888", "names": ["Claim Status", "Not claimed yet", "Transferability"], "what": "the claim status, and if the token can move"},
+            {"repo": "treetracker-web-map-client", "path": "src/pages/tokens/[tokenid].js", "lines": "578-586", "commit": "1529888", "names": ["Transfer token between:", "transaction.source_wallet_id"], "what": "the timeline of the transfers"},
+            {"repo": "treetracker-web-map-client", "path": "src/pages/wallets/[walletid].js", "lines": "312-313", "commit": "1529888", "names": ["title=\"Tokens\"", "tokens?.total"], "what": "the wallet page counts the tokens"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/products.md", "lines": "20", "commit": "6f415de", "names": ["buy, sell, and trade", "ensures compensation"], "what": "the product page: buy, sell, and pay the grower"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/the-model/white-paper.md", "lines": "122", "commit": "6f415de", "names": ["Relative Value Index"], "what": "the white paper: a token has a value"},
+            {"repo": "greenstand-documentation", "path": "docs/introduction/the-model/README.md", "lines": "15", "commit": "6f415de", "names": ["Business Model Solution"], "what": "the model page links the business model, which names the token fee"}
+          ],
+          "moreRepos": [
+            {"repo": "treetracker-query-api", "what": "gives the data of the token page and the wallet page"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "organizations",
+      "subtitle": "The capture in the data for organizations",
+      "start": {"chapter": 1, "stage": "the-record"},
+      "intro": [
+        "This chapter follows one capture into the data that an organization gets. A grower works with an organization, for example a group that plants trees. The captures of the grower belong to that organization.",
+        "Greenstand sends no report to an organization. A person of the organization signs in to the admin panel to see the data. One organization gets cards with more numbers."
+      ],
+      "stages": [
+        {
+          "id": "the-account",
+          "short": "The account",
+          "title": "The account: a person of the organization signs in",
+          "icon": "account",
+          "story": [
+            "A Greenstand maintainer gives a person of the organization an account in the admin panel. The role of the account names the organization.",
+            "When the person signs in, the admin panel asks only for the data of that organization. So the person sees the captures and the growers of that organization."
+          ],
+          "flags": [
+            {"kind": "guess", "text": "Some organizations have such accounts today, and their people use the Captures page and the export.", "question": "Which organizations have admin panel accounts with an organization role today? Do their people use the Captures page and the export?"}
+          ],
+          "images": [
+            {"file": "org-account.svg", "alt": "A drawing of an organization account with made-up data. A person of Example Org signs in. The admin panel asks only for the captures and the growers of Example Org", "caption": "A drawing of an organization account"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-admin-api", "path": "src/js/auth.js", "lines": "141-143", "commit": "351db46", "names": ["policyObj.organization", "compositePolicy.organization"], "what": "the role of an account can name an organization"},
+            {"repo": "treetracker-admin-client", "path": "src/api/apiUtils.js", "lines": "30-33", "commit": "c2076e4", "names": ["getOrganization", "limiting organization access"], "what": "the admin panel asks for the data of the organization of the account"},
+            {"repo": "treetracker-admin-client", "path": "src/context/CapturesContext.js", "lines": "58-61", "commit": "c2076e4", "names": ["getOrganization", "trees"], "what": "the admin panel asks for the captures of the organization of the account"},
+            {"repo": "treetracker-admin-client", "path": "src/api/growers.js", "lines": "45-47", "commit": "c2076e4", "names": ["getOrganization", "planter"], "what": "the admin panel asks for the growers of the organization of the account"}
+          ]
+        },
+        {
+          "id": "the-export",
+          "short": "The export",
+          "title": "The export: the person downloads a spreadsheet",
+          "icon": "export",
+          "story": [
+            "On the Captures page, the person sees the captures of the organization. By default, the list shows the captures that no admin approved yet and the captures that an admin approved. A filter can make the list smaller.",
+            "The button “Export Captures” opens a dialog. The person picks the columns, and the admin panel downloads a spreadsheet file with one row for each capture. The file holds up to 20,000 captures."
+          ],
+          "note": "Greenstand’s product page says that the web map and the admin panel show the trees on a map. An organization can then confirm the place and the health of each tree. The admin panel of today shows the data in a list, in numbers, and in a file. The public web map shows the trees on a map.",
+          "seeChapter": "web-map",
+          "images": [
+            {"file": "org-export.svg", "alt": "A drawing of the export: the Captures page with made-up captures, and the Export Captures dialog with a list of columns to pick", "caption": "A drawing of the export"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-admin-client", "path": "src/components/Captures/CaptureTable.js", "lines": "260-270", "commit": "c2076e4", "names": ["Export Captures", "ExportCaptures"], "what": "the Captures page has the Export Captures button and dialog"},
+            {"repo": "treetracker-admin-client", "path": "src/context/CapturesContext.js", "lines": "38-45", "commit": "c2076e4", "names": ["verifyStatus", "approved: true", "approved: false"], "what": "the list shows the captures that wait and the captures that are approved"},
+            {"repo": "treetracker-admin-client", "path": "src/context/CapturesContext.js", "lines": "99-110", "commit": "c2076e4", "names": ["getAllCaptures", "limit: 20000"], "what": "the export takes up to 20,000 captures"},
+            {"repo": "greenstand-documentation", "path": "general/overview/introduction/products.md", "lines": "12", "commit": "6f415de", "names": ["Admin Panel", "confirm placement"], "what": "Greenstand’s product page: the admin panel shows the trees on a map"}
+          ]
+        },
+        {
+          "id": "the-home-numbers",
+          "short": "The numbers",
+          "title": "The Home page: four numbers",
+          "icon": "numbers",
+          "story": [
+            "The Home page of the admin panel shows four numbers for the organization. They are “Total Captures”, “Untagged Captures” (the captures that no admin approved yet), “Verified Captures”, and “Growers”.",
+            "The numbers count the captures and the growers that the admin panel asks for (stage 1). When an admin approves a capture, the capture moves from “Untagged Captures” to “Verified Captures”."
+          ],
+          "note": "Greenstand does not send these numbers to the organization: no report, no email, and no message. A person must sign in to see them. The impact tokens of the organization are in its wallet.",
+          "seeChapter": "token",
+          "images": [
+            {"file": "org-numbers.svg", "alt": "A drawing of the Home page with made-up values: Total Captures, Untagged Captures, Verified Captures, and Growers. An arrow goes from Untagged Captures to Verified Captures", "caption": "A drawing of the four numbers"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-admin-client", "path": "src/components/DashStat.container.js", "lines": "37-66", "commit": "c2076e4", "names": ["Total Captures", "Untagged Captures", "approved: false"], "what": "the numbers of all captures and of the captures that wait"},
+            {"repo": "treetracker-admin-client", "path": "src/components/DashStat.container.js", "lines": "95-122", "commit": "c2076e4", "names": ["Verified Captures", "Growers"], "what": "the numbers of the verified captures and of the growers"},
+            {"repo": "treetracker-admin-client", "path": "src/api/treeTrackerApi.js", "lines": "122-124", "commit": "c2076e4", "names": ["getCaptureCount", "getOrganization"], "what": "the admin panel asks for the counts of the organization of the account"}
+          ]
+        },
+        {
+          "id": "the-reporting-cards",
+          "short": "The reporting cards",
+          "title": "The reporting cards: one organization sees more",
+          "icon": "cards",
+          "story": [
+            "One organization, Freetown City Council, sees reporting cards on its Home page. A job copies the captures of the council’s growers into separate tables of the database. A reporting service counts the captures of these tables for the cards.",
+            "The cards show counts and short lists, for example the top growers, the catchment areas, and the trees that survive."
+          ],
+          "flags": [
+            {"kind": "guess", "text": "The copy job and the reporting service run in production today, and the council still uses the cards.", "question": "Do the copy job and the reporting service run in production today? Does the council still use the reporting cards?"}
+          ],
+          "images": [
+            {"file": "org-cards.svg", "alt": "A drawing of the reporting cards with made-up numbers. The top growers card shows each grower as a plain block with only the word Grower, with no name", "caption": "A drawing of the reporting cards"}
+          ],
+          "evidence": [
+            {"repo": "treetracker-airflow-dags", "path": "populate-reports-schema.py", "lines": "98", "commit": "6ede7fe", "names": ["getEntityRelationshipChildren"], "what": "the job takes only the growers of one organization and its member groups"},
+            {"repo": "treetracker-airflow-dags", "path": "populate-reports-schema.py", "lines": "105", "commit": "6ede7fe", "names": ["reporting.capture_denormalized"], "what": "the job writes the copies to separate tables"},
+            {"repo": "treetracker-admin-client", "path": "src/components/Home/Home.js", "lines": "208-221", "commit": "c2076e4", "names": ["ReportingCard10", "ReportingCard12"], "what": "the reporting cards on the Home page"},
+            {"repo": "treetracker-admin-client", "path": "src/components/reportingCards/ReportingCard4.js", "lines": "20-22", "commit": "c2076e4", "names": ["Top Growers"], "what": "the card of the top growers"},
+            {"repo": "treetracker-admin-client", "path": "src/components/reportingCards/ReportingCard7.js", "lines": "20-22", "commit": "c2076e4", "names": ["Catchments"], "what": "the card of the catchment areas"},
+            {"repo": "treetracker-admin-client", "path": "src/components/reportingCards/ReportingCard10.js", "lines": "20-22", "commit": "c2076e4", "names": ["Surviving Trees"], "what": "the card of the trees that survive"},
+            {"repo": "greenstand-documentation", "path": "admin-panel/development/admin-panel/freetown-phase-2-admin-panel/overview-and-requirements.md", "lines": "9", "commit": "6f415de", "names": ["Freetown City Council"], "what": "a Greenstand design page names Freetown City Council"},
+            {"repo": "treetracker-reporting", "path": "deployment/overlays/production/kustomization.yaml", "lines": "6-7", "commit": "6b5f2e8", "names": ["greenstand/treetracker-reporting", "1.10.8"], "what": "the production setup of the reporting service"}
+          ],
+          "issues": [
+            {"repo": "treetracker-admin-client", "number": 654, "what": "asks for the reporting cards for all organizations"}
+          ]
+        }
+      ]
+    }
+  ]
+}

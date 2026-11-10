@@ -1,0 +1,2820 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-admin-client",
+    "languages": [
+      "javascript",
+      "html",
+      "css",
+      "json",
+      "yaml"
+    ],
+    "frameworks": [
+      "React",
+      "Redux",
+      "Material UI",
+      "create-react-app"
+    ],
+    "description": "React web frontend for the Greenstand Treetracker Admin Panel: verifying, processing, and managing tree-planting captures, growers, and species collected by the Treetracker mobile app, plus grower messaging/surveys, stakeholder/organization management, and earnings/payments reporting, migrating off a legacy API to Greenstand microservices.",
+    "analyzedAt": "2026-09-03T10:41:36.645Z",
+    "gitCommitHash": "ecbfe050405695a5ca31ab630614ee3e122cddc4"
+  },
+  "nodes": [
+    {
+      "id": "domain:authentication-access-control",
+      "type": "domain",
+      "name": "Authentication & Access Control",
+      "summary": "Manages admin user login, session storage, and permission-gated navigation across the Admin Panel. Determines which routes and menu items a signed-in user can access based on their role and organization.",
+      "tags": [
+        "authentication",
+        "authorization",
+        "session",
+        "routing"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "User Session",
+          "Permission",
+          "Route/Menu Entry",
+          "Organization"
+        ],
+        "businessRules": [
+          "Unauthenticated users are redirected to /login for any private route.",
+          "Route and menu visibility is derived per-user from hasPermission checks, not hardcoded.",
+          "A 'Freetown' feature flag permission gates a subset of experimental routes."
+        ],
+        "crossDomainInteractions": [
+          "Gates every other domain's views via PrivateRoute",
+          "Supplies organization/session context consumed by all API modules"
+        ]
+      }
+    },
+    {
+      "id": "flow:user-login",
+      "type": "flow",
+      "name": "User Login",
+      "summary": "Authenticates an admin user with credentials, stores the session, and redirects into the permission-gated app shell.",
+      "tags": [
+        "authentication",
+        "form",
+        "session"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Login.js form submission (POST auth)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:user-login:render-login-form",
+      "type": "step",
+      "name": "Render login form",
+      "summary": "Displays the login form and validates username/password input on the entry-point Login page.",
+      "tags": [
+        "component",
+        "form"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Login.js"
+    },
+    {
+      "id": "step:user-login:submit-credentials",
+      "type": "step",
+      "name": "Submit credentials",
+      "summary": "Handles form submission, calls the authentication API, and surfaces validation/API errors.",
+      "tags": [
+        "api-handler",
+        "form-validation"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/Login.js",
+      "lineRange": [
+        56,
+        254
+      ]
+    },
+    {
+      "id": "step:user-login:establish-session",
+      "type": "step",
+      "name": "Establish session",
+      "summary": "Stores the authenticated user and organization in AppContext and persists session state for subsequent API calls.",
+      "tags": [
+        "context-provider",
+        "session-management"
+      ],
+      "complexity": "complex",
+      "filePath": "src/context/AppContext.js",
+      "lineRange": [
+        214,
+        336
+      ]
+    },
+    {
+      "id": "step:user-login:persist-session-storage",
+      "type": "step",
+      "name": "Persist session to storage",
+      "summary": "Reads and writes the session object (user, token, organization) to local storage for reuse across page loads.",
+      "tags": [
+        "session",
+        "localstorage"
+      ],
+      "complexity": "simple",
+      "filePath": "src/models/auth.js",
+      "lineRange": [
+        52,
+        58
+      ]
+    },
+    {
+      "id": "step:user-login:redirect-to-app",
+      "type": "step",
+      "name": "Redirect into app shell",
+      "summary": "Once a session exists, PrivateRoute stops redirecting to /login and renders the requested page.",
+      "tags": [
+        "routing",
+        "middleware"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/PrivateRoute.js",
+      "lineRange": [
+        5,
+        25
+      ]
+    },
+    {
+      "id": "flow:permission-gated-routing",
+      "type": "flow",
+      "name": "Permission-Gated Routing",
+      "summary": "Builds the set of routes and menu items a user is allowed to see, and blocks direct navigation to unauthorized pages.",
+      "tags": [
+        "authorization",
+        "routing",
+        "permissions"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "App bootstrap / route table construction",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:permission-gated-routing:build-routes",
+      "type": "step",
+      "name": "Build permission-gated route tree",
+      "summary": "Constructs the app's route/menu tree for the current user by checking each candidate route against the permission model.",
+      "tags": [
+        "routing",
+        "authorization"
+      ],
+      "complexity": "complex",
+      "filePath": "src/context/AppContext.js",
+      "lineRange": [
+        43,
+        212
+      ]
+    },
+    {
+      "id": "step:permission-gated-routing:check-permission",
+      "type": "step",
+      "name": "Check role permission",
+      "summary": "Evaluates whether the current user's role grants access to a given permission key.",
+      "tags": [
+        "auth",
+        "permissions"
+      ],
+      "complexity": "simple",
+      "filePath": "src/models/auth.js",
+      "lineRange": [
+        27,
+        38
+      ]
+    },
+    {
+      "id": "step:permission-gated-routing:check-feature-flag",
+      "type": "step",
+      "name": "Check feature-flag permission",
+      "summary": "Evaluates the 'Freetown' feature-flag permission for experimental routes.",
+      "tags": [
+        "auth",
+        "feature-flag"
+      ],
+      "complexity": "simple",
+      "filePath": "src/models/auth.js",
+      "lineRange": [
+        40,
+        47
+      ]
+    },
+    {
+      "id": "step:permission-gated-routing:guard-route",
+      "type": "step",
+      "name": "Guard route render",
+      "summary": "Wraps each route element, checking AppContext.user before rendering the target page or redirecting to /login.",
+      "tags": [
+        "routing",
+        "authentication"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/PrivateRoute.js",
+      "lineRange": [
+        5,
+        25
+      ]
+    },
+    {
+      "id": "step:permission-gated-routing:show-unauthorized",
+      "type": "step",
+      "name": "Show unauthorized page",
+      "summary": "Renders an error page when a user navigates to a route their permissions do not allow.",
+      "tags": [
+        "error-page",
+        "authorization"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Unauthorized.js"
+    },
+    {
+      "id": "domain:capture-management",
+      "type": "domain",
+      "name": "Capture Management",
+      "summary": "Covers verifying, browsing, exporting, and de-duplicating tree-planting 'captures' (photo submissions) collected by the Treetracker mobile app. This is the core review workflow that turns raw field submissions into verified, tokenized tree records.",
+      "tags": [
+        "captures",
+        "verification",
+        "core-workflow"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Capture",
+          "Capture Image",
+          "Verification Status",
+          "Tag",
+          "Duplicate Candidate"
+        ],
+        "businessRules": [
+          "A capture must be approved or rejected before it is tokenized.",
+          "Approve/reject actions support undo via an in-memory action history.",
+          "Filters (date, species, tag, organization) scope both the verify queue and the captures table.",
+          "The matching tool flags visually/geospatially similar captures as likely duplicates before approval."
+        ],
+        "crossDomainInteractions": [
+          "Reads Species and Tags reference data for tagging captures",
+          "Captures are attributed to a Grower",
+          "Aggregated into Reporting & Analytics Dashboard stat cards"
+        ]
+      }
+    },
+    {
+      "id": "flow:verify-captures",
+      "type": "flow",
+      "name": "Verify Captures",
+      "summary": "Reviews a paginated queue of unverified capture images and approves, rejects, or undoes verification decisions.",
+      "tags": [
+        "verification",
+        "workflow",
+        "context"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "/verify route (VerifyView)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:verify-captures:compose-view",
+      "type": "step",
+      "name": "Compose verify view",
+      "summary": "Sets the document title and wraps the verification UI in VerifyProvider, SpeciesProvider, and TagsProvider.",
+      "tags": [
+        "view",
+        "composition"
+      ],
+      "complexity": "simple",
+      "filePath": "src/views/VerifyView.js",
+      "lineRange": [
+        8,
+        22
+      ]
+    },
+    {
+      "id": "step:verify-captures:load-queue",
+      "type": "step",
+      "name": "Load paginated capture queue",
+      "summary": "Loads paginated capture images, tracks selection state, and exposes approve/approveAll/undo/undoAll actions with optimistic undo history.",
+      "tags": [
+        "context-provider",
+        "workflow",
+        "state-management"
+      ],
+      "complexity": "complex",
+      "filePath": "src/context/VerifyContext.js",
+      "lineRange": [
+        37,
+        326
+      ]
+    },
+    {
+      "id": "step:verify-captures:filter-queue",
+      "type": "step",
+      "name": "Filter capture queue",
+      "summary": "Provides capture search criteria (dates, verification/tokenization status, species, tags, organization) that re-trigger the queue fetch.",
+      "tags": [
+        "component",
+        "form",
+        "filter"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/CaptureFilter.js",
+      "lineRange": [
+        77,
+        443
+      ]
+    },
+    {
+      "id": "step:verify-captures:tag-capture",
+      "type": "step",
+      "name": "Tag capture",
+      "summary": "Autosuggest input for attaching one or more tags to a capture during review.",
+      "tags": [
+        "component",
+        "autosuggest",
+        "tags"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/CaptureTags.js",
+      "lineRange": [
+        69,
+        166
+      ]
+    },
+    {
+      "id": "step:verify-captures:view-detail",
+      "type": "step",
+      "name": "View capture detail",
+      "summary": "Opens a detail dialog showing the full capture image, metadata, and token status for close inspection before deciding.",
+      "tags": [
+        "component",
+        "dialog"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/CaptureDetailDialog.js",
+      "lineRange": [
+        87,
+        384
+      ]
+    },
+    {
+      "id": "flow:browse-export-captures",
+      "type": "flow",
+      "name": "Browse & Export Captures",
+      "summary": "Lists already-processed captures in a filterable table and exports the current result set to CSV.",
+      "tags": [
+        "captures",
+        "table",
+        "export"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "/captures route (CapturesView)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:browse-export-captures:compose-view",
+      "type": "step",
+      "name": "Compose captures view",
+      "summary": "Composes CapturesProvider, SpeciesProvider, and TagsProvider with the filter header and table.",
+      "tags": [
+        "view",
+        "composition"
+      ],
+      "complexity": "simple",
+      "filePath": "src/views/CapturesView.js",
+      "lineRange": [
+        10,
+        31
+      ]
+    },
+    {
+      "id": "step:browse-export-captures:load-captures",
+      "type": "step",
+      "name": "Load captures list",
+      "summary": "Fetches and paginates the captures list scoped by the active filter.",
+      "tags": [
+        "context-provider",
+        "data-fetching"
+      ],
+      "complexity": "complex",
+      "filePath": "src/context/CapturesContext.js",
+      "lineRange": [
+        30,
+        150
+      ]
+    },
+    {
+      "id": "step:browse-export-captures:filter-header",
+      "type": "step",
+      "name": "Filter captures",
+      "summary": "Renders the filter header controlling date, status, species, and tag criteria for the captures table.",
+      "tags": [
+        "component",
+        "filter"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/CaptureFilterHeader.js",
+      "lineRange": [
+        21,
+        64
+      ]
+    },
+    {
+      "id": "step:browse-export-captures:render-table",
+      "type": "step",
+      "name": "Render captures table",
+      "summary": "Renders the paginated captures table with formatted cell values.",
+      "tags": [
+        "component",
+        "table"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/Captures/CaptureTable.js",
+      "lineRange": [
+        113,
+        363
+      ]
+    },
+    {
+      "id": "step:browse-export-captures:export-csv",
+      "type": "step",
+      "name": "Export captures to CSV",
+      "summary": "Exports the currently filtered set of captures to a CSV file for download.",
+      "tags": [
+        "component",
+        "export",
+        "csv"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/ExportCaptures.js",
+      "lineRange": [
+        34,
+        148
+      ]
+    },
+    {
+      "id": "flow:match-duplicate-captures",
+      "type": "flow",
+      "name": "Match Duplicate Capture Images",
+      "summary": "Surfaces visually and geospatially similar capture images so reviewers can identify likely duplicate submissions from the same grower before approval.",
+      "tags": [
+        "capture-matching",
+        "deduplication",
+        "geolocation"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "/matching route (MatchingToolView)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:match-duplicate-captures:compose-view",
+      "type": "step",
+      "name": "Compose matching tool view",
+      "summary": "Wraps the capture matching UI in MatchingToolProvider and sets the document title.",
+      "tags": [
+        "view",
+        "composition"
+      ],
+      "complexity": "simple",
+      "filePath": "src/views/MatchingToolView.js",
+      "lineRange": [
+        7,
+        23
+      ]
+    },
+    {
+      "id": "step:match-duplicate-captures:load-candidates",
+      "type": "step",
+      "name": "Load and render candidate set",
+      "summary": "Fetches candidate captures and drives the matching workspace UI.",
+      "tags": [
+        "view",
+        "capture-matching",
+        "data-fetching"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/CaptureMatching/CaptureMatchingView.js",
+      "lineRange": [
+        320,
+        935
+      ]
+    },
+    {
+      "id": "step:match-duplicate-captures:filter-by-geolocation",
+      "type": "step",
+      "name": "Filter candidates by geolocation",
+      "summary": "Filters the candidate tree set by proximity/geolocation criteria to narrow likely duplicates.",
+      "tags": [
+        "utility",
+        "filtering",
+        "geolocation"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/CaptureMatching/CaptureMatchingView.js",
+      "lineRange": [
+        259,
+        315
+      ]
+    },
+    {
+      "id": "step:match-duplicate-captures:render-image-grid",
+      "type": "step",
+      "name": "Render candidate image grid",
+      "summary": "Displays candidate capture images in a comparable grid for visual review.",
+      "tags": [
+        "component",
+        "capture-matching",
+        "image-grid"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/CaptureMatching/CandidateImages.js",
+      "lineRange": [
+        139,
+        333
+      ]
+    },
+    {
+      "id": "step:match-duplicate-captures:compute-distance",
+      "type": "step",
+      "name": "Compute geolocation distance",
+      "summary": "Calculates distance between candidate capture locations to support duplicate scoring.",
+      "tags": [
+        "utility",
+        "geolocation"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/CaptureMatching/CandidateImages.js",
+      "lineRange": [
+        111,
+        137
+      ]
+    },
+    {
+      "id": "domain:grower-management",
+      "type": "domain",
+      "name": "Grower Management",
+      "summary": "Manages the tree planters ('growers') who submit captures: browsing and filtering the grower directory, and viewing/editing individual grower profiles, registrations, and organization assignment.",
+      "tags": [
+        "growers",
+        "profile-management",
+        "crud"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Grower",
+          "Grower Registration",
+          "Grower Selfie",
+          "Organization Assignment"
+        ],
+        "businessRules": [
+          "A grower can be reassigned to a different stakeholder organization, including cleared to null.",
+          "Grower selfie photos are deduplicated from the grower's capture history rather than stored separately."
+        ],
+        "crossDomainInteractions": [
+          "Captures are attributed to a Grower",
+          "Growers can belong to a Stakeholder organization",
+          "Earnings/payments are tied to a Grower",
+          "Aggregated into Reporting & Analytics Dashboard grower stats"
+        ]
+      }
+    },
+    {
+      "id": "flow:browse-filter-growers",
+      "type": "flow",
+      "name": "Browse & Filter Growers",
+      "summary": "Lists growers in a paginated grid with search/filter controls for finding a specific planter.",
+      "tags": [
+        "growers",
+        "table",
+        "filter"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "/growers route (GrowersView)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:browse-filter-growers:compose-view",
+      "type": "step",
+      "name": "Compose growers view",
+      "summary": "Sets the document title and composes GrowerProvider, SpeciesProvider, and TagsProvider with the filter header and grid.",
+      "tags": [
+        "view",
+        "composition"
+      ],
+      "complexity": "simple",
+      "filePath": "src/views/GrowersView.js",
+      "lineRange": [
+        10,
+        31
+      ]
+    },
+    {
+      "id": "step:browse-filter-growers:load-growers",
+      "type": "step",
+      "name": "Load grower list",
+      "summary": "Provides grower list state loaded from the growers API, scoped by the active filter.",
+      "tags": [
+        "context-provider",
+        "data-fetching"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/context/GrowerContext.js",
+      "lineRange": [
+        27,
+        130
+      ]
+    },
+    {
+      "id": "step:browse-filter-growers:filter-header",
+      "type": "step",
+      "name": "Filter growers",
+      "summary": "Renders the header controls for filtering the grower directory.",
+      "tags": [
+        "component",
+        "filter"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/GrowerFilterHeader.js",
+      "lineRange": [
+        21,
+        64
+      ]
+    },
+    {
+      "id": "step:browse-filter-growers:filter-top-grower",
+      "type": "step",
+      "name": "Filter top growers by criteria",
+      "summary": "Provides an advanced filter form (organization, date range, etc.) for narrowing the grower list.",
+      "tags": [
+        "component",
+        "form",
+        "filter"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/FilterTopGrower.js",
+      "lineRange": [
+        44,
+        212
+      ]
+    },
+    {
+      "id": "step:browse-filter-growers:render-grid",
+      "type": "step",
+      "name": "Render grower grid",
+      "summary": "Renders the paginated grid of grower cards.",
+      "tags": [
+        "component",
+        "grid",
+        "pagination"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/Growers/Growers.js",
+      "lineRange": [
+        21,
+        135
+      ]
+    },
+    {
+      "id": "step:browse-filter-growers:show-tooltip",
+      "type": "step",
+      "name": "Show grower tooltip",
+      "summary": "Displays a hover tooltip with quick grower details from the grid.",
+      "tags": [
+        "component",
+        "tooltip"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Growers/GrowerTooltip.js",
+      "lineRange": [
+        13,
+        124
+      ]
+    },
+    {
+      "id": "flow:view-edit-grower-profile",
+      "type": "flow",
+      "name": "View & Edit Grower Profile",
+      "summary": "Loads a single grower's profile, registration devices, and photos, and allows editing profile fields including organization assignment.",
+      "tags": [
+        "growers",
+        "profile",
+        "crud"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "Grower detail dialog / GrowerDetail component",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:view-edit-grower-profile:load-detail",
+      "type": "step",
+      "name": "Load grower detail",
+      "summary": "Fetches and renders a single grower's full profile detail.",
+      "tags": [
+        "component",
+        "detail-view",
+        "data-fetching"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/GrowerDetail.js",
+      "lineRange": [
+        136,
+        578
+      ]
+    },
+    {
+      "id": "step:view-edit-grower-profile:fetch-grower",
+      "type": "step",
+      "name": "Fetch grower by id",
+      "summary": "Fetches a single grower record by id from the API with authorization headers.",
+      "tags": [
+        "api-handler",
+        "data-fetching"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/growers.js",
+      "lineRange": [
+        5,
+        21
+      ]
+    },
+    {
+      "id": "step:view-edit-grower-profile:fetch-registrations",
+      "type": "step",
+      "name": "Fetch grower device registrations",
+      "summary": "Fetches device registration records associated with the grower.",
+      "tags": [
+        "api-handler",
+        "data-fetching"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/growers.js",
+      "lineRange": [
+        79,
+        94
+      ]
+    },
+    {
+      "id": "step:view-edit-grower-profile:fetch-selfies",
+      "type": "step",
+      "name": "Fetch grower selfies",
+      "summary": "Fetches and deduplicates the grower's selfie photo URLs from their capture history.",
+      "tags": [
+        "api-handler",
+        "data-fetching",
+        "image"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/api/growers.js",
+      "lineRange": [
+        96,
+        131
+      ]
+    },
+    {
+      "id": "step:view-edit-grower-profile:edit-form",
+      "type": "step",
+      "name": "Edit grower profile form",
+      "summary": "Renders an editable form dialog for updating grower profile fields.",
+      "tags": [
+        "component",
+        "form",
+        "dialog"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/EditGrower.js",
+      "lineRange": [
+        30,
+        200
+      ]
+    },
+    {
+      "id": "step:view-edit-grower-profile:assign-organization",
+      "type": "step",
+      "name": "Assign grower organization",
+      "summary": "Allows assigning or clearing the grower's stakeholder organization.",
+      "tags": [
+        "component",
+        "organization"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/GrowerOrganization.js",
+      "lineRange": [
+        19,
+        54
+      ]
+    },
+    {
+      "id": "step:view-edit-grower-profile:submit-update",
+      "type": "step",
+      "name": "Submit grower update",
+      "summary": "Sends a PATCH request to update grower profile fields, normalizing a null organization sentinel value.",
+      "tags": [
+        "api-handler",
+        "data-fetching"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/growers.js",
+      "lineRange": [
+        133,
+        154
+      ]
+    },
+    {
+      "id": "domain:reference-data-management",
+      "type": "domain",
+      "name": "Reference Data Management",
+      "summary": "Maintains the master/reference catalogs used throughout the app: tree species taxonomy and geographic regions (with GeoJSON boundaries). Both are simple CRUD catalogs referenced by captures, growers, and messaging.",
+      "tags": [
+        "species",
+        "regions",
+        "master-data",
+        "crud"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Species",
+          "Region",
+          "Region GeoJSON Boundary"
+        ],
+        "businessRules": [
+          "Duplicate species entries can be merged ('combined') rather than only deleted.",
+          "Region boundaries are stored and edited as GeoJSON.",
+          "Deleting a species or region requires an explicit confirmation dialog."
+        ],
+        "crossDomainInteractions": [
+          "Species used to tag/filter Captures and Growers",
+          "Regions used to scope Messaging recipients and grower filters",
+          "Aggregated into Reporting & Analytics Dashboard species stats"
+        ]
+      }
+    },
+    {
+      "id": "flow:manage-species-catalog",
+      "type": "flow",
+      "name": "Manage Species Catalog",
+      "summary": "Views, edits, merges, and deletes entries in the tree species catalog.",
+      "tags": [
+        "species",
+        "crud",
+        "table"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "/species route (SpeciesView)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:manage-species-catalog:compose-view",
+      "type": "step",
+      "name": "Compose species view",
+      "summary": "Sets the document title and renders SpeciesTable inside a SpeciesProvider context wrapper.",
+      "tags": [
+        "view",
+        "composition"
+      ],
+      "complexity": "simple",
+      "filePath": "src/views/SpeciesView.js",
+      "lineRange": [
+        7,
+        26
+      ]
+    },
+    {
+      "id": "step:manage-species-catalog:load-species",
+      "type": "step",
+      "name": "Load species list",
+      "summary": "Loads the species catalog via react-query for use across the app.",
+      "tags": [
+        "context-provider",
+        "react-query"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/context/SpeciesContext.js",
+      "lineRange": [
+        20,
+        104
+      ]
+    },
+    {
+      "id": "step:manage-species-catalog:render-table",
+      "type": "step",
+      "name": "Render species table",
+      "summary": "Renders the paginated species data table with CRUD row actions.",
+      "tags": [
+        "component",
+        "data-table",
+        "crud"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/SpeciesTable.js",
+      "lineRange": [
+        126,
+        376
+      ]
+    },
+    {
+      "id": "step:manage-species-catalog:edit-species",
+      "type": "step",
+      "name": "Edit species entry",
+      "summary": "Opens a modal with form validation for editing a species entry.",
+      "tags": [
+        "component",
+        "modal",
+        "form-validation"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/SpeciesTable.js",
+      "lineRange": [
+        378,
+        477
+      ]
+    },
+    {
+      "id": "step:manage-species-catalog:combine-species",
+      "type": "step",
+      "name": "Combine duplicate species",
+      "summary": "Opens a modal to merge one species entry into another, consolidating duplicate data.",
+      "tags": [
+        "component",
+        "modal",
+        "data-merge"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/SpeciesTable.js",
+      "lineRange": [
+        479,
+        572
+      ]
+    },
+    {
+      "id": "step:manage-species-catalog:delete-species",
+      "type": "step",
+      "name": "Delete species entry",
+      "summary": "Opens a confirmation dialog before deleting a species entry.",
+      "tags": [
+        "component",
+        "modal",
+        "confirmation"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/SpeciesTable.js",
+      "lineRange": [
+        574,
+        611
+      ]
+    },
+    {
+      "id": "flow:manage-regions",
+      "type": "flow",
+      "name": "Manage Regions & Boundaries",
+      "summary": "Views, edits (including GeoJSON boundary upload), and deletes geographic regions used to scope growers and messaging.",
+      "tags": [
+        "regions",
+        "crud",
+        "geojson"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "/regions route (RegionsView)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:manage-regions:compose-view",
+      "type": "step",
+      "name": "Compose regions view",
+      "summary": "Updates the browser document title and renders the regions table inside a RegionProvider.",
+      "tags": [
+        "view",
+        "composition"
+      ],
+      "complexity": "simple",
+      "filePath": "src/views/RegionsView.js",
+      "lineRange": [
+        7,
+        26
+      ]
+    },
+    {
+      "id": "step:manage-regions:load-regions",
+      "type": "step",
+      "name": "Load region list",
+      "summary": "Provides region list state and CRUD operations loaded from the regions API.",
+      "tags": [
+        "context-provider",
+        "crud"
+      ],
+      "complexity": "complex",
+      "filePath": "src/context/RegionContext.js",
+      "lineRange": [
+        34,
+        233
+      ]
+    },
+    {
+      "id": "step:manage-regions:render-table",
+      "type": "step",
+      "name": "Render region table",
+      "summary": "Renders the paginated regions table with CRUD row actions.",
+      "tags": [
+        "table",
+        "pagination",
+        "crud"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/Regions.js",
+      "lineRange": [
+        107,
+        434
+      ]
+    },
+    {
+      "id": "step:manage-regions:edit-region",
+      "type": "step",
+      "name": "Edit region boundary",
+      "summary": "Opens a modal for editing region fields and uploading a GeoJSON boundary.",
+      "tags": [
+        "modal",
+        "geojson",
+        "form"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/Regions.js",
+      "lineRange": [
+        436,
+        795
+      ]
+    },
+    {
+      "id": "step:manage-regions:delete-region",
+      "type": "step",
+      "name": "Delete region",
+      "summary": "Opens a confirmation dialog before deleting a region.",
+      "tags": [
+        "modal",
+        "confirmation"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Regions.js",
+      "lineRange": [
+        797,
+        853
+      ]
+    },
+    {
+      "id": "domain:stakeholder-management",
+      "type": "domain",
+      "name": "Stakeholder & Organization Management",
+      "summary": "Manages stakeholder organizations (NGOs, partners, groups) that growers and users belong to, including their parent/child organizational hierarchy and membership lists.",
+      "tags": [
+        "stakeholders",
+        "organizations",
+        "hierarchy"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Stakeholder",
+          "Stakeholder Group",
+          "Parent/Child Relationship",
+          "Member Grower/User"
+        ],
+        "businessRules": [
+          "Stakeholders can be organized in a parent/child hierarchy.",
+          "A stakeholder detail view lists both member growers and member users.",
+          "Adding a stakeholder requires form validation before submission."
+        ],
+        "crossDomainInteractions": [
+          "Growers can be assigned to a Stakeholder organization",
+          "Used to scope Messaging recipients by organization",
+          "Session organization drives most region/messaging API scoping"
+        ]
+      }
+    },
+    {
+      "id": "flow:browse-filter-stakeholders",
+      "type": "flow",
+      "name": "Browse & Filter Stakeholders",
+      "summary": "Lists stakeholder organizations in a sortable table with filter controls.",
+      "tags": [
+        "stakeholders",
+        "table",
+        "filter"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "/stakeholders route (StakeholdersView)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:browse-filter-stakeholders:compose-view",
+      "type": "step",
+      "name": "Compose stakeholders view",
+      "summary": "Composes the Navbar, FilterBar, and StakeholderTable wrapped in StakeholdersProvider and GrowerProvider.",
+      "tags": [
+        "view",
+        "composition"
+      ],
+      "complexity": "simple",
+      "filePath": "src/views/StakeholdersView.js",
+      "lineRange": [
+        9,
+        23
+      ]
+    },
+    {
+      "id": "step:browse-filter-stakeholders:load-stakeholders",
+      "type": "step",
+      "name": "Load stakeholder list",
+      "summary": "Provides stakeholder list state and CRUD operations loaded from the stakeholders API.",
+      "tags": [
+        "context-provider",
+        "api-integration",
+        "crud"
+      ],
+      "complexity": "complex",
+      "filePath": "src/context/StakeholdersContext.js",
+      "lineRange": [
+        51,
+        152
+      ]
+    },
+    {
+      "id": "step:browse-filter-stakeholders:filter-form",
+      "type": "step",
+      "name": "Filter stakeholders",
+      "summary": "Provides filter-criteria state for narrowing the stakeholder list.",
+      "tags": [
+        "component",
+        "filter-logic"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/Stakeholders/Filter.js",
+      "lineRange": [
+        36,
+        350
+      ]
+    },
+    {
+      "id": "step:browse-filter-stakeholders:filter-toolbar",
+      "type": "step",
+      "name": "Render filter toolbar",
+      "summary": "Renders the toolbar layout hosting the stakeholder filter controls.",
+      "tags": [
+        "component",
+        "layout"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Stakeholders/FilterBar.js",
+      "lineRange": [
+        20,
+        35
+      ]
+    },
+    {
+      "id": "step:browse-filter-stakeholders:render-table",
+      "type": "step",
+      "name": "Render stakeholder table",
+      "summary": "Renders the sortable stakeholder table.",
+      "tags": [
+        "component",
+        "table",
+        "sort-logic"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/Stakeholders/Table.js",
+      "lineRange": [
+        29,
+        131
+      ]
+    },
+    {
+      "id": "flow:manage-stakeholder-detail",
+      "type": "flow",
+      "name": "Manage Stakeholder Detail & Relationships",
+      "summary": "Views and edits a single stakeholder's profile, parent/child organization hierarchy, and member growers/users.",
+      "tags": [
+        "stakeholders",
+        "hierarchy",
+        "relationships"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "Stakeholder detail modal",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:manage-stakeholder-detail:open-detail",
+      "type": "step",
+      "name": "Open stakeholder detail modal",
+      "summary": "Renders the modal container for a single stakeholder's detail view.",
+      "tags": [
+        "component",
+        "modal",
+        "container"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/Stakeholders/StakeholderDetail/StakeholderDetail.js",
+      "lineRange": [
+        59,
+        210
+      ]
+    },
+    {
+      "id": "step:manage-stakeholder-detail:edit-header",
+      "type": "step",
+      "name": "Edit stakeholder header",
+      "summary": "Renders an editable header form for the stakeholder's core fields with validation.",
+      "tags": [
+        "component",
+        "form-handler",
+        "validation"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/Stakeholders/StakeholderDetail/Header.js",
+      "lineRange": [
+        57,
+        466
+      ]
+    },
+    {
+      "id": "step:manage-stakeholder-detail:manage-groups",
+      "type": "step",
+      "name": "Manage stakeholder groups",
+      "summary": "Manages parent/child organization group relationships for the stakeholder.",
+      "tags": [
+        "component",
+        "relationship-management",
+        "state-update"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/Stakeholders/StakeholderDetail/Groups.js",
+      "lineRange": [
+        32,
+        92
+      ]
+    },
+    {
+      "id": "step:manage-stakeholder-detail:list-relationships",
+      "type": "step",
+      "name": "List parent/child relationships",
+      "summary": "Displays list items for related parent/child stakeholder entries with delete confirmation.",
+      "tags": [
+        "component",
+        "list-item",
+        "delete-confirmation"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/Stakeholders/StakeholderDetail/List.js",
+      "lineRange": [
+        19,
+        65
+      ]
+    },
+    {
+      "id": "flow:add-stakeholder",
+      "type": "flow",
+      "name": "Add New Stakeholder",
+      "summary": "Creates a new stakeholder organization via a validated form.",
+      "tags": [
+        "stakeholders",
+        "form",
+        "create"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Add stakeholder modal",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:add-stakeholder:open-form",
+      "type": "step",
+      "name": "Open add-stakeholder form",
+      "summary": "Renders the modal form for creating a new stakeholder, with field validation.",
+      "tags": [
+        "component",
+        "form-handler",
+        "modal",
+        "validation"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/Stakeholders/Add.js",
+      "lineRange": [
+        54,
+        351
+      ]
+    },
+    {
+      "id": "step:add-stakeholder:submit-create",
+      "type": "step",
+      "name": "Submit new stakeholder",
+      "summary": "Submits the validated form to create the stakeholder record via the stakeholders API.",
+      "tags": [
+        "api",
+        "crud"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/stakeholders.js"
+    },
+    {
+      "id": "domain:messaging-surveys",
+      "type": "domain",
+      "name": "Messaging & Surveys",
+      "summary": "Handles direct and broadcast messaging with growers, including announcements and grower surveys, plus visualization of aggregated survey responses.",
+      "tags": [
+        "messaging",
+        "surveys",
+        "communication"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Message",
+          "Announcement",
+          "Survey",
+          "Survey Response",
+          "Inbox Thread"
+        ],
+        "businessRules": [
+          "Announcements can be broadcast to many growers at once, distinct from a single-recipient message.",
+          "Survey responses are rendered as distinct chat-bubble types from plain sent/received messages.",
+          "Most messaging API calls are scoped by the session organization UUID."
+        ],
+        "crossDomainInteractions": [
+          "Targets Growers as message recipients",
+          "Region lookups scope which growers can be messaged",
+          "Survey response aggregation feeds SurveyCharts visualizations"
+        ]
+      }
+    },
+    {
+      "id": "flow:send-message-announcement",
+      "type": "flow",
+      "name": "Send Message / Announcement",
+      "summary": "Browses the message inbox, composes a new one-to-one message or a broadcast announcement, and sends it to grower(s).",
+      "tags": [
+        "messaging",
+        "inbox",
+        "broadcast"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "/messaging route (MessagingView)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:send-message-announcement:compose-view",
+      "type": "step",
+      "name": "Compose messaging view",
+      "summary": "Renders the messaging page layout with Navbar and the Messaging container.",
+      "tags": [
+        "view",
+        "page"
+      ],
+      "complexity": "simple",
+      "filePath": "src/views/MessagingView.js",
+      "lineRange": [
+        7,
+        19
+      ]
+    },
+    {
+      "id": "step:send-message-announcement:container-state",
+      "type": "step",
+      "name": "Manage messaging container state",
+      "summary": "Coordinates inbox selection, active thread, and message-sending state for the messaging page.",
+      "tags": [
+        "messaging",
+        "container",
+        "state-management"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/Messaging/Messaging.js",
+      "lineRange": [
+        58,
+        167
+      ]
+    },
+    {
+      "id": "step:send-message-announcement:search-inbox",
+      "type": "step",
+      "name": "Search inbox",
+      "summary": "Provides search input for filtering the inbox thread list.",
+      "tags": [
+        "search",
+        "form-input"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Messaging/SearchInbox.js",
+      "lineRange": [
+        18,
+        33
+      ]
+    },
+    {
+      "id": "step:send-message-announcement:select-thread",
+      "type": "step",
+      "name": "Select inbox thread",
+      "summary": "Lists inbox threads and lets the reviewer select one to view/reply to.",
+      "tags": [
+        "list",
+        "search"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/Messaging/Inbox.js",
+      "lineRange": [
+        58,
+        119
+      ]
+    },
+    {
+      "id": "step:send-message-announcement:compose-new-message",
+      "type": "step",
+      "name": "Compose new message",
+      "summary": "Opens a validated form modal to compose a new one-to-one message.",
+      "tags": [
+        "form",
+        "modal",
+        "validation"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/Messaging/NewMessage.js",
+      "lineRange": [
+        62,
+        263
+      ]
+    },
+    {
+      "id": "step:send-message-announcement:compose-announcement",
+      "type": "step",
+      "name": "Compose broadcast announcement",
+      "summary": "Opens a validated form with autocomplete recipient selection for broadcasting an announcement to many growers.",
+      "tags": [
+        "form",
+        "validation",
+        "autocomplete"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/Messaging/AnnounceMessage.js",
+      "lineRange": [
+        57,
+        312
+      ]
+    },
+    {
+      "id": "step:send-message-announcement:render-thread",
+      "type": "step",
+      "name": "Render message thread",
+      "summary": "Renders sent/received chat bubbles for the active thread, including a form for replying.",
+      "tags": [
+        "chat",
+        "state-management",
+        "form"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/Messaging/MessageBody.js",
+      "lineRange": [
+        461,
+        713
+      ]
+    },
+    {
+      "id": "flow:conduct-grower-survey",
+      "type": "flow",
+      "name": "Conduct Grower Survey",
+      "summary": "Builds and sends a survey to growers, then visualizes the aggregated responses.",
+      "tags": [
+        "survey",
+        "messaging",
+        "charts"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Survey composer within Messaging",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:conduct-grower-survey:build-survey",
+      "type": "step",
+      "name": "Build survey form",
+      "summary": "Renders a validated form for authoring survey questions to send to growers.",
+      "tags": [
+        "form",
+        "survey",
+        "validation"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/Messaging/Survey.js",
+      "lineRange": [
+        68,
+        415
+      ]
+    },
+    {
+      "id": "step:conduct-grower-survey:send-survey",
+      "type": "step",
+      "name": "Send survey",
+      "summary": "Wraps the survey form in a responsive modal and triggers the send action.",
+      "tags": [
+        "modal",
+        "responsive"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Messaging/Survey.js",
+      "lineRange": [
+        417,
+        470
+      ]
+    },
+    {
+      "id": "step:conduct-grower-survey:render-survey-message",
+      "type": "step",
+      "name": "Render sent survey in thread",
+      "summary": "Renders a sent survey as a distinct chat-bubble type in the message thread.",
+      "tags": [
+        "chat-bubble",
+        "survey"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Messaging/MessageBody.js",
+      "lineRange": [
+        255,
+        293
+      ]
+    },
+    {
+      "id": "step:conduct-grower-survey:render-survey-response",
+      "type": "step",
+      "name": "Render survey response",
+      "summary": "Renders a grower's survey response as a distinct chat-bubble type in the message thread.",
+      "tags": [
+        "chat-bubble",
+        "survey"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Messaging/MessageBody.js",
+      "lineRange": [
+        224,
+        253
+      ]
+    },
+    {
+      "id": "step:conduct-grower-survey:visualize-responses",
+      "type": "step",
+      "name": "Visualize survey responses",
+      "summary": "Aggregates and charts survey response data for review.",
+      "tags": [
+        "charts",
+        "data-visualization"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/Messaging/SurveyCharts.js",
+      "lineRange": [
+        21,
+        142
+      ]
+    },
+    {
+      "id": "domain:earnings-payments",
+      "type": "domain",
+      "name": "Earnings & Payments Reporting",
+      "summary": "Tracks grower earnings from verified/tokenized captures and records payment confirmations, including bulk CSV-based adjustment of earnings and payment logs.",
+      "tags": [
+        "earnings",
+        "payments",
+        "finance"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Earning Record",
+          "Payment Confirmation",
+          "CSV Batch Upload"
+        ],
+        "businessRules": [
+          "Earnings can be patched individually or in bulk via CSV upload.",
+          "Logging a payment confirmation (id + method) updates the underlying earning record."
+        ],
+        "crossDomainInteractions": [
+          "Earnings/payments are tied to a Grower",
+          "Relies on session-scoped authenticated API headers from Authentication domain"
+        ]
+      }
+    },
+    {
+      "id": "flow:review-adjust-earnings",
+      "type": "flow",
+      "name": "Review & Adjust Earnings",
+      "summary": "Views paginated grower earnings and adjusts them individually or via bulk CSV upload.",
+      "tags": [
+        "earnings",
+        "table",
+        "csv"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "/earnings route (EarningsView)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:review-adjust-earnings:compose-view",
+      "type": "step",
+      "name": "Compose earnings view",
+      "summary": "Renders the earnings page layout with Navbar and EarningsTable.",
+      "tags": [
+        "view",
+        "page"
+      ],
+      "complexity": "simple",
+      "filePath": "src/views/EarningsView/EarningsView.js",
+      "lineRange": [
+        14,
+        29
+      ]
+    },
+    {
+      "id": "step:review-adjust-earnings:render-table",
+      "type": "step",
+      "name": "Render earnings table",
+      "summary": "Fetches, paginates, and renders the earnings table with formatted rows.",
+      "tags": [
+        "component",
+        "table",
+        "data-fetching"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/EarningsTable/EarningsTable.js",
+      "lineRange": [
+        108,
+        256
+      ]
+    },
+    {
+      "id": "step:review-adjust-earnings:fetch-earnings",
+      "type": "step",
+      "name": "Fetch earnings records",
+      "summary": "Fetches earnings records from the API with query params and an authenticated bearer header.",
+      "tags": [
+        "api-call",
+        "async",
+        "http-get"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/earnings.js",
+      "lineRange": [
+        13,
+        20
+      ]
+    },
+    {
+      "id": "step:review-adjust-earnings:patch-earning",
+      "type": "step",
+      "name": "Patch single earning",
+      "summary": "Patches a single earning record via the API.",
+      "tags": [
+        "api-call",
+        "async",
+        "http-patch"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/earnings.js",
+      "lineRange": [
+        29,
+        38
+      ]
+    },
+    {
+      "id": "step:review-adjust-earnings:batch-patch",
+      "type": "step",
+      "name": "Batch-patch earnings via CSV",
+      "summary": "Uploads a CSV file to batch-patch multiple earning records, wrapping upload errors.",
+      "tags": [
+        "api-call",
+        "csv-upload",
+        "error-handling"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/api/earnings.js",
+      "lineRange": [
+        46,
+        59
+      ]
+    },
+    {
+      "id": "flow:log-grower-payments",
+      "type": "flow",
+      "name": "Log Grower Payments",
+      "summary": "Views payment records with date-range filtering, bulk CSV upload, and logs payment confirmation details against an earning.",
+      "tags": [
+        "payments",
+        "table",
+        "csv"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "/payments route (PaymentsView)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:log-grower-payments:compose-view",
+      "type": "step",
+      "name": "Compose payments view",
+      "summary": "Renders the payments page layout with Navbar and PaymentsTable.",
+      "tags": [
+        "view",
+        "page"
+      ],
+      "complexity": "simple",
+      "filePath": "src/views/PaymentsView/PaymentsView.js",
+      "lineRange": [
+        14,
+        28
+      ]
+    },
+    {
+      "id": "step:log-grower-payments:render-table",
+      "type": "step",
+      "name": "Render payments table",
+      "summary": "Renders the payments table with pagination, date-range filtering, and CSV batch upload with snackbar/error feedback.",
+      "tags": [
+        "component",
+        "table",
+        "data-fetching"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/PaymentsTable/PaymentsTable.js",
+      "lineRange": [
+        121,
+        305
+      ]
+    },
+    {
+      "id": "step:log-grower-payments:log-confirmation",
+      "type": "step",
+      "name": "Log payment confirmation",
+      "summary": "Renders a form for logging a payment confirmation (id and method) and submits the update via the earnings API.",
+      "tags": [
+        "form",
+        "payment"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/common/CustomTableItemDetails/CustomTableItemDetails.js",
+      "lineRange": [
+        29,
+        134
+      ]
+    },
+    {
+      "id": "step:log-grower-payments:submit-patch",
+      "type": "step",
+      "name": "Submit payment update",
+      "summary": "Submits the payment confirmation update as a patch to the underlying earning record.",
+      "tags": [
+        "api-call",
+        "async",
+        "http-patch"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/earnings.js",
+      "lineRange": [
+        29,
+        38
+      ]
+    },
+    {
+      "id": "domain:analytics-dashboard",
+      "type": "domain",
+      "name": "Reporting & Analytics Dashboard",
+      "summary": "Presents the admin home page with at-a-glance stat cards and date-range-filterable reporting cards summarizing captures, growers, trees, and species across the organization.",
+      "tags": [
+        "dashboard",
+        "analytics",
+        "reporting"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Dashboard Stat",
+          "Reporting Card",
+          "Date Range Filter"
+        ],
+        "businessRules": [
+          "Dashboard sections and menus are gated by user permissions.",
+          "Reporting cards show a top-N breakdown alongside the headline stat, with a 'see more' modal for detail."
+        ],
+        "crossDomainInteractions": [
+          "Aggregates counts from Capture Management, Grower Management, and Reference Data Management domains",
+          "Gated by Authentication permissions per section"
+        ]
+      }
+    },
+    {
+      "id": "flow:view-dashboard-overview",
+      "type": "flow",
+      "name": "View Dashboard Overview",
+      "summary": "Renders the home page's stat cards and reporting cards for a selected date range, summarizing captures, growers, trees, and species activity.",
+      "tags": [
+        "dashboard",
+        "stats",
+        "reporting-cards"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "/ route (Home)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:view-dashboard-overview:compose-home",
+      "type": "step",
+      "name": "Compose dashboard home page",
+      "summary": "Renders the dashboard home page: stat cards, reporting cards, a time-range picker, last-update timestamp, and permission-gated sections.",
+      "tags": [
+        "view",
+        "composition"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/Home/Home.js",
+      "lineRange": [
+        54,
+        229
+      ]
+    },
+    {
+      "id": "step:view-dashboard-overview:fetch-capture-stats",
+      "type": "step",
+      "name": "Fetch capture count stats",
+      "summary": "Fetches total, unprocessed, and verified capture counts from the API for the stat cards.",
+      "tags": [
+        "data-fetching",
+        "dashboard",
+        "stats"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/DashStat.container.js",
+      "lineRange": [
+        16,
+        42
+      ]
+    },
+    {
+      "id": "step:view-dashboard-overview:fetch-grower-stats",
+      "type": "step",
+      "name": "Fetch grower count stat",
+      "summary": "Fetches the total active grower count from the growers API.",
+      "tags": [
+        "data-fetching",
+        "dashboard",
+        "stats"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/DashStat.container.js",
+      "lineRange": [
+        102,
+        127
+      ]
+    },
+    {
+      "id": "step:view-dashboard-overview:render-stat-card",
+      "type": "step",
+      "name": "Render stat card",
+      "summary": "Renders a colored icon badge, numeric value (or loading spinner), and label for a single dashboard stat.",
+      "tags": [
+        "component",
+        "dashboard"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/DashStat.js",
+      "lineRange": [
+        81,
+        99
+      ]
+    },
+    {
+      "id": "step:view-dashboard-overview:load-reporting-data",
+      "type": "step",
+      "name": "Load reporting card data",
+      "summary": "Loads capture/grower/tree/species statistics and a top-N breakdown from the reporting API for the selected date range.",
+      "tags": [
+        "data-fetching",
+        "reporting"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/reportingCards/ReportingCard.hook.js",
+      "lineRange": [
+        5,
+        74
+      ]
+    },
+    {
+      "id": "step:view-dashboard-overview:render-reporting-card",
+      "type": "step",
+      "name": "Render reporting card",
+      "summary": "Renders a stat card with a top-4 breakdown list and a 'see more' detail modal.",
+      "tags": [
+        "component",
+        "reporting"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/reportingCards/ReportingCard.js",
+      "lineRange": [
+        129,
+        254
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:authentication-access-control",
+      "target": "flow:user-login",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:user-login",
+      "target": "step:user-login:render-login-form",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:user-login",
+      "target": "step:user-login:submit-credentials",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:user-login",
+      "target": "step:user-login:establish-session",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:user-login",
+      "target": "step:user-login:persist-session-storage",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:user-login",
+      "target": "step:user-login:redirect-to-app",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:authentication-access-control",
+      "target": "flow:permission-gated-routing",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:permission-gated-routing",
+      "target": "step:permission-gated-routing:build-routes",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:permission-gated-routing",
+      "target": "step:permission-gated-routing:check-permission",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:permission-gated-routing",
+      "target": "step:permission-gated-routing:check-feature-flag",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:permission-gated-routing",
+      "target": "step:permission-gated-routing:guard-route",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:permission-gated-routing",
+      "target": "step:permission-gated-routing:show-unauthorized",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:capture-management",
+      "target": "flow:verify-captures",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:verify-captures",
+      "target": "step:verify-captures:compose-view",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:verify-captures",
+      "target": "step:verify-captures:load-queue",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:verify-captures",
+      "target": "step:verify-captures:filter-queue",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:verify-captures",
+      "target": "step:verify-captures:tag-capture",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:verify-captures",
+      "target": "step:verify-captures:view-detail",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:capture-management",
+      "target": "flow:browse-export-captures",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:browse-export-captures",
+      "target": "step:browse-export-captures:compose-view",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:browse-export-captures",
+      "target": "step:browse-export-captures:load-captures",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:browse-export-captures",
+      "target": "step:browse-export-captures:filter-header",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:browse-export-captures",
+      "target": "step:browse-export-captures:render-table",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:browse-export-captures",
+      "target": "step:browse-export-captures:export-csv",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:capture-management",
+      "target": "flow:match-duplicate-captures",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:match-duplicate-captures",
+      "target": "step:match-duplicate-captures:compose-view",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:match-duplicate-captures",
+      "target": "step:match-duplicate-captures:load-candidates",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:match-duplicate-captures",
+      "target": "step:match-duplicate-captures:filter-by-geolocation",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:match-duplicate-captures",
+      "target": "step:match-duplicate-captures:render-image-grid",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:match-duplicate-captures",
+      "target": "step:match-duplicate-captures:compute-distance",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:grower-management",
+      "target": "flow:browse-filter-growers",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:browse-filter-growers",
+      "target": "step:browse-filter-growers:compose-view",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:browse-filter-growers",
+      "target": "step:browse-filter-growers:load-growers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:browse-filter-growers",
+      "target": "step:browse-filter-growers:filter-header",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:browse-filter-growers",
+      "target": "step:browse-filter-growers:filter-top-grower",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:browse-filter-growers",
+      "target": "step:browse-filter-growers:render-grid",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:browse-filter-growers",
+      "target": "step:browse-filter-growers:show-tooltip",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:grower-management",
+      "target": "flow:view-edit-grower-profile",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:view-edit-grower-profile",
+      "target": "step:view-edit-grower-profile:load-detail",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:view-edit-grower-profile",
+      "target": "step:view-edit-grower-profile:fetch-grower",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:view-edit-grower-profile",
+      "target": "step:view-edit-grower-profile:fetch-registrations",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:view-edit-grower-profile",
+      "target": "step:view-edit-grower-profile:fetch-selfies",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:view-edit-grower-profile",
+      "target": "step:view-edit-grower-profile:edit-form",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:view-edit-grower-profile",
+      "target": "step:view-edit-grower-profile:assign-organization",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "flow:view-edit-grower-profile",
+      "target": "step:view-edit-grower-profile:submit-update",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:reference-data-management",
+      "target": "flow:manage-species-catalog",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:manage-species-catalog",
+      "target": "step:manage-species-catalog:compose-view",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:manage-species-catalog",
+      "target": "step:manage-species-catalog:load-species",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:manage-species-catalog",
+      "target": "step:manage-species-catalog:render-table",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:manage-species-catalog",
+      "target": "step:manage-species-catalog:edit-species",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:manage-species-catalog",
+      "target": "step:manage-species-catalog:combine-species",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:manage-species-catalog",
+      "target": "step:manage-species-catalog:delete-species",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:reference-data-management",
+      "target": "flow:manage-regions",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:manage-regions",
+      "target": "step:manage-regions:compose-view",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:manage-regions",
+      "target": "step:manage-regions:load-regions",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:manage-regions",
+      "target": "step:manage-regions:render-table",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:manage-regions",
+      "target": "step:manage-regions:edit-region",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:manage-regions",
+      "target": "step:manage-regions:delete-region",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:stakeholder-management",
+      "target": "flow:browse-filter-stakeholders",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:browse-filter-stakeholders",
+      "target": "step:browse-filter-stakeholders:compose-view",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:browse-filter-stakeholders",
+      "target": "step:browse-filter-stakeholders:load-stakeholders",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:browse-filter-stakeholders",
+      "target": "step:browse-filter-stakeholders:filter-form",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:browse-filter-stakeholders",
+      "target": "step:browse-filter-stakeholders:filter-toolbar",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:browse-filter-stakeholders",
+      "target": "step:browse-filter-stakeholders:render-table",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:stakeholder-management",
+      "target": "flow:manage-stakeholder-detail",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:manage-stakeholder-detail",
+      "target": "step:manage-stakeholder-detail:open-detail",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:manage-stakeholder-detail",
+      "target": "step:manage-stakeholder-detail:edit-header",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:manage-stakeholder-detail",
+      "target": "step:manage-stakeholder-detail:manage-groups",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:manage-stakeholder-detail",
+      "target": "step:manage-stakeholder-detail:list-relationships",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:stakeholder-management",
+      "target": "flow:add-stakeholder",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:add-stakeholder",
+      "target": "step:add-stakeholder:open-form",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:add-stakeholder",
+      "target": "step:add-stakeholder:submit-create",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:messaging-surveys",
+      "target": "flow:send-message-announcement",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:send-message-announcement",
+      "target": "step:send-message-announcement:compose-view",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:send-message-announcement",
+      "target": "step:send-message-announcement:container-state",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:send-message-announcement",
+      "target": "step:send-message-announcement:search-inbox",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:send-message-announcement",
+      "target": "step:send-message-announcement:select-thread",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:send-message-announcement",
+      "target": "step:send-message-announcement:compose-new-message",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:send-message-announcement",
+      "target": "step:send-message-announcement:compose-announcement",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "flow:send-message-announcement",
+      "target": "step:send-message-announcement:render-thread",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:messaging-surveys",
+      "target": "flow:conduct-grower-survey",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:conduct-grower-survey",
+      "target": "step:conduct-grower-survey:build-survey",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:conduct-grower-survey",
+      "target": "step:conduct-grower-survey:send-survey",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:conduct-grower-survey",
+      "target": "step:conduct-grower-survey:render-survey-message",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:conduct-grower-survey",
+      "target": "step:conduct-grower-survey:render-survey-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:conduct-grower-survey",
+      "target": "step:conduct-grower-survey:visualize-responses",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:earnings-payments",
+      "target": "flow:review-adjust-earnings",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:review-adjust-earnings",
+      "target": "step:review-adjust-earnings:compose-view",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:review-adjust-earnings",
+      "target": "step:review-adjust-earnings:render-table",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:review-adjust-earnings",
+      "target": "step:review-adjust-earnings:fetch-earnings",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:review-adjust-earnings",
+      "target": "step:review-adjust-earnings:patch-earning",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:review-adjust-earnings",
+      "target": "step:review-adjust-earnings:batch-patch",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:earnings-payments",
+      "target": "flow:log-grower-payments",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:log-grower-payments",
+      "target": "step:log-grower-payments:compose-view",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:log-grower-payments",
+      "target": "step:log-grower-payments:render-table",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:log-grower-payments",
+      "target": "step:log-grower-payments:log-confirmation",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:log-grower-payments",
+      "target": "step:log-grower-payments:submit-patch",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:analytics-dashboard",
+      "target": "flow:view-dashboard-overview",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:view-dashboard-overview",
+      "target": "step:view-dashboard-overview:compose-home",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:view-dashboard-overview",
+      "target": "step:view-dashboard-overview:fetch-capture-stats",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:view-dashboard-overview",
+      "target": "step:view-dashboard-overview:fetch-grower-stats",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:view-dashboard-overview",
+      "target": "step:view-dashboard-overview:render-stat-card",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:view-dashboard-overview",
+      "target": "step:view-dashboard-overview:load-reporting-data",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:view-dashboard-overview",
+      "target": "step:view-dashboard-overview:render-reporting-card",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:authentication-access-control",
+      "target": "domain:capture-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "PrivateRoute gates the /verify, /captures, and /matching routes; session organization scopes capture API queries.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:authentication-access-control",
+      "target": "domain:grower-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "PrivateRoute gates the /growers route; permission checks control visible grower actions.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:authentication-access-control",
+      "target": "domain:reference-data-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "PrivateRoute gates the /species and /regions routes.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:authentication-access-control",
+      "target": "domain:stakeholder-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "PrivateRoute gates the /stakeholders route.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:authentication-access-control",
+      "target": "domain:messaging-surveys",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "PrivateRoute gates the /messaging route; session organization UUID scopes most messaging API calls.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:authentication-access-control",
+      "target": "domain:earnings-payments",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "PrivateRoute gates the /earnings and /payments routes; authenticated bearer header required for earnings API calls.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:authentication-access-control",
+      "target": "domain:analytics-dashboard",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Dashboard sections and menu items are gated by user permissions from getRoutes/hasPermission.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:capture-management",
+      "target": "domain:reference-data-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Verify and captures flows read Species and Tags reference data to tag and filter captures.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:capture-management",
+      "target": "domain:grower-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Captures are attributed to a grower; the matching tool links duplicate captures to the same grower.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:capture-management",
+      "target": "domain:analytics-dashboard",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Capture totals, unprocessed, and verified counts feed the dashboard stat and reporting cards.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:grower-management",
+      "target": "domain:stakeholder-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "GrowerOrganization assigns/clears a grower's stakeholder organization.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:grower-management",
+      "target": "domain:earnings-payments",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Earnings and payment records are tied to individual growers.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:grower-management",
+      "target": "domain:analytics-dashboard",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Grower counts and demographic breakdowns feed dashboard reporting cards.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:stakeholder-management",
+      "target": "domain:grower-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Stakeholder detail view lists and manages member growers via GrowerListItem.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:messaging-surveys",
+      "target": "domain:grower-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Messages and announcements are sent to growers as recipients.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:messaging-surveys",
+      "target": "domain:reference-data-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Messaging API performs region lookups to scope recipient selection.",
+      "weight": 0.4
+    },
+    {
+      "source": "domain:reference-data-management",
+      "target": "domain:analytics-dashboard",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Species counts feed dashboard reporting cards.",
+      "weight": 0.4
+    }
+  ],
+  "layers": [],
+  "tour": []
+}

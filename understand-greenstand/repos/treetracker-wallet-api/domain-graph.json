@@ -1,0 +1,496 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-wallet-api",
+    "languages": ["javascript", "sql", "pgsql"],
+    "frameworks": ["Express", "Knex", "Mocha"],
+    "description": "A wallet service for the Treetracker ecosystem. It manages wallets that accumulate tree-planting tokens, trust relationships that gate who may move tokens between wallets, and the transfer lifecycle (pending, requested, completed, declined, cancelled) for both explicit tokens and unclaimed bundles, all behind JWT and API-key authenticated REST endpoints with per-wallet audit logging.",
+    "analyzedAt": "2026-09-03T10:37:53Z",
+    "gitCommitHash": "e95c15a933e969eea4b4bdaab73e96bac95f5f8f"
+  },
+  "nodes": [
+    {
+      "id": "domain:authentication",
+      "type": "domain",
+      "name": "Authentication",
+      "summary": "Verifies caller identity for every request. Wallets sign in with a password to receive an RS256 JWT, and every protected route is gated by an API-key check and a JWT check before it reaches business logic.",
+      "tags": ["authentication", "security", "jwt", "api-key"],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": ["Wallet credentials", "ApiKey", "JWT"],
+        "businessRules": [
+          "Password is verified as an HMAC SHA-512 hash against the stored wallet hash, not plaintext.",
+          "Every protected request needs a valid treetracker-api-key header before JWT verification runs.",
+          "A JWT carries wallet_id and is required to resolve 'the logged-in wallet' for all downstream authorization checks."
+        ],
+        "crossDomainInteractions": [
+          "Successful sign-in triggers an audit event via the Event/Audit Logging domain.",
+          "verifyJWTHandler resolves wallet_id used by Wallet, Trust, Token, and Transfer domains to authorize access."
+        ]
+      }
+    },
+    {
+      "id": "domain:wallet-management",
+      "type": "domain",
+      "name": "Wallet Management",
+      "summary": "Owns wallet accounts: creation, lookup, hierarchical parent/sub-wallet control, and batch provisioning. A wallet can be a standalone account or a sub-wallet managed by another wallet, and 'control-over' checks here underpin authorization everywhere else in the system.",
+      "tags": ["wallet", "hierarchy", "authorization", "batch-processing"],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": ["Wallet", "sub-wallet / managed wallet"],
+        "businessRules": [
+          "Creating a wallet automatically grants the creator a trusted 'manage' relationship over it.",
+          "A wallet controls another wallet if they are the same wallet or a trusted manage/yield sub-wallet relationship exists.",
+          "Wallet listing unions self, child, and managed wallets so a manager can see everything it controls.",
+          "Batch wallet creation and batch transfer are driven by uploaded CSV files."
+        ],
+        "crossDomainInteractions": [
+          "hasControlOver() is consumed by Trust, Transfer, Token and Event domains to authorize actions on behalf of sub-wallets.",
+          "Wallet creation grants a Trust relationship (Trust Relationship Management domain).",
+          "Batch transfer initiates transfers through the Token Transfer domain.",
+          "getPendingTransfersSummary reads transfer state from the Token Transfer domain."
+        ]
+      }
+    },
+    {
+      "id": "domain:trust-relationships",
+      "type": "domain",
+      "name": "Trust Relationship Management",
+      "summary": "Manages consent between wallets before tokens can move automatically. A wallet requests to 'send' to or 'manage'/'yield' another wallet; the target must accept before transfers between them can complete without manual approval.",
+      "tags": ["trust", "authorization", "state-machine"],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": ["Trust relationship (wallet_trust)", "trust type (send/manage/yield)", "trust state"],
+        "businessRules": [
+          "Duplicate trust requests of the same type/direction between the same two wallets are rejected.",
+          "Accepting a manage or yield relationship is rejected if it would create a management circle between wallets that already trust each other in the opposite direction.",
+          "Only the wallet that controls the actor, target, or originator side may view, accept, decline, or cancel a given relationship.",
+          "Declining sets state to cancelled-by-target; cancelling sets state to cancelled-by-originator."
+        ],
+        "crossDomainInteractions": [
+          "hasTrust() is checked by the Token Transfer domain to decide whether a transfer completes immediately or stays pending/requested.",
+          "Uses Wallet Management's hasControlOver() to authorize who may act on a relationship.",
+          "State changes are recorded via the Event/Audit Logging domain."
+        ]
+      }
+    },
+    {
+      "id": "domain:token-transfer",
+      "type": "domain",
+      "name": "Token Transfer",
+      "summary": "Moves tree-planting tokens between wallets, either as explicit named tokens or as unclaimed bundles selected by count. Transfers route to completed, pending, or requested state depending on trust and wallet-control relationships, and support accept, decline, cancel, and fulfill actions.",
+      "tags": ["transfer", "token", "state-machine", "transaction"],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": ["Transfer", "Token", "Transaction", "bundle"],
+        "businessRules": [
+          "A transfer completes immediately only if the sender's wallet already trusts the receiver (or the sender controls the receiver).",
+          "Without trust, an explicit send becomes 'pending' (receiver must accept); a pull becomes 'requested' (sender must fulfill).",
+          "Bundle transfers require the sender to have enough unclaimed tokens of the requested count before proceeding.",
+          "Every state transition (initiate, accept, decline, cancel, fulfill) runs inside a database transaction and is logged as an audit event.",
+          "Only the wallet controlling the appropriate side (sender/receiver) may accept, decline, cancel, or fulfill a transfer."
+        ],
+        "crossDomainInteractions": [
+          "Checks Trust Relationship Management's hasTrust() to route transfer state.",
+          "Checks Wallet Management's hasControlOver() to authorize transfer actions and deduct/pull semantics.",
+          "Logs every state change via the Event/Audit Logging domain.",
+          "Exposes token/transaction data consumed by the Token Query domain endpoints."
+        ]
+      }
+    },
+    {
+      "id": "domain:token-query",
+      "type": "domain",
+      "name": "Token Query",
+      "summary": "Read-only access to a wallet's tokens and their transaction history, with ownership checks ensuring a wallet can only see tokens it owns or controls.",
+      "tags": ["token", "query", "authorization"],
+      "complexity": "simple",
+      "domainMeta": {
+        "entities": ["Token", "Transaction"],
+        "businessRules": [
+          "A wallet may only fetch a token or its transactions if it owns or controls the owning wallet."
+        ],
+        "crossDomainInteractions": [
+          "Relies on Wallet Management's control checks to authorize token access.",
+          "Reads token/transaction records created by the Token Transfer domain."
+        ]
+      }
+    },
+    {
+      "id": "domain:audit-logging",
+      "type": "domain",
+      "name": "Event/Audit Logging",
+      "summary": "Records and exposes an audit trail of wallet activity (authentication, trust, transfer, wallet events) and lets a wallet query its own event history.",
+      "tags": ["events", "audit-log", "authorization"],
+      "complexity": "simple",
+      "domainMeta": {
+        "entities": ["Event (wallet_event)"],
+        "businessRules": [
+          "A wallet may only query events for a wallet it controls."
+        ],
+        "crossDomainInteractions": [
+          "Receives log calls from Authentication, Trust Relationship Management, Token Transfer, and Wallet Management on every meaningful state change.",
+          "Uses Wallet Management's control-over check to authorize event queries."
+        ]
+      }
+    },
+    {
+      "id": "flow:wallet-sign-in",
+      "type": "flow",
+      "name": "Wallet Sign-In",
+      "summary": "Authenticates a wallet by wallet identifier and password, returning a signed JWT for use on subsequent requests.",
+      "tags": ["authentication", "login", "jwt"],
+      "complexity": "simple",
+      "domainMeta": { "entryPoint": "POST /auth", "entryType": "http" }
+    },
+    {
+      "id": "flow:request-authorization-middleware",
+      "type": "flow",
+      "name": "Request Authentication Middleware",
+      "summary": "Every protected request passes through API-key validation and JWT verification before reaching a route handler, resolving the acting wallet_id.",
+      "tags": ["authentication", "middleware", "jwt", "api-key"],
+      "complexity": "simple",
+      "domainMeta": { "entryPoint": "Express middleware chain on protected routes", "entryType": "http" }
+    },
+    {
+      "id": "flow:create-wallet",
+      "type": "flow",
+      "name": "Create Wallet",
+      "summary": "Creates a new sub-wallet under the requesting wallet, checking name uniqueness and granting the creator a manage trust relationship over the new wallet.",
+      "tags": ["wallet", "creation"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "POST /wallets", "entryType": "http" }
+    },
+    {
+      "id": "flow:list-lookup-wallets",
+      "type": "flow",
+      "name": "List and Look Up Wallets",
+      "summary": "Lists wallets visible to the requester (self, children, managed) or resolves a single wallet by id/name, enforcing control-over authorization.",
+      "tags": ["wallet", "query"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "GET /wallets, GET /wallets/:id", "entryType": "http" }
+    },
+    {
+      "id": "flow:update-wallet",
+      "type": "flow",
+      "name": "Update Wallet",
+      "summary": "Updates an existing wallet's mutable fields after verifying the requester controls it.",
+      "tags": ["wallet", "update"],
+      "complexity": "simple",
+      "domainMeta": { "entryPoint": "PATCH /wallets/:id", "entryType": "http" }
+    },
+    {
+      "id": "flow:batch-create-wallets",
+      "type": "flow",
+      "name": "Batch Create Wallets",
+      "summary": "Parses an uploaded CSV of wallet rows, validates each row, and creates the wallets in bulk.",
+      "tags": ["wallet", "batch-processing", "csv"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "POST /wallets/batch (multipart CSV upload)", "entryType": "http" }
+    },
+    {
+      "id": "flow:batch-transfer-wallets",
+      "type": "flow",
+      "name": "Batch Transfer Tokens",
+      "summary": "Parses an uploaded CSV of transfer rows, validates each row, and performs bulk token transfers between wallets.",
+      "tags": ["wallet", "batch-processing", "csv", "transfer"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "POST /wallets/batch-transfer (multipart CSV upload)", "entryType": "http" }
+    },
+    {
+      "id": "flow:request-trust",
+      "type": "flow",
+      "name": "Request Trust Relationship",
+      "summary": "One wallet requests a send, manage, or yield trust relationship with another wallet, after duplicate and circular-management checks.",
+      "tags": ["trust", "creation"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "POST /trust_relationships", "entryType": "http" }
+    },
+    {
+      "id": "flow:respond-to-trust-request",
+      "type": "flow",
+      "name": "Accept or Decline Trust Request",
+      "summary": "The target wallet of a pending trust request accepts it (transitioning to trusted, after a management-circle check) or declines it (transitioning to cancelled-by-target).",
+      "tags": ["trust", "state-transition"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "POST /trust_relationships/:id/accept, POST /trust_relationships/:id/decline", "entryType": "http" }
+    },
+    {
+      "id": "flow:cancel-trust-request",
+      "type": "flow",
+      "name": "Cancel Trust Request",
+      "summary": "The originating wallet cancels a trust request it created, transitioning it to cancelled-by-originator.",
+      "tags": ["trust", "state-transition"],
+      "complexity": "simple",
+      "domainMeta": { "entryPoint": "DELETE /trust_relationships/:id", "entryType": "http" }
+    },
+    {
+      "id": "flow:list-trust-relationships",
+      "type": "flow",
+      "name": "List Trust Relationships",
+      "summary": "Lists trust relationships visible to the requesting wallet and its sub-wallets, with optional state/type/search filters.",
+      "tags": ["trust", "query"],
+      "complexity": "simple",
+      "domainMeta": { "entryPoint": "GET /trust_relationships, GET /wallets/:id/trust_relationships", "entryType": "http" }
+    },
+    {
+      "id": "flow:initiate-transfer",
+      "type": "flow",
+      "name": "Initiate Transfer",
+      "summary": "Starts a token or bundle transfer between two wallets. Validates token ownership/availability, checks trust and control relationships, then completes, pends, or requests the transfer accordingly.",
+      "tags": ["transfer", "creation", "state-machine"],
+      "complexity": "complex",
+      "domainMeta": { "entryPoint": "POST /transfers", "entryType": "http" }
+    },
+    {
+      "id": "flow:accept-transfer",
+      "type": "flow",
+      "name": "Accept Transfer",
+      "summary": "The receiving wallet accepts a pending transfer, completing the token/bundle movement and logging the state change.",
+      "tags": ["transfer", "state-transition"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "POST /transfers/:id/accept", "entryType": "http" }
+    },
+    {
+      "id": "flow:decline-transfer",
+      "type": "flow",
+      "name": "Decline Transfer",
+      "summary": "The receiving wallet declines a pending or requested transfer, cancelling it and releasing the held tokens back to the sender.",
+      "tags": ["transfer", "state-transition"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "POST /transfers/:id/decline", "entryType": "http" }
+    },
+    {
+      "id": "flow:cancel-transfer",
+      "type": "flow",
+      "name": "Cancel Transfer",
+      "summary": "The originating wallet cancels a pending or requested transfer it created, mirroring decline from the opposite side.",
+      "tags": ["transfer", "state-transition"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "DELETE /transfers/:id", "entryType": "http" }
+    },
+    {
+      "id": "flow:fulfill-transfer-request",
+      "type": "flow",
+      "name": "Fulfill Transfer Request",
+      "summary": "The sending wallet fulfills a requested (pull) transfer, either from its bundle or by supplying an explicit token list, completing the movement.",
+      "tags": ["transfer", "state-transition"],
+      "complexity": "complex",
+      "domainMeta": { "entryPoint": "POST /transfers/:id/fulfill", "entryType": "http" }
+    },
+    {
+      "id": "flow:list-lookup-transfers",
+      "type": "flow",
+      "name": "List and Look Up Transfers",
+      "summary": "Lists transfers visible to the requesting wallet and its sub-wallets with filters, or fetches a single transfer or its associated tokens by id.",
+      "tags": ["transfer", "query"],
+      "complexity": "simple",
+      "domainMeta": { "entryPoint": "GET /transfers, GET /transfers/:id, GET /transfers/:id/tokens", "entryType": "http" }
+    },
+    {
+      "id": "flow:query-tokens",
+      "type": "flow",
+      "name": "Query Tokens and Transactions",
+      "summary": "Lists a wallet's tokens, fetches a single token by id, and returns a token's transaction history, all with ownership authorization.",
+      "tags": ["token", "query"],
+      "complexity": "simple",
+      "domainMeta": { "entryPoint": "GET /tokens, GET /tokens/:id, GET /tokens/:id/transactions", "entryType": "http" }
+    },
+    {
+      "id": "flow:log-audit-event",
+      "type": "flow",
+      "name": "Log Audit Event",
+      "summary": "Internal flow invoked by other domains to persist a structured event record (auth, trust, transfer, or wallet type) whenever a meaningful state change occurs.",
+      "tags": ["events", "audit-log", "internal"],
+      "complexity": "simple",
+      "domainMeta": { "entryPoint": "Called internally by AuthService, TrustService, TransferService, WalletService", "entryType": "event" }
+    },
+    {
+      "id": "flow:query-wallet-events",
+      "type": "flow",
+      "name": "Query Wallet Events",
+      "summary": "Retrieves the audit event history for a wallet, subject to limit/since filters and control-over authorization.",
+      "tags": ["events", "query"],
+      "complexity": "simple",
+      "domainMeta": { "entryPoint": "GET /events", "entryType": "http" }
+    },
+
+    { "id": "step:wallet-sign-in:validate-credentials", "type": "step", "name": "Validate sign-in request", "summary": "Validates the request body (wallet identifier and password) against a Joi schema.", "tags": ["validation"], "complexity": "simple", "filePath": "server/handlers/authHandler/index.js" },
+    { "id": "step:wallet-sign-in:call-auth-service", "type": "step", "name": "Call AuthService.signIn", "summary": "Delegates credential verification to AuthService with the wallet identifier and password.", "tags": ["service-call"], "complexity": "simple", "filePath": "server/handlers/authHandler/index.js" },
+    { "id": "step:wallet-sign-in:verify-password-hash", "type": "step", "name": "Verify password hash", "summary": "Looks up the wallet, computes an HMAC SHA-512 hash of the supplied password with the stored salt, and compares it to the stored hash.", "tags": ["cryptography"], "complexity": "moderate", "filePath": "server/services/AuthService.js" },
+    { "id": "step:wallet-sign-in:issue-jwt", "type": "step", "name": "Issue JWT", "summary": "Signs an RS256 JWT containing the wallet_id on successful password verification.", "tags": ["jwt"], "complexity": "simple", "filePath": "server/services/JWTService.js" },
+    { "id": "step:wallet-sign-in:log-login-event", "type": "step", "name": "Log login event", "summary": "Records an authentication-type audit event for the successful sign-in.", "tags": ["audit-log"], "complexity": "simple", "filePath": "server/services/AuthService.js" },
+    { "id": "step:wallet-sign-in:return-401", "type": "step", "name": "Return 401 on failure", "summary": "Throws an HttpError 401 if the wallet does not exist or the password does not match.", "tags": ["error-handling"], "complexity": "simple", "filePath": "server/handlers/authHandler/index.js" },
+
+    { "id": "step:request-authorization-middleware:check-api-key", "type": "step", "name": "Validate API key header", "summary": "Checks the treetracker-api-key header exists, is a known key, is not deprecated, and has permission for the target endpoint.", "tags": ["api-key"], "complexity": "moderate", "filePath": "server/services/ApiKeyService.js" },
+    { "id": "step:request-authorization-middleware:verify-jwt", "type": "step", "name": "Verify JWT bearer token", "summary": "Verifies the Authorization bearer JWT's signature and expiry, extracting the wallet_id claim.", "tags": ["jwt"], "complexity": "moderate", "filePath": "server/services/JWTService.js" },
+    { "id": "step:request-authorization-middleware:attach-wallet-id", "type": "step", "name": "Attach wallet_id to request", "summary": "Stores the resolved wallet_id on the Express request object for downstream handlers.", "tags": ["middleware"], "complexity": "simple", "filePath": "server/utils/utils.js" },
+
+    { "id": "step:create-wallet:validate-payload", "type": "step", "name": "Validate creation payload", "summary": "Validates the new wallet's name and metadata against a Joi schema.", "tags": ["validation"], "complexity": "simple", "filePath": "server/handlers/walletHandler/schemas.js" },
+    { "id": "step:create-wallet:check-name-unused", "type": "step", "name": "Check wallet name is unused", "summary": "Confirms no existing wallet already uses the requested name.", "tags": ["validation"], "complexity": "simple", "filePath": "server/models/Wallet.js" },
+    { "id": "step:create-wallet:insert-wallet", "type": "step", "name": "Insert wallet record", "summary": "Persists the new wallet row via WalletRepository.", "tags": ["database"], "complexity": "simple", "filePath": "server/repositories/WalletRepository.js" },
+    { "id": "step:create-wallet:grant-manage-trust", "type": "step", "name": "Grant manage trust relationship", "summary": "Creates a trusted manage relationship from the creating wallet over the new wallet.", "tags": ["trust"], "complexity": "moderate", "filePath": "server/models/Wallet.js" },
+
+    { "id": "step:initiate-transfer:validate-request", "type": "step", "name": "Validate transfer request", "summary": "Validates the request body against the token-vs-bundle conditional schema.", "tags": ["validation"], "complexity": "simple", "filePath": "server/handlers/transferHandler/schemas.js" },
+    { "id": "step:initiate-transfer:check-token-ownership", "type": "step", "name": "Check token ownership or bundle availability", "summary": "Verifies the sender owns and can transfer the named tokens, or has enough unclaimed tokens for a bundle request.", "tags": ["authorization", "token"], "complexity": "moderate", "filePath": "server/models/Transfer.js" },
+    { "id": "step:initiate-transfer:check-trust-and-control", "type": "step", "name": "Check trust and control relationships", "summary": "Determines whether the sender trusts the receiver or controls/is controlled by the receiver, to route the transfer's outcome.", "tags": ["trust", "authorization"], "complexity": "moderate", "filePath": "server/models/Transfer.js" },
+    { "id": "step:initiate-transfer:route-transfer-state", "type": "step", "name": "Route to completed, pending, or requested", "summary": "Completes the transfer immediately if trusted, otherwise creates it as pending (push) or requested (pull).", "tags": ["state-machine"], "complexity": "complex", "filePath": "server/models/Transfer.js" },
+    { "id": "step:initiate-transfer:persist-in-transaction", "type": "step", "name": "Persist transfer in a DB transaction", "summary": "Writes the transfer and any token state changes atomically via the Session/knex transaction wrapper.", "tags": ["database", "transaction"], "complexity": "moderate", "filePath": "server/services/TransferService.js" },
+    { "id": "step:initiate-transfer:log-transfer-event", "type": "step", "name": "Log transfer event", "summary": "Records an audit event for the transfer's initial state.", "tags": ["audit-log"], "complexity": "simple", "filePath": "server/services/TransferService.js" },
+
+    { "id": "step:accept-transfer:validate-id", "type": "step", "name": "Validate transfer id", "summary": "Validates the transfer id path parameter is a well-formed UUID.", "tags": ["validation"], "complexity": "simple", "filePath": "server/handlers/transferHandler/schemas.js" },
+    { "id": "step:accept-transfer:check-receiver-control", "type": "step", "name": "Check receiver control", "summary": "Verifies the requesting wallet controls the receiving side of the pending transfer.", "tags": ["authorization"], "complexity": "simple", "filePath": "server/models/Transfer.js" },
+    { "id": "step:accept-transfer:complete-token-movement", "type": "step", "name": "Complete token or bundle movement", "summary": "Marks the associated tokens as owned by the receiver, completing the pending token/bundle transfer.", "tags": ["token", "state-machine"], "complexity": "moderate", "filePath": "server/models/Token.js" },
+    { "id": "step:accept-transfer:mark-transfer-completed", "type": "step", "name": "Mark transfer completed", "summary": "Updates the transfer record's state to completed.", "tags": ["state-transition"], "complexity": "simple", "filePath": "server/repositories/TransferRepository.js" },
+    { "id": "step:accept-transfer:log-accept-event", "type": "step", "name": "Log accept event", "summary": "Records an audit event for the transfer acceptance.", "tags": ["audit-log"], "complexity": "simple", "filePath": "server/services/TransferService.js" },
+
+    { "id": "step:fulfill-transfer-request:validate-fulfillment", "type": "step", "name": "Validate fulfillment payload", "summary": "Validates the transfer id and, if present, the explicit token list supplied to fulfill the request.", "tags": ["validation"], "complexity": "simple", "filePath": "server/handlers/transferHandler/schemas.js" },
+    { "id": "step:fulfill-transfer-request:check-sender-control", "type": "step", "name": "Check sender control", "summary": "Verifies the requesting wallet controls the sending side of the requested transfer.", "tags": ["authorization"], "complexity": "simple", "filePath": "server/models/Transfer.js" },
+    { "id": "step:fulfill-transfer-request:validate-token-list", "type": "step", "name": "Validate explicit token list", "summary": "When tokens are supplied explicitly, checks the count matches the bundle size and each token belongs to the sender.", "tags": ["validation", "token"], "complexity": "moderate", "filePath": "server/models/Transfer.js" },
+    { "id": "step:fulfill-transfer-request:complete-transfer", "type": "step", "name": "Complete the transfer", "summary": "Marks the transfer completed and moves the bundle or pending tokens to the receiver.", "tags": ["state-machine"], "complexity": "moderate", "filePath": "server/models/Transfer.js" },
+    { "id": "step:fulfill-transfer-request:log-fulfill-event", "type": "step", "name": "Log fulfill event", "summary": "Records an audit event for the fulfillment.", "tags": ["audit-log"], "complexity": "simple", "filePath": "server/services/TransferService.js" },
+
+    { "id": "step:request-trust:validate-request", "type": "step", "name": "Validate trust request payload", "summary": "Validates requester/requestee wallet ids and the requested trust type.", "tags": ["validation"], "complexity": "simple", "filePath": "server/handlers/trustHandler/schemas.js" },
+    { "id": "step:request-trust:check-control-relationships", "type": "step", "name": "Check originator/actor/target control", "summary": "Prevents self-dealing or circular sub-wallet trust requests by checking control relationships among the involved wallets.", "tags": ["authorization"], "complexity": "moderate", "filePath": "server/models/Trust.js" },
+    { "id": "step:request-trust:check-duplicate", "type": "step", "name": "Check for duplicate request", "summary": "Rejects the request if an equivalent send or manage relationship already exists as requested or trusted.", "tags": ["validation"], "complexity": "simple", "filePath": "server/models/Trust.js" },
+    { "id": "step:request-trust:insert-trust-record", "type": "step", "name": "Insert trust relationship record", "summary": "Persists the new trust relationship in a requested state.", "tags": ["database"], "complexity": "simple", "filePath": "server/repositories/TrustRepository.js" },
+    { "id": "step:request-trust:log-trust-event", "type": "step", "name": "Log trust request event", "summary": "Records an audit event for the trust request.", "tags": ["audit-log"], "complexity": "simple", "filePath": "server/services/TrustService.js" },
+
+    { "id": "step:respond-to-trust-request:validate-id", "type": "step", "name": "Validate relationship id", "summary": "Validates the trust relationship id path parameter.", "tags": ["validation"], "complexity": "simple", "filePath": "server/handlers/trustHandler/schemas.js" },
+    { "id": "step:respond-to-trust-request:locate-pending-request", "type": "step", "name": "Locate pending request sent to wallet", "summary": "Finds the pending trust request addressed to the responding wallet.", "tags": ["query"], "complexity": "simple", "filePath": "server/models/Trust.js" },
+    { "id": "step:respond-to-trust-request:check-management-circle", "type": "step", "name": "Check for management circle", "summary": "On accept, verifies accepting would not create a management circle with an existing opposite-direction trust.", "tags": ["validation"], "complexity": "moderate", "filePath": "server/models/Trust.js" },
+    { "id": "step:respond-to-trust-request:update-state", "type": "step", "name": "Update relationship state", "summary": "Transitions the relationship to trusted (accept) or cancelled-by-target (decline).", "tags": ["state-transition"], "complexity": "simple", "filePath": "server/models/Trust.js" },
+    { "id": "step:respond-to-trust-request:log-response-event", "type": "step", "name": "Log response event", "summary": "Records an audit event for the accept or decline.", "tags": ["audit-log"], "complexity": "simple", "filePath": "server/services/TrustService.js" },
+
+    { "id": "step:query-tokens:validate-query", "type": "step", "name": "Validate list/lookup query", "summary": "Validates pagination or id parameters for the token endpoints.", "tags": ["validation"], "complexity": "simple", "filePath": "server/handlers/tokenHandler/schemas.js" },
+    { "id": "step:query-tokens:check-ownership", "type": "step", "name": "Check ownership or control", "summary": "Confirms the requesting wallet owns or controls the wallet that owns the token(s).", "tags": ["authorization"], "complexity": "simple", "filePath": "server/services/TokenService.js" },
+    { "id": "step:query-tokens:fetch-records", "type": "step", "name": "Fetch token or transaction records", "summary": "Retrieves the requested tokens or transaction history via the repositories.", "tags": ["database", "query"], "complexity": "simple", "filePath": "server/repositories/TokenRepository.js" },
+
+    { "id": "step:query-wallet-events:validate-query", "type": "step", "name": "Validate events query", "summary": "Validates limit, since, and wallet query parameters.", "tags": ["validation"], "complexity": "simple", "filePath": "server/handlers/eventHandler/schemas.js" },
+    { "id": "step:query-wallet-events:check-control", "type": "step", "name": "Check control over target wallet", "summary": "Verifies the requesting wallet controls the wallet whose events are being queried.", "tags": ["authorization"], "complexity": "simple", "filePath": "server/services/EventService.js" },
+    { "id": "step:query-wallet-events:fetch-events", "type": "step", "name": "Fetch event records", "summary": "Retrieves matching wallet_event rows via EventRepository.", "tags": ["database", "query"], "complexity": "simple", "filePath": "server/repositories/EventRepository.js" },
+
+    { "id": "step:log-audit-event:build-event-record", "type": "step", "name": "Build event record", "summary": "Constructs an event record with a type (auth/trust/transfer/wallet), wallet_id, and details payload.", "tags": ["event"], "complexity": "simple", "filePath": "server/models/Event.js" },
+    { "id": "step:log-audit-event:persist-event", "type": "step", "name": "Persist event", "summary": "Inserts the event row via EventRepository.", "tags": ["database"], "complexity": "simple", "filePath": "server/repositories/EventRepository.js" },
+
+    { "id": "step:batch-create-wallets:parse-csv", "type": "step", "name": "Parse uploaded CSV", "summary": "Parses the uploaded multipart CSV file into wallet row objects.", "tags": ["csv", "file-upload"], "complexity": "moderate", "filePath": "server/handlers/walletHandler/index.js" },
+    { "id": "step:batch-create-wallets:validate-rows", "type": "step", "name": "Validate CSV rows", "summary": "Validates each parsed row against the batch-create Joi schema.", "tags": ["validation"], "complexity": "simple", "filePath": "server/handlers/walletHandler/schemas.js" },
+    { "id": "step:batch-create-wallets:batch-insert", "type": "step", "name": "Batch insert wallets", "summary": "Creates all validated wallets, granting manage trust for each.", "tags": ["database", "batch-processing"], "complexity": "moderate", "filePath": "server/services/WalletService.js" },
+
+    { "id": "step:batch-transfer-wallets:parse-csv", "type": "step", "name": "Parse uploaded CSV", "summary": "Parses the uploaded multipart CSV file into transfer row objects.", "tags": ["csv", "file-upload"], "complexity": "moderate", "filePath": "server/handlers/walletHandler/index.js" },
+    { "id": "step:batch-transfer-wallets:validate-rows", "type": "step", "name": "Validate CSV rows", "summary": "Validates each parsed row against the batch-transfer Joi schema.", "tags": ["validation"], "complexity": "simple", "filePath": "server/handlers/walletHandler/schemas.js" },
+    { "id": "step:batch-transfer-wallets:execute-transfers", "type": "step", "name": "Execute transfers", "summary": "Initiates a transfer for each validated row through the Token Transfer domain's initiate-transfer logic.", "tags": ["transfer", "batch-processing"], "complexity": "moderate", "filePath": "server/services/WalletService.js" }
+  ],
+  "edges": [
+    { "source": "domain:authentication", "target": "flow:wallet-sign-in", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:authentication", "target": "flow:request-authorization-middleware", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+
+    { "source": "domain:wallet-management", "target": "flow:create-wallet", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:wallet-management", "target": "flow:list-lookup-wallets", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:wallet-management", "target": "flow:update-wallet", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:wallet-management", "target": "flow:batch-create-wallets", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:wallet-management", "target": "flow:batch-transfer-wallets", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+
+    { "source": "domain:trust-relationships", "target": "flow:request-trust", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:trust-relationships", "target": "flow:respond-to-trust-request", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:trust-relationships", "target": "flow:cancel-trust-request", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:trust-relationships", "target": "flow:list-trust-relationships", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+
+    { "source": "domain:token-transfer", "target": "flow:initiate-transfer", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:token-transfer", "target": "flow:accept-transfer", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:token-transfer", "target": "flow:decline-transfer", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:token-transfer", "target": "flow:cancel-transfer", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:token-transfer", "target": "flow:fulfill-transfer-request", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:token-transfer", "target": "flow:list-lookup-transfers", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+
+    { "source": "domain:token-query", "target": "flow:query-tokens", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+
+    { "source": "domain:audit-logging", "target": "flow:log-audit-event", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:audit-logging", "target": "flow:query-wallet-events", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:wallet-sign-in", "target": "step:wallet-sign-in:validate-credentials", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:wallet-sign-in", "target": "step:wallet-sign-in:call-auth-service", "type": "flow_step", "direction": "forward", "weight": 0.4 },
+    { "source": "flow:wallet-sign-in", "target": "step:wallet-sign-in:verify-password-hash", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:wallet-sign-in", "target": "step:wallet-sign-in:issue-jwt", "type": "flow_step", "direction": "forward", "weight": 0.7 },
+    { "source": "flow:wallet-sign-in", "target": "step:wallet-sign-in:log-login-event", "type": "flow_step", "direction": "forward", "weight": 0.9 },
+    { "source": "flow:wallet-sign-in", "target": "step:wallet-sign-in:return-401", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:request-authorization-middleware", "target": "step:request-authorization-middleware:check-api-key", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:request-authorization-middleware", "target": "step:request-authorization-middleware:verify-jwt", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:request-authorization-middleware", "target": "step:request-authorization-middleware:attach-wallet-id", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:create-wallet", "target": "step:create-wallet:validate-payload", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:create-wallet", "target": "step:create-wallet:check-name-unused", "type": "flow_step", "direction": "forward", "weight": 0.5 },
+    { "source": "flow:create-wallet", "target": "step:create-wallet:insert-wallet", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:create-wallet", "target": "step:create-wallet:grant-manage-trust", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:initiate-transfer", "target": "step:initiate-transfer:validate-request", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:initiate-transfer", "target": "step:initiate-transfer:check-token-ownership", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:initiate-transfer", "target": "step:initiate-transfer:check-trust-and-control", "type": "flow_step", "direction": "forward", "weight": 0.5 },
+    { "source": "flow:initiate-transfer", "target": "step:initiate-transfer:route-transfer-state", "type": "flow_step", "direction": "forward", "weight": 0.7 },
+    { "source": "flow:initiate-transfer", "target": "step:initiate-transfer:persist-in-transaction", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:initiate-transfer", "target": "step:initiate-transfer:log-transfer-event", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:accept-transfer", "target": "step:accept-transfer:validate-id", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:accept-transfer", "target": "step:accept-transfer:check-receiver-control", "type": "flow_step", "direction": "forward", "weight": 0.4 },
+    { "source": "flow:accept-transfer", "target": "step:accept-transfer:complete-token-movement", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:accept-transfer", "target": "step:accept-transfer:mark-transfer-completed", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:accept-transfer", "target": "step:accept-transfer:log-accept-event", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:fulfill-transfer-request", "target": "step:fulfill-transfer-request:validate-fulfillment", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:fulfill-transfer-request", "target": "step:fulfill-transfer-request:check-sender-control", "type": "flow_step", "direction": "forward", "weight": 0.4 },
+    { "source": "flow:fulfill-transfer-request", "target": "step:fulfill-transfer-request:validate-token-list", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:fulfill-transfer-request", "target": "step:fulfill-transfer-request:complete-transfer", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:fulfill-transfer-request", "target": "step:fulfill-transfer-request:log-fulfill-event", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:request-trust", "target": "step:request-trust:validate-request", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:request-trust", "target": "step:request-trust:check-control-relationships", "type": "flow_step", "direction": "forward", "weight": 0.4 },
+    { "source": "flow:request-trust", "target": "step:request-trust:check-duplicate", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:request-trust", "target": "step:request-trust:insert-trust-record", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:request-trust", "target": "step:request-trust:log-trust-event", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:respond-to-trust-request", "target": "step:respond-to-trust-request:validate-id", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:respond-to-trust-request", "target": "step:respond-to-trust-request:locate-pending-request", "type": "flow_step", "direction": "forward", "weight": 0.4 },
+    { "source": "flow:respond-to-trust-request", "target": "step:respond-to-trust-request:check-management-circle", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:respond-to-trust-request", "target": "step:respond-to-trust-request:update-state", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:respond-to-trust-request", "target": "step:respond-to-trust-request:log-response-event", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:query-tokens", "target": "step:query-tokens:validate-query", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:query-tokens", "target": "step:query-tokens:check-ownership", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:query-tokens", "target": "step:query-tokens:fetch-records", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:query-wallet-events", "target": "step:query-wallet-events:validate-query", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:query-wallet-events", "target": "step:query-wallet-events:check-control", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:query-wallet-events", "target": "step:query-wallet-events:fetch-events", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:log-audit-event", "target": "step:log-audit-event:build-event-record", "type": "flow_step", "direction": "forward", "weight": 0.5 },
+    { "source": "flow:log-audit-event", "target": "step:log-audit-event:persist-event", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:batch-create-wallets", "target": "step:batch-create-wallets:parse-csv", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:batch-create-wallets", "target": "step:batch-create-wallets:validate-rows", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:batch-create-wallets", "target": "step:batch-create-wallets:batch-insert", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:batch-transfer-wallets", "target": "step:batch-transfer-wallets:parse-csv", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:batch-transfer-wallets", "target": "step:batch-transfer-wallets:validate-rows", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:batch-transfer-wallets", "target": "step:batch-transfer-wallets:execute-transfers", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "domain:authentication", "target": "domain:audit-logging", "type": "cross_domain", "direction": "forward", "description": "Successful and failed sign-ins are recorded as authentication audit events.", "weight": 0.5 },
+    { "source": "domain:authentication", "target": "domain:wallet-management", "type": "cross_domain", "direction": "forward", "description": "JWT verification resolves the acting wallet_id that Wallet Management operations authorize against.", "weight": 0.7 },
+
+    { "source": "domain:wallet-management", "target": "domain:trust-relationships", "type": "cross_domain", "direction": "forward", "description": "Wallet creation grants a manage trust relationship; wallet control checks are reused to authorize trust actions.", "weight": 0.7 },
+    { "source": "domain:wallet-management", "target": "domain:token-transfer", "type": "cross_domain", "direction": "forward", "description": "Batch transfer and control-over checks authorize and drive token transfers on behalf of managed wallets.", "weight": 0.7 },
+    { "source": "domain:wallet-management", "target": "domain:audit-logging", "type": "cross_domain", "direction": "forward", "description": "Wallet creation and updates are recorded as wallet-type audit events.", "weight": 0.5 },
+
+    { "source": "domain:trust-relationships", "target": "domain:token-transfer", "type": "cross_domain", "direction": "forward", "description": "hasTrust() determines whether an initiated transfer completes immediately or becomes pending/requested.", "weight": 0.8 },
+    { "source": "domain:trust-relationships", "target": "domain:audit-logging", "type": "cross_domain", "direction": "forward", "description": "Trust request, accept, decline, and cancel actions are recorded as trust-type audit events.", "weight": 0.5 },
+
+    { "source": "domain:token-transfer", "target": "domain:token-query", "type": "cross_domain", "direction": "forward", "description": "Tokens and transactions created or moved by transfers are what the Token Query domain exposes for read access.", "weight": 0.6 },
+    { "source": "domain:token-transfer", "target": "domain:audit-logging", "type": "cross_domain", "direction": "forward", "description": "Every transfer state change (initiate, accept, decline, cancel, fulfill) is recorded as a transfer-type audit event.", "weight": 0.6 },
+
+    { "source": "domain:token-query", "target": "domain:wallet-management", "type": "cross_domain", "direction": "forward", "description": "Token ownership checks rely on wallet control-over relationships.", "weight": 0.4 },
+
+    { "source": "domain:audit-logging", "target": "domain:wallet-management", "type": "cross_domain", "direction": "forward", "description": "Querying a wallet's events requires a control-over check against Wallet Management.", "weight": 0.4 }
+  ],
+  "layers": [],
+  "tour": []
+}

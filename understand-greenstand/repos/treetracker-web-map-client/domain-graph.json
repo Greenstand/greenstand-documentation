@@ -1,0 +1,2414 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-web-map-client",
+    "languages": [
+      "javascript",
+      "css",
+      "json"
+    ],
+    "frameworks": [
+      "Next.js",
+      "React",
+      "MUI",
+      "treetracker-web-map-core",
+      "Leaflet",
+      "react-oidc-context",
+      "@react-keycloak/ssr",
+      "axios"
+    ],
+    "description": "Treetracker Web Map by Greenstand: a public web map that shows trees tracked by growers around the world and lets visitors open tree, planter, organization, wallet, token and capture profiles, browse featured items and a country leaderboard, filter by date, share or embed pages, and lets admins tune the navbar, map location and theme.",
+    "analyzedAt": "2026-10-17T00:30:56Z",
+    "gitCommitHash": "42b3a9a6a10ffb30b8a1e25d66f6ebb8850640ec"
+  },
+  "nodes": [
+    {
+      "id": "domain:map-exploration",
+      "type": "domain",
+      "name": "Map Exploration",
+      "summary": "The interactive tree map that the public desktop layouts and LayoutMobile mount. `_app.js` picks the layout, `App.js` builds the `treetracker-web-map-core` Map with runtime tile settings, and `mapContext.js` shares it so pages can filter, zoom and select trees. A tree click resolves to a tree, token or wallet-token route, and each map move writes `?bounds=` into the URL.",
+      "tags": [
+        "map",
+        "treetracker-web-map-core",
+        "leaflet",
+        "routing",
+        "layout"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Map (treetracker-web-map-core)",
+          "Tree marker",
+          "Map bounds",
+          "Map filters (userid, map_name, wallet, timeline)",
+          "Runtime env (tile server URL, subdomains, web map API)",
+          "Navbar config",
+          "Layout"
+        ],
+        "businessRules": [
+          "`getEnv` accepts only the three allowlisted tile keys and prefers `window.__RUNTIME_ENV__` (served by `/api/runtime-env`) over the build-time value; any other key throws.",
+          "Each map move end rewrites the URL to `?bounds=` and keeps `timeline`, `embed=true` and `tree_id`; admin routes skip this update.",
+          "The home, spotlight, planter, organization and wallet pages fly to `?bounds=` when it is present. Otherwise `/` and `/top` open at `gotoView(0, 0, 2)`, and planter, organization and wallet pages open at `map.getInitialView()` of the filtered map (the wallet page raises the zoom to at least 2).",
+          "Among the public layouts only `Layout`, `LayoutEmbed` and `LayoutMobile` mount the map; the mobile home page (`LayoutMobileB`) and the mobile search page (`LayoutMobileC`) show no map.",
+          "A tree click on a planter or organization page keeps that context (for example `/planters/:id/trees/:treeId`), and Next.js rewrites serve those paths with the tree page. On a wallet page the click goes to `/wallets/:id/tokens?tree_id=`, which rewrites to `/tokens/idfromquery`.",
+          "Navbar links come from the `testing-config` entry of a hard-coded dev `map_config` URL that `getInitialProps` fetches, or from `defaultConfig` when `NEXT_PUBLIC_SERVER_CONFIG_DISABLED` is set or no entry matches."
+        ],
+        "crossDomainInteractions": [
+          "Pushes tree, token and wallet-token routes that Entity Profiles render.",
+          "Gives Entity Profiles and Search and Discovery the shared map through `useMapContext`.",
+          "Uses the embed state of Sharing and Embedding to choose `LayoutEmbed`.",
+          "Applies a theme from the Authentication and Admin theme playground when the same browser stored one."
+        ]
+      }
+    },
+    {
+      "id": "domain:entity-profiles",
+      "type": "domain",
+      "name": "Entity Profiles",
+      "summary": "Detail pages for trees, planters, organizations, wallets, tokens and version 2 captures. Pages load data on the server through `api.js` and `requestAPI`, degrade with `PageLoadError` or `SectionUnavailable` when the API fails, and drive the shared map to the entity.",
+      "tags": [
+        "entity-pages",
+        "isr",
+        "api-client",
+        "error-handling"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Tree",
+          "Planter (grower)",
+          "Organization",
+          "Wallet",
+          "Token",
+          "Transaction",
+          "Capture",
+          "Grower account",
+          "Stakeholder",
+          "Species",
+          "Country"
+        ],
+        "businessRules": [
+          "Tree, planter, organization, wallet and capture pages use ISR with no prebuilt paths and `fallback: 'blocking'`; they and `/top` revalidate every 300 s unless `NEXT_CACHE_REVALIDATION_OVERRIDE` is set.",
+          "`wrapper` maps an API 404 to `notFound` and any other error to `loadError` with a 30 s revalidate; the page then shows `PageLoadError` with a Retry button.",
+          "The token page uses `getServerSideProps` and returns `notFound` for any error.",
+          "Requests through `api.js` and `requestAPI` time out after 15 s (`API_TIMEOUT_MS`); the direct axios calls in the token and search pages set no timeout.",
+          "`getOrgLinks` uses `Promise.allSettled`, so a failed featured-trees, associates or species request shows `SectionUnavailable`; the wallet page uses `Promise.all`, so one failed request fails the whole page.",
+          "`getPlanterName` shows a grower as first name plus last initial on the planter page, in the planter breadcrumbs of the tree and capture pages and in `TreeInfoDialog`. The planter cards of the tree, token and capture pages show the full last name.",
+          "Planter and organization badges ('Verified Planter', 'Seeking Orgs', 'Verified Organization', 'Seeking Planter') are hard-coded; tree badges come from `approved` and `token_id`.",
+          "A token shows 'Can be transferred' only when it is not claimed and has no pending transfer."
+        ],
+        "crossDomainInteractions": [
+          "Filters and focuses the Map Exploration map through `useMapContext` (`setFilters`, `gotoView`, `selectTree`).",
+          "Renders the Sharing and Embedding `Share` and `LikeButton` controls on tree, token and capture pages.",
+          "Receives routes from Map Exploration clicks and from Search and Discovery links."
+        ]
+      }
+    },
+    {
+      "id": "domain:search-and-discovery",
+      "type": "domain",
+      "name": "Search and Discovery",
+      "summary": "Ways to find trees other than panning the map: the keyword search page, the date filters (the map `Timeline` and the `/filter` page) and the Tree Spotlight page with featured trees, organizations, planters, wallets and a country leaderboard. Every layout hides the search bar, so the search page is reachable only by URL.",
+      "tags": [
+        "search",
+        "filter",
+        "timeline",
+        "spotlight",
+        "leaderboard"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Keyword (tree id)",
+          "Timeline (start and end date)",
+          "Featured tree",
+          "Featured planter",
+          "Featured organization",
+          "Featured wallet",
+          "Country leaderboard entry",
+          "Continent"
+        ],
+        "businessRules": [
+          "A timeline start date must not be after its end date; `Timeline` and `Filter` both reject it, and `Timeline` allows dates up to today only.",
+          "`Timeline` renders only on `/` and `/top`, and it sends its filter to the map with `map.setFilters({ timeline })` only; it does not change the URL.",
+          "The keyword search treats the keyword as a tree id: `/search` GETs `/trees/:keyword` and lists one result.",
+          "No layout renders the search bar: `LayoutEmbed` gates `SearchFilter` behind `false &&`, `LayoutMobile` comments it out, and `/top` hides `SearchButton` and its `Filter` behind `false &&`.",
+          "`NEXT_PUBLIC_COUNTRY_LEADER_BOARD_DISABLED=true` skips both leaderboard requests; the leaderboard heading, the continent chips and the table header still render with no rows. `.env.production` sets this flag to true, so the production build shows no leaderboard rows.",
+          "`/filter` prints the start date on the 'End Date' line and a fixed 'Found trees: 1,000,000'; it does not filter the map."
+        ],
+        "crossDomainInteractions": [
+          "Sets the timeline filter and country views on the Map Exploration map.",
+          "Links featured items and search results to Entity Profiles pages."
+        ]
+      }
+    },
+    {
+      "id": "domain:sharing-and-embedding",
+      "type": "domain",
+      "name": "Sharing and Embedding",
+      "summary": "Lets visitors share a tree, token or capture page by link, email, Facebook, Twitter or iframe code, like it on Facebook, and run the map in embed mode inside another site or app. Embed mode comes from `embed=true` in the URL or from the fullscreen flag in localStorage.",
+      "tags": [
+        "sharing",
+        "embed",
+        "social",
+        "iframe"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Share URL",
+          "Embed code (iframe)",
+          "Facebook like",
+          "Embed flag",
+          "Parent window message"
+        ],
+        "businessRules": [
+          "`Share` uses `window.location.href` as it is: the copied link, the social URLs and the iframe embed code do not add `embed=true` and are not URL-encoded.",
+          "`Share` and `LikeButton` appear only on tree, token and capture pages and in `TreeInfoDialog`; planter, organization and wallet pages have no share control.",
+          "Embed mode is on when the URL contains `embed=true` (`useEmbed`) or when the localStorage flag `greenstand-web-map-client-embed` is true (set by the fullscreen icon).",
+          "`LayoutEmbed` is desktop only; on mobile the normal layouts stay, and `embed=true` makes `Navbar` return null.",
+          "In URL embed mode, internal links, search routes and the move-end URL keep `embed=true`.",
+          "The Copy button reads 'Copied!' for 1.5 s after a copy."
+        ],
+        "crossDomainInteractions": [
+          "Embed state makes Map Exploration choose `LayoutEmbed` and keep `embed=true` in the map URL.",
+          "Entity Profiles pages host the share and like controls."
+        ]
+      }
+    },
+    {
+      "id": "domain:authentication-and-admin",
+      "type": "domain",
+      "name": "Authentication and Admin",
+      "summary": "OIDC sign-in wiring for the public app, which the code currently hides, and the admin pages: `/admin` (Keycloak login and permission buttons), `/admin/global` (navbar, logo and map location settings) and `/admin/theme` (theme playground). Admin pages render inside `LayoutDashboard`, where the Keycloak provider is commented out.",
+      "tags": [
+        "auth",
+        "oidc",
+        "keycloak",
+        "admin",
+        "theme"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "OIDC user",
+          "Keycloak token",
+          "RPT permission",
+          "Dashboard config (navbar items, logo URL, map initial location)",
+          "Theme object",
+          "Organization 178"
+        ],
+        "businessRules": [
+          "The public sign-in UI is hidden: `Navbar` comments out `LoginLogoutToggle` and `UserAvatar` ('hide login temporarily'), although `AuthProvider` still wraps every page.",
+          "`LayoutDashboard` comments out `SSRKeycloakProvider` ('disable keycloak for now'), while `/admin` and `/admin/theme` still call `useKeycloak`; the theme buttons on `/admin` show only for an RPT that lists the `web-map-theme` resource.",
+          "Dashboard config lives in the localStorage key `greenstand-web-map-client-config`, and no public page reads it. The admin map location only drives the map inside `/admin/global`.",
+          "`/admin/global` always loads organization 178 (hard-coded) and resets the logo URL to that organization's logo on mount; its Theme tab shows only a heading.",
+          "A map location must be numbers with lat from -90 to 90, lon from -180 to 180 and zoom from 2 to 20.",
+          "Navbar items must have unique titles and URLs; a new item is 'New Url' at '/new-url' and is not added twice.",
+          "A playground preview reaches public pages only in the same browser, through the localStorage key `greenstand-web-map-client-themeObject`.",
+          "Saving a theme posts to `NEXT_PUBLIC_CONFIG_API/organizations/<organization_id>/theme` and needs the Keycloak user and RPT that `load()` sets 10 s after mount."
+        ],
+        "crossDomainInteractions": [
+          "The theme playground preview changes the theme of Map Exploration pages in the same browser through `CustomThemeProvider`.",
+          "`/admin/global` mounts its own `App` map through `GlobalMapLayout`; dashboard settings do not reach the public map."
+        ]
+      }
+    },
+    {
+      "id": "flow:map-load",
+      "type": "flow",
+      "name": "Load Map",
+      "summary": "Loads a public page with the live tree map. `_app.js` detects the device, loads the navbar config and picks a layout; the layout loads `App.js` through `next/dynamic` with `ssr: false`. `App.js` builds the map with runtime tile settings and shares it through `mapContext.js`, the home page sets the first view, and each move end writes the bounds into the URL. The mobile home and mobile search layouts mount no map.",
+      "tags": [
+        "map",
+        "page-load",
+        "layout",
+        "runtime-env"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "Page load of / (and of every public route)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:map-click",
+      "type": "flow",
+      "name": "Open Tree From Map",
+      "summary": "A click on a tree marker goes to `handleClickTree` in `App.js`. It notifies host windows, loads the full tree, resolves the next route with `getPathWhenClickTree` and calls `router.push` when the route changes. `_app.js` shows a progress bar while the next page loads.",
+      "tags": [
+        "map",
+        "click",
+        "navigation"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Tree marker click in the map (`onClickTree`)",
+        "entryType": "event"
+      }
+    },
+    {
+      "id": "flow:view-tree",
+      "type": "flow",
+      "name": "View Tree Detail",
+      "summary": "Renders `/trees/[treeid]` with Incremental Static Regeneration. `getStaticProps` loads the tree, its planter and its organization through `api.js`, and `wrapper` turns errors into `notFound` or `loadError`. The page focuses the tree on the shared map and shows verification and token badges, like and share controls, and planter and organization cards.",
+      "tags": [
+        "tree",
+        "isr",
+        "detail-page"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "GET /trees/[treeid]",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:view-profile",
+      "type": "flow",
+      "name": "View Grower or Organization Profile",
+      "summary": "Renders the planter, organization and wallet profile pages with ISR through `wrapper`. Planter and organization pages load their linked featured trees, associates and species with `getOrgLinks` and show `SectionUnavailable` for failed parts; the wallet page loads species, tokens, region counts and trees with `Promise.all`. Each page filters the shared map to the entity.",
+      "tags": [
+        "planter",
+        "organization",
+        "wallet",
+        "isr",
+        "profile"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "GET /planters/[planterid], /organizations/[organizationid], /wallets/[walletid]",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:view-token",
+      "type": "flow",
+      "name": "View Token or Capture",
+      "summary": "Renders token pages with `getServerSideProps` and version 2 capture pages with ISR. The token page loads the token, wallet, transactions, tree and planter, focuses the token tree on the map and shows claim and transferability tags. The capture page loads the capture, grower, country and stakeholder; no page links to `/v2/captures`, so users open it by URL.",
+      "tags": [
+        "token",
+        "capture",
+        "wallet",
+        "detail-page"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "GET /tokens/[tokenid] (also /wallets/:id/tokens/:tokenId through a rewrite) and GET /v2/captures/[captureid]",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:keyword-search",
+      "type": "flow",
+      "name": "Search by Keyword",
+      "summary": "Looks up one tree by id. No layout shows the search bar, so a user must open `/search?keyword=<id>` (or `/filter`) by URL to see `SearchFilter`. The server GETs `/trees/:keyword` with axios, and the page lists the result as a link to the tree page.",
+      "tags": [
+        "search",
+        "disabled-feature"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /search?keyword=<tree id> (by URL only)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:timeline-filter",
+      "type": "flow",
+      "name": "Filter by Date Range",
+      "summary": "Filters trees by date. On `/` and `/top` the map `Timeline` validates the range and calls `map.setFilters({ timeline })`. The `Filter` form inside `SearchFilter` (only on `/search` and `/filter`) pushes `/filter?timeline=`, and that page only prints the dates. The `Filter` copy on `/top` is hidden behind `false &&`.",
+      "tags": [
+        "filter",
+        "timeline",
+        "dates"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Date change in the map Timeline on / or /top",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:tree-spotlight",
+      "type": "flow",
+      "name": "Browse Tree Spotlight",
+      "summary": "`/top` (the home page button 'Let's Find a Tree' links to it) loads featured trees, organizations, planters and wallets plus the country leaderboard with ISR, resets the map to the global view and lets users pick a continent or fly to a country. A load failure shows a warning with Retry. `.env.production` sets `NEXT_PUBLIC_COUNTRY_LEADER_BOARD_DISABLED=true`, so the production leaderboard has no rows. In embed mode the page content is hidden (`isFloatingDisabled`).",
+      "tags": [
+        "spotlight",
+        "featured",
+        "leaderboard"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /top",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:share-page",
+      "type": "flow",
+      "name": "Share Page",
+      "summary": "On a tree, token or capture page the share icon opens the `Share` dialog with embed, Facebook, Twitter and email buttons and a read-only link with a Copy button. The embed button opens a second dialog with editable iframe code and its own Copy button. A Facebook like button sits next to the share icon.",
+      "tags": [
+        "sharing",
+        "social",
+        "embed-code"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Click on the share icon of a tree, token or capture page",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:embed-map",
+      "type": "flow",
+      "name": "View Embedded Map",
+      "summary": "Runs the web map inside another site or app. `_app.js` treats a page as embedded when the URL has `embed=true` or the fullscreen flag is set in localStorage, and on desktop it renders `LayoutEmbed` with a full-screen map, a toggleable drawer and a 'Powered by Greenstand' badge. On mobile the normal layouts stay and only the navbar hides. Map clicks post the clicked tree to the host window.",
+      "tags": [
+        "embed",
+        "iframe",
+        "layout"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET of a public page with ?embed=true, or a click on the fullscreen icon",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:sign-in-out",
+      "type": "flow",
+      "name": "Sign In and Out",
+      "summary": "OIDC sign-in through `react-oidc-context` is wired but turned off in the UI. `_app.js` wraps every page in `AuthProvider`, but `Navbar` comments out `LoginLogoutToggle`, so no public page shows a sign-in or sign-out button. The `/admin` page has its own Keycloak Login and Logout buttons, but no Keycloak provider wraps it.",
+      "tags": [
+        "auth",
+        "oidc",
+        "keycloak",
+        "disabled-feature"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "None in the public UI (the toggle is hidden); Login button on /admin",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:configure-global-map",
+      "type": "flow",
+      "name": "Configure Global Map",
+      "summary": "`/admin/global` lets an admin edit navbar items, a logo URL and an initial map location for organization 178. The edits go through `configReducer` into the `DashboardProvider` state, which persists to localStorage. Only this admin page reads that state: the Map tab applies the location to its own map, and no public page uses the navbar or map settings. The Theme tab shows only a heading.",
+      "tags": [
+        "admin",
+        "dashboard",
+        "config"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "GET /admin/global",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:edit-theme",
+      "type": "flow",
+      "name": "Edit Theme in Playground",
+      "summary": "`/admin/theme` is a theme playground: an admin edits palette, typography and fonts and previews them on `/top` in an iframe. A preview stores the theme in localStorage, and `CustomThemeProvider` applies it to public pages in the same browser. Save and load to the config API need a Keycloak user and RPT, which depend on the disabled Keycloak provider.",
+      "tags": [
+        "admin",
+        "theme",
+        "playground"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "GET /admin/theme",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:map-load:detect-device-and-config",
+      "type": "step",
+      "name": "`getInitialProps` detects the device and loads navbar config",
+      "summary": "`TreetrackerApp.getInitialProps` reads the user agent to set `device` (default desktop). Unless `NEXT_PUBLIC_SERVER_CONFIG_DISABLED` is set, it fetches the hard-coded `https://dev-k8s.treetracker.org/map_config/config` and uses its `testing-config` entry or `defaultConfig`.",
+      "tags": [
+        "ssr",
+        "config",
+        "device-detection"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/_app.js",
+      "lineRange": [
+        242,
+        269
+      ]
+    },
+    {
+      "id": "step:map-load:choose-layout",
+      "type": "step",
+      "name": "`TreetrackerApp` chooses the layout",
+      "summary": "`TreetrackerApp` renders `LayoutDashboard` for any path that contains `admin`. Otherwise it wraps the page in the auth, config, theme, drawer and map providers and picks `Layout` (desktop), `LayoutEmbed` (desktop in embed mode), `LayoutMobileB` or `LayoutMobileC` (mobile pages flagged `isBLayout` or `isCLayout`) or `LayoutMobile` (other mobile pages).",
+      "tags": [
+        "layout",
+        "routing",
+        "responsive"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/_app.js",
+      "lineRange": [
+        170,
+        219
+      ]
+    },
+    {
+      "id": "step:map-load:read-runtime-env",
+      "type": "step",
+      "name": "`getEnv` reads the allowlisted tile settings",
+      "summary": "`getEnv` returns `NEXT_PUBLIC_TILE_SERVER_URL`, `NEXT_PUBLIC_TILE_SERVER_SUBDOMAINS` or `NEXT_PUBLIC_TILE_SERVER_WEBMAP_API` from `window.__RUNTIME_ENV__`, which the blocking `/api/runtime-env` script in `_document.js` sets, and falls back to the build-time value. It throws for any other key.",
+      "tags": [
+        "config",
+        "runtime-env",
+        "allowlist"
+      ],
+      "complexity": "simple",
+      "filePath": "src/models/runtimeEnv.js",
+      "lineRange": [
+        30,
+        42
+      ]
+    },
+    {
+      "id": "step:map-load:mount-map-core",
+      "type": "step",
+      "name": "`MapComponent` mounts the map core",
+      "summary": "The load-map `useEffect` in `MapComponent` adds the Google Maps script, builds `new Map(...)` from `treetracker-web-map-core` with `onClickTree: handleClickTree`, the `getEnv` tile settings, `NEXT_PUBLIC_API` and empty filters, then calls `map.mount` and `mapContext.setMap`. `Layout`, `LayoutEmbed` and `LayoutMobile` load this component through `next/dynamic` with `ssr: false`.",
+      "tags": [
+        "map",
+        "leaflet",
+        "mount"
+      ],
+      "complexity": "complex",
+      "filePath": "src/components/App.js",
+      "lineRange": [
+        149,
+        210
+      ]
+    },
+    {
+      "id": "step:map-load:share-map-instance",
+      "type": "step",
+      "name": "`MapContextProvider` shares the map instance",
+      "summary": "`MapContextProvider` keeps the map in React state, and `useMapContext` gives it to pages, `Timeline` and `ZoomInOutButton`, which call `setFilters`, `gotoView`, `selectTree` and zoom on it.",
+      "tags": [
+        "context",
+        "state"
+      ],
+      "complexity": "simple",
+      "filePath": "src/mapContext.js",
+      "lineRange": [
+        8,
+        24
+      ]
+    },
+    {
+      "id": "step:map-load:set-initial-view",
+      "type": "step",
+      "name": "`Home` sets the first map view",
+      "summary": "When the map is ready, the `Home` reload effect calls `clearSelection` and `setFilters({})`, then flies to `?bounds=` from `pathResolver.getBounds` or to the global view `gotoView(0, 0, 2)`.",
+      "tags": [
+        "map",
+        "view",
+        "home"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Home.js",
+      "lineRange": [
+        61,
+        80
+      ]
+    },
+    {
+      "id": "step:map-load:sync-bounds-to-url",
+      "type": "step",
+      "name": "`updatePathWhenMapMoveEnd` writes the bounds into the URL",
+      "summary": "On each `MOVE_END` event (not on admin routes) `App.js` calls `updatePathWhenMapMoveEnd`, which builds `<path>?bounds=<current bounds>` and keeps `timeline`, `embed=true` and `tree_id`; `App.js` stores the result with `history.replaceState`.",
+      "tags": [
+        "url",
+        "bounds",
+        "history"
+      ],
+      "complexity": "simple",
+      "filePath": "src/models/pathResolver.js",
+      "lineRange": [
+        92,
+        108
+      ]
+    },
+    {
+      "id": "step:map-click:handle-click",
+      "type": "step",
+      "name": "`handleClickTree` receives the tree click",
+      "summary": "`treetracker-web-map-core` calls `handleClickTree` with the clicked tree. Before it resolves the route, it posts the tree JSON to the host windows (see View Embedded Map).",
+      "tags": [
+        "event",
+        "map"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/App.js",
+      "lineRange": [
+        74,
+        83
+      ]
+    },
+    {
+      "id": "step:map-click:fetch-whole-tree",
+      "type": "step",
+      "name": "`getTreeById` loads the full tree",
+      "summary": "`handleClickTree` awaits `getTreeById(tree.id)`, which GETs `/trees/:id` from `NEXT_PUBLIC_API` with a 15 s timeout. A failure is only logged, so the route is resolved without `wholeTree`.",
+      "tags": [
+        "api",
+        "axios"
+      ],
+      "complexity": "simple",
+      "filePath": "src/models/api.js",
+      "lineRange": [
+        104,
+        116
+      ]
+    },
+    {
+      "id": "step:map-click:resolve-next-path",
+      "type": "step",
+      "name": "`getPathWhenClickTree` resolves the next route",
+      "summary": "`getPathWhenClickTree` matches the current path. On a token page it goes to `/tokens/<token_id>` of the clicked tree; on a planter or organization page it keeps the context (`/planters/:id/trees/:treeId`); on a wallet page it goes to `/wallets/:id/tokens` with `tree_id`; elsewhere it goes to `/trees/:id`. It keeps the `embed` and `timeline` query values.",
+      "tags": [
+        "routing",
+        "path-resolution"
+      ],
+      "complexity": "complex",
+      "filePath": "src/models/pathResolver.js",
+      "lineRange": [
+        21,
+        90
+      ]
+    },
+    {
+      "id": "step:map-click:push-route",
+      "type": "step",
+      "name": "`handleClickTree` pushes the route",
+      "summary": "`handleClickTree` calls `router.push(result)` only when the pathname or the `tree_id` changes, after it copies the result query into `router.query`. A click on the tree that is already open does nothing.",
+      "tags": [
+        "router",
+        "navigation"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/App.js",
+      "lineRange": [
+        103,
+        126
+      ]
+    },
+    {
+      "id": "step:map-click:show-loader",
+      "type": "step",
+      "name": "`TreetrackerApp` shows the route-change progress bar",
+      "summary": "`TreetrackerApp` listens to `routeChangeStart`, `routeChangeComplete` and `routeChangeError`, shows a fixed `LinearProgress` while the route loads and scrolls the page panel to the top when it completes. The tree page also shows `TreeLoader` while `usePageLoading` is true.",
+      "tags": [
+        "loading",
+        "ux"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/_app.js",
+      "lineRange": [
+        126,
+        160
+      ]
+    },
+    {
+      "id": "step:view-tree:build-api-path",
+      "type": "step",
+      "name": "`apiPaths.trees` builds the tree endpoint",
+      "summary": "`apiPaths.trees(id)` joins `NEXT_PUBLIC_API` with `/trees/:id`; `planters` and `organization` build the related endpoints the same way.",
+      "tags": [
+        "api",
+        "url"
+      ],
+      "complexity": "simple",
+      "filePath": "src/models/apiPaths.js",
+      "lineRange": [
+        5,
+        21
+      ]
+    },
+    {
+      "id": "step:view-tree:fetch-tree",
+      "type": "step",
+      "name": "`serverSideData` loads the tree, planter and organization",
+      "summary": "`serverSideData` calls `getTreeById`, then `getPlanterById(planter_id)`, then `getOrganizationById` with `planting_organization_id` or, if it is absent, the planter's `organization_id`. `getStaticProps` returns the result with a 300 s revalidate, and `getStaticPaths` prebuilds nothing with `fallback: 'blocking'`.",
+      "tags": [
+        "isr",
+        "api",
+        "data-loading"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/trees/[treeid].js",
+      "lineRange": [
+        741,
+        778
+      ]
+    },
+    {
+      "id": "step:view-tree:wrap-load-errors",
+      "type": "step",
+      "name": "`wrapper` converts fetch errors",
+      "summary": "`wrapper` runs the data callback. An API 404 returns `{ notFound: true }`, and any other error returns `props.loadError` (message, status, url, code, params) with a 30 s revalidate, so a transient failure is not cached for long.",
+      "tags": [
+        "error-handling",
+        "isr"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/models/utils.js",
+      "lineRange": [
+        248,
+        267
+      ]
+    },
+    {
+      "id": "step:view-tree:handle-load-error",
+      "type": "step",
+      "name": "`PageLoadError` shows the degraded panel",
+      "summary": "The tree page renders `PageLoadError` when `tree` or `planter` is missing. It logs the error and shows breadcrumbs, a warning that the map is still available, skeleton blocks and a Retry button that calls `router.replace(router.asPath)`.",
+      "tags": [
+        "error-handling",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/common/PageLoadError.js",
+      "lineRange": [
+        12,
+        98
+      ]
+    },
+    {
+      "id": "step:view-tree:focus-tree-on-map",
+      "type": "step",
+      "name": "`Tree` reload effect focuses the tree on the map",
+      "summary": "The `Tree` reload effect sets the map filter from the path context (`userid` for a planter path, `map_name` for an organization path, no filter otherwise), zooms to level 16 when the map is further out, and calls `map.selectTree`.",
+      "tags": [
+        "map",
+        "selection"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/trees/[treeid].js",
+      "lineRange": [
+        111,
+        181
+      ]
+    },
+    {
+      "id": "step:view-tree:render-tree-page",
+      "type": "step",
+      "name": "`Tree` renders the badges and actions",
+      "summary": "`BadgeSection` shows 'Verified' or 'Waiting for verification' from `approved`, and 'Token issued' or 'Token not issued' from `token_id`. The page also renders `LikeButton`, `Share`, `TreeInfoDialog` and cards that link to the planter and organization pages with `keyword` and `embed=true` kept.",
+      "tags": [
+        "ui",
+        "badges"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/trees/[treeid].js",
+      "lineRange": [
+        188,
+        203
+      ]
+    },
+    {
+      "id": "step:view-profile:fetch-planter",
+      "type": "step",
+      "name": "Planter `serverSideData` calls `getPlanterById` and `getOrgLinks`",
+      "summary": "The planter page `serverSideData` loads the planter with `getPlanterById` and merges the result of `getOrgLinks(planter.links)`; `getStaticProps` wraps it with `wrapper` and a 300 s revalidate.",
+      "tags": [
+        "api",
+        "isr"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/planters/[planterid].js",
+      "lineRange": [
+        564,
+        579
+      ]
+    },
+    {
+      "id": "step:view-profile:load-org-links",
+      "type": "step",
+      "name": "`getOrgLinks` loads the linked resources with `Promise.allSettled`",
+      "summary": "`getOrgLinks` requests the `featured_trees`, associated organizations or planters, and `species` link URLs through `requestAPI` with `Promise.allSettled`. A failed request becomes `null` plus an entry in `partialErrors`, so one failure does not fail the page.",
+      "tags": [
+        "api",
+        "resilience"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/models/api.js",
+      "lineRange": [
+        131,
+        165
+      ]
+    },
+    {
+      "id": "step:view-profile:fetch-organization",
+      "type": "step",
+      "name": "Organization `serverSideData` calls `getOrganizationById` and `getOrgLinks`",
+      "summary": "The organization page `serverSideData` loads the organization and merges `getOrgLinks(organization.links)`; `getStaticProps` wraps it with `wrapper` and a 300 s revalidate.",
+      "tags": [
+        "api",
+        "isr"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/organizations/[organizationid].js",
+      "lineRange": [
+        544,
+        563
+      ]
+    },
+    {
+      "id": "step:view-profile:fetch-wallet",
+      "type": "step",
+      "name": "Wallet `serverSideData` loads the wallet data with `Promise.all`",
+      "summary": "The wallet page `serverSideData` calls `getWalletById`, then runs `getSpeciesByWalletId`, `/tokens?wallet=`, `/wallets/:id/token-region-count` and `/trees?wallet_id=` with `Promise.all`, so one failed request turns the whole page into `loadError`. The page shows `tokens.total` on both the Trees card and the Tokens card.",
+      "tags": [
+        "api",
+        "isr",
+        "wallet"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/wallets/[walletid].js",
+      "lineRange": [
+        419,
+        455
+      ]
+    },
+    {
+      "id": "step:view-profile:filter-map-to-entity",
+      "type": "step",
+      "name": "`Planter` reload effect filters the map to the grower",
+      "summary": "The planter page calls `map.setFilters({ userid })` and flies to `?bounds=` or to `map.getInitialView()`. The organization page does the same with `map_name`, and the wallet page with `wallet` (zoom at least 2); without data each page clears the filters.",
+      "tags": [
+        "map",
+        "filter"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/planters/[planterid].js",
+      "lineRange": [
+        115,
+        138
+      ]
+    },
+    {
+      "id": "step:view-profile:show-unavailable-sections",
+      "type": "step",
+      "name": "`SectionUnavailable` marks the failed sections",
+      "summary": "When `partialErrors` names `featuredTrees`, `species` or `associates`, the planter and organization pages render `SectionUnavailable` with a text such as 'Featured trees are unavailable right now' instead of empty data.",
+      "tags": [
+        "error-handling",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/common/SectionUnavailable.js",
+      "lineRange": [
+        7,
+        13
+      ]
+    },
+    {
+      "id": "step:view-profile:render-planter-page",
+      "type": "step",
+      "name": "`Planter` renders the grower name and badges",
+      "summary": "The planter page shows the grower as first name plus last initial through `getPlanterName`, with the hard-coded badges 'Verified Planter' and 'Seeking Orgs'. Featured trees link to `/planters/:id/trees/:treeId`, which keeps the planter context on the tree page.",
+      "tags": [
+        "ui",
+        "privacy",
+        "badges"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/planters/[planterid].js",
+      "lineRange": [
+        140,
+        171
+      ]
+    },
+    {
+      "id": "step:view-token:load-token-ssr",
+      "type": "step",
+      "name": "`getServerSideProps` loads the token page",
+      "summary": "The token page uses `getServerSideProps` (its ISR version is commented out). Any error in `serverSideData` returns `{ notFound: true }`, so this page has no `loadError` panel.",
+      "tags": [
+        "ssr",
+        "error-handling"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/tokens/[tokenid].js",
+      "lineRange": [
+        776,
+        788
+      ]
+    },
+    {
+      "id": "step:view-token:fetch-token-data",
+      "type": "step",
+      "name": "`serverSideData` loads the token, wallet, transactions, tree and planter",
+      "summary": "`serverSideData` calls `getTokenById` and `getWalletById` from `api.js`, calls axios directly for `/transactions?token_id=` and `/trees/:tree_id`, then calls `getPlanterById`. For `tokenid === 'idfromquery'` (the rewrite of `/wallets/:id/tokens?tree_id=`) it first loads the tree and uses its `token_id`.",
+      "tags": [
+        "api",
+        "axios",
+        "token"
+      ],
+      "complexity": "complex",
+      "filePath": "src/pages/tokens/[tokenid].js",
+      "lineRange": [
+        698,
+        758
+      ]
+    },
+    {
+      "id": "step:view-token:focus-token-tree",
+      "type": "step",
+      "name": "`Token` reload effect focuses the token tree",
+      "summary": "When the token has a tree, the `Token` reload effect sets the `wallet` filter on a wallet path (or clears the filters otherwise), zooms to level 16 and calls `map.selectTree`.",
+      "tags": [
+        "map",
+        "selection"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/tokens/[tokenid].js",
+      "lineRange": [
+        77,
+        148
+      ]
+    },
+    {
+      "id": "step:view-token:render-token-page",
+      "type": "step",
+      "name": "`Token` renders the claim and transferability tags",
+      "summary": "The `TagList` shows the token id, the tree id (linked to `/trees/:id` when present), 'Claimed' or 'Not claimed yet', and 'Can be transferred' only when the token is not claimed and has no pending transfer.",
+      "tags": [
+        "ui",
+        "token-rules"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/tokens/[tokenid].js",
+      "lineRange": [
+        461,
+        503
+      ]
+    },
+    {
+      "id": "step:view-token:fetch-capture",
+      "type": "step",
+      "name": "Capture `serverSideData` loads the capture, grower, country and stakeholder",
+      "summary": "`serverSideData` calls `getCapturesById`, `getGrowerById(grower_account_id)`, `getCountryByLatLon(lat, lon)` and `getStakeHolderById` (on `NEXT_PUBLIC_API_V2`) for the planting organization or the grower's organization; `getStaticProps` wraps it with `utils.wrapper` and a 300 s revalidate.",
+      "tags": [
+        "api",
+        "isr",
+        "capture"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/v2/captures/[captureid].js",
+      "lineRange": [
+        740,
+        772
+      ]
+    },
+    {
+      "id": "step:view-token:render-capture-page",
+      "type": "step",
+      "name": "`Capture` renders the badges or the load error",
+      "summary": "`Capture` renders `PageLoadError` unless the capture, grower, organization and country all loaded. `BadgeSection` adds 'Tree matched' (a click pushes `/trees/:id`) or 'Waiting for tree match' to the verification and token badges.",
+      "tags": [
+        "ui",
+        "badges",
+        "error-handling"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/v2/captures/[captureid].js",
+      "lineRange": [
+        196,
+        226
+      ]
+    },
+    {
+      "id": "step:keyword-search:hidden-search-entry",
+      "type": "step",
+      "name": "`LayoutEmbed` gates the search bar behind `false &&`",
+      "summary": "`LayoutEmbed` mounts `SearchFilter` only inside `{false && ...}` blocks, `LayoutMobile` keeps it in a comment, `Layout` does not import it, and `Top` hides `SearchButton` behind `false &&`. No layout shows a search entry point.",
+      "tags": [
+        "disabled-feature",
+        "search"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/LayoutEmbed.js",
+      "lineRange": [
+        162,
+        189
+      ]
+    },
+    {
+      "id": "step:keyword-search:enter-keyword",
+      "type": "step",
+      "name": "`SearchFilter` pushes the search route",
+      "summary": "On `/search` and on desktop `/filter`, `SearchFilter` stores the typed keyword in `handleChange`, and `handleSearchClick` calls `router.push('/search?keyword=<keyword>')`, with `&embed=true` in embed mode.",
+      "tags": [
+        "search",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/SearchFilter.js",
+      "lineRange": [
+        21,
+        28
+      ]
+    },
+    {
+      "id": "step:keyword-search:fetch-result",
+      "type": "step",
+      "name": "`getServerSideProps` GETs the tree by keyword",
+      "summary": "`getServerSideProps` in `search.js` calls axios directly for `${NEXT_PUBLIC_API}/trees/<keyword>`, so the keyword must be a tree id. It has no error handling, so an unknown keyword makes the request throw.",
+      "tags": [
+        "ssr",
+        "axios"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/search.js",
+      "lineRange": [
+        33,
+        45
+      ]
+    },
+    {
+      "id": "step:keyword-search:list-results",
+      "type": "step",
+      "name": "`Search` lists the result link",
+      "summary": "`Search` renders `SearchFilter` and one link per result id to `/trees/:id?keyword=<keyword>` (with `&embed=true` in embed mode). On mobile the page uses `LayoutMobileC`, which has no map.",
+      "tags": [
+        "ui",
+        "search"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/search.js",
+      "lineRange": [
+        7,
+        31
+      ]
+    },
+    {
+      "id": "step:timeline-filter:show-timeline",
+      "type": "step",
+      "name": "`Timeline` shows only on the global pages",
+      "summary": "`Timeline` starts with today as start and end, computes `isGlobalPage` from the path (`/` or `/top`) and renders nothing on other pages. The clock icon toggles the start and end date pickers, which allow dates up to today. `Layout`, `LayoutEmbed` and `LayoutMobile` mount it.",
+      "tags": [
+        "timeline",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Timeline.js",
+      "lineRange": [
+        71,
+        89
+      ]
+    },
+    {
+      "id": "step:timeline-filter:validate-range",
+      "type": "step",
+      "name": "`handleDatePickerChange` rejects a start after the end",
+      "summary": "`handleDatePickerChange` compares the new start or end with the other date. If the start is after the end, it sets `isError`, shows 'Start date must be before end date' and keeps the old range.",
+      "tags": [
+        "validation",
+        "timeline"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Timeline.js",
+      "lineRange": [
+        91,
+        109
+      ]
+    },
+    {
+      "id": "step:timeline-filter:apply-map-filter",
+      "type": "step",
+      "name": "`Timeline` effect calls `map.setFilters`",
+      "summary": "When the range changes and the map exists, the effect formats both dates as `YYYY-MM-DD` and calls `map.setFilters({ timeline: '<start>_<end>' })`. The URL and the share link do not get the timeline.",
+      "tags": [
+        "map",
+        "filter"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Timeline.js",
+      "lineRange": [
+        111,
+        117
+      ]
+    },
+    {
+      "id": "step:timeline-filter:enter-dates",
+      "type": "step",
+      "name": "`Filter.handleSubmit` validates the form dates",
+      "summary": "In `SearchFilter` filter mode, `Filter` collects a start and an end date. `handleSubmit` shows a warning when the start is after the end; otherwise it calls `onFilter` with both dates as `YYYY-MM-DD`.",
+      "tags": [
+        "validation",
+        "form"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/common/Filter.js",
+      "lineRange": [
+        59,
+        82
+      ]
+    },
+    {
+      "id": "step:timeline-filter:push-filter-route",
+      "type": "step",
+      "name": "`SearchFilter.handleFilter` pushes `/filter`",
+      "summary": "`handleFilter` calls `router.push('/filter?timeline=<start>_<end>')` (with `&embed=true` in embed mode), closes the form and refreshes the mode label.",
+      "tags": [
+        "router",
+        "filter"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/SearchFilter.js",
+      "lineRange": [
+        44,
+        55
+      ]
+    },
+    {
+      "id": "step:timeline-filter:apply-filter-page",
+      "type": "step",
+      "name": "`FilterPage` prints the parsed dates",
+      "summary": "`FilterPage` parses `?timeline=` into a start and an end, but it prints the start date on both the 'Start Date' and the 'End Date' lines and a fixed 'Found trees: 1,000,000'. It does not call the map.",
+      "tags": [
+        "filter",
+        "known-issue"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/filter.js",
+      "lineRange": [
+        6,
+        38
+      ]
+    },
+    {
+      "id": "step:tree-spotlight:fetch-featured-data",
+      "type": "step",
+      "name": "`serverSideData` loads the featured items and the leaderboard",
+      "summary": "`serverSideData` runs `getFeaturedTrees`, `getCountryLeaderboard` (or `[]` when `NEXT_PUBLIC_COUNTRY_LEADER_BOARD_DISABLED` is 'true', as in `.env.production`), and `requestAPI` for `/planters/featured`, `/organizations/featured` and `/wallets/featured` with `Promise.all`; `getStaticProps` wraps it with `utils.wrapper` and a 300 s revalidate.",
+      "tags": [
+        "api",
+        "isr"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/top.js",
+      "lineRange": [
+        290,
+        328
+      ]
+    },
+    {
+      "id": "step:tree-spotlight:reset-global-map",
+      "type": "step",
+      "name": "`Top` reload effect resets the map",
+      "summary": "When the map is ready, `Top` calls `setFilters({})` and flies to `?bounds=` or to `gotoView(0, 0, 2)`.",
+      "tags": [
+        "map",
+        "view"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/top.js",
+      "lineRange": [
+        61,
+        76
+      ]
+    },
+    {
+      "id": "step:tree-spotlight:render-sliders",
+      "type": "step",
+      "name": "`FeaturedTreesSlider` links the featured trees",
+      "summary": "`FeaturedTreesSlider` shows the featured trees and links each one to `/trees/:id`; `FeaturedPlantersSlider` does the same for organizations, planters and wallets. Each section shows only when its list is not empty.",
+      "tags": [
+        "ui",
+        "featured"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/FeaturedTreesSlider/index.js",
+      "lineRange": [
+        17,
+        173
+      ]
+    },
+    {
+      "id": "step:tree-spotlight:fetch-continent-leaderboard",
+      "type": "step",
+      "name": "`Top` effect loads the leaderboard per continent",
+      "summary": "When the user picks a `TagChips` continent ('Global' first), the effect calls `requestAPI('/countries/leaderboard/<continent>')` and replaces the rows; it returns early when the leaderboard is disabled.",
+      "tags": [
+        "leaderboard",
+        "api"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/top.js",
+      "lineRange": [
+        78,
+        88
+      ]
+    },
+    {
+      "id": "step:tree-spotlight:render-leaderboard",
+      "type": "step",
+      "name": "`LeaderBoard` ranks the countries",
+      "summary": "`LeaderBoard` fixes some country names for the flag lookup (`fixCountryNames`), shows ribbons for the top three, flags, names and tree counts, and calls `handleCountryClick` when a row is clicked.",
+      "tags": [
+        "leaderboard",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/LeaderBoard.js",
+      "lineRange": [
+        104,
+        275
+      ]
+    },
+    {
+      "id": "step:tree-spotlight:fly-to-country",
+      "type": "step",
+      "name": "`handleCountryClick` flies the map to the country",
+      "summary": "`handleCountryClick` loads `/countries/:id` with `requestAPI`, parses the `centroid` GeoJSON and calls `map.gotoView(lat, lon, 6)`.",
+      "tags": [
+        "map",
+        "country"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/top.js",
+      "lineRange": [
+        90,
+        98
+      ]
+    },
+    {
+      "id": "step:share-page:open-share-dialog",
+      "type": "step",
+      "name": "`Share.handleClick` opens the share dialog",
+      "summary": "`Share` receives `shareUrl` (`window.location.href`) and an icon; a click on the icon calls `handleClick`, which opens the 'Share this link' dialog.",
+      "tags": [
+        "ui",
+        "dialog"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Share.js",
+      "lineRange": [
+        47,
+        65
+      ]
+    },
+    {
+      "id": "step:share-page:pick-option",
+      "type": "step",
+      "name": "`CustomShareIcon` renders each share target",
+      "summary": "`CustomShareIcon` renders a round `IconButton` for embed, Facebook and Twitter with their click handlers, and wraps the email button in a `mailto:` anchor when `mailString` is set.",
+      "tags": [
+        "ui",
+        "sharing"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/common/CustomShareIcon.js",
+      "lineRange": [
+        3,
+        33
+      ]
+    },
+    {
+      "id": "step:share-page:share-to-social",
+      "type": "step",
+      "name": "`handleTwitter` and `handleFaceBook` open the share windows",
+      "summary": "`handleTwitter` opens the Twitter intent with `url=<shareUrl>&via=green_stand`, `handleFaceBook` opens the Facebook share dialog with `href=<shareUrl>`, and `mailString` builds a `mailto:` link with the subject 'A tree from Greenstand'.",
+      "tags": [
+        "social",
+        "sharing"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Share.js",
+      "lineRange": [
+        67,
+        79
+      ]
+    },
+    {
+      "id": "step:share-page:build-embed-code",
+      "type": "step",
+      "name": "`Share` builds the iframe embed code",
+      "summary": "`handleEmbed` closes the share dialog and opens 'Embed Greenstand'. The effect sets the embed code to a 560 x 315 `<iframe>` whose `src` is `shareUrl` as it is (no `embed=true` is added); the user can edit the code before the copy.",
+      "tags": [
+        "embed-code",
+        "iframe"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Share.js",
+      "lineRange": [
+        81,
+        99
+      ]
+    },
+    {
+      "id": "step:share-page:copy-link",
+      "type": "step",
+      "name": "`useClipboard.onCopy` copies the text",
+      "summary": "`useClipboard` copies the link or the embed code with `copy-to-clipboard`, sets `hasCopied` so the button reads 'Copied!', and resets it after 1500 ms.",
+      "tags": [
+        "clipboard",
+        "hook"
+      ],
+      "complexity": "simple",
+      "filePath": "src/hooks/globalHooks/useClipboard.js",
+      "lineRange": [
+        8,
+        31
+      ]
+    },
+    {
+      "id": "step:share-page:like-on-facebook",
+      "type": "step",
+      "name": "`LikeButton` loads the Facebook like widget",
+      "summary": "`LikeButton` loads the Facebook SDK script once (`fbsdk`), calls `FB.XFBML.parse()` and renders an `fb-like` box for a fixed `https://map.treetracker.org/trees/:id` or `/tokens/:id` URL.",
+      "tags": [
+        "social",
+        "facebook"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/LikeButton.js",
+      "lineRange": [
+        3,
+        40
+      ]
+    },
+    {
+      "id": "step:embed-map:detect-embed",
+      "type": "step",
+      "name": "`useEmbed` detects `embed=true`",
+      "summary": "`useEmbed` returns true when `router.asPath` contains `embed=true`; `_app.js` combines it with the localStorage `embed` flag into `nextExtraIsEmbed`.",
+      "tags": [
+        "embed",
+        "hook"
+      ],
+      "complexity": "simple",
+      "filePath": "src/hooks/globalHooks/useEmbed.js",
+      "lineRange": [
+        4,
+        8
+      ]
+    },
+    {
+      "id": "step:embed-map:toggle-fullscreen",
+      "type": "step",
+      "name": "`Layout.handleFullScreen` flips the stored embed flag",
+      "summary": "The maximize icon on the desktop `Layout` map calls `handleFullScreen`, which flips `nextExtraIsEmbedCallback` (the `useLocalStorage('embed')` setter), so `_app.js` switches to `LayoutEmbed` and keeps it on later visits.",
+      "tags": [
+        "embed",
+        "local-storage"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Layout.js",
+      "lineRange": [
+        56,
+        58
+      ]
+    },
+    {
+      "id": "step:embed-map:render-embed-layout",
+      "type": "step",
+      "name": "`LayoutEmbed` renders the full-screen map",
+      "summary": "`LayoutEmbed` renders the map at full size, a persistent 568 px drawer with the page (hidden for pages flagged `isFloatingDisabled`, such as `/` and `/top`), `Timeline`, the zoom buttons and a 'Powered by Greenstand' badge. The minimize icon that leaves embed mode shows only when the URL has no `embed=true`.",
+      "tags": [
+        "layout",
+        "embed"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/LayoutEmbed.js",
+      "lineRange": [
+        56,
+        310
+      ]
+    },
+    {
+      "id": "step:embed-map:hide-navbar",
+      "type": "step",
+      "name": "`Navbar` returns null in URL embed mode",
+      "summary": "`Navbar` returns null when `router.asPath` contains `embed=true`. This matters on mobile, where `LayoutMobile`, `LayoutMobileB` and `LayoutMobileC` still render it; `LayoutEmbed` has no navbar.",
+      "tags": [
+        "navbar",
+        "embed"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Navbar.js",
+      "lineRange": [
+        85,
+        90
+      ]
+    },
+    {
+      "id": "step:embed-map:portal-entity-logo",
+      "type": "step",
+      "name": "`Planter` portals the grower avatar into the embed badge",
+      "summary": "In embed mode the planter page renders the grower image through a `Portal` into the `#embed-logo-container` box of `LayoutEmbed`.",
+      "tags": [
+        "embed",
+        "branding"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/planters/[planterid].js",
+      "lineRange": [
+        542,
+        559
+      ]
+    },
+    {
+      "id": "step:embed-map:notify-parent-window",
+      "type": "step",
+      "name": "`handleClickTree` posts the clicked tree to the host",
+      "summary": "On each tree click `handleClickTree` posts the tree JSON to `window.ReactNativeWebView` when it exists and to `window.parent` with the target `*`, so a host page or app can react to the click.",
+      "tags": [
+        "postMessage",
+        "integration"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/App.js",
+      "lineRange": [
+        74,
+        83
+      ]
+    },
+    {
+      "id": "step:sign-in-out:load-oidc-config",
+      "type": "step",
+      "name": "`oidcConfig` reads the Keycloak settings",
+      "summary": "`oidcConfig` takes `authority`, `client_id`, `redirect_uri` and `realm` from the `NEXT_PUBLIC_KEYCLOAK_*` variables; `onSigninCallback` stores the sign-in response in the localStorage key `res`.",
+      "tags": [
+        "oidc",
+        "config"
+      ],
+      "complexity": "simple",
+      "filePath": "src/models/oidcConfig.js",
+      "lineRange": [
+        3,
+        12
+      ]
+    },
+    {
+      "id": "step:sign-in-out:wrap-app-in-provider",
+      "type": "step",
+      "name": "`TreetrackerApp` wraps the pages in `AuthProvider`",
+      "summary": "`TreetrackerApp` wraps both the admin branch and the public branch in `<AuthProvider {...oidcConfig}>`, so `useAuth` works on every page.",
+      "tags": [
+        "oidc",
+        "provider"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/_app.js",
+      "lineRange": [
+        170,
+        183
+      ]
+    },
+    {
+      "id": "step:sign-in-out:hide-login-toggle",
+      "type": "step",
+      "name": "`Navbar` comments out the sign-in toggle",
+      "summary": "`Navbar` still calls `useAuth`, but the desktop toolbar and the mobile menu keep `LoginLogoutToggle` and `UserAvatar` inside comments marked 'hide login temporarily'. Users see only the logo, the navbar links and the theme toggle.",
+      "tags": [
+        "disabled-feature",
+        "navbar"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/Navbar.js",
+      "lineRange": [
+        145,
+        148
+      ]
+    },
+    {
+      "id": "step:sign-in-out:choose-button",
+      "type": "step",
+      "name": "`LoginLogoutToggle` picks sign-in or sign-out (not rendered)",
+      "summary": "`LoginLogoutToggle` returns `SignOutButton` when `auth.isAuthenticated` is true and `SignInButton` otherwise. No live page renders it now.",
+      "tags": [
+        "disabled-feature",
+        "auth"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/LoginLogoutToggle.js",
+      "lineRange": [
+        6,
+        14
+      ]
+    },
+    {
+      "id": "step:sign-in-out:sign-in",
+      "type": "step",
+      "name": "`SignInButton` calls `signinRedirect` (not rendered)",
+      "summary": "`SignInButton` renders a 'Sign in' link that calls `auth.signinRedirect`; users cannot reach it while the toggle is hidden.",
+      "tags": [
+        "disabled-feature",
+        "oidc"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/SignInButton.js",
+      "lineRange": [
+        3,
+        34
+      ]
+    },
+    {
+      "id": "step:sign-in-out:sign-out",
+      "type": "step",
+      "name": "`SignOutButton` calls `removeUser` (not rendered)",
+      "summary": "`SignOutButton` renders 'Sign Out', which calls `auth.removeUser` to drop the local user only (no Keycloak logout); users cannot reach it while the toggle is hidden.",
+      "tags": [
+        "disabled-feature",
+        "oidc"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/SignOutButton.js",
+      "lineRange": [
+        3,
+        36
+      ]
+    },
+    {
+      "id": "step:sign-in-out:admin-keycloak-login",
+      "type": "step",
+      "name": "`Index` shows the Keycloak Login and Logout on /admin",
+      "summary": "The `/admin` page reads `keycloak` from `useKeycloak` and shows 'Login' (`createLoginUrl`) or 'Hi, <name>!' with 'Logout' (`createLogoutUrl`). `LayoutDashboard` comments out `SSRKeycloakProvider`, so no provider supplies a configured Keycloak client to this hook.",
+      "tags": [
+        "keycloak",
+        "admin",
+        "disabled-feature"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/admin/index.js",
+      "lineRange": [
+        298,
+        333
+      ]
+    },
+    {
+      "id": "step:configure-global-map:load-admin-org",
+      "type": "step",
+      "name": "`getServerSideProps` loads organization 178",
+      "summary": "`getServerSideProps` uses `wrapper` with `isr: false` to load the hard-coded organization 178 through `getOrganizationById`.",
+      "tags": [
+        "ssr",
+        "admin"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/admin/global.js",
+      "lineRange": [
+        141,
+        154
+      ]
+    },
+    {
+      "id": "step:configure-global-map:open-admin-page",
+      "type": "step",
+      "name": "`Global` renders the dashboard tabs",
+      "summary": "`GlobalWithContext` wraps `Global` in `DashboardProvider` and a local `MapContextProvider`. `Global` dispatches `updateLogoUrl(organization.logo_url)` on mount and shows the Navbar Settings, Theme Settings and Map Settings tabs; the Theme tab shows only the heading 'Theme View'.",
+      "tags": [
+        "admin",
+        "ui"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/admin/global.js",
+      "lineRange": [
+        21,
+        139
+      ]
+    },
+    {
+      "id": "step:configure-global-map:persist-config",
+      "type": "step",
+      "name": "`DashboardProvider` persists the config",
+      "summary": "`DashboardProvider` starts `useReducer(configReducer)` from the stored config or `defaultConfig` and writes each new state to the localStorage key `greenstand-web-map-client-config`. No public page reads this key.",
+      "tags": [
+        "state",
+        "local-storage"
+      ],
+      "complexity": "simple",
+      "filePath": "src/context/dashboardContext.js",
+      "lineRange": [
+        14,
+        41
+      ]
+    },
+    {
+      "id": "step:configure-global-map:edit-config-state",
+      "type": "step",
+      "name": "`configReducer` applies the logo, navbar and map actions",
+      "summary": "`configReducer` handles `UPDATE_LOGO_URL`, `ADD_NAV_ITEM` (next free id, 'New Url' at '/new-url', no duplicate), `REMOVE_NAV_ITEM`, `UPDATE_NAV_ITEM`, `REORDER_NAV_ITEMS` and `UPDATE_MAP_LOCATION`.",
+      "tags": [
+        "reducer",
+        "state"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/models/config.reducer.js",
+      "lineRange": [
+        10,
+        125
+      ]
+    },
+    {
+      "id": "step:configure-global-map:customize-navbar",
+      "type": "step",
+      "name": "`CustomizeNavbar` edits the navbar items",
+      "summary": "`CustomizeNavbar` lists the items in a drag-and-drop list (`@hello-pangea/dnd`) and dispatches reorder, add, update and delete actions; `CustomInputs` flags a title or URL that another item already uses. The logo text field in `CustomLogo` dispatches on each keystroke, and its Save button has no handler.",
+      "tags": [
+        "admin",
+        "navbar",
+        "drag-and-drop"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/dashboard/CustomizeNavbar.js",
+      "lineRange": [
+        170,
+        203
+      ]
+    },
+    {
+      "id": "step:configure-global-map:set-map-location",
+      "type": "step",
+      "name": "`MapLayout` validates and submits the map location",
+      "summary": "`MapLayout` mounts its own `App` map, shows the current center and zoom after each move end, checks that lat is from -90 to 90, lon from -180 to 180 and zoom from 2 to 20, and on submit dispatches `updateMapLocation`.",
+      "tags": [
+        "admin",
+        "map",
+        "validation"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/GlobalMapLayout.js",
+      "lineRange": [
+        56,
+        137
+      ]
+    },
+    {
+      "id": "step:configure-global-map:apply-admin-map",
+      "type": "step",
+      "name": "`Global` `setUpMap` applies the location to the admin map",
+      "summary": "The `setUpMap` effect sets the `map_name` filter of organization 178 and, when lat, lon and zoom are set, calls `map.gotoView` on the map inside `/admin/global` only.",
+      "tags": [
+        "admin",
+        "map"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/admin/global.js",
+      "lineRange": [
+        34,
+        50
+      ]
+    },
+    {
+      "id": "step:edit-theme:open-playground",
+      "type": "step",
+      "name": "`PlaygroundProvider` builds the editable theme",
+      "summary": "`ThemePlayground` wraps `ThemeConfig` in `PlaygroundProvider`, which builds light and dark variants with `buildTheme`, adds the predefined fonts and merges a saved `themeObject` from localStorage.",
+      "tags": [
+        "theme",
+        "context"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/context/playgroundContext.js",
+      "lineRange": [
+        30,
+        53
+      ]
+    },
+    {
+      "id": "step:edit-theme:edit-theme-props",
+      "type": "step",
+      "name": "`ColorInput.handleChange` sets the theme values",
+      "summary": "`ColorInput` accepts a typed value only if it passes `propRules.color` (gradients excepted) and calls `setPropByPath`; picker drags apply after a 200 ms pause. The typography inputs and the JSON textarea also update the theme.",
+      "tags": [
+        "theme",
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/playground/ColorInput.js",
+      "lineRange": [
+        42,
+        59
+      ]
+    },
+    {
+      "id": "step:edit-theme:preview-theme",
+      "type": "step",
+      "name": "`handlePreview` sends the theme to the preview",
+      "summary": "`handlePreview` runs `optimizeThemeFonts`, dispatches a `playground:theme-update` event into the `/top` iframe and saves the theme as `themeObject` in localStorage. With Auto Reload on, each theme change runs it.",
+      "tags": [
+        "theme",
+        "preview"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/admin/theme.js",
+      "lineRange": [
+        66,
+        76
+      ]
+    },
+    {
+      "id": "step:edit-theme:apply-theme-in-map",
+      "type": "step",
+      "name": "`CustomThemeProvider` applies the playground theme",
+      "summary": "On public pages `CustomThemeProvider` reads `themeObject` from localStorage, builds the MUI theme for the current light or dark mode, loads its fonts and listens for `playground:theme-update` to apply new previews.",
+      "tags": [
+        "theme",
+        "context"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/context/themeContext.js",
+      "lineRange": [
+        390,
+        424
+      ]
+    },
+    {
+      "id": "step:edit-theme:save-theme-to-server",
+      "type": "step",
+      "name": "`handleSave` posts the theme to the config API",
+      "summary": "`handleSave` POSTs the theme to `${NEXT_PUBLIC_CONFIG_API}/organizations/<user.organization_id>/theme` with the RPT. `user` and `auz` come from `load()`, which runs 10 s after mount only when `NEXT_PUBLIC_CONFIG_API` is set and a Keycloak token exists.",
+      "tags": [
+        "theme",
+        "api",
+        "keycloak"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/admin/theme.js",
+      "lineRange": [
+        78,
+        101
+      ]
+    },
+    {
+      "id": "step:edit-theme:load-server-theme",
+      "type": "step",
+      "name": "`loadThemeFromServer` loads the organization 1 theme",
+      "summary": "When `NEXT_PUBLIC_CONFIG_API` is set, public pages GET `/organizations/1/theme` from the config API and apply `response.data.theme` with `createTheme`.",
+      "tags": [
+        "theme",
+        "api"
+      ],
+      "complexity": "simple",
+      "filePath": "src/context/themeContext.js",
+      "lineRange": [
+        377,
+        388
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:map-exploration",
+      "target": "flow:map-load",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:map-exploration",
+      "target": "flow:map-click",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:entity-profiles",
+      "target": "flow:view-tree",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:entity-profiles",
+      "target": "flow:view-profile",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:entity-profiles",
+      "target": "flow:view-token",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:search-and-discovery",
+      "target": "flow:keyword-search",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:search-and-discovery",
+      "target": "flow:timeline-filter",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:search-and-discovery",
+      "target": "flow:tree-spotlight",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:sharing-and-embedding",
+      "target": "flow:share-page",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:sharing-and-embedding",
+      "target": "flow:embed-map",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:authentication-and-admin",
+      "target": "flow:sign-in-out",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:authentication-and-admin",
+      "target": "flow:configure-global-map",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:authentication-and-admin",
+      "target": "flow:edit-theme",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:map-load",
+      "target": "step:map-load:detect-device-and-config",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.14
+    },
+    {
+      "source": "flow:map-load",
+      "target": "step:map-load:choose-layout",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.29
+    },
+    {
+      "source": "flow:map-load",
+      "target": "step:map-load:read-runtime-env",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.43
+    },
+    {
+      "source": "flow:map-load",
+      "target": "step:map-load:mount-map-core",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.57
+    },
+    {
+      "source": "flow:map-load",
+      "target": "step:map-load:share-map-instance",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.71
+    },
+    {
+      "source": "flow:map-load",
+      "target": "step:map-load:set-initial-view",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.86
+    },
+    {
+      "source": "flow:map-load",
+      "target": "step:map-load:sync-bounds-to-url",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:map-click",
+      "target": "step:map-click:handle-click",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:map-click",
+      "target": "step:map-click:fetch-whole-tree",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:map-click",
+      "target": "step:map-click:resolve-next-path",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:map-click",
+      "target": "step:map-click:push-route",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:map-click",
+      "target": "step:map-click:show-loader",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:view-tree",
+      "target": "step:view-tree:build-api-path",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.17
+    },
+    {
+      "source": "flow:view-tree",
+      "target": "step:view-tree:fetch-tree",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:view-tree",
+      "target": "step:view-tree:wrap-load-errors",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:view-tree",
+      "target": "step:view-tree:handle-load-error",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:view-tree",
+      "target": "step:view-tree:focus-tree-on-map",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.83
+    },
+    {
+      "source": "flow:view-tree",
+      "target": "step:view-tree:render-tree-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:view-profile",
+      "target": "step:view-profile:fetch-planter",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.14
+    },
+    {
+      "source": "flow:view-profile",
+      "target": "step:view-profile:load-org-links",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.29
+    },
+    {
+      "source": "flow:view-profile",
+      "target": "step:view-profile:fetch-organization",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.43
+    },
+    {
+      "source": "flow:view-profile",
+      "target": "step:view-profile:fetch-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.57
+    },
+    {
+      "source": "flow:view-profile",
+      "target": "step:view-profile:filter-map-to-entity",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.71
+    },
+    {
+      "source": "flow:view-profile",
+      "target": "step:view-profile:show-unavailable-sections",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.86
+    },
+    {
+      "source": "flow:view-profile",
+      "target": "step:view-profile:render-planter-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:view-token",
+      "target": "step:view-token:load-token-ssr",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.17
+    },
+    {
+      "source": "flow:view-token",
+      "target": "step:view-token:fetch-token-data",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:view-token",
+      "target": "step:view-token:focus-token-tree",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:view-token",
+      "target": "step:view-token:render-token-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:view-token",
+      "target": "step:view-token:fetch-capture",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.83
+    },
+    {
+      "source": "flow:view-token",
+      "target": "step:view-token:render-capture-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:keyword-search",
+      "target": "step:keyword-search:hidden-search-entry",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.25
+    },
+    {
+      "source": "flow:keyword-search",
+      "target": "step:keyword-search:enter-keyword",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:keyword-search",
+      "target": "step:keyword-search:fetch-result",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.75
+    },
+    {
+      "source": "flow:keyword-search",
+      "target": "step:keyword-search:list-results",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:timeline-filter",
+      "target": "step:timeline-filter:show-timeline",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.17
+    },
+    {
+      "source": "flow:timeline-filter",
+      "target": "step:timeline-filter:validate-range",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:timeline-filter",
+      "target": "step:timeline-filter:apply-map-filter",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:timeline-filter",
+      "target": "step:timeline-filter:enter-dates",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:timeline-filter",
+      "target": "step:timeline-filter:push-filter-route",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.83
+    },
+    {
+      "source": "flow:timeline-filter",
+      "target": "step:timeline-filter:apply-filter-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:tree-spotlight",
+      "target": "step:tree-spotlight:fetch-featured-data",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.17
+    },
+    {
+      "source": "flow:tree-spotlight",
+      "target": "step:tree-spotlight:reset-global-map",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:tree-spotlight",
+      "target": "step:tree-spotlight:render-sliders",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:tree-spotlight",
+      "target": "step:tree-spotlight:fetch-continent-leaderboard",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:tree-spotlight",
+      "target": "step:tree-spotlight:render-leaderboard",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.83
+    },
+    {
+      "source": "flow:tree-spotlight",
+      "target": "step:tree-spotlight:fly-to-country",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:share-page",
+      "target": "step:share-page:open-share-dialog",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.17
+    },
+    {
+      "source": "flow:share-page",
+      "target": "step:share-page:pick-option",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:share-page",
+      "target": "step:share-page:share-to-social",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:share-page",
+      "target": "step:share-page:build-embed-code",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:share-page",
+      "target": "step:share-page:copy-link",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.83
+    },
+    {
+      "source": "flow:share-page",
+      "target": "step:share-page:like-on-facebook",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:embed-map",
+      "target": "step:embed-map:detect-embed",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.17
+    },
+    {
+      "source": "flow:embed-map",
+      "target": "step:embed-map:toggle-fullscreen",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:embed-map",
+      "target": "step:embed-map:render-embed-layout",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:embed-map",
+      "target": "step:embed-map:hide-navbar",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:embed-map",
+      "target": "step:embed-map:portal-entity-logo",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.83
+    },
+    {
+      "source": "flow:embed-map",
+      "target": "step:embed-map:notify-parent-window",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:sign-in-out",
+      "target": "step:sign-in-out:load-oidc-config",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.14
+    },
+    {
+      "source": "flow:sign-in-out",
+      "target": "step:sign-in-out:wrap-app-in-provider",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.29
+    },
+    {
+      "source": "flow:sign-in-out",
+      "target": "step:sign-in-out:hide-login-toggle",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.43
+    },
+    {
+      "source": "flow:sign-in-out",
+      "target": "step:sign-in-out:choose-button",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.57
+    },
+    {
+      "source": "flow:sign-in-out",
+      "target": "step:sign-in-out:sign-in",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.71
+    },
+    {
+      "source": "flow:sign-in-out",
+      "target": "step:sign-in-out:sign-out",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.86
+    },
+    {
+      "source": "flow:sign-in-out",
+      "target": "step:sign-in-out:admin-keycloak-login",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:configure-global-map",
+      "target": "step:configure-global-map:load-admin-org",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.14
+    },
+    {
+      "source": "flow:configure-global-map",
+      "target": "step:configure-global-map:open-admin-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.29
+    },
+    {
+      "source": "flow:configure-global-map",
+      "target": "step:configure-global-map:persist-config",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.43
+    },
+    {
+      "source": "flow:configure-global-map",
+      "target": "step:configure-global-map:edit-config-state",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.57
+    },
+    {
+      "source": "flow:configure-global-map",
+      "target": "step:configure-global-map:customize-navbar",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.71
+    },
+    {
+      "source": "flow:configure-global-map",
+      "target": "step:configure-global-map:set-map-location",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.86
+    },
+    {
+      "source": "flow:configure-global-map",
+      "target": "step:configure-global-map:apply-admin-map",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:edit-theme",
+      "target": "step:edit-theme:open-playground",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.17
+    },
+    {
+      "source": "flow:edit-theme",
+      "target": "step:edit-theme:edit-theme-props",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:edit-theme",
+      "target": "step:edit-theme:preview-theme",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:edit-theme",
+      "target": "step:edit-theme:apply-theme-in-map",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:edit-theme",
+      "target": "step:edit-theme:save-theme-to-server",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.83
+    },
+    {
+      "source": "flow:edit-theme",
+      "target": "step:edit-theme:load-server-theme",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:map-exploration",
+      "target": "domain:entity-profiles",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "`handleClickTree` pushes the tree, token or wallet-token route that `getPathWhenClickTree` resolves.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:entity-profiles",
+      "target": "domain:map-exploration",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Entity pages filter and focus the shared map through `useMapContext` (`setFilters`, `gotoView`, `selectTree`).",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:search-and-discovery",
+      "target": "domain:map-exploration",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "`Timeline` calls `map.setFilters({ timeline })`, and `/top` resets the map and flies to a clicked country.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:search-and-discovery",
+      "target": "domain:entity-profiles",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Spotlight sliders and search results link to tree, planter, organization and wallet pages.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:entity-profiles",
+      "target": "domain:sharing-and-embedding",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Tree, token and capture pages render `Share` and `LikeButton` with the current URL.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:sharing-and-embedding",
+      "target": "domain:map-exploration",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Embed state makes `_app.js` choose `LayoutEmbed`, and `updatePathWhenMapMoveEnd` keeps `embed=true` in the map URL.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:authentication-and-admin",
+      "target": "domain:map-exploration",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The theme playground preview stores `themeObject` in localStorage, and `CustomThemeProvider` applies it to public map pages in the same browser. Dashboard navbar and map settings do not reach public pages.",
+      "weight": 0.6
+    }
+  ],
+  "layers": [],
+  "tour": []
+}

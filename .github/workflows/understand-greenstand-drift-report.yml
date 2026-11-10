@@ -1,0 +1,74 @@
+name: "Understand Greenstand: Drift report"
+
+# Reports the drift of each source repo since its snapshot, which repos are due for
+# regeneration, which shared-resource facts and capture journey facts are gone, and whether the
+# roadmap changed after the snapshot of the roadmap page (.github/scripts/drift-report.mjs). The
+# report goes to the job summary and to one "Docs drift report" issue: the job opens or reopens it
+# when a repo is due, a fact is gone, or the roadmap changed, edits it on each run, comments when the
+# due list, the list of gone facts, or the new roadmap commit changes, and closes it when no repo
+# is due, no fact is gone, and the roadmap is current.
+# It never regenerates: that needs Claude Code and a human (docs/regenerating.md).
+# The issue text is authored text on a public surface, and GitHub starts no workflow (so no issue
+# scan) for what GITHUB_TOKEN writes. So the script runs the shared private-name check on the
+# whole text before it prints or posts any of it, and the job refuses to run without the name list.
+# The job fails when the GitHub API fails, a source repo or a repo outside the estate that the
+# capture journey cites is not found, or the check finds a name.
+
+on:
+  # Weekly. GitHub can delay or skip a scheduled run, and stops schedules in a public repo
+  # after 60 days without activity.
+  schedule:
+    - cron: "41 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Our files live in the folder understand-greenstand/ of this repo: each run step starts there.
+defaults:
+  run:
+    working-directory: understand-greenstand
+
+concurrency:
+  group: understand-greenstand-drift-report
+  cancel-in-progress: false
+
+jobs:
+  drift-report:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    env:
+      PRIVATE_REPO_NAMES: ${{ secrets.PRIVATE_REPO_NAMES }}
+      # Fake terms for end-to-end tests only; normally unset.
+      PRIVATE_NAMES_EXTRA_TERMS: ${{ vars.PRIVATE_NAMES_EXTRA_TERMS }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Load scanner pins
+        run: grep -E '^[A-Z0-9_]+=' .github/scanner-versions.env >> "$GITHUB_ENV"
+
+      - name: Install scanners
+        run: |
+          .github/scripts/install-scanner.sh gitleaks "$GITLEAKS_VERSION" "$GITLEAKS_SHA256"
+          .github/scripts/install-scanner.sh betterleaks "$BETTERLEAKS_VERSION" "$BETTERLEAKS_SHA256"
+
+      - name: Check that the CI name list is set and current
+        run: |
+          if [ -z "$PRIVATE_REPO_NAMES" ]; then
+            echo "::error::PRIVATE_REPO_NAMES is not set. The report publishes only after a private-name check."
+            exit 1
+          fi
+          .github/scripts/private-names.sh fingerprint-check
+
+      - name: Report drift, check it, and sync the issue
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node .github/scripts/drift-report.mjs --sync-issue

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 400" role="img" aria-labelledby="t">
+<title id="t">A drawing of the Verify page: a grid of tree photos and a side panel with Approve and Reject</title>
+<style>
+  .bg{fill:#ffffff}.card{fill:#f6f8fa;stroke:#d0d7de;stroke-width:1.5}.t{font:600 17px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#1f2328}.s{font:14px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#656d76}.g{fill:#4c9a2a}.gl{fill:#dafbe1}.al{fill:#fff8c5}.b{fill:#0969da}.w{fill:#ffffff}.tree1{fill:#4c9a2a}.trunk{fill:#8a6a3b}
+  @media (prefers-color-scheme: dark){.bg{fill:#0d1117}.card{fill:#161b22;stroke:#30363d}.t{fill:#e6edf3}.s{fill:#8b949e}.gl{fill:#12261e}.al{fill:#272115}.w{fill:#0d1117}}
+</style>
+<rect class="bg" width="360" height="400" rx="12"/>
+<rect class="card" x="12" y="12" width="336" height="376" rx="10"/>
+<circle cx="32" cy="32" r="5" fill="#cf222e" opacity=".6"/><circle cx="48" cy="32" r="5" fill="#bf8700" opacity=".6"/><circle cx="64" cy="32" r="5" fill="#4c9a2a" opacity=".6"/>
+<text class="t" x="28" y="74">Verify</text>
+<rect class="al" x="92" y="56" width="172" height="26" rx="13"/><text class="s" x="178" y="74" text-anchor="middle">Awaiting Verification</text>
+<rect class="gl" x="28" y="96" width="74" height="84" rx="8"/><rect class="trunk" x="62" y="142" width="6" height="24"/><circle class="tree1" cx="65" cy="132" r="18"/>
+<rect class="gl" x="112" y="96" width="74" height="84" rx="8" stroke="#0969da" stroke-width="4"/><rect class="trunk" x="146" y="142" width="6" height="24"/><circle class="tree1" cx="149" cy="132" r="18"/>
+<rect class="gl" x="28" y="192" width="74" height="84" rx="8"/><rect class="trunk" x="62" y="238" width="6" height="24"/><circle class="tree1" cx="65" cy="228" r="18"/>
+<rect class="gl" x="112" y="192" width="74" height="84" rx="8"/><rect class="trunk" x="146" y="238" width="6" height="24"/><circle class="tree1" cx="149" cy="228" r="18"/>
+<rect class="gl" x="28" y="288" width="74" height="84" rx="8"/><rect class="trunk" x="62" y="334" width="6" height="24"/><circle class="tree1" cx="65" cy="324" r="18"/>
+<rect class="gl" x="112" y="288" width="74" height="84" rx="8"/><rect class="trunk" x="146" y="334" width="6" height="24"/><circle class="tree1" cx="149" cy="324" r="18"/>
+<circle class="b" cx="186" cy="104" r="11"/><path d="M180 104l4 4 8-8" stroke="#fff" stroke-width="2.5" fill="none"/>
+<rect class="w" x="200" y="96" width="136" height="276" rx="8" stroke="#d0d7de" stroke-width="1.5"/>
+<text class="s" x="212" y="122">Morphology</text><rect class="card" x="212" y="130" width="112" height="22" rx="11"/>
+<text class="s" x="212" y="176">Age</text><rect class="card" x="212" y="184" width="112" height="22" rx="11"/>
+<text class="s" x="212" y="230">Species</text><rect class="card" x="212" y="238" width="112" height="22" rx="11"/>
+<rect class="g" x="212" y="280" width="112" height="34" rx="6"/><text x="268" y="302" text-anchor="middle" style="font:600 15px system-ui,sans-serif;fill:#fff">Approve</text>
+<rect x="212" y="324" width="112" height="34" rx="6" fill="none" stroke="#cf222e" stroke-width="2"/><text x="268" y="346" text-anchor="middle" style="font:600 15px system-ui,sans-serif;fill:#cf222e">Reject</text>
+</svg>

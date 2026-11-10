@@ -1,0 +1,20 @@
+name: "Understand Greenstand: Docs improvement"
+description: >-
+  An idea to make the Understand Greenstand docs (greenstand.github.io/greenstand-documentation)
+  more useful to volunteers.
+title: "Understand Greenstand: Docs improvement: "
+labels: ["understand-greenstand", "documentation", "enhancement"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help
+      description: Tell what to change, and who it helps.
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: A link to the page that the idea is about, if there is one.
+      placeholder: https://

@@ -1,0 +1,300 @@
+diff --git a/understand-anything-plugin/packages/dashboard/src/App.tsx b/understand-anything-plugin/packages/dashboard/src/App.tsx
+index cd1b33c..4013ab7 100644
+--- a/understand-anything-plugin/packages/dashboard/src/App.tsx
++++ b/understand-anything-plugin/packages/dashboard/src/App.tsx
+@@ -127,6 +127,7 @@ function Dashboard({ accessToken }: { accessToken: string }) {
+       .then((r) => (r.ok ? r.json() : null))
+       .then((config) => {
+         if (config?.outputLanguage) setOutputLanguage(config.outputLanguage);
++        useDashboardStore.getState().setSourceBaseUrl(config?.sourceBaseUrl ?? null);
+       })
+       .catch(() => {});
+   }, []);
+diff --git a/understand-anything-plugin/packages/dashboard/src/components/CodeViewer.tsx b/understand-anything-plugin/packages/dashboard/src/components/CodeViewer.tsx
+index 592fb1a..77b3480 100644
+--- a/understand-anything-plugin/packages/dashboard/src/components/CodeViewer.tsx
++++ b/understand-anything-plugin/packages/dashboard/src/components/CodeViewer.tsx
+@@ -18,16 +18,59 @@ interface SourceFile {
+   lineCount: number;
+ }
+ 
++type SourceLink = { url: string; label: string };
++
+ type SourceState =
+-  | { status: "idle" | "loading"; source: null; error: null }
+-  | { status: "loaded"; source: SourceFile; error: null }
+-  | { status: "error"; source: null; error: string };
++  | { status: "idle" | "loading"; source: null; error: null; link: null; imageUrl: null }
++  | { status: "loaded"; source: SourceFile; error: null; link: null; imageUrl: null }
++  | { status: "image"; source: null; error: null; link: null; imageUrl: string }
++  | { status: "error"; source: null; error: string; link: SourceLink | null; imageUrl: null };
++
++const IDLE_STATE: SourceState = { status: "idle", source: null, error: null, link: null, imageUrl: null };
+ 
+ function fileContentUrl(filePath: string, token: string): string {
+   const params = new URLSearchParams({ token, path: filePath });
+   return `/file-content.json?${params.toString()}`;
+ }
+ 
++const IMAGE_EXTENSIONS = new Set(["png", "jpg", "jpeg", "gif", "webp", "svg", "ico", "bmp", "avif"]);
++const LFS_POINTER_PREFIX = "version https://git-lfs.github.com/spec";
++const MAX_INLINE_BYTES = 1024 * 1024; // 1 MB
++
++function isImagePath(filePath: string): boolean {
++  const ext = filePath.split(".").pop()?.toLowerCase();
++  return !!ext && IMAGE_EXTENSIONS.has(ext);
++}
++
++/** Percent-encode each path segment individually — never the "/" separators. */
++function encodePathSegments(filePath: string): string {
++  return filePath
++    .split("/")
++    .map((segment) => encodeURIComponent(segment))
++    .join("/");
++}
++
++function githubRawUrl(sourceBaseUrl: string, filePath: string): string {
++  return `${sourceBaseUrl}${encodePathSegments(filePath)}`;
++}
++
++/** Derive github.com web (blob / commit-history) links from a raw.githubusercontent.com sourceBaseUrl. */
++function githubWebLinks(
++  sourceBaseUrl: string,
++  filePath: string,
++): { blobUrl: string; commitsUrl: string } | null {
++  const match = sourceBaseUrl.match(
++    /^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/$/,
++  );
++  if (!match) return null;
++  const [, owner, repo, ref] = match;
++  const encodedPath = encodePathSegments(filePath);
++  return {
++    blobUrl: `https://github.com/${owner}/${repo}/blob/${ref}/${encodedPath}`,
++    commitsUrl: `https://github.com/${owner}/${repo}/commits/${ref}/${encodedPath}`,
++  };
++}
++
+ function fallbackLanguage(filePath: string | undefined): string {
+   const ext = filePath?.split(".").pop()?.toLowerCase();
+   const byExt: Record<string, string> = {
+@@ -67,6 +110,7 @@ export default function CodeViewer({
+   const viewMode = useDashboardStore((s) => s.viewMode);
+   const codeViewerNodeId = useDashboardStore((s) => s.codeViewerNodeId);
+   const closeCodeViewer = useDashboardStore((s) => s.closeCodeViewer);
++  const sourceBaseUrl = useDashboardStore((s) => s.sourceBaseUrl);
+   const activeGraph = viewMode === "domain" && domainGraph ? domainGraph : graph;
+   // Files tab always builds its tree from the structural graph, so a node ID opened from
+   // there may not exist in the active (domain) graph — fall back to the structural graph.
+@@ -74,38 +118,124 @@ export default function CodeViewer({
+     activeGraph?.nodes.find((n) => n.id === codeViewerNodeId) ??
+     graph?.nodes.find((n) => n.id === codeViewerNodeId) ??
+     null;
+-  const [state, setState] = useState<SourceState>({
+-    status: "idle",
+-    source: null,
+-    error: null,
+-  });
++  const [state, setState] = useState<SourceState>(IDLE_STATE);
+   const { t } = useI18n();
+ 
+   useEffect(() => {
++    // Nodes without a filePath (CI step / terraform sub-resource children) never get a source
++    // fetch — never derive a path from `id`, which is not a committed contract.
+     if (!node?.filePath) {
+-      setState({ status: "error", source: null, error: "This node does not have a file path." });
++      setState({
++        status: "error",
++        source: null,
++        error: "This node does not have a file path.",
++        link: null,
++        imageUrl: null,
++      });
+       return;
+     }
++    const filePath = node.filePath;
+ 
+-    if (accessToken === "__demo__") {
++    // Demo builds normally hard-disable source viewing (no local dashboard server to serve
++    // /file-content.json). That restriction doesn't apply once a per-repo sourceBaseUrl is
++    // configured, since the source then comes straight from GitHub raw.
++    if (accessToken === "__demo__" && !sourceBaseUrl) {
+       setState({
+         status: "error",
+         source: null,
+         error: "Source preview is available only when the local dashboard server is running.",
++        link: null,
++        imageUrl: null,
+       });
+       return;
+     }
+ 
+     const controller = new AbortController();
+-    setState({ status: "loading", source: null, error: null });
++    setState({ status: "loading", source: null, error: null, link: null, imageUrl: null });
++
++    if (sourceBaseUrl) {
++      const rawUrl = githubRawUrl(sourceBaseUrl, filePath);
++      const webLinks = githubWebLinks(sourceBaseUrl, filePath);
++
++      if (isImagePath(filePath)) {
++        setState({ status: "image", source: null, error: null, link: null, imageUrl: rawUrl });
++        return () => controller.abort();
++      }
++
++      fetch(rawUrl, { method: "HEAD", signal: controller.signal })
++        .then((headRes) => {
++          if (headRes.status === 404) throw { kind: "not-found" } as const;
++          const contentLength = Number(headRes.headers.get("content-length") ?? "0");
++          if (contentLength > MAX_INLINE_BYTES) throw { kind: "too-large" } as const;
++          return fetch(rawUrl, { signal: controller.signal });
++        })
++        .then(async (res) => {
++          if (res.status === 404) throw { kind: "not-found" } as const;
++          if (!res.ok) throw { kind: "error", message: `Source unavailable (HTTP ${res.status}).` } as const;
++          const text = await res.text();
++          if (text.startsWith(LFS_POINTER_PREFIX)) throw { kind: "too-large" } as const;
++          const sizeBytes = new TextEncoder().encode(text).length;
++          const source: SourceFile = {
++            path: filePath,
++            language: fallbackLanguage(filePath),
++            content: text,
++            sizeBytes,
++            lineCount: text.split("\n").length,
++          };
++          setState({ status: "loaded", source, error: null, link: null, imageUrl: null });
++        })
++        .catch((err: unknown) => {
++          if (controller.signal.aborted) return;
++          if (err && typeof err === "object" && "kind" in err) {
++            const e = err as { kind: string; message?: string };
++            if (e.kind === "not-found") {
++              setState({
++                status: "error",
++                source: null,
++                error: "This file is not present at this commit.",
++                link: webLinks ? { url: webLinks.commitsUrl, label: "View commit history" } : null,
++                imageUrl: null,
++              });
++              return;
++            }
++            if (e.kind === "too-large") {
++              setState({
++                status: "error",
++                source: null,
++                error: "This file is too large to preview inline.",
++                link: webLinks ? { url: webLinks.blobUrl, label: "View on GitHub" } : null,
++                imageUrl: null,
++              });
++              return;
++            }
++            setState({
++              status: "error",
++              source: null,
++              error: e.message ?? "Source unavailable",
++              link: webLinks ? { url: webLinks.blobUrl, label: "View on GitHub" } : null,
++              imageUrl: null,
++            });
++            return;
++          }
++          setState({
++            status: "error",
++            source: null,
++            error: err instanceof Error ? err.message : String(err),
++            link: null,
++            imageUrl: null,
++          });
++        });
+ 
+-    fetch(fileContentUrl(node.filePath, accessToken), { signal: controller.signal })
++      return () => controller.abort();
++    }
++
++    fetch(fileContentUrl(filePath, accessToken), { signal: controller.signal })
+       .then(async (res) => {
+         const data = (await res.json()) as SourceFile | { error?: string };
+         if (!res.ok) {
+           throw new Error("error" in data && data.error ? data.error : "Source unavailable");
+         }
+-        setState({ status: "loaded", source: data as SourceFile, error: null });
++        setState({ status: "loaded", source: data as SourceFile, error: null, link: null, imageUrl: null });
+       })
+       .catch((err: unknown) => {
+         if (controller.signal.aborted) return;
+@@ -113,11 +243,13 @@ export default function CodeViewer({
+           status: "error",
+           source: null,
+           error: err instanceof Error ? err.message : String(err),
++          link: null,
++          imageUrl: null,
+         });
+       });
+ 
+     return () => controller.abort();
+-  }, [accessToken, node?.filePath]);
++  }, [accessToken, node?.filePath, sourceBaseUrl]);
+ 
+   const highlightedRange = useMemo(() => {
+     if (!node?.lineRange) return null;
+@@ -204,10 +336,30 @@ export default function CodeViewer({
+             <div className="rounded-lg border border-border-subtle bg-elevated p-4">
+               <div className="text-sm font-medium text-text-primary mb-2">{t.codeViewer.sourceUnavailable}</div>
+               <p className="text-sm text-text-secondary leading-relaxed">{state.error}</p>
++              {state.link && (
++                <a
++                  href={state.link.url}
++                  target="_blank"
++                  rel="noreferrer"
++                  className="inline-block mt-2 text-sm text-accent hover:underline"
++                >
++                  {state.link.label}
++                </a>
++              )}
+             </div>
+           </div>
+         )}
+ 
++        {state.status === "image" && (
++          <div className="p-5 flex items-center justify-center">
++            <img
++              src={state.imageUrl}
++              alt={node.name}
++              className="max-w-full h-auto rounded border border-border-subtle"
++            />
++          </div>
++        )}
++
+         {source && (
+           <>
+             <div className="px-4 py-2 border-b border-border-subtle bg-surface text-[11px] text-text-muted flex items-center justify-between">
+diff --git a/understand-anything-plugin/packages/dashboard/src/store.ts b/understand-anything-plugin/packages/dashboard/src/store.ts
+index 884f428..0d4b01c 100644
+--- a/understand-anything-plugin/packages/dashboard/src/store.ts
++++ b/understand-anything-plugin/packages/dashboard/src/store.ts
+@@ -194,8 +194,10 @@ interface DashboardStore {
+   isKnowledgeGraph: boolean;
+   domainGraph: KnowledgeGraph | null;
+   activeDomainId: string | null;
++  sourceBaseUrl: string | null;
+ 
+   setDomainGraph: (graph: KnowledgeGraph) => void;
++  setSourceBaseUrl: (url: string | null) => void;
+   setViewMode: (mode: ViewMode) => void;
+   setIsKnowledgeGraph: (value: boolean) => void;
+   navigateToDomain: (domainId: string) => void;
+@@ -686,11 +688,16 @@ export const useDashboardStore = create<DashboardStore>()((set, get) => ({
+   isKnowledgeGraph: false,
+   domainGraph: null,
+   activeDomainId: null,
++  sourceBaseUrl: null,
+ 
+   setDomainGraph: (graph) => {
+     set({ domainGraph: graph });
+   },
+ 
++  setSourceBaseUrl: (url) => {
++    set({ sourceBaseUrl: url });
++  },
++
+   setIsKnowledgeGraph: (value) => {
+     set({ isKnowledgeGraph: value });
+   },

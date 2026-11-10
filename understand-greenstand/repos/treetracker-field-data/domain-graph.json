@@ -1,0 +1,2879 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-field-data",
+    "languages": [
+      "javascript",
+      "sql",
+      "yaml",
+      "shell",
+      "dockerfile",
+      "json",
+      "markdown"
+    ],
+    "frameworks": [
+      "Express",
+      "Knex",
+      "db-migrate",
+      "Joi",
+      "Mocha",
+      "Docker",
+      "Kustomize",
+      "GitHub Actions"
+    ],
+    "description": "Field data service that owns the raw tree tracking data that the Treetracker app uploads: raw captures, sessions, tracks, device configurations, and wallet registrations. A layered Express service (routes, handlers, services, models, repositories) over PostgreSQL, which also writes the legacy tables.",
+    "analyzedAt": "2026-11-02T23:54:41.000Z",
+    "gitCommitHash": "8ffb53c98722c168f95e2a2a316198315547ce11"
+  },
+  "nodes": [
+    {
+      "id": "domain:raw-capture-ingestion",
+      "type": "domain",
+      "name": "Raw Capture Ingestion",
+      "summary": "Receives tree photo captures that the Treetracker app uploads and stores them in the field_data raw_capture table with status 'unprocessed'. Each capture belongs to an existing session and gets reference_id set to the id of a mirrored row in the legacy trees table. The domain also lists, reads, and rejects captures through the /raw-captures routes.",
+      "tags": [
+        "raw-capture",
+        "ingestion",
+        "rest-api",
+        "tree-capture"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "raw_capture",
+          "RawCapture",
+          "RawCaptureService",
+          "session_id",
+          "reference_id",
+          "rotation_matrix",
+          "rejection_reason",
+          "status (unprocessed, approved, rejected)"
+        ],
+        "businessRules": [
+          "POST /raw-captures requires a uuid id and session_id, lat in -90..90, lon in -180..180, a URI image_url, and an ISO captured_at (rawCaptureSchema, unknown keys rejected).",
+          "The handler deletes extra_attributes from the body before validation, because the mobile app does not send them yet; so no tree_attributes rows come from the API.",
+          "The handler sets each rotation_matrix entry below 0.001 to 0 before validation.",
+          "A capture whose session_id is not stored yet fails with HTTP 409 'has yet to be created, kindly retry later'.",
+          "Creation is idempotent on raw_capture.id: an existing id returns the stored capture with 200, a new id is inserted with status 'unprocessed' and returns 201.",
+          "PATCH /raw-captures/:raw_capture_id/reject requires rejection_reason and an Authorization header (422 'legacy authorization header needed' when missing); organization_id is an optional integer.",
+          "The legacy admin API call must succeed before the capture is set to status 'rejected'.",
+          "POST and PATCH requests without Content-Type application/json fail with HTTP 415."
+        ],
+        "crossDomainInteractions": [
+          "Reads the session (with wallet and device_identifier joins) from Session & Track Tracking and fails with 409 when it is missing.",
+          "Uses Legacy Database Bridging to write the legacy trees row whose id becomes raw_capture.reference_id.",
+          "Uses Legacy Database Bridging (LegacyAPIService) to reject the legacy tree through the admin API.",
+          "List and single reads join session, wallet_registration and device_configuration to return organization_id, wallet, grower_account_id, user_photo_url and device_identifier."
+        ]
+      }
+    },
+    {
+      "id": "flow:upload-raw-capture",
+      "type": "flow",
+      "name": "Upload Raw Capture",
+      "summary": "Stores one tree capture from the Treetracker app: it checks the session, mirrors the capture into the legacy trees table, then inserts the raw_capture row with reference_id set to the legacy tree id. It returns 201 for a new capture or 200 for an existing id.",
+      "tags": [
+        "raw-capture",
+        "create",
+        "idempotent",
+        "two-database-transaction"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "POST /raw-captures",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:upload-raw-capture:enforce-json-content-type",
+      "type": "step",
+      "name": "Enforce JSON content type",
+      "summary": "The app-level middleware rejects a POST whose content-type header is not exactly application/json with HttpError 415 'Invalid content type. API only supports application/json'.",
+      "tags": [
+        "validation",
+        "middleware"
+      ],
+      "complexity": "simple",
+      "filePath": "server/app.js",
+      "lineRange": [
+        26,
+        42
+      ]
+    },
+    {
+      "id": "step:upload-raw-capture:normalize-upload-body",
+      "type": "step",
+      "name": "Normalize upload body",
+      "summary": "rawCapturePost deletes req.body.extra_attributes (not yet implemented on the mobile side) and sets each rotation_matrix entry below 0.001 to 0.",
+      "tags": [
+        "normalization",
+        "handler"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/rawCaptureHandler/index.js",
+      "lineRange": [
+        44,
+        53
+      ]
+    },
+    {
+      "id": "step:upload-raw-capture:validate-capture",
+      "type": "step",
+      "name": "Validate capture with rawCaptureSchema",
+      "summary": "Joi validates the body with abortEarly false: uuid id and session_id, lat -90..90, lon -180..180, URI image_url, ISO captured_at, nullable gps_accuracy, step counts, rotation_matrix and note, optional bulk_pack_file_name, no unknown keys. Failures become HTTP 422 through errorHandler.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/rawCaptureHandler/schemas.js",
+      "lineRange": [
+        10,
+        32
+      ]
+    },
+    {
+      "id": "step:upload-raw-capture:require-existing-session",
+      "type": "step",
+      "name": "Require existing session",
+      "summary": "RawCaptureService.createRawCapture loads the session through SessionModel.getSessionById (joined with wallet_registration and device_configuration) and throws HttpError 409 when no session with session_id exists yet.",
+      "tags": [
+        "session",
+        "precondition",
+        "conflict"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/RawCaptureService.js",
+      "lineRange": [
+        27,
+        41
+      ]
+    },
+    {
+      "id": "step:upload-raw-capture:mirror-into-legacy-trees",
+      "type": "step",
+      "name": "Mirror capture into legacy trees",
+      "summary": "In a LegacySession transaction, LegacyTree.legacyTree builds a trees row from the session and capture fields (the capture id wins over the session id), and createTreesInLegacyDB reuses or inserts the legacy tree.",
+      "tags": [
+        "legacy",
+        "trees",
+        "transaction"
+      ],
+      "complexity": "complex",
+      "filePath": "server/services/RawCaptureService.js",
+      "lineRange": [
+        43,
+        54
+      ]
+    },
+    {
+      "id": "step:upload-raw-capture:insert-raw-capture",
+      "type": "step",
+      "name": "Insert raw capture idempotently",
+      "summary": "In a field data transaction, RawCapture.createRawCapture returns the stored capture with status 200 when raw_capture.id exists; otherwise it inserts the row with reference_id = legacy tree id, status 'unprocessed', and new created_at and updated_at, and returns 201.",
+      "tags": [
+        "raw_capture",
+        "idempotent",
+        "insert"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/RawCapture.js",
+      "lineRange": [
+        84,
+        101
+      ]
+    },
+    {
+      "id": "step:upload-raw-capture:commit-both-transactions",
+      "type": "step",
+      "name": "Commit or roll back both databases",
+      "summary": "The service commits the field data transaction first and the legacy transaction second. On any error it rolls back whichever transaction is still open and rethrows; this is two separate transactions, not a distributed commit.",
+      "tags": [
+        "transaction",
+        "rollback",
+        "consistency"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/RawCaptureService.js",
+      "lineRange": [
+        56,
+        75
+      ]
+    },
+    {
+      "id": "step:upload-raw-capture:respond-with-status",
+      "type": "step",
+      "name": "Respond with capture and status",
+      "summary": "rawCapturePost sends the capture with the status from the service: 201 for a new row, 200 for a repeated id.",
+      "tags": [
+        "response",
+        "handler"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/rawCaptureHandler/index.js",
+      "lineRange": [
+        54,
+        60
+      ]
+    },
+    {
+      "id": "flow:reject-raw-capture",
+      "type": "flow",
+      "name": "Reject Raw Capture",
+      "summary": "Rejects a capture in both systems: it patches the mirrored legacy tree through the legacy admin API with approved false and active false, then sets raw_capture.status to 'rejected' with the rejection_reason.",
+      "tags": [
+        "raw-capture",
+        "reject",
+        "legacy-admin-api"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "PATCH /raw-captures/:raw_capture_id/reject",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:reject-raw-capture:validate-rejection-request",
+      "type": "step",
+      "name": "Validate rejection request",
+      "summary": "rawCaptureRejectPatch validates the body with rawCaptureRejectionSchema (required rejection_reason string, optional integer organization_id) and the path with rawCaptureIdParamSchema (uuid raw_capture_id).",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/rawCaptureHandler/index.js",
+      "lineRange": [
+        62,
+        69
+      ]
+    },
+    {
+      "id": "step:reject-raw-capture:require-legacy-authorization",
+      "type": "step",
+      "name": "Require legacy authorization header",
+      "summary": "The handler reads req.headers.authorization and throws HttpError 422 'legacy authorization header needed' when it is missing, because the header is forwarded to the legacy admin API.",
+      "tags": [
+        "authorization",
+        "precondition"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/rawCaptureHandler/index.js",
+      "lineRange": [
+        71,
+        75
+      ]
+    },
+    {
+      "id": "step:reject-raw-capture:load-legacy-reference",
+      "type": "step",
+      "name": "Load legacy tree reference",
+      "summary": "RawCaptureService.rejectRawCapture begins a field data transaction, reads the capture by id and takes reference_id as the legacy tree id.",
+      "tags": [
+        "reference_id",
+        "transaction"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/RawCaptureService.js",
+      "lineRange": [
+        84,
+        89
+      ]
+    },
+    {
+      "id": "step:reject-raw-capture:patch-legacy-tree",
+      "type": "step",
+      "name": "Reject tree in legacy admin API",
+      "summary": "LegacyAPIService.rejectLegacyTree sends an axios PATCH to TREETRACKER_LEGACY_API_URL/api/[organization/<organization_id>/]trees/<id> with approved false, active false and rejectionReason, with the caller's authorization header.",
+      "tags": [
+        "legacy",
+        "http-client",
+        "axios"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/LegacyAPIService.js",
+      "lineRange": [
+        9,
+        24
+      ]
+    },
+    {
+      "id": "step:reject-raw-capture:mark-capture-rejected",
+      "type": "step",
+      "name": "Mark capture rejected",
+      "summary": "RawCapture.rejectRawCapture updates the raw_capture row to status 'rejected' with rejection_reason and a new updated_at, and returns the earlier read capture merged with these fields.",
+      "tags": [
+        "raw_capture",
+        "status-change"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/RawCapture.js",
+      "lineRange": [
+        103,
+        118
+      ]
+    },
+    {
+      "id": "step:reject-raw-capture:commit-or-rollback-rejection",
+      "type": "step",
+      "name": "Commit or roll back rejection",
+      "summary": "The service commits the field data transaction and returns the updated capture; on any error it rolls back the open transaction and rethrows. The legacy PATCH is not undone when the later update fails.",
+      "tags": [
+        "transaction",
+        "rollback"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/RawCaptureService.js",
+      "lineRange": [
+        99,
+        113
+      ]
+    },
+    {
+      "id": "step:reject-raw-capture:map-admin-api-errors",
+      "type": "step",
+      "name": "Map admin API errors",
+      "summary": "errorHandler turns an Axios error from the legacy admin API into HTTP 500 with the upstream error message, and logs the microservice url and request data.",
+      "tags": [
+        "error-handling",
+        "axios"
+      ],
+      "complexity": "simple",
+      "filePath": "server/utils/utils.js",
+      "lineRange": [
+        45,
+        62
+      ]
+    },
+    {
+      "id": "flow:list-raw-captures",
+      "type": "flow",
+      "name": "List Raw Captures",
+      "summary": "Returns a page of raw captures, newest first, filtered by status or bulk_pack_file_name, with a total count and prev/next links.",
+      "tags": [
+        "raw-capture",
+        "query",
+        "pagination"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /raw-captures",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:list-raw-captures:validate-list-query",
+      "type": "step",
+      "name": "Validate list query",
+      "summary": "rawCaptureGetQuerySchema allows only offset (>= 0), limit (> 0), status ('unprocessed', 'approved', 'rejected') and bulk_pack_file_name.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/rawCaptureHandler/schemas.js",
+      "lineRange": [
+        3,
+        8
+      ]
+    },
+    {
+      "id": "step:list-raw-captures:split-filter-and-paging",
+      "type": "step",
+      "name": "Split filter and paging",
+      "summary": "getFilterAndLimitOptions copies the query into a filter, moves limit and offset into limitOptions with defaults 100 and 0, and removes them from the filter.",
+      "tags": [
+        "pagination",
+        "helper"
+      ],
+      "complexity": "simple",
+      "filePath": "server/utils/helper.js",
+      "lineRange": [
+        32,
+        44
+      ]
+    },
+    {
+      "id": "step:list-raw-captures:query-joined-captures",
+      "type": "step",
+      "name": "Query captures with session joins",
+      "summary": "RawCaptureRepository.getByFilter selects raw_capture columns plus device_identifier, grower_account_id, wallet, user_photo_url and session.organization_id through left joins, ordered by created_at desc with limit and offset.",
+      "tags": [
+        "repository",
+        "join",
+        "sql"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/repositories/RawCaptureRepository.js",
+      "lineRange": [
+        10,
+        62
+      ]
+    },
+    {
+      "id": "step:list-raw-captures:count-captures",
+      "type": "step",
+      "name": "Count matching captures",
+      "summary": "RawCapture.getRawCapturesCount calls the inherited BaseRepository.countByFilter, which runs COUNT on raw_capture with the same filter and parses the result as an integer.",
+      "tags": [
+        "count",
+        "repository"
+      ],
+      "complexity": "simple",
+      "filePath": "server/repositories/BaseRepository.js",
+      "lineRange": [
+        83,
+        95
+      ]
+    },
+    {
+      "id": "step:list-raw-captures:build-page-response",
+      "type": "step",
+      "name": "Build page response with links",
+      "summary": "rawCaptureGet builds prev/next links for 'raw-captures' with generatePrevAndNext and sends raw_captures, links, and the query with count.",
+      "tags": [
+        "pagination",
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/rawCaptureHandler/index.js",
+      "lineRange": [
+        28,
+        41
+      ]
+    },
+    {
+      "id": "flow:get-raw-capture",
+      "type": "flow",
+      "name": "Get Raw Capture by Id",
+      "summary": "Returns one raw capture with its session, wallet and device fields, or HTTP 404 when the id is unknown.",
+      "tags": [
+        "raw-capture",
+        "query"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /raw-captures/:raw_capture_id",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:get-raw-capture:validate-capture-id",
+      "type": "step",
+      "name": "Validate capture id",
+      "summary": "rawCaptureSingleGet validates req.params with rawCaptureIdParamSchema (uuid raw_capture_id).",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/rawCaptureHandler/index.js",
+      "lineRange": [
+        88,
+        91
+      ]
+    },
+    {
+      "id": "step:get-raw-capture:load-capture-by-id",
+      "type": "step",
+      "name": "Load capture through joined filter",
+      "summary": "RawCapture.getRawCaptureById runs the joined getByFilter with 'raw_capture.id' and returns the first frozen capture.",
+      "tags": [
+        "model",
+        "query"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/RawCapture.js",
+      "lineRange": [
+        77,
+        82
+      ]
+    },
+    {
+      "id": "step:get-raw-capture:return-or-404",
+      "type": "step",
+      "name": "Return capture or 404",
+      "summary": "The handler throws HttpError 404 'raw capture with <id> not found' when no capture has an id, otherwise it sends the capture.",
+      "tags": [
+        "error-handling",
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/rawCaptureHandler/index.js",
+      "lineRange": [
+        93,
+        105
+      ]
+    },
+    {
+      "id": "domain:session-track-tracking",
+      "type": "domain",
+      "name": "Session & Track Tracking",
+      "summary": "Records field data collection sessions on the /session routes and GPS track uploads on the /track routes. A session row links one device_configuration to the originating wallet_registration and carries target_wallet, check_in_photo_url, track_url, organization, start_time and bulk_pack_version; a track row links a locations_url file to a session.",
+      "tags": [
+        "session",
+        "track",
+        "field-data",
+        "rest-api"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "session",
+          "SessionModel",
+          "track",
+          "Track",
+          "device_configuration_id",
+          "originating_wallet_registration_id",
+          "organization",
+          "organization_id",
+          "bulk_pack_version",
+          "locations_url"
+        ],
+        "businessRules": [
+          "POST /session requires uuid id, device_configuration_id and originating_wallet_registration_id; bulk_pack_version must be 'v1' or 'v2'; unknown keys are rejected.",
+          "Session creation is idempotent on id: 201 for a new row with created_at now, 200 with the stored session for a repeated id.",
+          "Session list filters grower_account_id and wallet apply to wallet_registration, all other filter keys are prefixed with 'session.'.",
+          "POST /track requires a URI locations_url, a uuid session_id and bulk_pack_file_name; track creation is not idempotent and always returns 201.",
+          "GET /track/:track_id uses BaseRepository.getById, so an unknown id fails with 404 'Can not found track by id:<id>' from the repository.",
+          "session.organization_id is not accepted by POST /session; per ADR 0001 a database operator sets it from the organization string."
+        ],
+        "crossDomainInteractions": [
+          "Sessions reference Device Configuration (device_configuration_id) and Wallet Registration (originating_wallet_registration_id) by foreign key and join them for device_identifier, wallet, grower_account_id and user_photo_url.",
+          "Raw Capture Ingestion requires the session before it stores a capture (409 otherwise).",
+          "The session wallet supplies the planter identifier that Legacy Database Bridging uses to find the legacy planter."
+        ]
+      }
+    },
+    {
+      "id": "flow:create-session",
+      "type": "flow",
+      "name": "Create Session",
+      "summary": "Stores a collection session that the app uploads before its captures, idempotent on the session id.",
+      "tags": [
+        "session",
+        "create",
+        "idempotent"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "POST /session",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:create-session:validate-session-body",
+      "type": "step",
+      "name": "Validate session body",
+      "summary": "sessionPostSchema requires uuid id, device_configuration_id and originating_wallet_registration_id, and allows target_wallet, URI check_in_photo_url and track_url, organization, ISO start_time, bulk_pack_file_name and bulk_pack_version 'v1' or 'v2'.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/sessionHandler/schemas.js",
+      "lineRange": [
+        22,
+        33
+      ]
+    },
+    {
+      "id": "step:create-session:open-session-transaction",
+      "type": "step",
+      "name": "Open transaction",
+      "summary": "SessionService.createSession begins a transaction on the field data Session and rolls it back on any error before it rethrows.",
+      "tags": [
+        "transaction"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/SessionService.js",
+      "lineRange": [
+        37,
+        50
+      ]
+    },
+    {
+      "id": "step:create-session:check-existing-session",
+      "type": "step",
+      "name": "Check for existing session id",
+      "summary": "SessionModel.createSession looks up the id through getSessionById, which queries the joined session view with limit 1.",
+      "tags": [
+        "idempotency",
+        "lookup"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/SessionModel.js",
+      "lineRange": [
+        62,
+        72
+      ]
+    },
+    {
+      "id": "step:create-session:insert-or-return-session",
+      "type": "step",
+      "name": "Insert session or return existing",
+      "summary": "When no session exists, the model inserts the body with created_at now and returns status 201; otherwise it returns the stored session with status 200.",
+      "tags": [
+        "insert",
+        "idempotent"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/SessionModel.js",
+      "lineRange": [
+        70,
+        81
+      ]
+    },
+    {
+      "id": "step:create-session:respond-session",
+      "type": "step",
+      "name": "Respond with session",
+      "summary": "sessionPost sends the session with the status that the model returned.",
+      "tags": [
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/sessionHandler/index.js",
+      "lineRange": [
+        13,
+        22
+      ]
+    },
+    {
+      "id": "flow:list-sessions",
+      "type": "flow",
+      "name": "List Sessions",
+      "summary": "Returns a page of sessions joined with device and wallet details, with a count over the same joins and prev/next links.",
+      "tags": [
+        "session",
+        "query",
+        "pagination"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /session",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:list-sessions:validate-session-query",
+      "type": "step",
+      "name": "Validate session query",
+      "summary": "sessionGetQuerySchema allows filters such as id, HH:MM start_time, device_configuration_id, originating_wallet_registration_id, YYYY-MM-DD created_at, grower_account_id, organization_id arrays, device_identifier, wallet, bulk_pack_file_name, offset and limit.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/sessionHandler/schemas.js",
+      "lineRange": [
+        3,
+        20
+      ]
+    },
+    {
+      "id": "step:list-sessions:qualify-filter-columns",
+      "type": "step",
+      "name": "Qualify filter columns",
+      "summary": "SessionService.addTableNames maps grower_account_id and wallet to wallet_registration.<key> and every other key to session.<key>.",
+      "tags": [
+        "filter",
+        "service"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/SessionService.js",
+      "lineRange": [
+        11,
+        21
+      ]
+    },
+    {
+      "id": "step:list-sessions:query-joined-sessions",
+      "type": "step",
+      "name": "Query sessions with joins",
+      "summary": "SessionRepository.getSessions selects session columns plus device_identifier, grower_account_id, wallet and user_photo_url through left joins, with limit and offset.",
+      "tags": [
+        "repository",
+        "join",
+        "sql"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/repositories/SessionRepository.js",
+      "lineRange": [
+        11,
+        46
+      ]
+    },
+    {
+      "id": "step:list-sessions:count-joined-sessions",
+      "type": "step",
+      "name": "Count sessions over joins",
+      "summary": "SessionRepository.countByFilter counts session rows after the same left joins, so the filter can use joined columns.",
+      "tags": [
+        "count",
+        "repository"
+      ],
+      "complexity": "simple",
+      "filePath": "server/repositories/SessionRepository.js",
+      "lineRange": [
+        48,
+        73
+      ]
+    },
+    {
+      "id": "step:list-sessions:build-session-page",
+      "type": "step",
+      "name": "Build page response",
+      "summary": "sessionGet builds prev/next links for 'session' and sends sessions, links and the query with count.",
+      "tags": [
+        "pagination",
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/sessionHandler/index.js",
+      "lineRange": [
+        29,
+        44
+      ]
+    },
+    {
+      "id": "flow:get-session",
+      "type": "flow",
+      "name": "Get Session by Id",
+      "summary": "Returns one session with device and wallet details, or HTTP 404.",
+      "tags": [
+        "session",
+        "query"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /session/:session_id",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:get-session:validate-session-id",
+      "type": "step",
+      "name": "Validate session id",
+      "summary": "sessionSingleGet validates req.params with sessionIdParamSchema (uuid session_id).",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/sessionHandler/index.js",
+      "lineRange": [
+        47,
+        50
+      ]
+    },
+    {
+      "id": "step:get-session:load-session-by-id",
+      "type": "step",
+      "name": "Load session by id",
+      "summary": "SessionModel.getSessionById queries the joined session view on 'session.id' with limit 1 and returns the first frozen session.",
+      "tags": [
+        "model",
+        "query"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/SessionModel.js",
+      "lineRange": [
+        62,
+        68
+      ]
+    },
+    {
+      "id": "step:get-session:return-session-or-404",
+      "type": "step",
+      "name": "Return session or 404",
+      "summary": "The handler throws HttpError 404 'session with <id> not found' when the result has no id, otherwise it sends the session.",
+      "tags": [
+        "error-handling",
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/sessionHandler/index.js",
+      "lineRange": [
+        52,
+        60
+      ]
+    },
+    {
+      "id": "flow:record-track",
+      "type": "flow",
+      "name": "Record Track",
+      "summary": "Stores a reference to an uploaded GPS track file (locations_url) for a session and bulk pack.",
+      "tags": [
+        "track",
+        "create"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "POST /track",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:record-track:validate-track-body",
+      "type": "step",
+      "name": "Validate track body",
+      "summary": "trackPostSchema requires a URI locations_url, a uuid session_id and a bulk_pack_file_name string, and rejects unknown keys.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/tracksHandler/schemas.js",
+      "lineRange": [
+        10,
+        14
+      ]
+    },
+    {
+      "id": "step:record-track:insert-track-in-transaction",
+      "type": "step",
+      "name": "Insert track in transaction",
+      "summary": "TrackService.createTrack begins a transaction, calls Track.createTrack (a plain BaseRepository create on the track table, with no existence check), commits, and rolls back on error.",
+      "tags": [
+        "transaction",
+        "insert"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/TrackService.js",
+      "lineRange": [
+        22,
+        35
+      ]
+    },
+    {
+      "id": "step:record-track:respond-track-created",
+      "type": "step",
+      "name": "Respond 201",
+      "summary": "trackPost always sends the inserted track row with HTTP 201.",
+      "tags": [
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/tracksHandler/index.js",
+      "lineRange": [
+        13,
+        22
+      ]
+    },
+    {
+      "id": "flow:query-tracks",
+      "type": "flow",
+      "name": "List Tracks",
+      "summary": "Returns a page of tracks filtered by session_id or bulk_pack_file_name, with a count and prev/next links.",
+      "tags": [
+        "track",
+        "query",
+        "pagination"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /track",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:query-tracks:validate-track-query",
+      "type": "step",
+      "name": "Validate track query",
+      "summary": "trackGetQuerySchema allows offset (>= 0), limit (> 0), bulk_pack_file_name and a uuid session_id.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/tracksHandler/schemas.js",
+      "lineRange": [
+        3,
+        8
+      ]
+    },
+    {
+      "id": "step:query-tracks:load-track-page",
+      "type": "step",
+      "name": "Load tracks and count",
+      "summary": "trackGet splits the filter and paging, then reads Track.getTracks (BaseRepository.getByFilter mapped to the five public fields) and getTracksCount.",
+      "tags": [
+        "query",
+        "count"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/tracksHandler/index.js",
+      "lineRange": [
+        29,
+        33
+      ]
+    },
+    {
+      "id": "step:query-tracks:build-track-page",
+      "type": "step",
+      "name": "Build page response",
+      "summary": "trackGet builds prev/next links for 'track' and sends tracks, links and the query with count.",
+      "tags": [
+        "pagination",
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/tracksHandler/index.js",
+      "lineRange": [
+        35,
+        44
+      ]
+    },
+    {
+      "id": "flow:get-track",
+      "type": "flow",
+      "name": "Get Track by Id",
+      "summary": "Returns one track row; an unknown id fails with HTTP 404 from the repository.",
+      "tags": [
+        "track",
+        "query"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /track/:track_id",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:get-track:validate-track-id",
+      "type": "step",
+      "name": "Validate track id",
+      "summary": "trackSingleGet validates req.params with trackIdParamSchema (uuid track_id).",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/tracksHandler/index.js",
+      "lineRange": [
+        47,
+        50
+      ]
+    },
+    {
+      "id": "step:get-track:load-track-by-id",
+      "type": "step",
+      "name": "Load track by id",
+      "summary": "Track.getTrackById calls BaseRepository.getById, which throws HttpError 404 'Can not found track by id:<id>' when no row matches; the handler's own 404 check is therefore not reached for unknown ids.",
+      "tags": [
+        "repository",
+        "error-handling"
+      ],
+      "complexity": "simple",
+      "filePath": "server/repositories/BaseRepository.js",
+      "lineRange": [
+        11,
+        22
+      ]
+    },
+    {
+      "id": "step:get-track:send-track",
+      "type": "step",
+      "name": "Send track",
+      "summary": "The handler sends the raw track row.",
+      "tags": [
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/tracksHandler/index.js",
+      "lineRange": [
+        52,
+        59
+      ]
+    },
+    {
+      "id": "domain:device-configuration",
+      "type": "domain",
+      "name": "Device Configuration",
+      "summary": "Stores the phone and app build that a grower used, as rows in the device_configuration table on the /device-configuration routes. Sessions reference these rows, and capture and session reads join them for device_identifier.",
+      "tags": [
+        "device",
+        "configuration",
+        "rest-api"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entities": [
+          "device_configuration",
+          "DeviceConfiguration",
+          "device_identifier",
+          "app_build",
+          "app_version",
+          "os_version",
+          "sdk_version",
+          "logged_at"
+        ],
+        "businessRules": [
+          "POST /device-configuration requires uuid id, device_identifier, brand, model, device, hardware, manufacturer, app_build, app_version, os_version, sdk_version and an ISO logged_at; serial may be empty or null; unknown keys are rejected.",
+          "Creation is idempotent on id: 201 for a new row with created_at now, 200 with the stored row for a repeated id.",
+          "GET /device-configuration accepts only offset, limit and bulk_pack_file_name."
+        ],
+        "crossDomainInteractions": [
+          "Session & Track Tracking references device_configuration.id from session.device_configuration_id.",
+          "Raw Capture Ingestion and session reads join device_configuration for device_identifier, which the legacy trees row also stores."
+        ]
+      }
+    },
+    {
+      "id": "flow:register-device-configuration",
+      "type": "flow",
+      "name": "Register Device Configuration",
+      "summary": "Stores the device and app details that the app sends, idempotent on the configuration id.",
+      "tags": [
+        "device",
+        "create",
+        "idempotent"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "POST /device-configuration",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:register-device-configuration:validate-device-body",
+      "type": "step",
+      "name": "Validate device body",
+      "summary": "deviceConfigurationPostSchema requires the uuid id, the device and app build fields and an ISO logged_at, allows an empty serial and an optional bulk_pack_file_name, and rejects unknown keys.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/deviceConfigurationHandler/schemas.js",
+      "lineRange": [
+        3,
+        18
+      ]
+    },
+    {
+      "id": "step:register-device-configuration:open-device-transaction",
+      "type": "step",
+      "name": "Open transaction",
+      "summary": "DeviceConfigurationService.createDeviceConfiguration begins a transaction on the field data Session, commits after the model call, and rolls back on error.",
+      "tags": [
+        "transaction"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/DeviceConfigurationService.js",
+      "lineRange": [
+        27,
+        42
+      ]
+    },
+    {
+      "id": "step:register-device-configuration:insert-or-return-device",
+      "type": "step",
+      "name": "Insert device configuration or return existing",
+      "summary": "DeviceConfiguration.createDeviceConfiguration looks up the id; it inserts the row with created_at now and returns 201, or returns the stored row with 200.",
+      "tags": [
+        "insert",
+        "idempotent"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/DeviceConfiguration.js",
+      "lineRange": [
+        70,
+        88
+      ]
+    },
+    {
+      "id": "step:register-device-configuration:respond-device",
+      "type": "step",
+      "name": "Respond with device configuration",
+      "summary": "deviceConfigurationPost sends the record as JSON with the status from the model.",
+      "tags": [
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/deviceConfigurationHandler/index.js",
+      "lineRange": [
+        13,
+        24
+      ]
+    },
+    {
+      "id": "flow:list-device-configurations",
+      "type": "flow",
+      "name": "List Device Configurations",
+      "summary": "Returns a page of device configurations filtered by bulk_pack_file_name, with a count and prev/next links.",
+      "tags": [
+        "device",
+        "query",
+        "pagination"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /device-configuration",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:list-device-configurations:validate-device-query",
+      "type": "step",
+      "name": "Validate device query",
+      "summary": "deviceConfigurationGetQuerySchema allows offset (>= 0), limit (> 0) and bulk_pack_file_name.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/deviceConfigurationHandler/schemas.js",
+      "lineRange": [
+        24,
+        28
+      ]
+    },
+    {
+      "id": "step:list-device-configurations:load-device-page",
+      "type": "step",
+      "name": "Load page and count",
+      "summary": "The model reads rows through BaseRepository.getByFilter, freezes the 15 device fields plus created_at, and counts with countByFilter.",
+      "tags": [
+        "query",
+        "count"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/DeviceConfiguration.js",
+      "lineRange": [
+        50,
+        61
+      ]
+    },
+    {
+      "id": "step:list-device-configurations:build-device-page",
+      "type": "step",
+      "name": "Build page response",
+      "summary": "deviceConfigurationGet builds prev/next links for 'device-configuration' and sends device_configurations, links and the query with count.",
+      "tags": [
+        "pagination",
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/deviceConfigurationHandler/index.js",
+      "lineRange": [
+        43,
+        56
+      ]
+    },
+    {
+      "id": "flow:get-device-configuration",
+      "type": "flow",
+      "name": "Get Device Configuration by Id",
+      "summary": "Returns one device configuration or HTTP 404.",
+      "tags": [
+        "device",
+        "query"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /device-configuration/:device_configuration_id",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:get-device-configuration:validate-device-id",
+      "type": "step",
+      "name": "Validate device configuration id",
+      "summary": "deviceConfigurationSingleGet validates the uuid device_configuration_id path parameter.",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/deviceConfigurationHandler/index.js",
+      "lineRange": [
+        59,
+        62
+      ]
+    },
+    {
+      "id": "step:get-device-configuration:load-device-by-id",
+      "type": "step",
+      "name": "Load by id",
+      "summary": "DeviceConfiguration.getDeviceConfigurationById filters on id and returns the first frozen row.",
+      "tags": [
+        "model",
+        "query"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/DeviceConfiguration.js",
+      "lineRange": [
+        63,
+        68
+      ]
+    },
+    {
+      "id": "step:get-device-configuration:return-device-or-404",
+      "type": "step",
+      "name": "Return record or 404",
+      "summary": "The handler throws HttpError 404 'device configuration with <id> not found' when no record has an id.",
+      "tags": [
+        "error-handling",
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/deviceConfigurationHandler/index.js",
+      "lineRange": [
+        64,
+        77
+      ]
+    },
+    {
+      "id": "domain:wallet-registration",
+      "type": "domain",
+      "name": "Wallet Registration",
+      "summary": "Stores grower wallet registrations made on a device in the wallet_registration table on the /wallet-registration routes: wallet, grower_account_id, names, phone or email, user_photo_url, location and registered_at. A session names its originating wallet registration, and the wallet value identifies the legacy planter.",
+      "tags": [
+        "wallet",
+        "grower",
+        "registration",
+        "rest-api"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "wallet_registration",
+          "WalletRegistration",
+          "wallet",
+          "grower_account_id",
+          "phone",
+          "email",
+          "user_photo_url",
+          "v1_legacy_organization"
+        ],
+        "businessRules": [
+          "POST /wallet-registration requires uuid id and grower_account_id, wallet, URI user_photo_url, first_name, last_name, and lat -90..90 and lon -180..180; email must match /.*@.*/.",
+          "Either phone or email is required (HTTP 422 'Either phone or email is required').",
+          "Creation is idempotent on id: 201 for a new row, 200 with the stored row for a repeated id; the model does not set created_at (the column default does).",
+          "GET /wallet-registration accepts only offset, limit and bulk_pack_file_name."
+        ],
+        "crossDomainInteractions": [
+          "Session & Track Tracking references wallet_registration.id from session.originating_wallet_registration_id and joins it for wallet and grower_account_id.",
+          "Legacy Database Bridging matches the wallet against legacy planter phone or email, and its ETL scripts backfill wallet_registration from legacy planter_registrations."
+        ]
+      }
+    },
+    {
+      "id": "flow:register-wallet",
+      "type": "flow",
+      "name": "Register Wallet",
+      "summary": "Stores a grower wallet registration from the app, idempotent on the registration id.",
+      "tags": [
+        "wallet",
+        "create",
+        "idempotent"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "POST /wallet-registration",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:register-wallet:validate-wallet-body",
+      "type": "step",
+      "name": "Validate registration body",
+      "summary": "walletRegistrationPostSchema requires the uuid id and grower_account_id, wallet, URI user_photo_url, names and bounded lat and lon; phone and email are nullable; registered_at, v1_legacy_organization and bulk_pack_file_name are optional.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/walletRegistrationHandler/schemas.js",
+      "lineRange": [
+        3,
+        17
+      ]
+    },
+    {
+      "id": "step:register-wallet:require-phone-or-email",
+      "type": "step",
+      "name": "Require phone or email",
+      "summary": "walletRegistrationPost throws HttpError 422 'Either phone or email is required' when both are absent.",
+      "tags": [
+        "business-rule",
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/walletRegistrationHandler/index.js",
+      "lineRange": [
+        18,
+        20
+      ]
+    },
+    {
+      "id": "step:register-wallet:open-wallet-transaction",
+      "type": "step",
+      "name": "Open transaction",
+      "summary": "WalletRegistrationService.createWalletRegistration begins a transaction on the field data Session, commits after the model call, and rolls back on error.",
+      "tags": [
+        "transaction"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/WalletRegistrationService.js",
+      "lineRange": [
+        27,
+        42
+      ]
+    },
+    {
+      "id": "step:register-wallet:insert-or-return-wallet",
+      "type": "step",
+      "name": "Insert registration or return existing",
+      "summary": "WalletRegistration.createWalletRegistration looks up the id; it inserts the body and returns 201, or returns the stored registration with 200.",
+      "tags": [
+        "insert",
+        "idempotent"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/WalletRegistration.js",
+      "lineRange": [
+        66,
+        81
+      ]
+    },
+    {
+      "id": "step:register-wallet:respond-wallet",
+      "type": "step",
+      "name": "Respond with registration",
+      "summary": "walletRegistrationPost sends the frozen registration as JSON with the status from the model.",
+      "tags": [
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/walletRegistrationHandler/index.js",
+      "lineRange": [
+        22,
+        27
+      ]
+    },
+    {
+      "id": "flow:list-wallet-registrations",
+      "type": "flow",
+      "name": "List Wallet Registrations",
+      "summary": "Returns a page of wallet registrations filtered by bulk_pack_file_name, with a count and prev/next links.",
+      "tags": [
+        "wallet",
+        "query",
+        "pagination"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /wallet-registration",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:list-wallet-registrations:validate-wallet-query",
+      "type": "step",
+      "name": "Validate registration query",
+      "summary": "walletRegistrationGetQuerySchema allows offset (>= 0), limit (> 0) and bulk_pack_file_name.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/walletRegistrationHandler/schemas.js",
+      "lineRange": [
+        23,
+        27
+      ]
+    },
+    {
+      "id": "step:list-wallet-registrations:load-wallet-page",
+      "type": "step",
+      "name": "Load page and count",
+      "summary": "The model reads rows through BaseRepository.getByFilter, keeps the 13 public registration fields, and counts with countByFilter.",
+      "tags": [
+        "query",
+        "count"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/WalletRegistration.js",
+      "lineRange": [
+        47,
+        57
+      ]
+    },
+    {
+      "id": "step:list-wallet-registrations:build-wallet-page",
+      "type": "step",
+      "name": "Build page response",
+      "summary": "walletRegistrationGet builds prev/next links for 'wallet-registration' and sends wallet_registrations, links and the query with count.",
+      "tags": [
+        "pagination",
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/walletRegistrationHandler/index.js",
+      "lineRange": [
+        47,
+        60
+      ]
+    },
+    {
+      "id": "flow:get-wallet-registration",
+      "type": "flow",
+      "name": "Get Wallet Registration by Id",
+      "summary": "Returns one wallet registration or HTTP 404.",
+      "tags": [
+        "wallet",
+        "query"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /wallet-registration/:wallet_registration_id",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:get-wallet-registration:validate-wallet-id",
+      "type": "step",
+      "name": "Validate registration id",
+      "summary": "walletRegistrationSingleGet validates the uuid wallet_registration_id path parameter.",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/walletRegistrationHandler/index.js",
+      "lineRange": [
+        63,
+        66
+      ]
+    },
+    {
+      "id": "step:get-wallet-registration:load-wallet-by-id",
+      "type": "step",
+      "name": "Load by id",
+      "summary": "WalletRegistration.getWalletRegistrationById filters on id and returns the first frozen registration.",
+      "tags": [
+        "model",
+        "query"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/WalletRegistration.js",
+      "lineRange": [
+        59,
+        64
+      ]
+    },
+    {
+      "id": "step:get-wallet-registration:return-wallet-or-404",
+      "type": "step",
+      "name": "Return registration or 404",
+      "summary": "The handler throws HttpError 404 'wallet registration with <id> not found' when no record has an id.",
+      "tags": [
+        "error-handling",
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/walletRegistrationHandler/index.js",
+      "lineRange": [
+        68,
+        81
+      ]
+    },
+    {
+      "id": "domain:legacy-database-bridging",
+      "type": "domain",
+      "name": "Legacy Database Bridging",
+      "summary": "Keeps the legacy treetracker database in step with field data during the monolith migration. At runtime it writes a trees row (and tree_attributes rows when given) for each new capture through a second Knex client on DATABASE_URL_LEGACYDB, and rejects legacy trees through the legacy admin API. One-off ETL scripts in database/etl backfill trees.session_id and field_data.wallet_registration from legacy data.",
+      "tags": [
+        "legacy",
+        "migration",
+        "backward-compatibility",
+        "etl"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "trees",
+          "tree_attributes",
+          "planter",
+          "planter_registrations",
+          "LegacyTree",
+          "LegacySession",
+          "knexLegacyDB",
+          "TREETRACKER_LEGACY_API_URL"
+        ],
+        "businessRules": [
+          "A legacy planter whose phone or email equals the session wallet must exist; otherwise the capture upload fails with HTTP 422 'Legacy planter has not been created for the legacy tree'.",
+          "The legacy trees row is idempotent on uuid (the lowercased capture id): an existing row is reused.",
+          "estimated_geometric_location is set with ST_PointFromText('POINT(lon lat)', 4326).",
+          "time_created and time_updated of the legacy tree both take captured_at.",
+          "Legacy rejection sets approved false and active false through the admin API, scoped to /organization/<id>/ when organization_id is given.",
+          "A legacy session id is uuid-by-string(device_identifier + planter_identifier)."
+        ],
+        "crossDomainInteractions": [
+          "Raw Capture Ingestion calls this domain on POST /raw-captures and on PATCH /raw-captures/:raw_capture_id/reject.",
+          "Uses the wallet from Wallet Registration (via the session join) as planter_identifier.",
+          "The wallet registration ETL inserts rows into Wallet Registration, with id set to the legacy trees.session_id."
+        ]
+      }
+    },
+    {
+      "id": "flow:mirror-capture-to-legacy-trees",
+      "type": "flow",
+      "name": "Mirror Capture to Legacy Trees",
+      "summary": "Builds and writes the legacy trees row for a new capture inside the LegacySession transaction that RawCaptureService opens; its id becomes raw_capture.reference_id.",
+      "tags": [
+        "legacy",
+        "trees",
+        "write"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "RawCaptureService.createRawCapture during POST /raw-captures",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:mirror-capture-to-legacy-trees:bind-legacy-session",
+      "type": "step",
+      "name": "Bind legacy database session",
+      "summary": "LegacySession is a BaseSession bound to knexLegacyDB, the Knex client for DATABASE_URL_LEGACYDB, so the legacy repositories share one legacy transaction.",
+      "tags": [
+        "database",
+        "session"
+      ],
+      "complexity": "simple",
+      "filePath": "server/infra/database/Sessions/LegacySession.js",
+      "lineRange": [
+        4,
+        8
+      ]
+    },
+    {
+      "id": "step:mirror-capture-to-legacy-trees:find-legacy-planter",
+      "type": "step",
+      "name": "Find legacy planter by wallet",
+      "summary": "LegacyPlanterRepository.findUser selects the first planter row where phone or email equals the wallet.",
+      "tags": [
+        "planter",
+        "lookup"
+      ],
+      "complexity": "simple",
+      "filePath": "server/repositories/Legacy/PlanterRepository.js",
+      "lineRange": [
+        10,
+        18
+      ]
+    },
+    {
+      "id": "step:mirror-capture-to-legacy-trees:build-legacy-tree-row",
+      "type": "step",
+      "name": "Build legacy trees row",
+      "summary": "LegacyTree.legacyTree throws HttpError 422 when no planter exists; otherwise it returns a frozen row with lowercased uuid, image_url, lat, lon, planter_id, planter_identifier (wallet), planter_photo_url, device_identifier, note, and time_created and time_updated set to captured_at.",
+      "tags": [
+        "mapping",
+        "business-rule"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/LegacyTree.js",
+      "lineRange": [
+        20,
+        53
+      ]
+    },
+    {
+      "id": "step:mirror-capture-to-legacy-trees:reuse-existing-legacy-tree",
+      "type": "step",
+      "name": "Reuse existing legacy tree",
+      "summary": "createTreesInLegacyDB returns the existing trees row when one with the same uuid exists.",
+      "tags": [
+        "idempotency"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/LegacyTree.js",
+      "lineRange": [
+        55,
+        63
+      ]
+    },
+    {
+      "id": "step:mirror-capture-to-legacy-trees:insert-legacy-tree",
+      "type": "step",
+      "name": "Insert legacy tree with geometry",
+      "summary": "LegacyTreeRepository.create runs a raw INSERT into trees with estimated_geometric_location = ST_PointFromText('POINT(lon lat)', 4326) and returns the new id.",
+      "tags": [
+        "insert",
+        "postgis"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/repositories/Legacy/TreeRepository.js",
+      "lineRange": [
+        10,
+        46
+      ]
+    },
+    {
+      "id": "step:mirror-capture-to-legacy-trees:insert-tree-attributes",
+      "type": "step",
+      "name": "Insert tree attributes",
+      "summary": "When attributes are given, the model inserts them into tree_attributes with tree_id set to the new tree id. POST /raw-captures deletes extra_attributes first, so this list is empty for API uploads.",
+      "tags": [
+        "tree_attributes",
+        "insert"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/LegacyTree.js",
+      "lineRange": [
+        64,
+        72
+      ]
+    },
+    {
+      "id": "flow:backfill-legacy-session-ids",
+      "type": "flow",
+      "name": "Backfill Legacy Session Ids",
+      "summary": "One-off script that sets trees.session_id on active legacy trees from the device and planter identifiers.",
+      "tags": [
+        "etl",
+        "legacy",
+        "session",
+        "backfill"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "node database/etl/create-legacy-session-ids.js",
+        "entryType": "cli"
+      }
+    },
+    {
+      "id": "step:backfill-legacy-session-ids:connect-etl-database",
+      "type": "step",
+      "name": "Connect to database",
+      "summary": "The script creates its own Knex pg client on DATABASE_URL with a pool of 0 to 4.",
+      "tags": [
+        "database",
+        "etl"
+      ],
+      "complexity": "simple",
+      "filePath": "database/etl/create-legacy-session-ids.js",
+      "lineRange": [
+        6,
+        15
+      ]
+    },
+    {
+      "id": "step:backfill-legacy-session-ids:select-trees-without-session",
+      "type": "step",
+      "name": "Select trees without session id",
+      "summary": "It selects up to 1000 trees rows that are active, have a null session_id, and have a device_identifier and planter_identifier.",
+      "tags": [
+        "query",
+        "batch"
+      ],
+      "complexity": "simple",
+      "filePath": "database/etl/create-legacy-session-ids.js",
+      "lineRange": [
+        21,
+        28
+      ]
+    },
+    {
+      "id": "step:backfill-legacy-session-ids:derive-session-uuid",
+      "type": "step",
+      "name": "Derive session uuid",
+      "summary": "For each row it computes the session id as uuid-by-string(device_identifier + planter_identifier); make-legacy-session-id.js logs the same derivation for one hard-coded pair.",
+      "tags": [
+        "uuid",
+        "derivation"
+      ],
+      "complexity": "simple",
+      "filePath": "database/etl/create-legacy-session-ids.js",
+      "lineRange": [
+        32,
+        39
+      ]
+    },
+    {
+      "id": "step:backfill-legacy-session-ids:update-tree-session-id",
+      "type": "step",
+      "name": "Update tree session id",
+      "summary": "It updates trees.session_id for the row id. The outer loop condition (j < 500 with a constant j) never changes, so the script repeats batches until it is stopped.",
+      "tags": [
+        "update",
+        "etl"
+      ],
+      "complexity": "simple",
+      "filePath": "database/etl/create-legacy-session-ids.js",
+      "lineRange": [
+        40,
+        46
+      ]
+    },
+    {
+      "id": "flow:backfill-wallet-registrations",
+      "type": "flow",
+      "name": "Backfill Wallet Registrations from Legacy",
+      "summary": "One-off SQL that creates field_data.wallet_registration rows from legacy planter_registrations, the latest planter photo and session_id in trees, and treetracker.grower_account.",
+      "tags": [
+        "etl",
+        "legacy",
+        "wallet",
+        "backfill"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "database/etl/create-wallet-registration-from-legacy-2.sql (run by an operator)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:backfill-wallet-registrations:pick-latest-planter-photo",
+      "type": "step",
+      "name": "Pick latest planter photo and session",
+      "summary": "A subquery takes, per planter_id, the newest active trees row with a session_id and keeps its planter_photo_url and session_id (the first script version does not require active = true).",
+      "tags": [
+        "query",
+        "legacy"
+      ],
+      "complexity": "moderate",
+      "filePath": "database/etl/create-wallet-registration-from-legacy-2.sql",
+      "lineRange": [
+        30,
+        38
+      ]
+    },
+    {
+      "id": "step:backfill-wallet-registrations:join-grower-account",
+      "type": "step",
+      "name": "Join grower account by wallet",
+      "summary": "It joins treetracker.grower_account where wallet equals COALESCE(phone, email) of the planter registration.",
+      "tags": [
+        "join",
+        "grower-account"
+      ],
+      "complexity": "simple",
+      "filePath": "database/etl/create-wallet-registration-from-legacy-2.sql",
+      "lineRange": [
+        39,
+        40
+      ]
+    },
+    {
+      "id": "step:backfill-wallet-registrations:filter-and-dedupe",
+      "type": "step",
+      "name": "Filter and remove duplicates",
+      "summary": "It keeps registrations with a phone or email and a lat and lon, skips session ids that already exist in field_data.wallet_registration, and keeps one row per wallet with DISTINCT ON.",
+      "tags": [
+        "filter",
+        "idempotency"
+      ],
+      "complexity": "simple",
+      "filePath": "database/etl/create-wallet-registration-from-legacy-2.sql",
+      "lineRange": [
+        16,
+        47
+      ]
+    },
+    {
+      "id": "step:backfill-wallet-registrations:insert-wallet-registrations",
+      "type": "step",
+      "name": "Insert wallet registrations",
+      "summary": "It inserts id (the legacy session_id), wallet, user_photo_url (or 'none'), grower_account_id, names, phone, email, lat, lon, registered_at and v1_legacy_organization into field_data.wallet_registration.",
+      "tags": [
+        "insert",
+        "wallet_registration"
+      ],
+      "complexity": "simple",
+      "filePath": "database/etl/create-wallet-registration-from-legacy-2.sql",
+      "lineRange": [
+        1,
+        28
+      ]
+    },
+    {
+      "id": "domain:schema-migrations-seed-data",
+      "type": "domain",
+      "name": "Schema Migrations & Seed Data",
+      "summary": "Defines and evolves the field data schema with db-migrate (46 up and down SQL files under database/migrations/sqls) and fills development databases with Knex seeds. The domainEvents migrations create the domain_event table, LIST-partitioned by status, with domain_event_sent and domain_event_handled yearly partitions up to 2026; no runtime code under server/ reads or writes these tables. session_segment and the raw_capture root and root_check_processed_at columns also exist only in the schema at this commit.",
+      "tags": [
+        "database",
+        "migrations",
+        "seed-data",
+        "schema"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "db-migrate migration",
+          "raw_capture",
+          "session",
+          "track",
+          "wallet_registration",
+          "device_configuration",
+          "session_segment",
+          "domain_event",
+          "knex seed"
+        ],
+        "businessRules": [
+          "Each migration JavaScript file reads its sqls/<name>-up.sql or -down.sql file and runs it with db.runSql.",
+          "The domain_event tables (domain_event_raised, domain_event_received, domain_event_sent_2021..2026, domain_event_handled_2021..2026) are created by migrations but not written by runtime code.",
+          "In Kubernetes, migrations run as an Argo CD PostSync Job with DATABASE_URL from the database-migration-connection secret; in CI, npm run db-migrate-ci runs them.",
+          "Seeds run in file order 00 to 04 with NODE_ENV development or usertest and DATABASE_URL_SEEDER, and they also write the legacy planter and trees tables."
+        ],
+        "crossDomainInteractions": [
+          "Creates the tables that Raw Capture Ingestion, Session & Track Tracking, Device Configuration and Wallet Registration read and write.",
+          "The raw capture seed writes legacy planter and trees rows the same way that Legacy Database Bridging links them through reference_id."
+        ]
+      }
+    },
+    {
+      "id": "flow:apply-schema-migrations",
+      "type": "flow",
+      "name": "Apply Schema Migrations",
+      "summary": "Runs pending db-migrate migrations against the field data schema in CI, locally, and on each Argo CD sync.",
+      "tags": [
+        "migrations",
+        "db-migrate",
+        "deployment"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "npm run db-migrate-ci / database-migration-job (Argo CD PostSync)",
+        "entryType": "cli"
+      }
+    },
+    {
+      "id": "step:apply-schema-migrations:run-db-migrate-up",
+      "type": "step",
+      "name": "Run db-migrate up",
+      "summary": "The database-migration-job runs node_modules/db-migrate/bin/db-migrate up --migrations-dir database/migrations/ in the service image as an Argo CD PostSync hook with backoffLimit 1.",
+      "tags": [
+        "kubernetes",
+        "job"
+      ],
+      "complexity": "simple",
+      "filePath": "deployment/base/database-migration-job.yaml",
+      "lineRange": [
+        1,
+        39
+      ]
+    },
+    {
+      "id": "step:apply-schema-migrations:load-and-run-sql",
+      "type": "step",
+      "name": "Load and run migration SQL",
+      "summary": "Each migration up() reads sqls/<name>-up.sql with fs.readFile, logs it, and passes it to db.runSql; down() does the same with the -down.sql file.",
+      "tags": [
+        "db-migrate",
+        "sql"
+      ],
+      "complexity": "simple",
+      "filePath": "database/migrations/20201225201548-createCaptures.js",
+      "lineRange": [
+        20,
+        54
+      ]
+    },
+    {
+      "id": "step:apply-schema-migrations:create-capture-table",
+      "type": "step",
+      "name": "Create raw_capture table",
+      "summary": "The first migration creates raw_capture with reference_id, image_url, lat, lon, status and rejection_reason, plus status and date indexes; later migrations reshape it for bulk packs and sessions.",
+      "tags": [
+        "raw_capture",
+        "ddl"
+      ],
+      "complexity": "simple",
+      "filePath": "database/migrations/sqls/20201225201548-createCaptures-up.sql",
+      "lineRange": [
+        1,
+        26
+      ]
+    },
+    {
+      "id": "step:apply-schema-migrations:create-session-and-track-tables",
+      "type": "step",
+      "name": "Create session and track tables",
+      "summary": "The session migration creates session with foreign keys to device_configuration and wallet_registration; a later migration creates track with session_id, locations_url and bulk_pack_file_name.",
+      "tags": [
+        "session",
+        "track",
+        "ddl"
+      ],
+      "complexity": "simple",
+      "filePath": "database/migrations/sqls/20220125153204-session-up.sql",
+      "lineRange": [
+        1,
+        11
+      ]
+    },
+    {
+      "id": "step:apply-schema-migrations:create-domain-event-partitions",
+      "type": "step",
+      "name": "Create unused domain_event partitions",
+      "summary": "The domainEvents migration creates domain_event partitioned by status into raised, received, sent and handled, with yearly sent and handled partitions; 20240105095545 adds 2024 to 2026. No server code writes these tables.",
+      "tags": [
+        "domain_event",
+        "partitioning",
+        "unused"
+      ],
+      "complexity": "simple",
+      "filePath": "database/migrations/sqls/20201231060447-domainEvents-up.sql",
+      "lineRange": [
+        1,
+        24
+      ]
+    },
+    {
+      "id": "step:apply-schema-migrations:add-session-segment-and-root-columns",
+      "type": "step",
+      "name": "Add session_segment and root columns",
+      "summary": "Later migrations add the session_segment table with a PostGIS convex_hull and raw_capture.session_segment_id, session.processed_at, and raw_capture.root and root_check_processed_at; no server code reads them yet.",
+      "tags": [
+        "session_segment",
+        "ddl",
+        "unused"
+      ],
+      "complexity": "simple",
+      "filePath": "database/migrations/sqls/20240722001220-add-session-segment-table-up.sql",
+      "lineRange": [
+        1,
+        12
+      ]
+    },
+    {
+      "id": "flow:seed-development-data",
+      "type": "flow",
+      "name": "Seed Development Data",
+      "summary": "Fills a development or user-test database with device configurations, wallet registrations, sessions and about 13,500 raw captures with matching legacy trees.",
+      "tags": [
+        "seed-data",
+        "knex",
+        "development"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "npm run seed-dev / npm run seed-usertest (knex seed:run)",
+        "entryType": "cli"
+      }
+    },
+    {
+      "id": "step:seed-development-data:clean-seeded-tables",
+      "type": "step",
+      "name": "Clean seeded tables",
+      "summary": "00_job_database_cleaner deletes all raw_capture, session, wallet_registration and device_configuration rows, then the planter rows of the seeded grower accounts and their trees rows.",
+      "tags": [
+        "cleanup"
+      ],
+      "complexity": "simple",
+      "filePath": "database/seeds/00_job_database_cleaner.js",
+      "lineRange": [
+        3,
+        20
+      ]
+    },
+    {
+      "id": "step:seed-development-data:seed-device-configurations",
+      "type": "step",
+      "name": "Seed device configurations",
+      "summary": "01_table_device_configuration inserts 100 rows with fixed ids and random Chance strings for the device and app fields.",
+      "tags": [
+        "device_configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "database/seeds/01_table_device_configuration.js",
+      "lineRange": [
+        5,
+        30
+      ]
+    },
+    {
+      "id": "step:seed-development-data:seed-wallet-registrations",
+      "type": "step",
+      "name": "Seed wallet registrations",
+      "summary": "02_table_wallet_registration inserts 100 rows, each copied from a random grower account, with email set to the wallet.",
+      "tags": [
+        "wallet_registration"
+      ],
+      "complexity": "simple",
+      "filePath": "database/seeds/02_table_wallet_registration.js",
+      "lineRange": [
+        8,
+        41
+      ]
+    },
+    {
+      "id": "step:seed-development-data:seed-sessions",
+      "type": "step",
+      "name": "Seed sessions",
+      "summary": "03_table_session inserts 100 sessions that pair device configuration i with wallet registration i.",
+      "tags": [
+        "session"
+      ],
+      "complexity": "simple",
+      "filePath": "database/seeds/03_table_session.js",
+      "lineRange": [
+        5,
+        20
+      ]
+    },
+    {
+      "id": "step:seed-development-data:seed-raw-captures-with-legacy-trees",
+      "type": "step",
+      "name": "Seed raw captures with legacy trees",
+      "summary": "04_table_raw_capture creates a planter for the grower account when none exists, then in one CTE inserts a trees row and a raw_capture row with reference_id = the new tree id and status 'unprocessed', for each capture-match record.",
+      "tags": [
+        "raw_capture",
+        "trees",
+        "legacy"
+      ],
+      "complexity": "moderate",
+      "filePath": "database/seeds/04_table_raw_capture.js",
+      "lineRange": [
+        5,
+        109
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:raw-capture-ingestion",
+      "target": "flow:upload-raw-capture",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:upload-raw-capture",
+      "target": "step:upload-raw-capture:enforce-json-content-type",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:upload-raw-capture",
+      "target": "step:upload-raw-capture:normalize-upload-body",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:upload-raw-capture",
+      "target": "step:upload-raw-capture:validate-capture",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:upload-raw-capture",
+      "target": "step:upload-raw-capture:require-existing-session",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:upload-raw-capture",
+      "target": "step:upload-raw-capture:mirror-into-legacy-trees",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:upload-raw-capture",
+      "target": "step:upload-raw-capture:insert-raw-capture",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:upload-raw-capture",
+      "target": "step:upload-raw-capture:commit-both-transactions",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:upload-raw-capture",
+      "target": "step:upload-raw-capture:respond-with-status",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:raw-capture-ingestion",
+      "target": "flow:reject-raw-capture",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:reject-raw-capture",
+      "target": "step:reject-raw-capture:validate-rejection-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:reject-raw-capture",
+      "target": "step:reject-raw-capture:require-legacy-authorization",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:reject-raw-capture",
+      "target": "step:reject-raw-capture:load-legacy-reference",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:reject-raw-capture",
+      "target": "step:reject-raw-capture:patch-legacy-tree",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:reject-raw-capture",
+      "target": "step:reject-raw-capture:mark-capture-rejected",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:reject-raw-capture",
+      "target": "step:reject-raw-capture:commit-or-rollback-rejection",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:reject-raw-capture",
+      "target": "step:reject-raw-capture:map-admin-api-errors",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:raw-capture-ingestion",
+      "target": "flow:list-raw-captures",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:list-raw-captures",
+      "target": "step:list-raw-captures:validate-list-query",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:list-raw-captures",
+      "target": "step:list-raw-captures:split-filter-and-paging",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:list-raw-captures",
+      "target": "step:list-raw-captures:query-joined-captures",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:list-raw-captures",
+      "target": "step:list-raw-captures:count-captures",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:list-raw-captures",
+      "target": "step:list-raw-captures:build-page-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:raw-capture-ingestion",
+      "target": "flow:get-raw-capture",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:get-raw-capture",
+      "target": "step:get-raw-capture:validate-capture-id",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:get-raw-capture",
+      "target": "step:get-raw-capture:load-capture-by-id",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:get-raw-capture",
+      "target": "step:get-raw-capture:return-or-404",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "domain:session-track-tracking",
+      "target": "flow:create-session",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:create-session",
+      "target": "step:create-session:validate-session-body",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:create-session",
+      "target": "step:create-session:open-session-transaction",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:create-session",
+      "target": "step:create-session:check-existing-session",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:create-session",
+      "target": "step:create-session:insert-or-return-session",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:create-session",
+      "target": "step:create-session:respond-session",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:session-track-tracking",
+      "target": "flow:list-sessions",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:list-sessions",
+      "target": "step:list-sessions:validate-session-query",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:list-sessions",
+      "target": "step:list-sessions:qualify-filter-columns",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:list-sessions",
+      "target": "step:list-sessions:query-joined-sessions",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:list-sessions",
+      "target": "step:list-sessions:count-joined-sessions",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:list-sessions",
+      "target": "step:list-sessions:build-session-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:session-track-tracking",
+      "target": "flow:get-session",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:get-session",
+      "target": "step:get-session:validate-session-id",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:get-session",
+      "target": "step:get-session:load-session-by-id",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:get-session",
+      "target": "step:get-session:return-session-or-404",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "domain:session-track-tracking",
+      "target": "flow:record-track",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:record-track",
+      "target": "step:record-track:validate-track-body",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:record-track",
+      "target": "step:record-track:insert-track-in-transaction",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:record-track",
+      "target": "step:record-track:respond-track-created",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "domain:session-track-tracking",
+      "target": "flow:query-tracks",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:query-tracks",
+      "target": "step:query-tracks:validate-track-query",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:query-tracks",
+      "target": "step:query-tracks:load-track-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:query-tracks",
+      "target": "step:query-tracks:build-track-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "domain:session-track-tracking",
+      "target": "flow:get-track",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:get-track",
+      "target": "step:get-track:validate-track-id",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:get-track",
+      "target": "step:get-track:load-track-by-id",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:get-track",
+      "target": "step:get-track:send-track",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "domain:device-configuration",
+      "target": "flow:register-device-configuration",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:register-device-configuration",
+      "target": "step:register-device-configuration:validate-device-body",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:register-device-configuration",
+      "target": "step:register-device-configuration:open-device-transaction",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:register-device-configuration",
+      "target": "step:register-device-configuration:insert-or-return-device",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:register-device-configuration",
+      "target": "step:register-device-configuration:respond-device",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "domain:device-configuration",
+      "target": "flow:list-device-configurations",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:list-device-configurations",
+      "target": "step:list-device-configurations:validate-device-query",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:list-device-configurations",
+      "target": "step:list-device-configurations:load-device-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:list-device-configurations",
+      "target": "step:list-device-configurations:build-device-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "domain:device-configuration",
+      "target": "flow:get-device-configuration",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:get-device-configuration",
+      "target": "step:get-device-configuration:validate-device-id",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:get-device-configuration",
+      "target": "step:get-device-configuration:load-device-by-id",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:get-device-configuration",
+      "target": "step:get-device-configuration:return-device-or-404",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "domain:wallet-registration",
+      "target": "flow:register-wallet",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:register-wallet",
+      "target": "step:register-wallet:validate-wallet-body",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:register-wallet",
+      "target": "step:register-wallet:require-phone-or-email",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:register-wallet",
+      "target": "step:register-wallet:open-wallet-transaction",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:register-wallet",
+      "target": "step:register-wallet:insert-or-return-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:register-wallet",
+      "target": "step:register-wallet:respond-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:wallet-registration",
+      "target": "flow:list-wallet-registrations",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:list-wallet-registrations",
+      "target": "step:list-wallet-registrations:validate-wallet-query",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:list-wallet-registrations",
+      "target": "step:list-wallet-registrations:load-wallet-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:list-wallet-registrations",
+      "target": "step:list-wallet-registrations:build-wallet-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "domain:wallet-registration",
+      "target": "flow:get-wallet-registration",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:get-wallet-registration",
+      "target": "step:get-wallet-registration:validate-wallet-id",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:get-wallet-registration",
+      "target": "step:get-wallet-registration:load-wallet-by-id",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:get-wallet-registration",
+      "target": "step:get-wallet-registration:return-wallet-or-404",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "domain:legacy-database-bridging",
+      "target": "flow:mirror-capture-to-legacy-trees",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:mirror-capture-to-legacy-trees",
+      "target": "step:mirror-capture-to-legacy-trees:bind-legacy-session",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:mirror-capture-to-legacy-trees",
+      "target": "step:mirror-capture-to-legacy-trees:find-legacy-planter",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:mirror-capture-to-legacy-trees",
+      "target": "step:mirror-capture-to-legacy-trees:build-legacy-tree-row",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:mirror-capture-to-legacy-trees",
+      "target": "step:mirror-capture-to-legacy-trees:reuse-existing-legacy-tree",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:mirror-capture-to-legacy-trees",
+      "target": "step:mirror-capture-to-legacy-trees:insert-legacy-tree",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:mirror-capture-to-legacy-trees",
+      "target": "step:mirror-capture-to-legacy-trees:insert-tree-attributes",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:legacy-database-bridging",
+      "target": "flow:backfill-legacy-session-ids",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:backfill-legacy-session-ids",
+      "target": "step:backfill-legacy-session-ids:connect-etl-database",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:backfill-legacy-session-ids",
+      "target": "step:backfill-legacy-session-ids:select-trees-without-session",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:backfill-legacy-session-ids",
+      "target": "step:backfill-legacy-session-ids:derive-session-uuid",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:backfill-legacy-session-ids",
+      "target": "step:backfill-legacy-session-ids:update-tree-session-id",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "domain:legacy-database-bridging",
+      "target": "flow:backfill-wallet-registrations",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:backfill-wallet-registrations",
+      "target": "step:backfill-wallet-registrations:pick-latest-planter-photo",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:backfill-wallet-registrations",
+      "target": "step:backfill-wallet-registrations:join-grower-account",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:backfill-wallet-registrations",
+      "target": "step:backfill-wallet-registrations:filter-and-dedupe",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:backfill-wallet-registrations",
+      "target": "step:backfill-wallet-registrations:insert-wallet-registrations",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "domain:schema-migrations-seed-data",
+      "target": "flow:apply-schema-migrations",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:apply-schema-migrations",
+      "target": "step:apply-schema-migrations:run-db-migrate-up",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:apply-schema-migrations",
+      "target": "step:apply-schema-migrations:load-and-run-sql",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:apply-schema-migrations",
+      "target": "step:apply-schema-migrations:create-capture-table",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:apply-schema-migrations",
+      "target": "step:apply-schema-migrations:create-session-and-track-tables",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:apply-schema-migrations",
+      "target": "step:apply-schema-migrations:create-domain-event-partitions",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:apply-schema-migrations",
+      "target": "step:apply-schema-migrations:add-session-segment-and-root-columns",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:schema-migrations-seed-data",
+      "target": "flow:seed-development-data",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:seed-development-data",
+      "target": "step:seed-development-data:clean-seeded-tables",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:seed-development-data",
+      "target": "step:seed-development-data:seed-device-configurations",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:seed-development-data",
+      "target": "step:seed-development-data:seed-wallet-registrations",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:seed-development-data",
+      "target": "step:seed-development-data:seed-sessions",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:seed-development-data",
+      "target": "step:seed-development-data:seed-raw-captures-with-legacy-trees",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:raw-capture-ingestion",
+      "target": "domain:session-track-tracking",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "POST /raw-captures loads the session by session_id (409 when missing) and uses its wallet, device_identifier and user_photo_url; capture reads join session for organization_id.",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:raw-capture-ingestion",
+      "target": "domain:legacy-database-bridging",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Capture upload writes a legacy trees row whose id becomes raw_capture.reference_id; capture rejection patches that legacy tree through the legacy admin API.",
+      "weight": 0.9
+    },
+    {
+      "source": "domain:session-track-tracking",
+      "target": "domain:device-configuration",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "session.device_configuration_id references device_configuration.id; session and capture reads join it for device_identifier.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:session-track-tracking",
+      "target": "domain:wallet-registration",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "session.originating_wallet_registration_id references wallet_registration.id; session and capture reads join it for wallet, grower_account_id and user_photo_url.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:legacy-database-bridging",
+      "target": "domain:wallet-registration",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The wallet is the planter identifier for the legacy planter lookup; the ETL SQL backfills wallet_registration rows from legacy planter_registrations.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:schema-migrations-seed-data",
+      "target": "domain:raw-capture-ingestion",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Migrations create and reshape raw_capture; the seeds load raw captures with legacy trees and reference_id.",
+      "weight": 0.4
+    },
+    {
+      "source": "domain:schema-migrations-seed-data",
+      "target": "domain:session-track-tracking",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Migrations create session, track and session_segment; the seeds insert 100 sessions.",
+      "weight": 0.3
+    }
+  ],
+  "layers": [],
+  "tour": []
+}

@@ -1,0 +1,2304 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-airflow-dags",
+    "languages": [
+      "python",
+      "javascript",
+      "shell"
+    ],
+    "frameworks": [
+      "Apache Airflow"
+    ],
+    "description": "Greenstand Apache Airflow pipeline that automates recurring Treetracker data jobs: exporting capture, grower and earnings data to CKAN and FTP, migrating legacy captures and stakeholders, computing reporting schemas and country leaderboards, precomputing web-map tiles and tree clusters, and running a SageMaker species-identification pipeline. Thin DAGs schedule work and delegate business logic to a shared lib of job modules over PostGIS/CKAN.",
+    "analyzedAt": "2026-09-02T23:20:00.000Z",
+    "gitCommitHash": "a5372312efc52797b7a2f5cd620507ab65fff871"
+  },
+  "nodes": [
+    {
+      "id": "domain:data-export",
+      "type": "domain",
+      "name": "Data Export",
+      "summary": "Extracts Treetracker records (tree captures, growers, earnings, planter info) from Postgres and publishes them to external destinations. Most exports stream batched query results into CSV and upload to the CKAN open-data portal; planter info uploads over FTP.",
+      "tags": [
+        "export",
+        "ckan",
+        "csv",
+        "ftp",
+        "data-pipeline"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "capture",
+          "grower",
+          "earnings",
+          "planter",
+          "CKAN dataset",
+          "organization"
+        ],
+        "businessRules": [
+          "Exports run per organization for a monthly date window",
+          "Inputs (organization id, date) are validated before any query runs",
+          "Query results are streamed in batches to bound memory usage",
+          "Planter info upload supports a dry-run mode that skips the FTP transfer"
+        ],
+        "crossDomainInteractions": [
+          "Shares month-range date helpers and Slack failure notifications with Platform & Orchestration",
+          "Reads capture and grower data produced by Data Migration"
+        ]
+      }
+    },
+    {
+      "id": "domain:data-migration",
+      "type": "domain",
+      "name": "Data Migration",
+      "summary": "Moves and reshapes legacy Treetracker data into the current domain database. Migrates legacy capture records daily and consolidates the stakeholder and entity tables, reconciling entity-stakeholder relationships transactionally.",
+      "tags": [
+        "migration",
+        "database",
+        "stakeholders",
+        "captures",
+        "kubernetes"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "capture",
+          "stakeholder",
+          "entity",
+          "planter"
+        ],
+        "businessRules": [
+          "Capture migration runs on a daily schedule via Kubernetes pod operators",
+          "Entity-stakeholder reconciliation runs inside a single transaction with commit or rollback",
+          "The sync routine supports a dry-run mode"
+        ],
+        "crossDomainInteractions": [
+          "Supplies migrated captures consumed by Web-Map Precompute and Species Identification",
+          "Its entity and stakeholder sync logic is reused by Reporting & Analytics for FCC earnings"
+        ]
+      }
+    },
+    {
+      "id": "domain:reporting-analytics",
+      "type": "domain",
+      "name": "Reporting & Analytics",
+      "summary": "Computes aggregates and denormalized reporting data in-database. Populates the reporting schema and tree_denormalized table, ranks countries by planted trees with PostGIS, computes FCC contract earnings per term, and chops sessions into time segments.",
+      "tags": [
+        "reporting",
+        "analytics",
+        "leaderboard",
+        "earnings",
+        "postgis"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "country leader board",
+          "FCC contract earnings",
+          "reporting schema",
+          "tree_denormalized",
+          "session_segment"
+        ],
+        "businessRules": [
+          "Leaderboard ranking uses PostGIS spatial SQL (ST_Contains, ST_Area) over country geometries",
+          "FCC earnings are computed per contract term bounded by start and end dates",
+          "Reporting jobs compute results in-database rather than exporting raw data"
+        ],
+        "crossDomainInteractions": [
+          "FCC earnings reuse planter-entity population and entity-stakeholder sync from Data Migration",
+          "Uses shared utilities and failure notifications from Platform & Orchestration"
+        ]
+      }
+    },
+    {
+      "id": "domain:web-map-precompute",
+      "type": "domain",
+      "name": "Web-Map Precompute",
+      "summary": "Keeps the Greenstand web map fast by precomputing tiles and tree clusters. Warms tile and cluster caches on a short schedule, assigns newly captured trees to clusters, removes deactivated trees, and refreshes webmap materialized views.",
+      "tags": [
+        "map",
+        "caching",
+        "clustering",
+        "materialized-view",
+        "geospatial"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "map tile",
+          "tree cluster",
+          "active_tree_region view",
+          "organization_location view",
+          "planter_location view",
+          "species stat view"
+        ],
+        "businessRules": [
+          "Tile and cluster caches are warmed every 5 minutes for the most-visited views",
+          "Cluster assignment runs staged SQL within a transaction and rolls back on error",
+          "Deactivated trees are removed from cluster counts before views refresh"
+        ],
+        "crossDomainInteractions": [
+          "Consumes newly captured/migrated tree data from Data Migration",
+          "Cron shell wrappers in Platform & Orchestration run the Node precompute scripts outside Airflow"
+        ]
+      }
+    },
+    {
+      "id": "domain:species-identification",
+      "type": "domain",
+      "name": "Species Identification",
+      "summary": "Machine-learning pipeline that identifies tree species from capture images. Pulls capture image URLs within a geographic bounding box, stages images in S3, runs a SageMaker batch transform inference job, and builds a validation set from accepted predictions.",
+      "tags": [
+        "machine-learning",
+        "sagemaker",
+        "s3",
+        "species-id",
+        "image-processing"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "capture image",
+          "S3 manifest",
+          "SageMaker batch transform job",
+          "prediction",
+          "validation set"
+        ],
+        "businessRules": [
+          "Image URLs are selected by geographic bounding box and date range",
+          "Predictions are filtered by an acceptance threshold before entering the validation set",
+          "S3 staging buckets are cleaned up after each inference run"
+        ],
+        "crossDomainInteractions": [
+          "Reads capture image data sourced through Data Migration",
+          "Scheduled and error-notified through Platform & Orchestration"
+        ]
+      }
+    },
+    {
+      "id": "domain:platform-orchestration",
+      "type": "domain",
+      "name": "Platform & Orchestration",
+      "summary": "Cross-cutting scheduling and platform jobs. Airflow default_args wire a shared Slack failure callback into every DAG, cron shell wrappers run Node jobs with PID locking, and small platform jobs provision messaging authors and wallet tokens.",
+      "tags": [
+        "orchestration",
+        "airflow",
+        "notification",
+        "slack",
+        "cron"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "DAG",
+          "Airflow Variable",
+          "Slack channel",
+          "messaging author",
+          "wallet token",
+          "PID lock"
+        ],
+        "businessRules": [
+          "A task failure triggers a Slack notification via the shared on_failure_callback",
+          "Cron wrappers use a PID lock file to prevent overlapping runs",
+          "Messaging authors are created only for approved growers/organizations"
+        ],
+        "crossDomainInteractions": [
+          "Provides shared utils, date helpers and failure notifications used by all functional domains",
+          "Runs the Web-Map Precompute Node scripts as cron jobs"
+        ]
+      }
+    },
+    {
+      "id": "flow:capture-export",
+      "type": "flow",
+      "name": "Monthly Capture Export",
+      "summary": "Exports monthly tree-capture data for an organization to CSV and uploads it to the CKAN data portal.",
+      "tags": [
+        "export",
+        "capture",
+        "ckan",
+        "csv"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "capture_export_dag.py (monthly schedule)",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:grower-export",
+      "type": "flow",
+      "name": "Grower Export",
+      "summary": "Queries grower records for an organization and date, builds a CSV payload, and uploads it to a CKAN datastore over HTTP.",
+      "tags": [
+        "export",
+        "grower",
+        "ckan",
+        "http"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "grower_export_dag.py",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:earnings-export",
+      "type": "flow",
+      "name": "Monthly Earnings Export",
+      "summary": "Computes the previous-month window, queries earnings for that range, and pushes the dataset to a CKAN endpoint.",
+      "tags": [
+        "export",
+        "earnings",
+        "ckan"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "earnings_export_dag.py (monthly schedule)",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:planter-info-ftp-upload",
+      "type": "flow",
+      "name": "Planter Info FTP Upload",
+      "summary": "Queries planter info from Postgres, builds a CSV byte stream, and uploads it to an FTP server on a daily schedule.",
+      "tags": [
+        "export",
+        "planter",
+        "ftp",
+        "csv"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "upload_planter_info_dag.py (daily)",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:migrate-captures",
+      "type": "flow",
+      "name": "Migrate Captures",
+      "summary": "Migrates legacy capture data into the new domain database daily using Postgres and Kubernetes pod operators.",
+      "tags": [
+        "migration",
+        "captures",
+        "kubernetes"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "migrate_captures_dag.py (daily)",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:migrate-stakeholders",
+      "type": "flow",
+      "name": "Migrate Stakeholders",
+      "summary": "Consolidates the stakeholder and entity tables and reconciles entity-stakeholder relationships transactionally.",
+      "tags": [
+        "migration",
+        "stakeholders",
+        "database"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "migrate_stakeholders_dag.py",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:country-leaderboard-refresh",
+      "type": "flow",
+      "name": "Country Leaderboard Refresh",
+      "summary": "Ranks countries by planted trees using PostGIS spatial SQL, fetches centroids, and persists the leader board back to the database.",
+      "tags": [
+        "reporting",
+        "leaderboard",
+        "postgis",
+        "aggregation"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "country_learder_board_dag.py",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:fcc-contract-earnings",
+      "type": "flow",
+      "name": "FCC Contract Earnings",
+      "summary": "Computes daily earnings for FCC (Freetown) planters by creating planter entities, syncing stakeholders, and aggregating contract earnings per term.",
+      "tags": [
+        "reporting",
+        "earnings",
+        "fcc",
+        "orchestration"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "contracts-earnings-fcc.py (daily)",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:populate-reports-schema",
+      "type": "flow",
+      "name": "Populate Reports Schema",
+      "summary": "Populates the reporting schema and the tree_denormalized table in Postgres via a sequence of SQL and Python tasks for downstream analytics.",
+      "tags": [
+        "reporting",
+        "denormalization",
+        "postgres"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "populate-reports-schema.py",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:session-time-chopping",
+      "type": "flow",
+      "name": "Session Time Chopping",
+      "summary": "Computes the session_segment for each raw_capture within a session and writes UUID-keyed segments to Postgres.",
+      "tags": [
+        "analytics",
+        "sessions",
+        "postgres"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "session_time_chopping_dag.py",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:reporting-card-cache-warming",
+      "type": "flow",
+      "name": "Reporting Card Cache Warming",
+      "summary": "Pre-warms the reporting capture-statistics endpoint using the K8S_DOMAIN Airflow Variable and the current date.",
+      "tags": [
+        "reporting",
+        "cache-warming",
+        "http"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "pre_request_reporting_card.py",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:map-tile-cache-warming",
+      "type": "flow",
+      "name": "Map Tile Cache Warming",
+      "summary": "Pre-warms the web-map client tile cache for the most-visited views every five minutes by issuing GET requests over a fixed URL list.",
+      "tags": [
+        "map",
+        "cache-warming",
+        "tile-server"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "pre_request_map_client_dag.py (every 5 min)",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:map-cluster-cache-warming",
+      "type": "flow",
+      "name": "Map Cluster Cache Warming",
+      "summary": "Pre-warms map cluster tile endpoints across multiple zoom levels by repeatedly calling the pre_request helper.",
+      "tags": [
+        "map",
+        "cache-warming",
+        "clustering"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "pre_request_map_clusters_dag.py",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:assign-new-trees-to-clusters",
+      "type": "flow",
+      "name": "Assign New Trees to Clusters",
+      "summary": "Assigns newly captured active trees to their nearest map cluster by running staged SQL against Postgres within a transaction.",
+      "tags": [
+        "map",
+        "clustering",
+        "geospatial",
+        "transaction"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "map/assign-new-trees-to-clusters.py",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:update-clusters-deactivated-trees",
+      "type": "flow",
+      "name": "Update Clusters for Deactivated Trees",
+      "summary": "Removes deactivated trees from cluster counts, refreshes the active_tree_region materialized view, and recomputes map clusters.",
+      "tags": [
+        "map",
+        "clustering",
+        "materialized-view"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "map/update-clusters-for-deactivated-trees.py",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:refresh-webmap-materialized-views",
+      "type": "flow",
+      "name": "Refresh Webmap Materialized Views",
+      "summary": "Refreshes the organization_location, planter_location, and species-statistics materialized views in the webmap database.",
+      "tags": [
+        "map",
+        "materialized-view",
+        "refresh"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "refresh_webmap_*_dag.py",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:species-id-batch-inference",
+      "type": "flow",
+      "name": "Species ID Batch Inference",
+      "summary": "Runs the species-identification pipeline: selects capture images, stages them in S3, builds a manifest, runs a SageMaker batch transform job, and builds a validation set before cleaning up S3.",
+      "tags": [
+        "machine-learning",
+        "sagemaker",
+        "s3",
+        "inference"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "species_id_dag.py",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:failure-notification",
+      "type": "flow",
+      "name": "Task Failure Notification",
+      "summary": "When any DAG task fails, the shared on_failure_callback builds task context and posts an alert to Slack.",
+      "tags": [
+        "orchestration",
+        "notification",
+        "slack",
+        "event-handler"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "on_failure_callback (Airflow task failure)",
+        "entryType": "event"
+      }
+    },
+    {
+      "id": "flow:cron-wrapper-execution",
+      "type": "flow",
+      "name": "Cron Wrapper Execution",
+      "summary": "Shell cron wrappers acquire a PID lock to prevent overlapping runs, invoke a Node map task, and log output to a system log file.",
+      "tags": [
+        "cron",
+        "automation",
+        "pid-lock",
+        "script"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "map/scripts/*.sh (cron)",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:messaging-author-provisioning",
+      "type": "flow",
+      "name": "Messaging Author Provisioning",
+      "summary": "Hourly job that reads approved growers/organizations and inserts corresponding messaging-system author records.",
+      "tags": [
+        "messaging",
+        "provisioning",
+        "database"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "create-authors.py (hourly)",
+        "entryType": "cron"
+      }
+    },
+    {
+      "id": "flow:wallet-token-creation",
+      "type": "flow",
+      "name": "Wallet Token Creation",
+      "summary": "Creates wallet tokens by reading run configuration and inserting rows into the wallet database.",
+      "tags": [
+        "wallet",
+        "database",
+        "provisioning"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "create-tokens.py",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:capture-export:trigger-scheduled-export",
+      "type": "step",
+      "name": "Trigger scheduled export",
+      "summary": "The capture export DAG reads CKAN config from Airflow Variables, opens a PostgresHook connection, and runs the capture_export wrapper monthly.",
+      "tags": [
+        "airflow",
+        "trigger",
+        "config"
+      ],
+      "complexity": "simple",
+      "filePath": "capture_export_dag.py"
+    },
+    {
+      "id": "step:capture-export:validate-inputs",
+      "type": "step",
+      "name": "Validate inputs",
+      "summary": "Validates organization id and date parameters before any query runs.",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/capture_export.py",
+      "lineRange": [
+        6,
+        255
+      ]
+    },
+    {
+      "id": "step:capture-export:stream-captures-batched",
+      "type": "step",
+      "name": "Stream captures in batches",
+      "summary": "Streams capture query results from Postgres in batches to bound memory usage.",
+      "tags": [
+        "database",
+        "batch"
+      ],
+      "complexity": "complex",
+      "filePath": "lib/capture_export.py",
+      "lineRange": [
+        6,
+        255
+      ]
+    },
+    {
+      "id": "step:capture-export:write-csv",
+      "type": "step",
+      "name": "Write CSV files",
+      "summary": "Writes the batched rows to CSV files and renames the completed files.",
+      "tags": [
+        "csv",
+        "serialization"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/capture_export.py",
+      "lineRange": [
+        6,
+        255
+      ]
+    },
+    {
+      "id": "step:capture-export:upload-to-ckan",
+      "type": "step",
+      "name": "Upload to CKAN",
+      "summary": "Uploads the resulting CSV files to the CKAN dataset for the organization and date.",
+      "tags": [
+        "ckan",
+        "http",
+        "upload"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/capture_export.py",
+      "lineRange": [
+        6,
+        255
+      ]
+    },
+    {
+      "id": "step:grower-export:trigger-export",
+      "type": "step",
+      "name": "Trigger export",
+      "summary": "The grower export DAG reads configuration from Airflow Variables and calls grower_export with a Postgres connection.",
+      "tags": [
+        "airflow",
+        "trigger",
+        "config"
+      ],
+      "complexity": "simple",
+      "filePath": "grower_export_dag.py"
+    },
+    {
+      "id": "step:grower-export:validate-parameters",
+      "type": "step",
+      "name": "Validate parameters",
+      "summary": "Validates parameters with a regex before running the export.",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/grower_export.py",
+      "lineRange": [
+        5,
+        134
+      ]
+    },
+    {
+      "id": "step:grower-export:query-grower-rows",
+      "type": "step",
+      "name": "Query grower rows",
+      "summary": "Queries grower rows for an organization and date from Postgres.",
+      "tags": [
+        "database",
+        "query"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/grower_export.py",
+      "lineRange": [
+        5,
+        134
+      ]
+    },
+    {
+      "id": "step:grower-export:assemble-csv",
+      "type": "step",
+      "name": "Assemble CSV",
+      "summary": "Builds the CSV payload in memory via StringIO.",
+      "tags": [
+        "csv",
+        "serialization"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/grower_export.py",
+      "lineRange": [
+        5,
+        134
+      ]
+    },
+    {
+      "id": "step:grower-export:upload-to-ckan",
+      "type": "step",
+      "name": "Upload to CKAN",
+      "summary": "Posts the CSV to a CKAN resource via HTTP POST.",
+      "tags": [
+        "ckan",
+        "http",
+        "upload"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/grower_export.py",
+      "lineRange": [
+        5,
+        134
+      ]
+    },
+    {
+      "id": "step:earnings-export:trigger-monthly",
+      "type": "step",
+      "name": "Trigger monthly export",
+      "summary": "The earnings export DAG invokes the shared earning_export routine on a monthly schedule.",
+      "tags": [
+        "airflow",
+        "trigger"
+      ],
+      "complexity": "simple",
+      "filePath": "earnings_export_dag.py"
+    },
+    {
+      "id": "step:earnings-export:compute-previous-month-range",
+      "type": "step",
+      "name": "Compute previous-month window",
+      "summary": "Computes the start and end date of the preceding month for the export window.",
+      "tags": [
+        "date",
+        "utility"
+      ],
+      "complexity": "simple",
+      "filePath": "lib/utils.py",
+      "lineRange": [
+        52,
+        80
+      ]
+    },
+    {
+      "id": "step:earnings-export:query-earnings",
+      "type": "step",
+      "name": "Query earnings for range",
+      "summary": "Queries earnings for the given date range from the connection.",
+      "tags": [
+        "database",
+        "earnings",
+        "query"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/earning_export.py",
+      "lineRange": [
+        7,
+        161
+      ]
+    },
+    {
+      "id": "step:earnings-export:push-to-ckan",
+      "type": "step",
+      "name": "Push to CKAN",
+      "summary": "Pushes the resulting earnings dataset to a CKAN endpoint.",
+      "tags": [
+        "ckan",
+        "export",
+        "upload"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/earning_export.py",
+      "lineRange": [
+        7,
+        161
+      ]
+    },
+    {
+      "id": "step:planter-info-ftp-upload:trigger-daily",
+      "type": "step",
+      "name": "Trigger daily upload",
+      "summary": "The DAG wrapper opens a PostgresHook connection, reads FTP credentials from Airflow Variables, and delegates to upload_planter_info.",
+      "tags": [
+        "airflow",
+        "trigger",
+        "config"
+      ],
+      "complexity": "moderate",
+      "filePath": "upload_planter_info_dag.py",
+      "lineRange": [
+        57,
+        77
+      ]
+    },
+    {
+      "id": "step:planter-info-ftp-upload:query-planter-info",
+      "type": "step",
+      "name": "Query planter info",
+      "summary": "Runs a SQL query against Postgres to fetch planter info rows.",
+      "tags": [
+        "database",
+        "query"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/upload_planter_info.py",
+      "lineRange": [
+        5,
+        68
+      ]
+    },
+    {
+      "id": "step:planter-info-ftp-upload:build-csv-stream",
+      "type": "step",
+      "name": "Build CSV byte stream",
+      "summary": "Encodes the result rows into a CSV byte stream via io.BytesIO.",
+      "tags": [
+        "csv",
+        "serialization"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/upload_planter_info.py",
+      "lineRange": [
+        5,
+        68
+      ]
+    },
+    {
+      "id": "step:planter-info-ftp-upload:upload-to-ftp",
+      "type": "step",
+      "name": "Upload to FTP",
+      "summary": "Uploads the generated CSV to the FTP host via storbinary unless dry_run is set.",
+      "tags": [
+        "ftp",
+        "upload"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/upload_planter_info.py",
+      "lineRange": [
+        5,
+        68
+      ]
+    },
+    {
+      "id": "step:migrate-captures:trigger-daily-migration",
+      "type": "step",
+      "name": "Trigger daily migration",
+      "summary": "The DAG schedules the capture migration daily using the with-DAG context and operator dependencies.",
+      "tags": [
+        "airflow",
+        "trigger"
+      ],
+      "complexity": "simple",
+      "filePath": "migrate_captures_dag.py"
+    },
+    {
+      "id": "step:migrate-captures:run-migration-pod",
+      "type": "step",
+      "name": "Run migration pod",
+      "summary": "Executes the migration through a Kubernetes pod operator.",
+      "tags": [
+        "kubernetes",
+        "migration"
+      ],
+      "complexity": "moderate",
+      "filePath": "migrate_captures_dag.py"
+    },
+    {
+      "id": "step:migrate-captures:load-into-domain-db",
+      "type": "step",
+      "name": "Load into domain database",
+      "summary": "Loads the migrated legacy capture data into the new domain Postgres database.",
+      "tags": [
+        "database",
+        "migration"
+      ],
+      "complexity": "moderate",
+      "filePath": "migrate_captures_dag.py"
+    },
+    {
+      "id": "step:migrate-stakeholders:trigger-migration",
+      "type": "step",
+      "name": "Trigger migration",
+      "summary": "The DAG orchestrates the migration using Postgres and Kubernetes pod operators.",
+      "tags": [
+        "airflow",
+        "trigger",
+        "kubernetes"
+      ],
+      "complexity": "simple",
+      "filePath": "migrate_stakeholders_dag.py"
+    },
+    {
+      "id": "step:migrate-stakeholders:consolidate-tables",
+      "type": "step",
+      "name": "Consolidate stakeholder and entity tables",
+      "summary": "Consolidates the stakeholder and entity tables into the migration target.",
+      "tags": [
+        "database",
+        "migration"
+      ],
+      "complexity": "moderate",
+      "filePath": "migrate_stakeholders_dag.py"
+    },
+    {
+      "id": "step:migrate-stakeholders:reconcile-entity-stakeholders",
+      "type": "step",
+      "name": "Reconcile entity-stakeholders",
+      "summary": "Detects and synchronizes stakeholder records against entities in a single transaction, committing on success or rolling back on failure.",
+      "tags": [
+        "database",
+        "sync",
+        "transaction"
+      ],
+      "complexity": "complex",
+      "filePath": "lib/sync_entity_stakeholder.py",
+      "lineRange": [
+        11,
+        104
+      ]
+    },
+    {
+      "id": "step:country-leaderboard-refresh:trigger-scheduled-refresh",
+      "type": "step",
+      "name": "Trigger scheduled refresh",
+      "summary": "The DAG opens a PostgresHook connection and invokes refresh_country_leader_board on a schedule.",
+      "tags": [
+        "airflow",
+        "trigger"
+      ],
+      "complexity": "simple",
+      "filePath": "country_learder_board_dag.py"
+    },
+    {
+      "id": "step:country-leaderboard-refresh:rank-countries-spatial-sql",
+      "type": "step",
+      "name": "Rank countries with spatial SQL",
+      "summary": "Runs PostGIS spatial aggregation SQL to rank countries by planted trees.",
+      "tags": [
+        "postgis",
+        "aggregation",
+        "sql"
+      ],
+      "complexity": "complex",
+      "filePath": "lib/country_leader_board.py",
+      "lineRange": [
+        6,
+        172
+      ]
+    },
+    {
+      "id": "step:country-leaderboard-refresh:fetch-country-centroids",
+      "type": "step",
+      "name": "Fetch country centroids",
+      "summary": "Fetches country centroids for the ranked results.",
+      "tags": [
+        "geospatial",
+        "query"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/country_leader_board.py",
+      "lineRange": [
+        6,
+        172
+      ]
+    },
+    {
+      "id": "step:country-leaderboard-refresh:persist-leaderboard",
+      "type": "step",
+      "name": "Persist leaderboard",
+      "summary": "Serializes the leader board to JSON and upserts it into the leaderboard table via the connection.",
+      "tags": [
+        "database",
+        "upsert",
+        "serialization"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/leader_board.py",
+      "lineRange": [
+        116,
+        151
+      ]
+    },
+    {
+      "id": "step:fcc-contract-earnings:create-planter-entities",
+      "type": "step",
+      "name": "Create planter entities",
+      "summary": "Reads planter rows and inserts or updates corresponding entity records.",
+      "tags": [
+        "database",
+        "data-model"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/planter_entity.py",
+      "lineRange": [
+        9,
+        62
+      ]
+    },
+    {
+      "id": "step:fcc-contract-earnings:sync-entity-stakeholders",
+      "type": "step",
+      "name": "Sync entity-stakeholders",
+      "summary": "Reconciles stakeholder records against entities inside a transaction.",
+      "tags": [
+        "database",
+        "sync",
+        "transaction"
+      ],
+      "complexity": "complex",
+      "filePath": "lib/sync_entity_stakeholder.py",
+      "lineRange": [
+        11,
+        104
+      ]
+    },
+    {
+      "id": "step:fcc-contract-earnings:enumerate-contract-terms",
+      "type": "step",
+      "name": "Enumerate contract terms",
+      "summary": "Enumerates contract terms and delegates each to the per-term earnings routine.",
+      "tags": [
+        "earnings",
+        "orchestration"
+      ],
+      "complexity": "simple",
+      "filePath": "lib/contracts_earnings_fcc.py",
+      "lineRange": [
+        142,
+        158
+      ]
+    },
+    {
+      "id": "step:fcc-contract-earnings:compute-term-earnings",
+      "type": "step",
+      "name": "Compute term earnings",
+      "summary": "Queries and writes FCC contract earnings for a single term bounded by start and end dates, committing through the shared connection.",
+      "tags": [
+        "earnings",
+        "sql",
+        "aggregation"
+      ],
+      "complexity": "complex",
+      "filePath": "lib/contracts_earnings_fcc.py",
+      "lineRange": [
+        8,
+        140
+      ]
+    },
+    {
+      "id": "step:populate-reports-schema:trigger-schema-population",
+      "type": "step",
+      "name": "Trigger schema population",
+      "summary": "The DAG runs a sequence of SQL and Python tasks to populate the reporting schema in Postgres.",
+      "tags": [
+        "airflow",
+        "trigger",
+        "postgres"
+      ],
+      "complexity": "moderate",
+      "filePath": "populate-reports-schema.py"
+    },
+    {
+      "id": "step:populate-reports-schema:run-sql-python-tasks",
+      "type": "step",
+      "name": "Run SQL and Python tasks",
+      "summary": "Executes the chained SQL and Python tasks that build the reporting schema tables.",
+      "tags": [
+        "sql",
+        "reporting"
+      ],
+      "complexity": "complex",
+      "filePath": "populate-reports-schema.py"
+    },
+    {
+      "id": "step:populate-reports-schema:populate-tree-denormalized",
+      "type": "step",
+      "name": "Populate tree_denormalized",
+      "summary": "Populates the tree_denormalized table in the reporting schema for downstream analytics.",
+      "tags": [
+        "denormalization",
+        "postgres"
+      ],
+      "complexity": "complex",
+      "filePath": "populate_tree_reports_schema.py"
+    },
+    {
+      "id": "step:session-time-chopping:read-raw-captures",
+      "type": "step",
+      "name": "Read raw captures per session",
+      "summary": "Reads the raw_capture rows for each session from Postgres.",
+      "tags": [
+        "database",
+        "sessions"
+      ],
+      "complexity": "moderate",
+      "filePath": "session_time_chopping_dag.py"
+    },
+    {
+      "id": "step:session-time-chopping:compute-session-segments",
+      "type": "step",
+      "name": "Compute session segments",
+      "summary": "Computes the session_segment for each raw_capture within a session.",
+      "tags": [
+        "sessions",
+        "computation"
+      ],
+      "complexity": "complex",
+      "filePath": "session_time_chopping_dag.py"
+    },
+    {
+      "id": "step:session-time-chopping:write-uuid-segments",
+      "type": "step",
+      "name": "Write UUID-keyed segments",
+      "summary": "Writes the UUID-keyed session segments back to Postgres using the psycopg2 UUID adapter.",
+      "tags": [
+        "database",
+        "postgres"
+      ],
+      "complexity": "moderate",
+      "filePath": "session_time_chopping_dag.py"
+    },
+    {
+      "id": "step:reporting-card-cache-warming:build-endpoint-url",
+      "type": "step",
+      "name": "Build reporting endpoint URL",
+      "summary": "Builds the reporting capture-statistics endpoint URL from the K8S_DOMAIN Airflow Variable and the current date.",
+      "tags": [
+        "config",
+        "http"
+      ],
+      "complexity": "simple",
+      "filePath": "pre_request_reporting_card.py"
+    },
+    {
+      "id": "step:reporting-card-cache-warming:warm-endpoint",
+      "type": "step",
+      "name": "Warm capture-stats endpoint",
+      "summary": "Issues a GET request to pre-warm the reporting capture-statistics endpoint.",
+      "tags": [
+        "cache-warming",
+        "http"
+      ],
+      "complexity": "simple",
+      "filePath": "lib/pre_request.py",
+      "lineRange": [
+        6,
+        23
+      ]
+    },
+    {
+      "id": "step:map-tile-cache-warming:schedule-cycle",
+      "type": "step",
+      "name": "Schedule cache cycle",
+      "summary": "The DAG runs the tile cache warming every five minutes for the top and per-organization pages.",
+      "tags": [
+        "airflow",
+        "trigger",
+        "scheduled"
+      ],
+      "complexity": "simple",
+      "filePath": "pre_request_map_client_dag.py"
+    },
+    {
+      "id": "step:map-tile-cache-warming:iterate-url-list",
+      "type": "step",
+      "name": "Iterate tile URL list",
+      "summary": "Iterates the fixed list of map client tile URLs to warm.",
+      "tags": [
+        "map",
+        "iteration"
+      ],
+      "complexity": "simple",
+      "filePath": "pre_request_map_client_dag.py"
+    },
+    {
+      "id": "step:map-tile-cache-warming:warm-tile-cache",
+      "type": "step",
+      "name": "Warm tile cache",
+      "summary": "Issues a GET against each URL to pre-warm the tile-server cache.",
+      "tags": [
+        "cache-warming",
+        "http",
+        "tile-server"
+      ],
+      "complexity": "simple",
+      "filePath": "lib/pre_request.py",
+      "lineRange": [
+        6,
+        23
+      ]
+    },
+    {
+      "id": "step:map-cluster-cache-warming:schedule-warm",
+      "type": "step",
+      "name": "Schedule cluster warm",
+      "summary": "The DAG invokes the cluster cache-warming helper on a schedule.",
+      "tags": [
+        "airflow",
+        "trigger"
+      ],
+      "complexity": "simple",
+      "filePath": "pre_request_map_clusters_dag.py"
+    },
+    {
+      "id": "step:map-cluster-cache-warming:iterate-cluster-urls",
+      "type": "step",
+      "name": "Iterate cluster URLs across zoom levels",
+      "summary": "Iterates map cluster URLs at multiple zoom levels using a URL prefix.",
+      "tags": [
+        "map",
+        "clustering",
+        "iteration"
+      ],
+      "complexity": "simple",
+      "filePath": "lib/pre_request_map_clusters.py",
+      "lineRange": [
+        8,
+        31
+      ]
+    },
+    {
+      "id": "step:map-cluster-cache-warming:warm-cluster-cache",
+      "type": "step",
+      "name": "Warm cluster cache",
+      "summary": "Delegates each cluster URL to pre_request to warm the cluster cache.",
+      "tags": [
+        "cache-warming",
+        "http"
+      ],
+      "complexity": "simple",
+      "filePath": "lib/pre_request.py",
+      "lineRange": [
+        6,
+        23
+      ]
+    },
+    {
+      "id": "step:assign-new-trees-to-clusters:trigger-assignment",
+      "type": "step",
+      "name": "Trigger cluster assignment",
+      "summary": "The map DAG runs assign_new_trees_to_cluster on a schedule using a PostgresHook connection.",
+      "tags": [
+        "airflow",
+        "trigger"
+      ],
+      "complexity": "simple",
+      "filePath": "map/assign-new-trees-to-clusters.py"
+    },
+    {
+      "id": "step:assign-new-trees-to-clusters:run-staged-sql",
+      "type": "step",
+      "name": "Run staged cluster SQL",
+      "summary": "Runs staged SQL against Postgres to compute and persist cluster assignments for newly added trees.",
+      "tags": [
+        "database",
+        "clustering",
+        "sql"
+      ],
+      "complexity": "complex",
+      "filePath": "lib/assign_new_trees_to_cluster.py",
+      "lineRange": [
+        5,
+        149
+      ]
+    },
+    {
+      "id": "step:assign-new-trees-to-clusters:commit-or-rollback",
+      "type": "step",
+      "name": "Commit or rollback",
+      "summary": "Manages transaction isolation and commits, rolling back on error.",
+      "tags": [
+        "transaction",
+        "database"
+      ],
+      "complexity": "complex",
+      "filePath": "lib/assign_new_trees_to_cluster.py",
+      "lineRange": [
+        5,
+        149
+      ]
+    },
+    {
+      "id": "step:update-clusters-deactivated-trees:gate-conf-testing",
+      "type": "step",
+      "name": "Gate conf testing",
+      "summary": "The conf-testing decorator gates the task callable to allow test overrides.",
+      "tags": [
+        "decorator",
+        "testing"
+      ],
+      "complexity": "simple",
+      "filePath": "map/update-clusters-for-deactivated-trees.py",
+      "lineRange": [
+        43,
+        48
+      ]
+    },
+    {
+      "id": "step:update-clusters-deactivated-trees:refresh-active-tree-region-view",
+      "type": "step",
+      "name": "Refresh active_tree_region view",
+      "summary": "Refreshes the active_tree_region materialized view after trees are deactivated.",
+      "tags": [
+        "materialized-view",
+        "database"
+      ],
+      "complexity": "moderate",
+      "filePath": "map/scripts/update-clusters-for-deactivated-trees.js"
+    },
+    {
+      "id": "step:update-clusters-deactivated-trees:recompute-clusters",
+      "type": "step",
+      "name": "Recompute clusters",
+      "summary": "Recomputes map clusters and removes deactivated trees from cluster counts.",
+      "tags": [
+        "clustering",
+        "database"
+      ],
+      "complexity": "moderate",
+      "filePath": "map/scripts/update-clusters-for-deactivated-trees.js"
+    },
+    {
+      "id": "step:refresh-webmap-materialized-views:refresh-org-location",
+      "type": "step",
+      "name": "Refresh organization_location view",
+      "summary": "Refreshes the organization_location materialized view in the webmap database.",
+      "tags": [
+        "materialized-view",
+        "refresh"
+      ],
+      "complexity": "moderate",
+      "filePath": "refresh_webmap_org_location_dag.py"
+    },
+    {
+      "id": "step:refresh-webmap-materialized-views:refresh-planter-location",
+      "type": "step",
+      "name": "Refresh planter_location view",
+      "summary": "Refreshes the planter_location materialized view in the webmap database.",
+      "tags": [
+        "materialized-view",
+        "refresh"
+      ],
+      "complexity": "moderate",
+      "filePath": "refresh_webmap_planter_location_dag.py"
+    },
+    {
+      "id": "step:refresh-webmap-materialized-views:refresh-species-stat",
+      "type": "step",
+      "name": "Refresh species statistics view",
+      "summary": "Refreshes the species statistics materialized view in the webmap database.",
+      "tags": [
+        "materialized-view",
+        "refresh"
+      ],
+      "complexity": "moderate",
+      "filePath": "refresh_webmap_species_stat_dag.py"
+    },
+    {
+      "id": "step:species-id-batch-inference:query-image-urls",
+      "type": "step",
+      "name": "Query capture image URLs",
+      "summary": "Opens an SSH-tunneled SQLAlchemy connection to query capture image URLs within a geographic bounding box and date range.",
+      "tags": [
+        "database",
+        "ssh-tunnel",
+        "geospatial"
+      ],
+      "complexity": "complex",
+      "filePath": "lib/species_id.py",
+      "lineRange": [
+        44,
+        104
+      ]
+    },
+    {
+      "id": "step:species-id-batch-inference:load-images-to-s3",
+      "type": "step",
+      "name": "Load images to S3",
+      "summary": "Downloads capture images from their URLs and streams them into the inference S3 bucket.",
+      "tags": [
+        "s3",
+        "image-processing"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/species_id.py",
+      "lineRange": [
+        18,
+        41
+      ]
+    },
+    {
+      "id": "step:species-id-batch-inference:generate-manifest",
+      "type": "step",
+      "name": "Generate input manifest",
+      "summary": "Builds a JSON-lines manifest of image URIs and uploads it to S3 for the batch transform job.",
+      "tags": [
+        "s3",
+        "manifest",
+        "serialization"
+      ],
+      "complexity": "moderate",
+      "filePath": "species_id_dag.py",
+      "lineRange": [
+        39,
+        65
+      ]
+    },
+    {
+      "id": "step:species-id-batch-inference:trigger-sagemaker",
+      "type": "step",
+      "name": "Trigger SageMaker inference",
+      "summary": "Creates a SageMaker batch transform job against the model to run inference over the uploaded manifest.",
+      "tags": [
+        "sagemaker",
+        "inference",
+        "machine-learning"
+      ],
+      "complexity": "moderate",
+      "filePath": "species_id_dag.py",
+      "lineRange": [
+        67,
+        98
+      ]
+    },
+    {
+      "id": "step:species-id-batch-inference:create-validation-set",
+      "type": "step",
+      "name": "Create validation set",
+      "summary": "Reads inference responses, filters predictions by an acceptance threshold, and downloads accepted images into a local validation set.",
+      "tags": [
+        "validation",
+        "machine-learning"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/species_id.py",
+      "lineRange": [
+        133,
+        169
+      ]
+    },
+    {
+      "id": "step:species-id-batch-inference:clean-s3-buckets",
+      "type": "step",
+      "name": "Clean S3 buckets",
+      "summary": "Deletes staged manifest and inference objects from S3 after the run completes.",
+      "tags": [
+        "s3",
+        "cleanup"
+      ],
+      "complexity": "simple",
+      "filePath": "species_id_dag.py",
+      "lineRange": [
+        173,
+        178
+      ]
+    },
+    {
+      "id": "step:failure-notification:detect-task-failure",
+      "type": "step",
+      "name": "Detect task failure",
+      "summary": "The on_failure_callback wired into default_args fires when a DAG task fails.",
+      "tags": [
+        "event-handler",
+        "airflow"
+      ],
+      "complexity": "simple",
+      "filePath": "lib/utils.py",
+      "lineRange": [
+        20,
+        31
+      ]
+    },
+    {
+      "id": "step:failure-notification:build-failure-context",
+      "type": "step",
+      "name": "Build failure context",
+      "summary": "Builds the task context payload for the notification.",
+      "tags": [
+        "notification"
+      ],
+      "complexity": "simple",
+      "filePath": "lib/utils.py",
+      "lineRange": [
+        20,
+        31
+      ]
+    },
+    {
+      "id": "step:failure-notification:post-slack-message",
+      "type": "step",
+      "name": "Post Slack message",
+      "summary": "Posts the failure alert to a Slack channel.",
+      "tags": [
+        "slack",
+        "notification"
+      ],
+      "complexity": "simple",
+      "filePath": "lib/utils.py",
+      "lineRange": [
+        11,
+        18
+      ]
+    },
+    {
+      "id": "step:cron-wrapper-execution:acquire-pid-lock",
+      "type": "step",
+      "name": "Acquire PID lock",
+      "summary": "Writes a PID file and uses an EXIT trap to enforce single-instance execution.",
+      "tags": [
+        "pid-lock",
+        "cron"
+      ],
+      "complexity": "simple",
+      "filePath": "map/scripts/assign-new-trees-to-clusters.sh"
+    },
+    {
+      "id": "step:cron-wrapper-execution:invoke-node-task",
+      "type": "step",
+      "name": "Invoke Node task",
+      "summary": "Executes the corresponding Node map task once the lock is held.",
+      "tags": [
+        "automation",
+        "script"
+      ],
+      "complexity": "simple",
+      "filePath": "map/scripts/assign-new-trees-to-clusters.sh"
+    },
+    {
+      "id": "step:cron-wrapper-execution:log-output",
+      "type": "step",
+      "name": "Log output",
+      "summary": "Logs the task output to a system log file.",
+      "tags": [
+        "logging",
+        "script"
+      ],
+      "complexity": "simple",
+      "filePath": "map/scripts/assign-new-trees-to-clusters.sh"
+    },
+    {
+      "id": "step:messaging-author-provisioning:read-approved-orgs",
+      "type": "step",
+      "name": "Read approved organizations",
+      "summary": "Reads approved growers and organizations from the database, honoring the organization filter toggle.",
+      "tags": [
+        "database",
+        "query"
+      ],
+      "complexity": "moderate",
+      "filePath": "lib/messaging.py",
+      "lineRange": [
+        9,
+        91
+      ]
+    },
+    {
+      "id": "step:messaging-author-provisioning:insert-author-records",
+      "type": "step",
+      "name": "Insert author records",
+      "summary": "Inserts corresponding messaging-system author rows via Postgres cursors.",
+      "tags": [
+        "database",
+        "messaging"
+      ],
+      "complexity": "complex",
+      "filePath": "lib/messaging.py",
+      "lineRange": [
+        9,
+        91
+      ]
+    },
+    {
+      "id": "step:messaging-author-provisioning:commit-per-batch",
+      "type": "step",
+      "name": "Commit per batch",
+      "summary": "Commits the inserted author records per batch.",
+      "tags": [
+        "database",
+        "transaction"
+      ],
+      "complexity": "simple",
+      "filePath": "lib/messaging.py",
+      "lineRange": [
+        9,
+        91
+      ]
+    },
+    {
+      "id": "step:wallet-token-creation:read-run-config",
+      "type": "step",
+      "name": "Read run configuration",
+      "summary": "Reads the token creation parameters from dag_run.conf.",
+      "tags": [
+        "config",
+        "airflow"
+      ],
+      "complexity": "simple",
+      "filePath": "create-tokens.py"
+    },
+    {
+      "id": "step:wallet-token-creation:insert-wallet-tokens",
+      "type": "step",
+      "name": "Insert wallet tokens",
+      "summary": "Inserts wallet token rows into the Postgres wallet database via PostgresHook.",
+      "tags": [
+        "database",
+        "wallet"
+      ],
+      "complexity": "moderate",
+      "filePath": "create-tokens.py"
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:data-export",
+      "target": "flow:capture-export",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:data-export",
+      "target": "flow:grower-export",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:data-export",
+      "target": "flow:earnings-export",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:data-export",
+      "target": "flow:planter-info-ftp-upload",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:data-migration",
+      "target": "flow:migrate-captures",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:data-migration",
+      "target": "flow:migrate-stakeholders",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:reporting-analytics",
+      "target": "flow:country-leaderboard-refresh",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:reporting-analytics",
+      "target": "flow:fcc-contract-earnings",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:reporting-analytics",
+      "target": "flow:populate-reports-schema",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:reporting-analytics",
+      "target": "flow:session-time-chopping",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:reporting-analytics",
+      "target": "flow:reporting-card-cache-warming",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:web-map-precompute",
+      "target": "flow:map-tile-cache-warming",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:web-map-precompute",
+      "target": "flow:map-cluster-cache-warming",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:web-map-precompute",
+      "target": "flow:assign-new-trees-to-clusters",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:web-map-precompute",
+      "target": "flow:update-clusters-deactivated-trees",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:web-map-precompute",
+      "target": "flow:refresh-webmap-materialized-views",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:species-identification",
+      "target": "flow:species-id-batch-inference",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:platform-orchestration",
+      "target": "flow:failure-notification",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:platform-orchestration",
+      "target": "flow:cron-wrapper-execution",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:platform-orchestration",
+      "target": "flow:messaging-author-provisioning",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:platform-orchestration",
+      "target": "flow:wallet-token-creation",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:capture-export",
+      "target": "step:capture-export:trigger-scheduled-export",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:capture-export",
+      "target": "step:capture-export:validate-inputs",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:capture-export",
+      "target": "step:capture-export:stream-captures-batched",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:capture-export",
+      "target": "step:capture-export:write-csv",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:capture-export",
+      "target": "step:capture-export:upload-to-ckan",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:grower-export",
+      "target": "step:grower-export:trigger-export",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:grower-export",
+      "target": "step:grower-export:validate-parameters",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:grower-export",
+      "target": "step:grower-export:query-grower-rows",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:grower-export",
+      "target": "step:grower-export:assemble-csv",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:grower-export",
+      "target": "step:grower-export:upload-to-ckan",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:earnings-export",
+      "target": "step:earnings-export:trigger-monthly",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:earnings-export",
+      "target": "step:earnings-export:compute-previous-month-range",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:earnings-export",
+      "target": "step:earnings-export:query-earnings",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:earnings-export",
+      "target": "step:earnings-export:push-to-ckan",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:planter-info-ftp-upload",
+      "target": "step:planter-info-ftp-upload:trigger-daily",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:planter-info-ftp-upload",
+      "target": "step:planter-info-ftp-upload:query-planter-info",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:planter-info-ftp-upload",
+      "target": "step:planter-info-ftp-upload:build-csv-stream",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:planter-info-ftp-upload",
+      "target": "step:planter-info-ftp-upload:upload-to-ftp",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:migrate-captures",
+      "target": "step:migrate-captures:trigger-daily-migration",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:migrate-captures",
+      "target": "step:migrate-captures:run-migration-pod",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:migrate-captures",
+      "target": "step:migrate-captures:load-into-domain-db",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:migrate-stakeholders",
+      "target": "step:migrate-stakeholders:trigger-migration",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:migrate-stakeholders",
+      "target": "step:migrate-stakeholders:consolidate-tables",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:migrate-stakeholders",
+      "target": "step:migrate-stakeholders:reconcile-entity-stakeholders",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:country-leaderboard-refresh",
+      "target": "step:country-leaderboard-refresh:trigger-scheduled-refresh",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:country-leaderboard-refresh",
+      "target": "step:country-leaderboard-refresh:rank-countries-spatial-sql",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:country-leaderboard-refresh",
+      "target": "step:country-leaderboard-refresh:fetch-country-centroids",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:country-leaderboard-refresh",
+      "target": "step:country-leaderboard-refresh:persist-leaderboard",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:fcc-contract-earnings",
+      "target": "step:fcc-contract-earnings:create-planter-entities",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:fcc-contract-earnings",
+      "target": "step:fcc-contract-earnings:sync-entity-stakeholders",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:fcc-contract-earnings",
+      "target": "step:fcc-contract-earnings:enumerate-contract-terms",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:fcc-contract-earnings",
+      "target": "step:fcc-contract-earnings:compute-term-earnings",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:populate-reports-schema",
+      "target": "step:populate-reports-schema:trigger-schema-population",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:populate-reports-schema",
+      "target": "step:populate-reports-schema:run-sql-python-tasks",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:populate-reports-schema",
+      "target": "step:populate-reports-schema:populate-tree-denormalized",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:session-time-chopping",
+      "target": "step:session-time-chopping:read-raw-captures",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:session-time-chopping",
+      "target": "step:session-time-chopping:compute-session-segments",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:session-time-chopping",
+      "target": "step:session-time-chopping:write-uuid-segments",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:reporting-card-cache-warming",
+      "target": "step:reporting-card-cache-warming:build-endpoint-url",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:reporting-card-cache-warming",
+      "target": "step:reporting-card-cache-warming:warm-endpoint",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:map-tile-cache-warming",
+      "target": "step:map-tile-cache-warming:schedule-cycle",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:map-tile-cache-warming",
+      "target": "step:map-tile-cache-warming:iterate-url-list",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:map-tile-cache-warming",
+      "target": "step:map-tile-cache-warming:warm-tile-cache",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:map-cluster-cache-warming",
+      "target": "step:map-cluster-cache-warming:schedule-warm",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:map-cluster-cache-warming",
+      "target": "step:map-cluster-cache-warming:iterate-cluster-urls",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:map-cluster-cache-warming",
+      "target": "step:map-cluster-cache-warming:warm-cluster-cache",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:assign-new-trees-to-clusters",
+      "target": "step:assign-new-trees-to-clusters:trigger-assignment",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:assign-new-trees-to-clusters",
+      "target": "step:assign-new-trees-to-clusters:run-staged-sql",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:assign-new-trees-to-clusters",
+      "target": "step:assign-new-trees-to-clusters:commit-or-rollback",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:update-clusters-deactivated-trees",
+      "target": "step:update-clusters-deactivated-trees:gate-conf-testing",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:update-clusters-deactivated-trees",
+      "target": "step:update-clusters-deactivated-trees:refresh-active-tree-region-view",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:update-clusters-deactivated-trees",
+      "target": "step:update-clusters-deactivated-trees:recompute-clusters",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:refresh-webmap-materialized-views",
+      "target": "step:refresh-webmap-materialized-views:refresh-org-location",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:refresh-webmap-materialized-views",
+      "target": "step:refresh-webmap-materialized-views:refresh-planter-location",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:refresh-webmap-materialized-views",
+      "target": "step:refresh-webmap-materialized-views:refresh-species-stat",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:species-id-batch-inference",
+      "target": "step:species-id-batch-inference:query-image-urls",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:species-id-batch-inference",
+      "target": "step:species-id-batch-inference:load-images-to-s3",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:species-id-batch-inference",
+      "target": "step:species-id-batch-inference:generate-manifest",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:species-id-batch-inference",
+      "target": "step:species-id-batch-inference:trigger-sagemaker",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:species-id-batch-inference",
+      "target": "step:species-id-batch-inference:create-validation-set",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:species-id-batch-inference",
+      "target": "step:species-id-batch-inference:clean-s3-buckets",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:failure-notification",
+      "target": "step:failure-notification:detect-task-failure",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:failure-notification",
+      "target": "step:failure-notification:build-failure-context",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:failure-notification",
+      "target": "step:failure-notification:post-slack-message",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:cron-wrapper-execution",
+      "target": "step:cron-wrapper-execution:acquire-pid-lock",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:cron-wrapper-execution",
+      "target": "step:cron-wrapper-execution:invoke-node-task",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:cron-wrapper-execution",
+      "target": "step:cron-wrapper-execution:log-output",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:messaging-author-provisioning",
+      "target": "step:messaging-author-provisioning:read-approved-orgs",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:messaging-author-provisioning",
+      "target": "step:messaging-author-provisioning:insert-author-records",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:messaging-author-provisioning",
+      "target": "step:messaging-author-provisioning:commit-per-batch",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:wallet-token-creation",
+      "target": "step:wallet-token-creation:read-run-config",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:wallet-token-creation",
+      "target": "step:wallet-token-creation:insert-wallet-tokens",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:web-map-precompute",
+      "target": "domain:data-migration",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Cluster assignment consumes newly captured/migrated tree data from the domain database.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:reporting-analytics",
+      "target": "domain:data-migration",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "FCC contract earnings reuse planter-entity population and entity-stakeholder sync from the migration layer.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:species-identification",
+      "target": "domain:data-migration",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Species inference reads capture image data sourced through the capture data pipeline.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:data-export",
+      "target": "domain:platform-orchestration",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Export DAGs rely on shared date helpers and the Slack failure callback.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:web-map-precompute",
+      "target": "domain:platform-orchestration",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Node precompute scripts run through PID-locked cron wrappers outside Airflow.",
+      "weight": 0.5
+    }
+  ],
+  "layers": [],
+  "tour": []
+}

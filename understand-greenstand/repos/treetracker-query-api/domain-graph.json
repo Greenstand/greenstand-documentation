@@ -1,0 +1,1655 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-query-api",
+    "languages": [
+      "typescript",
+      "javascript"
+    ],
+    "frameworks": [
+      "Express",
+      "Knex",
+      "PostgreSQL/PostGIS",
+      "Joi",
+      "Jest"
+    ],
+    "description": "RESTful query API that exposes Greenstand treetracker data (tree captures, planters/growers, organizations, species, countries, tokens, transactions, wallets) to client apps such as the web map. It is read-only over a PostgreSQL database and follows a Domain Driven Design layered architecture: Express routers validate and translate HTTP requests, business models orchestrate and build HATEOAS links, and knex/pg repositories run the SQL.",
+    "analyzedAt": "2026-09-03T05:22:29.591Z",
+    "gitCommitHash": "42897d62c4a9e5fa4a49e99720ed28f3a254bb97"
+  },
+  "nodes": [
+    {
+      "id": "domain:tree-capture-data",
+      "type": "domain",
+      "name": "Tree & Capture Data",
+      "summary": "Core observation data of the platform. Exposes queries over trees, processed captures, and raw (unprocessed) captures, including filtered lists, counts, single-record lookups, and featured trees. This is the primary evidence that a tree was planted and geolocated.",
+      "tags": [
+        "trees",
+        "captures",
+        "core-data",
+        "geolocation"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Tree",
+          "Capture",
+          "RawCapture"
+        ],
+        "businessRules": [
+          "Queries are read-only; the API never mutates capture data",
+          "Trees and captures can be filtered by organization, date range, tag, wallet, and geometry",
+          "Featured trees are returned via a dedicated endpoint (with a deprecated hardcoded fallback)",
+          "Results are paginated with limit/offset"
+        ],
+        "crossDomainInteractions": [
+          "Provides tree/capture coordinates that the Geospatial & Mapping domain aggregates into map bounds",
+          "Captures are referenced by tokens in the Token & Transaction Ledger domain",
+          "Stakeholder resources link to featured trees of this domain via HATEOAS links"
+        ]
+      }
+    },
+    {
+      "id": "domain:stakeholder-directory",
+      "type": "domain",
+      "name": "Stakeholder Directory",
+      "summary": "The people and organizations behind the trees. Exposes planters, grower accounts (v2), organizations (v1 and v2), and stakeholder lookups. Builds HATEOAS resource links to related trees, organizations, and species.",
+      "tags": [
+        "planters",
+        "growers",
+        "organizations",
+        "stakeholders"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Planter",
+          "GrowerAccount",
+          "Organization",
+          "Stakeholder"
+        ],
+        "businessRules": [
+          "Planters, growers, and organizations can be listed by filter, fetched by id, or requested as featured",
+          "Grower accounts expose counts, featured selection, wallets, and selfies",
+          "Responses embed HATEOAS links to featured trees, organizations, and species",
+          "V2 organization queries additionally support grower-based lookups"
+        ],
+        "crossDomainInteractions": [
+          "Links to featured trees in the Tree & Capture Data domain",
+          "Links to species owned or planted in the Species Catalog domain",
+          "Grower accounts reference wallets in the Token & Transaction Ledger domain"
+        ]
+      }
+    },
+    {
+      "id": "domain:species-catalog",
+      "type": "domain",
+      "name": "Species Catalog",
+      "summary": "Catalog of tree species. Exposes filtered species lists and single-species lookups, and supports grouping species by organization, planter, or wallet with counts.",
+      "tags": [
+        "species",
+        "catalog",
+        "reference-data"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entities": [
+          "Species"
+        ],
+        "businessRules": [
+          "Species can be filtered by keyword, morphology, and range with pagination",
+          "Species can be grouped and counted by organization, planter, or wallet"
+        ],
+        "crossDomainInteractions": [
+          "Referenced by Stakeholder Directory HATEOAS links for a planter's or organization's species"
+        ]
+      }
+    },
+    {
+      "id": "domain:geospatial-mapping",
+      "type": "domain",
+      "name": "Geospatial & Mapping",
+      "summary": "Spatial support for rendering the web map. Computes map bounding boxes from tree capture coordinates, resolves the nearest GIS feature to a lat/lon point using PostGIS, and serves country geometries plus a planting leaderboard.",
+      "tags": [
+        "geospatial",
+        "postgis",
+        "map",
+        "bounds",
+        "leaderboard"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Bounds",
+          "Country",
+          "GisFeature"
+        ],
+        "businessRules": [
+          "Bounds are computed by planter, wallet, or organization from capture coordinates",
+          "Nearest-feature lookups validate coordinate inputs before running raw PostGIS distance queries",
+          "Country responses serialize centroids as GeoJSON",
+          "Country leaderboard aggregates planting counts by region",
+          "Country responses can be served from an LRU cache when caching is enabled"
+        ],
+        "crossDomainInteractions": [
+          "Aggregates tree/capture coordinates from the Tree & Capture Data domain to compute bounds",
+          "Bounds are computed per stakeholder (planter, organization) from the Stakeholder Directory domain"
+        ]
+      }
+    },
+    {
+      "id": "domain:token-transaction-ledger",
+      "type": "domain",
+      "name": "Token & Transaction Ledger",
+      "summary": "Impact accounting layer. Exposes issued tokens (linked to captures and wallets), token transactions between wallets, wallet records, and contract records. Read-only queries with filtering, counting, and pagination.",
+      "tags": [
+        "tokens",
+        "transactions",
+        "wallets",
+        "contracts",
+        "ledger"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Token",
+          "Transaction",
+          "Wallet",
+          "Contract"
+        ],
+        "businessRules": [
+          "Tokens link a capture to a wallet and track transfer and claim state",
+          "Transactions record source and destination wallets with processing metadata",
+          "Tokens, transactions, and contracts are queried by id and by filter with counts"
+        ],
+        "crossDomainInteractions": [
+          "Tokens reference captures in the Tree & Capture Data domain",
+          "Wallets are associated with growers/stakeholders in the Stakeholder Directory domain"
+        ]
+      }
+    },
+    {
+      "id": "flow:query-trees",
+      "type": "flow",
+      "name": "Query Trees",
+      "summary": "Return trees matching filters (organization, date, tag, wallet, geometry), fetch a tree by id/UUID, provide counts, or return featured trees.",
+      "tags": [
+        "trees",
+        "query",
+        "filter"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /trees, /trees/:val, /trees/featured",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:query-captures",
+      "type": "flow",
+      "name": "Query Captures",
+      "summary": "Return processed tree captures matching filters, fetch a capture by id, or return capture counts.",
+      "tags": [
+        "captures",
+        "query",
+        "filter"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /v2/captures, /v2/captures/:id, /v2/captures/count",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:query-raw-captures",
+      "type": "flow",
+      "name": "Query Raw Captures",
+      "summary": "Return raw (unprocessed) tree captures matching filters, fetch one by id, or return counts.",
+      "tags": [
+        "raw-captures",
+        "query",
+        "filter"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /raw-captures, /raw-captures/:id, /raw-captures/count",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:query-planters",
+      "type": "flow",
+      "name": "Query Planters",
+      "summary": "Return planters by filter, fetch a planter by id, or return featured planters, with HATEOAS links to trees, organizations, and species.",
+      "tags": [
+        "planters",
+        "query",
+        "hateoas"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /planters, /planters/:id, /planters/featured",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:query-grower-accounts",
+      "type": "flow",
+      "name": "Query Grower Accounts",
+      "summary": "Return grower accounts, counts, featured growers, wallets, and selfies, or a single grower by id, with HATEOAS links.",
+      "tags": [
+        "growers",
+        "query",
+        "hateoas",
+        "v2"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /v2/growers, /v2/growers/:id, /v2/growers/count, /v2/growers/featured",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:query-organizations",
+      "type": "flow",
+      "name": "Query Organizations",
+      "summary": "Return organizations by filter, fetch by id, or return featured organizations; v2 additionally supports grower-based lookups. Builds organization resource links.",
+      "tags": [
+        "organizations",
+        "query",
+        "hateoas"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /organizations, /organizations/:id, /organizations/featured (and /v2/organizations)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:query-species",
+      "type": "flow",
+      "name": "Query Species",
+      "summary": "Return species matching a filter (keyword, morphology, range) or fetch a single species by id, grouped and counted by organization, planter, or wallet.",
+      "tags": [
+        "species",
+        "query",
+        "filter"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /species, /species/:id (and /v2/species)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:compute-map-bounds",
+      "type": "flow",
+      "name": "Compute Map Bounds",
+      "summary": "Compute a geographic bounding box for a planter, wallet, or organization from tree capture coordinates so the web map can frame its view.",
+      "tags": [
+        "bounds",
+        "geospatial",
+        "map"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /bounds",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:find-nearest-feature",
+      "type": "flow",
+      "name": "Find Nearest GIS Feature",
+      "summary": "Resolve the nearest geographic feature to a supplied lat/lon point using raw PostGIS distance queries.",
+      "tags": [
+        "gis",
+        "postgis",
+        "nearest"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /gis",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:query-countries-leaderboard",
+      "type": "flow",
+      "name": "Query Countries & Leaderboard",
+      "summary": "Return country records by id or spatial filter with GeoJSON centroids, and a planting leaderboard aggregated by region, optionally served from an LRU cache.",
+      "tags": [
+        "countries",
+        "leaderboard",
+        "aggregation",
+        "cache"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /countries, /countries/:id, /countries/leaderboard, /countries/leaderboard/:region (and /v2)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:query-tokens",
+      "type": "flow",
+      "name": "Query Tokens",
+      "summary": "Return issued tokens matching a filter with counts and pagination, or fetch a single token by id.",
+      "tags": [
+        "tokens",
+        "query",
+        "filter"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /tokens, /tokens/:tokenId (and /v2/tokens)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:query-transactions",
+      "type": "flow",
+      "name": "Query Transactions",
+      "summary": "Return token transactions between wallets via filtered lookups over a database session.",
+      "tags": [
+        "transactions",
+        "query",
+        "wallets"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /transactions",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:query-contracts",
+      "type": "flow",
+      "name": "Query Contracts",
+      "summary": "Return contract records by filter, fetch by id, or return contract counts using dynamic where-clause building.",
+      "tags": [
+        "contracts",
+        "query",
+        "filter"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /contract",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:query-trees:validate-request",
+      "type": "step",
+      "name": "Validate request params",
+      "summary": "The trees router validates query parameters with Joi and selects the route (list, by id, count, or featured).",
+      "tags": [
+        "validation",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/treesRouter.ts"
+    },
+    {
+      "id": "step:query-trees:format-query",
+      "type": "step",
+      "name": "Normalize query filter",
+      "summary": "queryFormatter parses and normalizes query params, JSON-decoding where/in clauses and coercing numeric filters.",
+      "tags": [
+        "query",
+        "serialization"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/utils.ts",
+      "lineRange": [
+        56,
+        80
+      ]
+    },
+    {
+      "id": "step:query-trees:dispatch-filter",
+      "type": "step",
+      "name": "Dispatch to filter resolver",
+      "summary": "Tree model getByFilter dispatches to the correct repository method based on the active filter (organization, date, tag, wallet, geometry).",
+      "tags": [
+        "business-logic",
+        "dispatch"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/Tree.ts",
+      "lineRange": [
+        20,
+        62
+      ]
+    },
+    {
+      "id": "step:query-trees:query-repository",
+      "type": "step",
+      "name": "Run tree SQL query",
+      "summary": "TreeRepository runs the knex/pg query by id, UUID, organization, date range, tag, wallet, or geometry with pagination.",
+      "tags": [
+        "database",
+        "repository"
+      ],
+      "complexity": "complex",
+      "filePath": "server/infra/database/TreeRepository.ts",
+      "lineRange": [
+        13,
+        357
+      ]
+    },
+    {
+      "id": "step:query-trees:count-results",
+      "type": "step",
+      "name": "Count matching trees",
+      "summary": "Tree model countByFilter dispatches to the matching repository count method for the count endpoints.",
+      "tags": [
+        "count",
+        "business-logic"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/Tree.ts",
+      "lineRange": [
+        64,
+        113
+      ]
+    },
+    {
+      "id": "step:query-trees:return-response",
+      "type": "step",
+      "name": "Return JSON response",
+      "summary": "The router serializes trees (or featured trees) to JSON; the async handler wrapper forwards any error to the global handler.",
+      "tags": [
+        "response",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/treesRouter.ts"
+    },
+    {
+      "id": "step:query-captures:validate-request",
+      "type": "step",
+      "name": "Validate capture params",
+      "summary": "The captures router validates query parameters with Joi and selects list, by-id, or count route.",
+      "tags": [
+        "validation",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/capturesRouter.ts"
+    },
+    {
+      "id": "step:query-captures:delegate-model",
+      "type": "step",
+      "name": "Delegate to Capture model",
+      "summary": "The Capture business model exposes query and count operations delegating to the capture repository.",
+      "tags": [
+        "business-logic",
+        "delegation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/Capture.ts"
+    },
+    {
+      "id": "step:query-captures:build-where",
+      "type": "step",
+      "name": "Build capture where-clause",
+      "summary": "CaptureRepository filterWhereBuilder builds the dynamic where-clause from the filter and paginates.",
+      "tags": [
+        "query-builder",
+        "database"
+      ],
+      "complexity": "complex",
+      "filePath": "server/infra/database/CaptureRepository.ts",
+      "lineRange": [
+        8,
+        295
+      ]
+    },
+    {
+      "id": "step:query-captures:return-response",
+      "type": "step",
+      "name": "Return capture JSON",
+      "summary": "The router serializes captures or count to JSON.",
+      "tags": [
+        "response",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/capturesRouter.ts"
+    },
+    {
+      "id": "step:query-raw-captures:validate-request",
+      "type": "step",
+      "name": "Validate raw-capture params",
+      "summary": "The raw-captures router validates query parameters with Joi and selects list, by-id, or count route.",
+      "tags": [
+        "validation",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/rawCapturesRouter.ts"
+    },
+    {
+      "id": "step:query-raw-captures:delegate-model",
+      "type": "step",
+      "name": "Delegate to RawCapture model",
+      "summary": "The RawCapture business model exposes query and count operations delegating to the raw-capture repository.",
+      "tags": [
+        "business-logic",
+        "delegation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/RawCapture.ts"
+    },
+    {
+      "id": "step:query-raw-captures:build-where",
+      "type": "step",
+      "name": "Build raw-capture query",
+      "summary": "RawCaptureRepository builds the dynamic where-clause, paginates, and counts raw captures.",
+      "tags": [
+        "query-builder",
+        "database"
+      ],
+      "complexity": "complex",
+      "filePath": "server/infra/database/RawCaptureRepository.ts",
+      "lineRange": [
+        8,
+        299
+      ]
+    },
+    {
+      "id": "step:query-raw-captures:return-response",
+      "type": "step",
+      "name": "Return raw-capture JSON",
+      "summary": "The router serializes raw captures or count to JSON.",
+      "tags": [
+        "response",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/rawCapturesRouter.ts"
+    },
+    {
+      "id": "step:query-planters:validate-request",
+      "type": "step",
+      "name": "Route planter request",
+      "summary": "The planters router selects list, by-id, or featured route and forwards the query.",
+      "tags": [
+        "router",
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/plantersRouter.ts"
+    },
+    {
+      "id": "step:query-planters:filter-model",
+      "type": "step",
+      "name": "Filter planters in model",
+      "summary": "The Planter model exposes filter, count, name lookup, and featured operations over the planter repository.",
+      "tags": [
+        "business-logic",
+        "filter"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/Planter.ts"
+    },
+    {
+      "id": "step:query-planters:query-repository",
+      "type": "step",
+      "name": "Run planter SQL query",
+      "summary": "PlanterRepository queries planters by id, organization, filter, and name plus counts and featured planters.",
+      "tags": [
+        "database",
+        "repository"
+      ],
+      "complexity": "complex",
+      "filePath": "server/infra/database/PlanterRepository.ts",
+      "lineRange": [
+        11,
+        186
+      ]
+    },
+    {
+      "id": "step:query-planters:build-links",
+      "type": "step",
+      "name": "Build HATEOAS links",
+      "summary": "The Planter model builds resource links to featured trees, organizations, and species for each planter.",
+      "tags": [
+        "hateoas",
+        "serialization"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/Planter.ts"
+    },
+    {
+      "id": "step:query-planters:return-response",
+      "type": "step",
+      "name": "Return planter JSON",
+      "summary": "The router serializes planters (or featured planters) to JSON.",
+      "tags": [
+        "response",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/plantersRouter.ts"
+    },
+    {
+      "id": "step:query-grower-accounts:validate-request",
+      "type": "step",
+      "name": "Validate grower request",
+      "summary": "The grower accounts router validates query params with Joi and routes count, featured, wallets, selfies, by-id, or list.",
+      "tags": [
+        "validation",
+        "router",
+        "v2"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/routers/growerAccountsRouter.ts"
+    },
+    {
+      "id": "step:query-grower-accounts:model-usecase",
+      "type": "step",
+      "name": "Resolve grower use-case",
+      "summary": "The GrowerAccount model curries the repository into single-purpose use-case functions and builds HATEOAS links.",
+      "tags": [
+        "business-logic",
+        "hateoas"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/GrowerAccount.ts"
+    },
+    {
+      "id": "step:query-grower-accounts:query-repository",
+      "type": "step",
+      "name": "Run grower SQL query",
+      "summary": "GrowerAccountRepository queries grower accounts, wallets, and selfies from the database session.",
+      "tags": [
+        "database",
+        "repository"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/infra/database/GrowerAccountRepository.ts"
+    },
+    {
+      "id": "step:query-grower-accounts:return-response",
+      "type": "step",
+      "name": "Return grower JSON",
+      "summary": "The router serializes grower accounts, counts, wallets, or selfies to JSON.",
+      "tags": [
+        "response",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/growerAccountsRouter.ts"
+    },
+    {
+      "id": "step:query-organizations:route-request",
+      "type": "step",
+      "name": "Route organization request",
+      "summary": "The organizations router (v1/v2) selects list, by-id, featured, or grower-based route.",
+      "tags": [
+        "router",
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/organizationsRouter.ts"
+    },
+    {
+      "id": "step:query-organizations:filter-model",
+      "type": "step",
+      "name": "Filter organizations in model",
+      "summary": "The Organization model filters records via the repository and maps results.",
+      "tags": [
+        "business-logic",
+        "filter"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/Organization.ts",
+      "lineRange": [
+        13,
+        33
+      ]
+    },
+    {
+      "id": "step:query-organizations:query-repository",
+      "type": "step",
+      "name": "Run organization SQL query",
+      "summary": "OrganizationRepository retrieves organizations by planter, id, map name, ids, and featured selection (v2 adds getByGrower).",
+      "tags": [
+        "database",
+        "repository"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/infra/database/OrganizationRepository.ts",
+      "lineRange": [
+        8,
+        124
+      ]
+    },
+    {
+      "id": "step:query-organizations:build-links",
+      "type": "step",
+      "name": "Build organization links",
+      "summary": "The Organization model builds HATEOAS links to featured trees, associated planters, and species.",
+      "tags": [
+        "hateoas",
+        "serialization"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/Organization.ts"
+    },
+    {
+      "id": "step:query-organizations:return-response",
+      "type": "step",
+      "name": "Return organization JSON",
+      "summary": "The router serializes organizations to JSON.",
+      "tags": [
+        "response",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/organizationsRouter.ts"
+    },
+    {
+      "id": "step:query-species:validate-request",
+      "type": "step",
+      "name": "Route species request",
+      "summary": "The species router selects list or by-id route filtered by organization, planter, or wallet.",
+      "tags": [
+        "router",
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/speciesRouter.ts"
+    },
+    {
+      "id": "step:query-species:delegate-model",
+      "type": "step",
+      "name": "Delegate species query",
+      "summary": "The Species model getByFilter/countByFilter delegate the query to the species repository.",
+      "tags": [
+        "business-logic",
+        "delegation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/Species.ts",
+      "lineRange": [
+        13,
+        62
+      ]
+    },
+    {
+      "id": "step:query-species:query-repository",
+      "type": "step",
+      "name": "Run species SQL query",
+      "summary": "SpeciesRepository fetches species grouped by organization, planter, or wallet with counting.",
+      "tags": [
+        "database",
+        "repository"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/infra/database/SpeciesRepository.ts",
+      "lineRange": [
+        6,
+        120
+      ]
+    },
+    {
+      "id": "step:query-species:return-response",
+      "type": "step",
+      "name": "Return species JSON",
+      "summary": "The router serializes the species list or single record to JSON.",
+      "tags": [
+        "response",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/speciesRouter.ts"
+    },
+    {
+      "id": "step:compute-map-bounds:validate-request",
+      "type": "step",
+      "name": "Validate bounds params",
+      "summary": "The bounds router validates query params with Joi (planter, wallet, or organization filter) and delegates to the Bounds model.",
+      "tags": [
+        "validation",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/boundsRouter.ts"
+    },
+    {
+      "id": "step:compute-map-bounds:model-getbyfilter",
+      "type": "step",
+      "name": "Resolve bounds filter",
+      "summary": "The Bounds model getByFilter returns a filter function that computes map bounding boxes from the bounds repository.",
+      "tags": [
+        "business-logic",
+        "geospatial"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/Bounds.ts",
+      "lineRange": [
+        11,
+        38
+      ]
+    },
+    {
+      "id": "step:compute-map-bounds:query-repository",
+      "type": "step",
+      "name": "Compute bounds from captures",
+      "summary": "BoundsRepository computes geographic bounds by planter, wallet, or organization from tree capture coordinates and converts bound strings.",
+      "tags": [
+        "database",
+        "geospatial"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/infra/database/BoundsRepository.ts",
+      "lineRange": [
+        5,
+        85
+      ]
+    },
+    {
+      "id": "step:compute-map-bounds:return-response",
+      "type": "step",
+      "name": "Return bounding box",
+      "summary": "The router serializes the computed bounding box to JSON.",
+      "tags": [
+        "response",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/boundsRouter.ts"
+    },
+    {
+      "id": "step:find-nearest-feature:route-request",
+      "type": "step",
+      "name": "Route GIS request",
+      "summary": "The GIS router exposes the nearest-feature endpoint and delegates to the Gis model.",
+      "tags": [
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/gisRouter.ts"
+    },
+    {
+      "id": "step:find-nearest-feature:model-delegate",
+      "type": "step",
+      "name": "Delegate nearest lookup",
+      "summary": "The Gis model delegates the nearest-feature lookup to the GIS repository.",
+      "tags": [
+        "business-logic",
+        "geospatial"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/Gis.ts"
+    },
+    {
+      "id": "step:find-nearest-feature:query-postgis",
+      "type": "step",
+      "name": "Run PostGIS nearest query",
+      "summary": "GisRepository getNearest validates coordinates and runs a raw PostGIS distance query, then JSON-parses the result.",
+      "tags": [
+        "database",
+        "postgis"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/infra/database/GisRepository.ts",
+      "lineRange": [
+        5,
+        96
+      ]
+    },
+    {
+      "id": "step:find-nearest-feature:return-response",
+      "type": "step",
+      "name": "Return nearest feature",
+      "summary": "The router serializes the nearest feature to JSON.",
+      "tags": [
+        "response",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/gisRouter.ts"
+    },
+    {
+      "id": "step:query-countries-leaderboard:validate-request",
+      "type": "step",
+      "name": "Validate & cache country request",
+      "summary": "The countries router validates params with Joi.assert and applies express-lru caching gated by CACHE_ENABLED, routing leaderboard, by-id, or list.",
+      "tags": [
+        "validation",
+        "router",
+        "cache"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/routers/countriesRouter.ts"
+    },
+    {
+      "id": "step:query-countries-leaderboard:model-compose",
+      "type": "step",
+      "name": "Compose country operations",
+      "summary": "The Country model composes getCountries plus repository-delegated getById, getByFilter, and getLeaderBoard operations.",
+      "tags": [
+        "business-logic"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/Country.ts"
+    },
+    {
+      "id": "step:query-countries-leaderboard:query-repository",
+      "type": "step",
+      "name": "Run country query & aggregation",
+      "summary": "CountryRepository runs getById, getByFilter, and the getLeaderBoard aggregation with PostGIS GeoJSON centroid serialization.",
+      "tags": [
+        "database",
+        "aggregation",
+        "geospatial"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/infra/database/CountryRepository.ts",
+      "lineRange": [
+        9,
+        184
+      ]
+    },
+    {
+      "id": "step:query-countries-leaderboard:return-response",
+      "type": "step",
+      "name": "Return country JSON",
+      "summary": "The router serializes country records or the leaderboard to JSON, caching where enabled.",
+      "tags": [
+        "response",
+        "router",
+        "cache"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/countriesRouter.ts"
+    },
+    {
+      "id": "step:query-tokens:validate-request",
+      "type": "step",
+      "name": "Validate token params",
+      "summary": "The tokens router validates query params and routes list (with pagination) or by-id lookup.",
+      "tags": [
+        "validation",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/tokensRouter.ts"
+    },
+    {
+      "id": "step:query-tokens:delegate-model",
+      "type": "step",
+      "name": "Delegate token query",
+      "summary": "The Tokens model getByFilter/getCountByFilter call the tokens repository.",
+      "tags": [
+        "business-logic",
+        "delegation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/Tokens.ts"
+    },
+    {
+      "id": "step:query-tokens:query-repository",
+      "type": "step",
+      "name": "Run token SQL query",
+      "summary": "TokensRepository queries issued tokens by id and filter with count support over the knex session.",
+      "tags": [
+        "database",
+        "repository"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/infra/database/TokensRepository.ts",
+      "lineRange": [
+        12,
+        101
+      ]
+    },
+    {
+      "id": "step:query-tokens:return-response",
+      "type": "step",
+      "name": "Return token JSON",
+      "summary": "The router serializes tokens or a single token to JSON.",
+      "tags": [
+        "response",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/tokensRouter.ts"
+    },
+    {
+      "id": "step:query-transactions:route-request",
+      "type": "step",
+      "name": "Route transaction request",
+      "summary": "The transactions router exposes the transaction endpoint and opens a database Session.",
+      "tags": [
+        "router",
+        "session"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/transactionsRouter.ts"
+    },
+    {
+      "id": "step:query-transactions:delegate-model",
+      "type": "step",
+      "name": "Delegate transaction query",
+      "summary": "The Transaction model getByFilter delegates to the transaction repository.",
+      "tags": [
+        "business-logic",
+        "delegation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/Transaction.ts"
+    },
+    {
+      "id": "step:query-transactions:query-repository",
+      "type": "step",
+      "name": "Run transaction SQL query",
+      "summary": "TransactionRepository provides filtered lookups over source and destination wallets, extending BaseRepository.",
+      "tags": [
+        "database",
+        "repository"
+      ],
+      "complexity": "simple",
+      "filePath": "server/infra/database/TransactionRepository.ts",
+      "lineRange": [
+        6,
+        52
+      ]
+    },
+    {
+      "id": "step:query-transactions:return-response",
+      "type": "step",
+      "name": "Return transaction JSON",
+      "summary": "The router serializes the transactions to JSON.",
+      "tags": [
+        "response",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/transactionsRouter.ts"
+    },
+    {
+      "id": "step:query-contracts:validate-request",
+      "type": "step",
+      "name": "Validate contract params",
+      "summary": "The contracts router validates query params with Joi and routes list, by-id, or count.",
+      "tags": [
+        "validation",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/contractsRouter.ts"
+    },
+    {
+      "id": "step:query-contracts:delegate-model",
+      "type": "step",
+      "name": "Delegate contract query",
+      "summary": "The Contract model exposes query and count operations delegating to the contract repository.",
+      "tags": [
+        "business-logic",
+        "delegation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/Contract.ts"
+    },
+    {
+      "id": "step:query-contracts:build-where",
+      "type": "step",
+      "name": "Build contract where-clause",
+      "summary": "ContractRepository builds a dynamic where-clause and runs filtered queries and counts.",
+      "tags": [
+        "query-builder",
+        "database"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/infra/database/ContractRepository.ts",
+      "lineRange": [
+        8,
+        193
+      ]
+    },
+    {
+      "id": "step:query-contracts:return-response",
+      "type": "step",
+      "name": "Return contract JSON",
+      "summary": "The router serializes contract records or count to JSON.",
+      "tags": [
+        "response",
+        "router"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routers/contractsRouter.ts"
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:tree-capture-data",
+      "target": "flow:query-trees",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:tree-capture-data",
+      "target": "flow:query-captures",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:tree-capture-data",
+      "target": "flow:query-raw-captures",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:stakeholder-directory",
+      "target": "flow:query-planters",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:stakeholder-directory",
+      "target": "flow:query-grower-accounts",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:stakeholder-directory",
+      "target": "flow:query-organizations",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:species-catalog",
+      "target": "flow:query-species",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:geospatial-mapping",
+      "target": "flow:compute-map-bounds",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:geospatial-mapping",
+      "target": "flow:find-nearest-feature",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:geospatial-mapping",
+      "target": "flow:query-countries-leaderboard",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:token-transaction-ledger",
+      "target": "flow:query-tokens",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:token-transaction-ledger",
+      "target": "flow:query-transactions",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:token-transaction-ledger",
+      "target": "flow:query-contracts",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:query-trees",
+      "target": "step:query-trees:validate-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:query-trees",
+      "target": "step:query-trees:format-query",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:query-trees",
+      "target": "step:query-trees:dispatch-filter",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:query-trees",
+      "target": "step:query-trees:query-repository",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:query-trees",
+      "target": "step:query-trees:count-results",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:query-trees",
+      "target": "step:query-trees:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:query-captures",
+      "target": "step:query-captures:validate-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:query-captures",
+      "target": "step:query-captures:delegate-model",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:query-captures",
+      "target": "step:query-captures:build-where",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:query-captures",
+      "target": "step:query-captures:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:query-raw-captures",
+      "target": "step:query-raw-captures:validate-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:query-raw-captures",
+      "target": "step:query-raw-captures:delegate-model",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:query-raw-captures",
+      "target": "step:query-raw-captures:build-where",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:query-raw-captures",
+      "target": "step:query-raw-captures:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:query-planters",
+      "target": "step:query-planters:validate-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:query-planters",
+      "target": "step:query-planters:filter-model",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:query-planters",
+      "target": "step:query-planters:query-repository",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:query-planters",
+      "target": "step:query-planters:build-links",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:query-planters",
+      "target": "step:query-planters:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:query-grower-accounts",
+      "target": "step:query-grower-accounts:validate-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:query-grower-accounts",
+      "target": "step:query-grower-accounts:model-usecase",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:query-grower-accounts",
+      "target": "step:query-grower-accounts:query-repository",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:query-grower-accounts",
+      "target": "step:query-grower-accounts:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:query-organizations",
+      "target": "step:query-organizations:route-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:query-organizations",
+      "target": "step:query-organizations:filter-model",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:query-organizations",
+      "target": "step:query-organizations:query-repository",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:query-organizations",
+      "target": "step:query-organizations:build-links",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:query-organizations",
+      "target": "step:query-organizations:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:query-species",
+      "target": "step:query-species:validate-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:query-species",
+      "target": "step:query-species:delegate-model",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:query-species",
+      "target": "step:query-species:query-repository",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:query-species",
+      "target": "step:query-species:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:compute-map-bounds",
+      "target": "step:compute-map-bounds:validate-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:compute-map-bounds",
+      "target": "step:compute-map-bounds:model-getbyfilter",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:compute-map-bounds",
+      "target": "step:compute-map-bounds:query-repository",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:compute-map-bounds",
+      "target": "step:compute-map-bounds:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:find-nearest-feature",
+      "target": "step:find-nearest-feature:route-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:find-nearest-feature",
+      "target": "step:find-nearest-feature:model-delegate",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:find-nearest-feature",
+      "target": "step:find-nearest-feature:query-postgis",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:find-nearest-feature",
+      "target": "step:find-nearest-feature:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:query-countries-leaderboard",
+      "target": "step:query-countries-leaderboard:validate-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:query-countries-leaderboard",
+      "target": "step:query-countries-leaderboard:model-compose",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:query-countries-leaderboard",
+      "target": "step:query-countries-leaderboard:query-repository",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:query-countries-leaderboard",
+      "target": "step:query-countries-leaderboard:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:query-tokens",
+      "target": "step:query-tokens:validate-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:query-tokens",
+      "target": "step:query-tokens:delegate-model",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:query-tokens",
+      "target": "step:query-tokens:query-repository",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:query-tokens",
+      "target": "step:query-tokens:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:query-transactions",
+      "target": "step:query-transactions:route-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:query-transactions",
+      "target": "step:query-transactions:delegate-model",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:query-transactions",
+      "target": "step:query-transactions:query-repository",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:query-transactions",
+      "target": "step:query-transactions:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:query-contracts",
+      "target": "step:query-contracts:validate-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:query-contracts",
+      "target": "step:query-contracts:delegate-model",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:query-contracts",
+      "target": "step:query-contracts:build-where",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:query-contracts",
+      "target": "step:query-contracts:return-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "domain:geospatial-mapping",
+      "target": "domain:tree-capture-data",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Map bounds are computed from tree capture coordinates owned by the Tree & Capture Data domain.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:stakeholder-directory",
+      "target": "domain:tree-capture-data",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Planter, grower, and organization responses embed HATEOAS links to their featured trees.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:stakeholder-directory",
+      "target": "domain:species-catalog",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Stakeholder responses link to the species associated with a planter or organization.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:token-transaction-ledger",
+      "target": "domain:tree-capture-data",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Tokens reference the tree capture they were issued for.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:token-transaction-ledger",
+      "target": "domain:stakeholder-directory",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Wallets and transactions belong to growers/stakeholders in the directory.",
+      "weight": 0.5
+    }
+  ],
+  "layers": [],
+  "tour": []
+}

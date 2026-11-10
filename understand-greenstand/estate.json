@@ -1,0 +1,128 @@
+{
+  "siteUrl": "https://greenstand.github.io/greenstand-documentation/",
+  "docsRepo": "Greenstand/greenstand-documentation",
+  "docsDir": "understand-greenstand",
+  "sourceOrg": "Greenstand",
+  "areas": [
+    {
+      "title": "Start here",
+      "featured": true,
+      "intro": "Learn the mission and the big picture of the platform before you read the code.",
+      "seeAlso": [
+        { "text": "Documentation", "url": "https://github.com/Greenstand/greenstand-documentation" },
+        { "text": "Architecture decisions", "url": "https://github.com/Greenstand/treetracker-decisions" }
+      ]
+    },
+    {
+      "title": "Core API",
+      "color": "evergreen",
+      "repos": [
+        {
+          "name": "treetracker-api",
+          "description": "The core Treetracker API: captures, trees, grower accounts, and tags. Node.js, Express, PostgreSQL, RabbitMQ."
+        },
+        {
+          "name": "treetracker-query-api",
+          "description": "The read API that serves map and client data: captures, growers, organizations, and trees. Node.js, Express."
+        },
+        {
+          "name": "images-api",
+          "description": "The image service: it fetches remote images and resizes them. Node.js, Express, Sharp."
+        }
+      ]
+    },
+    {
+      "title": "Wallet",
+      "color": "cropland",
+      "repos": [
+        {
+          "name": "treetracker-wallet-api",
+          "description": "The wallet service: wallets, trust relationships, and token transfers. Node.js, Express, PostgreSQL."
+        },
+        {
+          "name": "treetracker-wallet-app",
+          "description": "The wallet app monorepo: a Next.js web wallet, an Expo mobile wallet, and a NestJS backend."
+        },
+        {
+          "name": "treetracker-wallet-admin-client",
+          "description": "The admin panel for the wallet service. React, Material UI."
+        }
+      ]
+    },
+    {
+      "title": "Admin",
+      "color": "shrub",
+      "repos": [
+        {
+          "name": "treetracker-admin-client",
+          "description": "The admin panel to verify, process, and manage the tree data that the app collects. React, Material UI."
+        },
+        {
+          "name": "treetracker-admin-api",
+          "description": "The legacy API for the admin panel. TypeScript, LoopBack 4, PostgreSQL."
+        }
+      ]
+    },
+    {
+      "title": "Web map",
+      "color": "wetland",
+      "repos": [
+        {
+          "name": "treetracker-web-map-client",
+          "description": "The public web map of trees, planters, organizations, and tokens. Next.js, React, Leaflet."
+        },
+        {
+          "name": "treetracker-tile-server",
+          "formerNames": ["node-mapnik-1"],
+          "description": "A fork of node-mapnik. The Greenstand part is the tile server that renders the web map tiles from PostGIS."
+        }
+      ]
+    },
+    {
+      "title": "Mobile",
+      "color": "deciduous",
+      "repos": [
+        {
+          "name": "treetracker-android",
+          "description": "The Android app: growers capture trees (photo and GPS) offline and sync them later. Kotlin, Jetpack Compose."
+        }
+      ]
+    },
+    {
+      "title": "Data ingest",
+      "color": "mixed-forest",
+      "repos": [
+        {
+          "name": "treetracker-field-data",
+          "description": "The service that owns the raw tree data that devices upload. Node.js, Express, PostgreSQL."
+        },
+        {
+          "name": "treetracker-airflow-dags",
+          "description": "The Apache Airflow pipelines: data export, migration, reports, and map precompute. Python."
+        }
+      ]
+    },
+    {
+      "title": "Infrastructure",
+      "color": "bare-ground",
+      "repos": [
+        {
+          "name": "treetracker-infrastructure",
+          "description": "The infrastructure as code: Kubernetes, PostgreSQL, and observability on DigitalOcean and AWS. Terraform."
+        }
+      ]
+    },
+    {
+      "title": "Organization",
+      "color": "ink",
+      "repos": [
+        {
+          "name": "Greenstand-Overview",
+          "description": "The org overview and onboarding repo: contributor guide, roadmap, and team directory. Docs, not code.",
+          "docs": true,
+          "note": "Some of its information is out of date."
+        }
+      ]
+    }
+  ]
+}

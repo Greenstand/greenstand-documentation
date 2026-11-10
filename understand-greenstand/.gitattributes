@@ -1,0 +1,6 @@
+# Check out every text file with LF line endings, on every system. The checks compare whole
+# lines. A checkout with CRLF line endings (core.autocrlf=true) makes the checks fail.
+* text=auto eol=lf
+# A pinned copy of a source file keeps its bytes: --evidence of build-roadmap.mjs compares it with
+# the file of the source repo at the snapshot, CRLF and all.
+sources/** -text

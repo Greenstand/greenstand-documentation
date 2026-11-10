@@ -1,0 +1,1666 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "images-api",
+    "languages": [
+      "dockerfile",
+      "javascript",
+      "json",
+      "markdown",
+      "shell",
+      "yaml"
+    ],
+    "frameworks": [
+      "Docker",
+      "Express",
+      "GitHub Actions",
+      "Mocha"
+    ],
+    "description": "A Greenstand microservice that exposes a RESTful image resize API built with Express. It uses a layered MVC-like structure (protocol, service, and model layers) with a PostgreSQL database via Knex and Sharp for image processing.",
+    "analyzedAt": "2026-09-03T03:25:45Z",
+    "gitCommitHash": "9d761d1697fd84c6a58c1da3fae2f8834c63ddc5"
+  },
+  "nodes": [
+    {
+      "id": "file:server/app.js",
+      "type": "file",
+      "name": "app.js",
+      "filePath": "server/app.js",
+      "summary": "Express application factory that wires CORS, JSON body parsing, a content-type guard middleware, the API router, and the global error handler.",
+      "tags": [
+        "entry-point",
+        "middleware",
+        "express",
+        "api-handler",
+        "bootstrap",
+        "tested"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Exports a configured Express app instance via module.exports for reuse in tests and the server bootstrap."
+    },
+    {
+      "id": "file:server/app.spec.js",
+      "type": "file",
+      "name": "app.spec.js",
+      "filePath": "server/app.spec.js",
+      "summary": "Supertest/Chai test suite verifying the app rejects non-JSON POST requests with 415 and answers GET / with 200.",
+      "tags": [
+        "test",
+        "integration-test",
+        "express",
+        "supertest"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:server/routes.js",
+      "type": "file",
+      "name": "routes.js",
+      "filePath": "server/routes.js",
+      "summary": "Express router mapping image-resize GET routes to the resize handlers, each wrapped by the async error-handling wrapper.",
+      "tags": [
+        "router",
+        "api-handler",
+        "express",
+        "routing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:server/utils/utils.js",
+      "type": "file",
+      "name": "utils.js",
+      "filePath": "server/utils/utils.js",
+      "summary": "Express helper utilities providing an async handler wrapper and a centralized error handler that maps HttpError, Joi ValidationError, and Axios errors to HTTP responses.",
+      "tags": [
+        "utility",
+        "middleware",
+        "error-handling",
+        "express",
+        "validation"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses instanceof checks to branch error responses across HttpError, Joi ValidationError, and Axios error shapes."
+    },
+    {
+      "id": "function:server/utils/utils.js:handlerWrapper",
+      "type": "function",
+      "name": "handlerWrapper",
+      "filePath": "server/utils/utils.js",
+      "lineRange": [
+        26,
+        33
+      ],
+      "summary": "Higher-order wrapper that runs an async Express handler and forwards any rejected promise to next(), enabling throw-based error flow.",
+      "tags": [
+        "utility",
+        "middleware",
+        "async",
+        "error-handling",
+        "factory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:server/utils/utils.js:errorHandler",
+      "type": "function",
+      "name": "errorHandler",
+      "filePath": "server/utils/utils.js",
+      "lineRange": [
+        35,
+        66
+      ],
+      "summary": "Global Express error middleware translating HttpError, Joi ValidationError, and Axios errors into appropriate status codes and JSON bodies, defaulting to 500.",
+      "tags": [
+        "middleware",
+        "error-handling",
+        "serialization",
+        "validation",
+        "express"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:server/repositories/BaseRepository.js",
+      "type": "file",
+      "name": "BaseRepository.js",
+      "filePath": "server/repositories/BaseRepository.js",
+      "summary": "Generic Knex-backed data-access base class providing CRUD and filtered-query helpers for all repositories in the API model layer.",
+      "tags": [
+        "data-model",
+        "repository",
+        "database",
+        "knex",
+        "base-class",
+        "tested"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses a recursive whereBuilder closure to translate nested and/or filter objects into chained Knex where clauses."
+    },
+    {
+      "id": "class:server/repositories/BaseRepository.js:BaseRepository",
+      "type": "class",
+      "name": "BaseRepository",
+      "filePath": "server/repositories/BaseRepository.js",
+      "lineRange": [
+        4,
+        120
+      ],
+      "summary": "Base repository wrapping a Knex session to expose getById, getByFilter, countByFilter, update, and create operations against a configured table.",
+      "tags": [
+        "repository",
+        "data-model",
+        "crud",
+        "database",
+        "knex"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:server/repositories/BaseRepository.spec.js",
+      "type": "file",
+      "name": "BaseRepository.spec.js",
+      "filePath": "server/repositories/BaseRepository.spec.js",
+      "summary": "Spec-named file that currently mirrors the BaseRepository CRUD implementation, defining the same Knex-backed repository class and importing HttpError.",
+      "tags": [
+        "repository",
+        "data-model",
+        "database",
+        "knex",
+        "duplicate"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Despite the .spec.js name, the file holds the production BaseRepository class rather than test assertions."
+    },
+    {
+      "id": "class:server/repositories/BaseRepository.spec.js:BaseRepository",
+      "type": "class",
+      "name": "BaseRepository",
+      "filePath": "server/repositories/BaseRepository.spec.js",
+      "lineRange": [
+        4,
+        120
+      ],
+      "summary": "Repository class duplicated in the spec file, exposing getById, getByFilter, countByFilter, update, and create over a Knex session.",
+      "tags": [
+        "repository",
+        "data-model",
+        "crud",
+        "database",
+        "knex"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:server/utils/HttpError.js",
+      "type": "file",
+      "name": "HttpError.js",
+      "filePath": "server/utils/HttpError.js",
+      "summary": "Defines a custom HttpError extending Error to carry an HTTP status code and a rollback flag, letting inner layers throw errors that outer layers convert to HTTP responses.",
+      "tags": [
+        "utility",
+        "error-handling",
+        "http",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:server/utils/HttpError.js:HttpError",
+      "type": "class",
+      "name": "HttpError",
+      "filePath": "server/utils/HttpError.js",
+      "lineRange": [
+        8,
+        20
+      ],
+      "summary": "Error subclass storing an HTTP status code and a transaction rollback flag exposed via shouldRollback().",
+      "tags": [
+        "error-handling",
+        "http",
+        "utility",
+        "exception"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "Dockerfile",
+      "summary": "Single-stage Docker build on node:16-alpine that installs dependencies via npm ci and runs the Express image-resize API with 'node .'.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "deployment",
+        "nodejs"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Copies package files before source to leverage Docker layer caching for npm ci."
+    },
+    {
+      "id": "config:.dockerignore",
+      "type": "config",
+      "name": ".dockerignore",
+      "filePath": ".dockerignore",
+      "summary": "Empty Docker ignore file that would exclude paths from the Docker build context; currently no exclusions defined.",
+      "tags": [
+        "configuration",
+        "containerization",
+        "infrastructure",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "pipeline:.github/workflows/treetracker-api-build-deploy-dev.yml",
+      "type": "pipeline",
+      "name": "treetracker-api-build-deploy-dev.yml",
+      "filePath": ".github/workflows/treetracker-api-build-deploy-dev.yml",
+      "summary": "GitHub Actions CI/CD pipeline that runs on push to main; a test job lints and runs integration tests, then a release job publishes a semantic-release version, builds and pushes a Docker image to DockerHub, and updates the development kustomize overlay.",
+      "tags": [
+        "ci-cd",
+        "deployment",
+        "containerization",
+        "infrastructure",
+        "kubernetes"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Two-stage pipeline using needs dependency; combines semantic-release, docker/build-push-action, and kustomize image edits for GitOps-style dev deployment."
+    },
+    {
+      "id": "pipeline:.github/workflows/treetracker-api-deploy-prod.yml",
+      "type": "pipeline",
+      "name": "treetracker-api-deploy-prod.yml",
+      "filePath": ".github/workflows/treetracker-api-deploy-prod.yml",
+      "summary": "Manually dispatched GitHub Actions workflow that promotes a given image tag to the production kustomize overlay and commits the bump, gated to the Greenstand organization.",
+      "tags": [
+        "ci-cd",
+        "deployment",
+        "infrastructure",
+        "kubernetes",
+        "production"
+      ],
+      "complexity": "simple",
+      "languageNotes": "workflow_dispatch with a required git-tag input; edits deployment/overlays/production via kustomize."
+    },
+    {
+      "id": "pipeline:.github/workflows/treetracker-api-deploy-test.yml",
+      "type": "pipeline",
+      "name": "treetracker-api-deploy-test.yml",
+      "filePath": ".github/workflows/treetracker-api-deploy-test.yml",
+      "summary": "Manually dispatched GitHub Actions workflow that promotes a given image tag to the test kustomize overlay and commits the bump, gated to the Greenstand organization.",
+      "tags": [
+        "ci-cd",
+        "deployment",
+        "infrastructure",
+        "kubernetes",
+        "testing"
+      ],
+      "complexity": "simple",
+      "languageNotes": "workflow_dispatch with a required git-tag input; edits deployment/overlays/test via kustomize."
+    },
+    {
+      "id": "pipeline:.github/workflows/treetracker-api-pull-request-ci.yml",
+      "type": "pipeline",
+      "name": "treetracker-api-pull-request-ci.yml",
+      "filePath": ".github/workflows/treetracker-api-pull-request-ci.yml",
+      "summary": "GitHub Actions CI workflow triggered on pull requests to main that installs dependencies, runs ESLint, and executes integration tests in a Node container.",
+      "tags": [
+        "ci-cd",
+        "testing",
+        "linting",
+        "infrastructure",
+        "continuous-integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.env.development.example",
+      "type": "config",
+      "name": ".env.development.example",
+      "filePath": ".env.development.example",
+      "summary": "Template of development environment variables: PostgreSQL connection URLs (app and seeder), schema, log level, and Treetracker/stakeholder API endpoints.",
+      "tags": [
+        "configuration",
+        "environment",
+        "database",
+        "secrets-template"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.env.test.example",
+      "type": "config",
+      "name": ".env.test.example",
+      "filePath": ".env.test.example",
+      "summary": "Template of test environment variables mirroring the development example, used to configure database and API endpoints when running the mocha test suites.",
+      "tags": [
+        "configuration",
+        "environment",
+        "test",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.prettierrc.json",
+      "type": "config",
+      "name": ".prettierrc.json",
+      "filePath": ".prettierrc.json",
+      "summary": "Prettier formatter configuration enforcing semicolons, trailing commas, and single quotes across the codebase.",
+      "tags": [
+        "configuration",
+        "formatting",
+        "prettier",
+        "code-style"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:CHANGELOG.md",
+      "type": "document",
+      "name": "CHANGELOG.md",
+      "filePath": "CHANGELOG.md",
+      "summary": "Auto-generated conventional-commits changelog tracking bug fixes and features from version 1.0.0 through 1.0.7.",
+      "tags": [
+        "documentation",
+        "changelog",
+        "versioning",
+        "release-notes"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Generated by semantic-release / conventional-changelog; entries group commits into Bug Fixes and Features per version."
+    },
+    {
+      "id": "document:CONTRIBUTING.md",
+      "type": "document",
+      "name": "CONTRIBUTING.md",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Minimal contributing guide pointing developers to project contribution conventions.",
+      "tags": [
+        "documentation",
+        "contributing",
+        "development"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Primary project documentation covering the development toolkit, project and database setup, the layered protocol/service/model architecture, and unit/integration/seeding test workflows.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "overview",
+        "setup",
+        "architecture"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "npm manifest for the treetracker images-api service defining the server/server.js entry point, lint/test/db-migrate/seed scripts, and Express, Knex, pg, and Sharp runtime dependencies.",
+      "tags": [
+        "configuration",
+        "build-system",
+        "dependencies",
+        "npm",
+        "entry-point"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Test scripts use mocha with dotenv config; database migrations run via db-migrate and knex seeds."
+    },
+    {
+      "id": "config:deployment/base/deployment.yaml",
+      "type": "config",
+      "name": "deployment.yaml",
+      "filePath": "deployment/base/deployment.yaml",
+      "summary": "Kubernetes Deployment for the images-api service running one replica of the greenstand/images-api container on port 80, pinned to the DigitalOcean microservices node pool.",
+      "tags": [
+        "infrastructure",
+        "deployment",
+        "kubernetes",
+        "orchestration"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses nodeAffinity requiredDuringSchedulingIgnoredDuringExecution to constrain pods to a specific DOKS node pool; image tag is templated as TAG for CI substitution."
+    },
+    {
+      "id": "config:deployment/base/kustomization.yaml",
+      "type": "config",
+      "name": "kustomization.yaml",
+      "filePath": "deployment/base/kustomization.yaml",
+      "summary": "Kustomize base that aggregates the namespace, deployment, mapping, and service manifests into a single deployable unit.",
+      "tags": [
+        "infrastructure",
+        "kubernetes",
+        "kustomize",
+        "orchestration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/base/mapping.yaml",
+      "type": "config",
+      "name": "mapping.yaml",
+      "filePath": "deployment/base/mapping.yaml",
+      "summary": "Ambassador (getambassador.io/v2) Mapping that routes external traffic under the /images/ prefix to the images-api service, rewriting the path to root.",
+      "tags": [
+        "infrastructure",
+        "routing",
+        "api-gateway",
+        "kubernetes"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Ambassador Mapping CRD; rewrite: / strips the /images/ prefix before forwarding to the backend service."
+    },
+    {
+      "id": "config:deployment/base/namespace.yaml",
+      "type": "config",
+      "name": "namespace.yaml",
+      "filePath": "deployment/base/namespace.yaml",
+      "summary": "Defines the images-api Kubernetes namespace that isolates all resources for this microservice.",
+      "tags": [
+        "infrastructure",
+        "kubernetes",
+        "namespace",
+        "orchestration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/base/service.yaml",
+      "type": "config",
+      "name": "service.yaml",
+      "filePath": "deployment/base/service.yaml",
+      "summary": "Kubernetes Service exposing the images-api pods on port 80 and forwarding to container targetPort 3006 via a TCP http port.",
+      "tags": [
+        "infrastructure",
+        "kubernetes",
+        "networking",
+        "orchestration"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Service port 80 maps to targetPort 3006, the app's internal listen port; selector app: images-api binds it to the Deployment pods."
+    },
+    {
+      "id": "file:.eslintignore",
+      "type": "file",
+      "name": ".eslintignore",
+      "filePath": ".eslintignore",
+      "summary": "ESLint ignore file excluding the docs and scripts directories from linting.",
+      "tags": [
+        "configuration",
+        "linting",
+        "tooling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.husky/commit-msg",
+      "type": "file",
+      "name": "commit-msg",
+      "filePath": ".husky/commit-msg",
+      "summary": "Husky commit-msg Git hook that runs commitlint to enforce Conventional Commits on every commit message.",
+      "tags": [
+        "git-hook",
+        "tooling",
+        "validation",
+        "commitlint"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.husky/pre-commit",
+      "type": "file",
+      "name": "pre-commit",
+      "filePath": ".husky/pre-commit",
+      "summary": "Husky pre-commit Git hook that runs the npm lint script before allowing a commit.",
+      "tags": [
+        "git-hook",
+        "tooling",
+        "linting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.npmrc",
+      "type": "file",
+      "name": ".npmrc",
+      "filePath": ".npmrc",
+      "summary": "npm configuration enabling engine-strict so the declared Node engine version is enforced.",
+      "tags": [
+        "configuration",
+        "npm",
+        "tooling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.releaserc",
+      "type": "file",
+      "name": ".releaserc",
+      "filePath": ".releaserc",
+      "summary": "semantic-release configuration defining the main release branch and plugin pipeline for automated changelog, npm, git, and GitHub releases.",
+      "tags": [
+        "configuration",
+        "ci-cd",
+        "release",
+        "automation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:CODEOWNERS",
+      "type": "file",
+      "name": "CODEOWNERS",
+      "filePath": "CODEOWNERS",
+      "summary": "GitHub CODEOWNERS file assigning the Greenstand microservices working group as default reviewers for the repository.",
+      "tags": [
+        "configuration",
+        "governance",
+        "code-review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:api-tests/image-resize-api.spec.js",
+      "type": "file",
+      "name": "image-resize-api.spec.js",
+      "filePath": "api-tests/image-resize-api.spec.js",
+      "summary": "API integration test suite for the image-resize endpoints, mocking axios via mockery and sinon and exercising the Express app end to end.",
+      "tags": [
+        "test",
+        "integration-test",
+        "api-handler",
+        "mocking"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses mockery + sinon to stub the axios image fetch before requiring the app module."
+    },
+    {
+      "id": "file:api-tests/lib/supertest.js",
+      "type": "file",
+      "name": "supertest.js",
+      "filePath": "api-tests/lib/supertest.js",
+      "summary": "Test helper wrapping supertest to provide a configured HTTP request client for the API test suite.",
+      "tags": [
+        "test",
+        "utility",
+        "http-client"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:commitlint.config.js",
+      "type": "file",
+      "name": "commitlint.config.js",
+      "filePath": "commitlint.config.js",
+      "summary": "commitlint configuration extending the conventional commits ruleset used by the commit-msg Git hook.",
+      "tags": [
+        "configuration",
+        "commitlint",
+        "tooling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:database/database.json.example",
+      "type": "file",
+      "name": "database.json.example",
+      "filePath": "database/database.json.example",
+      "summary": "Example database connection configuration template documenting the environment-specific Postgres settings developers should supply.",
+      "tags": [
+        "configuration",
+        "database",
+        "example",
+        "template"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:database/migrations/.gitkeep",
+      "type": "file",
+      "name": ".gitkeep",
+      "filePath": "database/migrations/.gitkeep",
+      "summary": "Placeholder file keeping the empty database migrations directory under version control.",
+      "tags": [
+        "placeholder",
+        "database",
+        "migration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:database/seeds/00_job_database_cleaner.js",
+      "type": "file",
+      "name": "00_job_database_cleaner.js",
+      "filePath": "database/seeds/00_job_database_cleaner.js",
+      "summary": "Knex seed stub that clears database state, currently containing an empty raw SQL cleanup block to be filled in.",
+      "tags": [
+        "database",
+        "seed",
+        "knex"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/overlays/development/kustomization.yaml",
+      "type": "config",
+      "name": "kustomization.yaml",
+      "filePath": "deployment/overlays/development/kustomization.yaml",
+      "summary": "Kustomize development overlay setting the container image and referencing base resources for the development environment.",
+      "tags": [
+        "configuration",
+        "deployment",
+        "kustomize",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/overlays/production/kustomization.yaml",
+      "type": "config",
+      "name": "kustomization.yaml",
+      "filePath": "deployment/overlays/production/kustomization.yaml",
+      "summary": "Kustomize production overlay setting the container image and referencing base resources for the production environment.",
+      "tags": [
+        "configuration",
+        "deployment",
+        "kustomize",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/overlays/test/kustomization.yaml",
+      "type": "config",
+      "name": "kustomization.yaml",
+      "filePath": "deployment/overlays/test/kustomization.yaml",
+      "summary": "Kustomize test overlay setting the container image and referencing base resources for the test environment.",
+      "tags": [
+        "configuration",
+        "deployment",
+        "kustomize",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:docs/api/spec/example.yaml",
+      "type": "config",
+      "name": "example.yaml",
+      "filePath": "docs/api/spec/example.yaml",
+      "summary": "Reference OpenAPI example specification illustrating entity and trust_relationship endpoints, used as a documentation template.",
+      "tags": [
+        "api-schema",
+        "documentation",
+        "openapi",
+        "example"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:docs/api/spec/images-api.yaml",
+      "type": "config",
+      "name": "images-api.yaml",
+      "filePath": "docs/api/spec/images-api.yaml",
+      "summary": "OpenAPI specification for the images-api service documenting the image-resize GET endpoints and their parameter format.",
+      "tags": [
+        "api-schema",
+        "documentation",
+        "openapi",
+        "schema-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:knexfile.js",
+      "type": "file",
+      "name": "knexfile.js",
+      "filePath": "knexfile.js",
+      "summary": "Knex configuration defining Postgres connection and migration/seed directory settings for each environment.",
+      "tags": [
+        "configuration",
+        "database",
+        "knex"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/setup-dev-database-passwords.sh",
+      "type": "file",
+      "name": "setup-dev-database-passwords.sh",
+      "filePath": "scripts/setup-dev-database-passwords.sh",
+      "summary": "Shell script that provisions local development database passwords for the Postgres roles used by the service.",
+      "tags": [
+        "script",
+        "database",
+        "development",
+        "setup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/vars.sh",
+      "type": "file",
+      "name": "vars.sh",
+      "filePath": "scripts/vars.sh",
+      "summary": "Shell variable stub defining the SCHEMA placeholder consumed by other setup scripts.",
+      "tags": [
+        "script",
+        "configuration",
+        "environment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:server/database/Session.js",
+      "type": "file",
+      "name": "Session.js",
+      "filePath": "server/database/Session.js",
+      "summary": "Database session abstraction wrapping the Knex connection and managing transaction lifecycle for the service layer.",
+      "tags": [
+        "database",
+        "data-model",
+        "transaction",
+        "knex"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:server/database/Session.js:Session",
+      "type": "class",
+      "name": "Session",
+      "filePath": "server/database/Session.js",
+      "lineRange": [
+        11,
+        49
+      ],
+      "summary": "Encapsulates a Knex connection and provides begin, commit, and rollback transaction control plus DB accessor helpers.",
+      "tags": [
+        "database",
+        "transaction",
+        "singleton",
+        "knex"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:server/database/knex.js",
+      "type": "file",
+      "name": "knex.js",
+      "filePath": "server/database/knex.js",
+      "summary": "Instantiates and exports the shared Knex Postgres connection using the environment knexfile configuration.",
+      "tags": [
+        "database",
+        "knex",
+        "singleton",
+        "connection"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:server/handlers/resizeImageHandler.js",
+      "type": "file",
+      "name": "resizeImageHandler.js",
+      "filePath": "server/handlers/resizeImageHandler.js",
+      "summary": "Express route handlers that validate request parameters and stream resized images through the ResizeImageService.",
+      "tags": [
+        "api-handler",
+        "image-processing",
+        "validation",
+        "controller"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:server/handlers/resizeImageHandler.js:resizeImageGet",
+      "type": "function",
+      "name": "resizeImageGet",
+      "filePath": "server/handlers/resizeImageHandler.js",
+      "lineRange": [
+        12,
+        23
+      ],
+      "summary": "Validates the image request params, resizes the image, and pipes the resulting stream back in the response.",
+      "tags": [
+        "api-handler",
+        "image-processing",
+        "validation",
+        "streaming"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:server/handlers/resizeImageHandler.js:resizeImageArbitraryDepth",
+      "type": "function",
+      "name": "resizeImageArbitraryDepth",
+      "filePath": "server/handlers/resizeImageHandler.js",
+      "lineRange": [
+        25,
+        59
+      ],
+      "summary": "Parses arbitrary-depth image URLs and resize parameters from the path, then resizes and streams the image back to the client.",
+      "tags": [
+        "api-handler",
+        "image-processing",
+        "url-parsing",
+        "streaming"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:docs/api/spec/images-api.yaml:GET /img/:domain/:image",
+      "type": "endpoint",
+      "name": "GET /img/:domain/:image",
+      "filePath": "docs/api/spec/images-api.yaml",
+      "summary": "GET endpoint returning an image for a given domain and image identifier.",
+      "tags": [
+        "api-schema",
+        "endpoint",
+        "image-processing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:docs/api/spec/images-api.yaml:GET /img/:domain/:params/:image",
+      "type": "endpoint",
+      "name": "GET /img/:domain/:params/:image",
+      "filePath": "docs/api/spec/images-api.yaml",
+      "summary": "GET endpoint returning a resized image, with params encoding height, width, rotation, and quality (e.g. h=100,w=100).",
+      "tags": [
+        "api-schema",
+        "endpoint",
+        "image-processing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:server/models/empty.spec.js",
+      "type": "file",
+      "name": "empty.spec.js",
+      "filePath": "server/models/empty.spec.js",
+      "summary": "Empty placeholder test spec for the models layer, present to satisfy the test runner glob.",
+      "tags": [
+        "test",
+        "placeholder"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:server/server.js",
+      "type": "file",
+      "name": "server.js",
+      "filePath": "server/server.js",
+      "summary": "Application entry point that loads environment config, configures the log level, and starts the Express app listening on the configured port.",
+      "tags": [
+        "entry-point",
+        "bootstrap",
+        "server",
+        "configuration"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Loads a per-environment dotenv file via `.env.${NODE_ENV}` before requiring the app."
+    },
+    {
+      "id": "file:server/services/ResizeImageService.js",
+      "type": "file",
+      "name": "ResizeImageService.js",
+      "filePath": "server/services/ResizeImageService.js",
+      "summary": "Service that fetches a remote image over HTTP, validates resize parameters with Joi, and applies width, height, rotation, and JPEG quality transforms via Sharp.",
+      "tags": [
+        "service",
+        "image-processing",
+        "validation",
+        "sharp"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Chains Sharp operations (resize, rotate, jpeg, toBuffer) and validates params with Joi schemas."
+    },
+    {
+      "id": "file:server/setup.js",
+      "type": "file",
+      "name": "setup.js",
+      "filePath": "server/setup.js",
+      "summary": "Global setup module that configures the loglevel default level from the NODE_LOG_LEVEL environment variable, falling back to info.",
+      "tags": [
+        "configuration",
+        "logging",
+        "setup",
+        "bootstrap"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:server/utils/helper.js",
+      "type": "file",
+      "name": "helper.js",
+      "filePath": "server/utils/helper.js",
+      "summary": "Utility helpers that build pagination prev/next URLs and parse filter and limit/offset options from a request query.",
+      "tags": [
+        "utility",
+        "pagination",
+        "query-parsing",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:server/services/ResizeImageService.js:resizeImage",
+      "type": "function",
+      "name": "resizeImage",
+      "filePath": "server/services/ResizeImageService.js",
+      "lineRange": [
+        5,
+        52
+      ],
+      "summary": "Downloads an image from a URL, parses and validates h/w/r/q resize params, and returns a Sharp-transformed JPEG buffer or the original image buffer.",
+      "tags": [
+        "service",
+        "image-processing",
+        "validation",
+        "async"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:server/utils/helper.js:generatePrevAndNext",
+      "type": "function",
+      "name": "generatePrevAndNext",
+      "filePath": "server/utils/helper.js",
+      "lineRange": [
+        1,
+        30
+      ],
+      "summary": "Computes previous and next pagination URLs from a base URL, total count, and limit/offset options, encoding remaining query parameters.",
+      "tags": [
+        "utility",
+        "pagination",
+        "url-builder"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:server/utils/helper.js:getFilterAndLimitOptions",
+      "type": "function",
+      "name": "getFilterAndLimitOptions",
+      "filePath": "server/utils/helper.js",
+      "lineRange": [
+        32,
+        44
+      ],
+      "summary": "Splits a request query into filter fields and limit/offset pagination options, applying default limit of 100 and offset of 0.",
+      "tags": [
+        "utility",
+        "query-parsing",
+        "pagination"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:server/app.js",
+      "target": "file:server/routes.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/app.js",
+      "target": "file:server/utils/HttpError.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/app.js",
+      "target": "file:server/utils/utils.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/app.spec.js",
+      "target": "file:server/app.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/routes.js",
+      "target": "file:server/handlers/resizeImageHandler.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/routes.js",
+      "target": "file:server/utils/utils.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/utils/utils.js",
+      "target": "file:server/utils/HttpError.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/utils/utils.js",
+      "target": "function:server/utils/utils.js:handlerWrapper",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:server/utils/utils.js",
+      "target": "function:server/utils/utils.js:errorHandler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:server/utils/utils.js",
+      "target": "function:server/utils/utils.js:handlerWrapper",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:server/utils/utils.js",
+      "target": "function:server/utils/utils.js:errorHandler",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:server/app.js",
+      "target": "function:server/utils/utils.js:errorHandler",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:server/app.js",
+      "target": "function:server/utils/utils.js:handlerWrapper",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:server/routes.js",
+      "target": "function:server/utils/utils.js:handlerWrapper",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:server/app.js",
+      "target": "file:server/app.spec.js",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:server/repositories/BaseRepository.js",
+      "target": "file:server/utils/HttpError.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/repositories/BaseRepository.spec.js",
+      "target": "file:server/utils/HttpError.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/repositories/BaseRepository.js",
+      "target": "class:server/repositories/BaseRepository.js:BaseRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:server/repositories/BaseRepository.js",
+      "target": "class:server/repositories/BaseRepository.js:BaseRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:server/repositories/BaseRepository.spec.js",
+      "target": "class:server/repositories/BaseRepository.spec.js:BaseRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:server/repositories/BaseRepository.spec.js",
+      "target": "class:server/repositories/BaseRepository.spec.js:BaseRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:server/utils/HttpError.js",
+      "target": "class:server/utils/HttpError.js:HttpError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:server/utils/HttpError.js",
+      "target": "class:server/utils/HttpError.js:HttpError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:server/repositories/BaseRepository.js:BaseRepository",
+      "target": "class:server/utils/HttpError.js:HttpError",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:.dockerignore",
+      "target": "service:Dockerfile",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "pipeline:.github/workflows/treetracker-api-build-deploy-dev.yml",
+      "target": "service:Dockerfile",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:server/server.js",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:server/server.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:.env.development.example",
+      "target": "file:server/server.js",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/kustomization.yaml",
+      "target": "config:deployment/base/namespace.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/kustomization.yaml",
+      "target": "config:deployment/base/deployment.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/kustomization.yaml",
+      "target": "config:deployment/base/mapping.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/kustomization.yaml",
+      "target": "config:deployment/base/service.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/mapping.yaml",
+      "target": "config:deployment/base/service.yaml",
+      "type": "routes",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/service.yaml",
+      "target": "config:deployment/base/deployment.yaml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:api-tests/image-resize-api.spec.js",
+      "target": "file:api-tests/lib/supertest.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:api-tests/image-resize-api.spec.js",
+      "target": "file:server/app.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/database/Session.js",
+      "target": "file:server/database/knex.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/handlers/resizeImageHandler.js",
+      "target": "file:server/services/ResizeImageService.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/database/Session.js",
+      "target": "class:server/database/Session.js:Session",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:server/handlers/resizeImageHandler.js",
+      "target": "function:server/handlers/resizeImageHandler.js:resizeImageGet",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:server/handlers/resizeImageHandler.js",
+      "target": "function:server/handlers/resizeImageHandler.js:resizeImageArbitraryDepth",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:docs/api/spec/images-api.yaml",
+      "target": "endpoint:docs/api/spec/images-api.yaml:GET /img/:domain/:image",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "config:docs/api/spec/images-api.yaml",
+      "target": "endpoint:docs/api/spec/images-api.yaml:GET /img/:domain/:params/:image",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:server/app.js",
+      "target": "file:api-tests/image-resize-api.spec.js",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:knexfile.js",
+      "target": "file:server/database/knex.js",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:docs/api/spec/images-api.yaml",
+      "target": "file:server/handlers/resizeImageHandler.js",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:.husky/commit-msg",
+      "target": "file:commitlint.config.js",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:docs/api/spec/example.yaml",
+      "target": "config:docs/api/spec/images-api.yaml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:server/server.js",
+      "target": "file:server/app.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/server.js",
+      "target": "file:server/setup.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:server/services/ResizeImageService.js",
+      "target": "function:server/services/ResizeImageService.js:resizeImage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:server/services/ResizeImageService.js",
+      "target": "function:server/services/ResizeImageService.js:resizeImage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:server/utils/helper.js",
+      "target": "function:server/utils/helper.js:generatePrevAndNext",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:server/utils/helper.js",
+      "target": "function:server/utils/helper.js:getFilterAndLimitOptions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:server/utils/helper.js",
+      "target": "function:server/utils/helper.js:generatePrevAndNext",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:server/utils/helper.js",
+      "target": "function:server/utils/helper.js:getFilterAndLimitOptions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:server/repositories/BaseRepository.js",
+      "target": "file:server/repositories/BaseRepository.spec.js",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5,
+      "description": "Path-based pairing (deterministic)"
+    },
+    {
+      "source": "file:server/handlers/resizeImageHandler.js",
+      "target": "config:package.json",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:api",
+      "name": "API Layer",
+      "description": "Express protocol layer: app factory, server bootstrap, image-resize route/handler chain, and the OpenAPI contract for the GET /img endpoints.",
+      "nodeIds": [
+        "file:server/app.js",
+        "file:server/server.js",
+        "file:server/setup.js",
+        "file:server/routes.js",
+        "file:server/handlers/resizeImageHandler.js",
+        "config:docs/api/spec/images-api.yaml",
+        "config:docs/api/spec/example.yaml",
+        "endpoint:docs/api/spec/images-api.yaml:GET /img/:domain/:image",
+        "endpoint:docs/api/spec/images-api.yaml:GET /img/:domain/:params/:image"
+      ]
+    },
+    {
+      "id": "layer:service",
+      "name": "Service Layer",
+      "description": "Business logic that fetches remote images, validates resize parameters with Joi, and applies Sharp transforms.",
+      "nodeIds": [
+        "file:server/services/ResizeImageService.js"
+      ]
+    },
+    {
+      "id": "layer:data",
+      "name": "Data Layer",
+      "description": "Knex/Postgres persistence: repository base class, session and connection modules, knexfile, and database migration/seed assets.",
+      "nodeIds": [
+        "file:server/repositories/BaseRepository.js",
+        "file:server/database/Session.js",
+        "file:server/database/knex.js",
+        "file:knexfile.js",
+        "file:database/database.json.example",
+        "file:database/migrations/.gitkeep",
+        "file:database/seeds/00_job_database_cleaner.js"
+      ]
+    },
+    {
+      "id": "layer:utility",
+      "name": "Utility Layer",
+      "description": "Shared cross-cutting helpers: async handler wrapper, centralized error handler, HttpError type, and pagination/query helpers.",
+      "nodeIds": [
+        "file:server/utils/utils.js",
+        "file:server/utils/HttpError.js",
+        "file:server/utils/helper.js"
+      ]
+    },
+    {
+      "id": "layer:test",
+      "name": "Test Layer",
+      "description": "Mocha/Chai unit and Supertest integration specs plus the shared HTTP test client for the image-resize API.",
+      "nodeIds": [
+        "file:server/app.spec.js",
+        "file:server/repositories/BaseRepository.spec.js",
+        "file:server/models/empty.spec.js",
+        "file:api-tests/image-resize-api.spec.js",
+        "file:api-tests/lib/supertest.js"
+      ]
+    },
+    {
+      "id": "layer:infrastructure",
+      "name": "Infrastructure & CI/CD",
+      "description": "Docker build, Kustomize base/overlay Kubernetes manifests, GitHub Actions build/deploy pipelines, Husky git hooks, and database setup scripts.",
+      "nodeIds": [
+        "service:Dockerfile",
+        "config:.dockerignore",
+        "config:deployment/base/deployment.yaml",
+        "config:deployment/base/kustomization.yaml",
+        "config:deployment/base/mapping.yaml",
+        "config:deployment/base/namespace.yaml",
+        "config:deployment/base/service.yaml",
+        "config:deployment/overlays/development/kustomization.yaml",
+        "config:deployment/overlays/production/kustomization.yaml",
+        "config:deployment/overlays/test/kustomization.yaml",
+        "pipeline:.github/workflows/treetracker-api-build-deploy-dev.yml",
+        "pipeline:.github/workflows/treetracker-api-deploy-prod.yml",
+        "pipeline:.github/workflows/treetracker-api-deploy-test.yml",
+        "pipeline:.github/workflows/treetracker-api-pull-request-ci.yml",
+        "file:.husky/commit-msg",
+        "file:.husky/pre-commit",
+        "file:scripts/setup-dev-database-passwords.sh",
+        "file:scripts/vars.sh"
+      ]
+    },
+    {
+      "id": "layer:config",
+      "name": "Configuration Layer",
+      "description": "Project manifest, environment templates, and tooling config for npm, ESLint, Prettier, commitlint, semantic-release, and repository governance.",
+      "nodeIds": [
+        "config:package.json",
+        "config:.env.development.example",
+        "config:.env.test.example",
+        "config:.prettierrc.json",
+        "file:.eslintignore",
+        "file:.npmrc",
+        "file:.releaserc",
+        "file:CODEOWNERS",
+        "file:commitlint.config.js"
+      ]
+    },
+    {
+      "id": "layer:documentation",
+      "name": "Documentation Layer",
+      "description": "Project README, changelog, and contributing guide for the images-api microservice.",
+      "nodeIds": [
+        "document:README.md",
+        "document:CHANGELOG.md",
+        "document:CONTRIBUTING.md"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Application Bootstrap",
+      "description": "The tour starts at the true entry point named in package.json. server.js loads environment configuration, sets the log level through setup.js, imports the Express app, and starts it listening on the configured port. This file is the thin outer shell of the microservice; it does no business logic itself and simply hands control to the app factory in Step 2.",
+      "nodeIds": [
+        "file:server/server.js",
+        "file:server/setup.js"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "The Express App Factory",
+      "description": "app.js builds the Express application that server.js runs. It wires CORS, JSON body parsing, a content-type guard middleware, the image-resize router, and a single global error handler. This is the highest fan-out file in the codebase, so it gives a clear map of every layer the request passes through before a response returns.",
+      "nodeIds": [
+        "file:server/app.js"
+      ],
+      "languageLesson": "Express middleware runs in registration order. The final error-handling middleware uses four arguments (err, req, res, next), which is how Express recognises it as an error handler rather than a normal middleware."
+    },
+    {
+      "order": 3,
+      "title": "Routing and Request Dispatch",
+      "description": "routes.js is the controller layer of this MVC-style service. It maps the image-resize GET routes to their handlers and wraps each one in an async error-handling wrapper from the utility layer. Building on the app from Step 2, this file shows how an incoming URL is matched and dispatched to business code.",
+      "nodeIds": [
+        "file:server/routes.js"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Image-Resize Handlers",
+      "description": "resizeImageHandler.js sits between the router and the service layer. It reads and validates request parameters, then streams the resized image back to the client through the ResizeImageService. Note the handler only orchestrates HTTP concerns; the actual image work is delegated downward, keeping the protocol layer thin.",
+      "nodeIds": [
+        "file:server/handlers/resizeImageHandler.js"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "The Service Layer: Sharp and Joi",
+      "description": "ResizeImageService.js holds the core business logic that gives this microservice its purpose. It fetches a remote source image over HTTP, validates the resize parameters (height, width, rotation, quality) with Joi, and applies the transforms with the Sharp image library. This is the deepest node in the dependency chain from the entry point and the payoff of the request flow started in Step 1.",
+      "nodeIds": [
+        "file:server/services/ResizeImageService.js"
+      ],
+      "languageLesson": "Sharp processes images as a stream pipeline, so large images never fully buffer in memory. Joi validates untrusted input against a schema before it reaches the transform stage, failing fast on bad parameters."
+    },
+    {
+      "order": 6,
+      "title": "Cross-Cutting Utilities and Error Handling",
+      "description": "The utility layer supports every other layer. utils.js provides the async handler wrapper (used by the router in Step 3) and the centralized error handler (registered by the app in Step 2), which maps HttpError, Joi validation errors, and Axios errors to proper HTTP responses. HttpError is the shared custom error type that lets inner layers throw and outer layers translate, while helper.js supplies pagination and query parsing. HttpError has the highest fan-in in the project.",
+      "nodeIds": [
+        "file:server/utils/utils.js",
+        "file:server/utils/HttpError.js",
+        "file:server/utils/helper.js"
+      ],
+      "languageLesson": "The async handler wrapper is a higher-order function: it wraps an async route handler and forwards any rejected promise to next(err), so a single error handler can catch failures from every route without repeated try/catch blocks."
+    },
+    {
+      "order": 7,
+      "title": "The Data Layer: Knex and Postgres",
+      "description": "Although the current image-resize flow is stateless, the template ships a full persistence layer. BaseRepository.js is a generic Knex-backed base class offering CRUD and filtered queries, Session.js manages the transaction lifecycle, and knex.js plus knexfile.js configure the shared Postgres connection per environment. This layer is the foundation for future repositories that store image or domain data.",
+      "nodeIds": [
+        "file:server/repositories/BaseRepository.js",
+        "file:server/database/Session.js",
+        "file:server/database/knex.js",
+        "file:knexfile.js"
+      ]
+    },
+    {
+      "order": 8,
+      "title": "The API Contract",
+      "description": "The OpenAPI specification documents the public shape of the service independent of the code. It defines two GET endpoints: one that returns an image for a domain, and one that returns a resized image whose params encode height, width, rotation, and quality (for example h=100,w=100). Read this alongside the handlers from Step 4 to see how the documented contract maps onto the implementation.",
+      "nodeIds": [
+        "config:docs/api/spec/images-api.yaml",
+        "endpoint:docs/api/spec/images-api.yaml:GET /img/:domain/:image",
+        "endpoint:docs/api/spec/images-api.yaml:GET /img/:domain/:params/:image"
+      ]
+    },
+    {
+      "order": 9,
+      "title": "Testing Strategy",
+      "description": "The service is verified at two levels. app.spec.js is a focused unit test confirming the app rejects non-JSON POSTs with 415 and answers GET / with 200. image-resize-api.spec.js is an end-to-end integration suite that exercises the full Express app while mocking Axios, using the shared supertest helper as its HTTP client. Together they cover both the middleware guard from Step 2 and the resize flow from Steps 3 to 5.",
+      "nodeIds": [
+        "file:server/app.spec.js",
+        "file:api-tests/image-resize-api.spec.js",
+        "file:api-tests/lib/supertest.js"
+      ]
+    },
+    {
+      "order": 10,
+      "title": "Project Manifest and Environment",
+      "description": "package.json is the project's control center: it declares server.js as the entry point, lists the lint, test, db-migrate, and seed scripts, and pins the Express, Knex, pg, and Sharp dependencies seen in earlier steps. The .env template documents the Postgres connection URLs and upstream API endpoints the service needs, and the README ties the whole layered protocol/service/model architecture together for new contributors.",
+      "nodeIds": [
+        "config:package.json",
+        "config:.env.development.example",
+        "document:README.md"
+      ]
+    },
+    {
+      "order": 11,
+      "title": "Containerization",
+      "description": "The Dockerfile packages the service into a runnable image. It uses a single-stage build on node:16-alpine, installs dependencies with npm ci for reproducibility, and starts the app with 'node .', which resolves to the server.js entry point from Step 1. The .dockerignore controls what enters the build context.",
+      "nodeIds": [
+        "service:Dockerfile",
+        "config:.dockerignore"
+      ],
+      "languageLesson": "Layer ordering matters for Docker cache efficiency: copy package files and run npm ci before copying source, so a code change does not force a full dependency reinstall. npm ci installs exactly from the lockfile, giving deterministic builds."
+    },
+    {
+      "order": 12,
+      "title": "Kubernetes Deployment",
+      "description": "The container from Step 11 runs on Kubernetes, assembled with Kustomize. The base kustomization aggregates a namespace, a Deployment (one replica of the images-api container), a Service exposing the pods, and an Ambassador Mapping that routes external /images/ traffic into the service. This shows how the running process reaches real users in production.",
+      "nodeIds": [
+        "config:deployment/base/kustomization.yaml",
+        "config:deployment/base/deployment.yaml",
+        "config:deployment/base/service.yaml",
+        "config:deployment/base/mapping.yaml"
+      ],
+      "languageLesson": "Kustomize separates a shared base from per-environment overlays: a base declares the common manifests, and development, test, and production overlays patch only what differs (mainly the image tag), avoiding duplicated YAML."
+    },
+    {
+      "order": 13,
+      "title": "CI/CD Pipelines",
+      "description": "GitHub Actions close the loop from commit to deployment. The pull-request workflow installs dependencies, runs ESLint, and executes the integration tests from Step 9 on every PR. The build-deploy-dev workflow runs on push to main, then publishes a semantic-release version, builds and pushes the Docker image from Step 11, and updates the development Kustomize overlay from Step 12. This is the capstone that automates the entire lifecycle.",
+      "nodeIds": [
+        "pipeline:.github/workflows/treetracker-api-pull-request-ci.yml",
+        "pipeline:.github/workflows/treetracker-api-build-deploy-dev.yml"
+      ],
+      "languageLesson": "GitHub Actions workflows use 'on' triggers (pull_request, push) to decide when to run and 'jobs' with 'steps' to do the work. Gating deploy jobs to the source organization prevents forks from triggering releases."
+    }
+  ]
+}

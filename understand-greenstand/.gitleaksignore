@@ -1,0 +1,3 @@
+# Reviewed false positives for gitleaks and betterleaks, one fingerprint per line.
+# Copy the fingerprint from the "Secrets scan" job summary, and add a comment line above it
+# with the reason. Never list a real secret here: rotate it, then remove it.
