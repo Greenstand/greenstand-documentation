@@ -1,0 +1,333 @@
+name: "Understand Greenstand: Deploy viewers to Pages"
+
+# Builds one static Understand-Anything viewer per documented repo and publishes them
+# to GitHub Pages, one per subpath (/<repo>/). No built bundles
+# live in git: the viewer is built from a pinned Understand-Anything source ref each run.
+# The job contributors builds the contributors page (build-contributors.mjs): each run fetches the
+# public pull requests of the Greenstand org with the workflow token. It is a job of its own, so
+# the secrets that it needs never reach the third-party build code of the build job. The data goes
+# only into the page, which is in 2 artifacts of the run, each kept 1 day: the page artifact (from
+# the contributors job to the build job) and the Pages artifact. No data file is in git, and the
+# log shows no login of a person. A daily run keeps the quarter to date current. To carry out a
+# removal, add the account id to the RECOGNITION_OPT_OUT secret and run this workflow by hand.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "understand-greenstand/repos/**"
+      - "understand-greenstand/estate.json"
+      - "understand-greenstand/GLOSSARY.md"
+      - "understand-greenstand/ARCHITECTURE.md"
+      - "understand-greenstand/docs/contribute-to-greenstand.md"
+      - "understand-greenstand/docs/shared-resources.md"
+      - "understand-greenstand/docs/roadmap.md"
+      - "understand-greenstand/roadmap.json"
+      - "understand-greenstand/sources/**"
+      - "understand-greenstand/capture-journey.json"
+      - "understand-greenstand/docs/capture-journey/**"
+      - "understand-greenstand/viewer/**"
+      - "understand-greenstand/.github/scripts/build-capture-journey.mjs"
+      - "understand-greenstand/.github/scripts/capture-journey-page.mjs"
+      - "understand-greenstand/.github/scripts/build-landing.mjs"
+      - "understand-greenstand/.github/scripts/build-moved.mjs"
+      - "understand-greenstand/.github/scripts/build-parcel-field.mjs"
+      - "understand-greenstand/.github/scripts/build-roadmap.mjs"
+      - "understand-greenstand/.github/scripts/estate.mjs"
+      - "understand-greenstand/.github/scripts/render-md.mjs"
+      - "understand-greenstand/.github/scripts/roadmap-page.mjs"
+      - "understand-greenstand/.github/scripts/roadmap-source.mjs"
+      - "understand-greenstand/.github/scripts/site-colors.mjs"
+      - "understand-greenstand/.github/scripts/site-drawings.mjs"
+      - "understand-greenstand/.github/scripts/site-html.mjs"
+      - "understand-greenstand/.github/scripts/slug.mjs"
+      - "understand-greenstand/.github/scripts/start-path.mjs"
+      - ".github/workflows/understand-greenstand-deploy-viewers.yml"
+      - "understand-greenstand/recognition.json"
+      - "understand-greenstand/.github/scripts/build-contributors.mjs"
+      - "understand-greenstand/.github/scripts/contributors.mjs"
+      - "understand-greenstand/.github/scripts/contributors-page.mjs"
+      - "understand-greenstand/.github/scripts/private-names.sh"
+      - "understand-greenstand/.github/scanner-versions.env"
+      - "understand-greenstand/.github/scripts/install-scanner.sh"
+      - "understand-greenstand/.gitleaks.toml"
+      - "understand-greenstand/.private-names-fingerprint"
+      - "understand-greenstand/.private-names-exceptions"
+  # After each run of the Jekyll workflow of this repo: a Jekyll deploy replaces the whole Pages
+  # site, so this deploy puts our site back (about 30 s later). It runs after a failed Jekyll run too.
+  workflow_run:
+    workflows: ["Deploy Jekyll with GitHub Pages dependencies preinstalled"]
+    types: [completed]
+  # Daily, for the quarter to date of the contributors page. GitHub can delay or skip a scheduled
+  # run, and stops schedules in a public repo after 60 days without activity.
+  schedule:
+    - cron: "23 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Our files live in the folder understand-greenstand/ of this repo: each run step starts there.
+defaults:
+  run:
+    working-directory: understand-greenstand
+
+# One deploy of ours at a time; do not cancel an in-progress deploy. Our own group, not the "pages"
+# group of the Jekyll workflow: in a shared group a third queued run cancels an older queued one.
+concurrency:
+  group: understand-greenstand-pages
+  cancel-in-progress: false
+
+env:
+  # Pin the viewer source. Nearest public tag to the plugin (2.9.4) is v2.9.0.
+  UA_REF: v2.9.0
+  # Pin Mermaid, which draws the ecosystem maps: the version and the SHA-512 of its npm tarball
+  # (`npm view mermaid@<version> dist.integrity` holds the same hash in base64).
+  MERMAID_VERSION: 12.2.0
+  MERMAID_SHA512: c3b9ebfd216b2ceec16954ecddd413bd8495ea7612063d18cbd0e3061b0826d01c1ea4735d2ab83e0df6ba31d9fc0756b0030d12fbe16e6e5db7d136b4e887cf
+  # Pin Archivo, the font of the headings and labels of the site look: the version and the SHA-512 of
+  # its npm tarball (Fontsource; `npm view @fontsource-variable/archivo@<version> dist.integrity`
+  # holds the same hash in base64).
+  ARCHIVO_VERSION: 5.3.0
+  ARCHIVO_SHA512: 1e880af0525e96b0f5a3b4e566590856d1e0736d1b3b93d945613b9947944dd30dd39e5a9739d057aff4d09d342017aef054001f8b37cd6f5424dbca1315dffa
+
+jobs:
+  # The contributors page. Only first-party actions and the scripts of this repo run here (and the
+  # 2 secrets scanners, pinned by their hash): no package install. The secrets go to the 2 steps
+  # that need them. A fetch error, an opt-out list error, or a private-name finding fails the
+  # job, so the deploy does not run, and the site keeps its last deploy.
+  contributors:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Load scanner pins
+        run: grep -E '^[A-Z0-9_]+=' .github/scanner-versions.env >> "$GITHUB_ENV"
+
+      - name: Install scanners
+        # For the private-name check of the page.
+        run: |
+          .github/scripts/install-scanner.sh gitleaks "$GITLEAKS_VERSION" "$GITLEAKS_SHA256"
+          .github/scripts/install-scanner.sh betterleaks "$BETTERLEAKS_VERSION" "$BETTERLEAKS_SHA256"
+
+      - name: Check that the CI name list is set and current
+        env:
+          PRIVATE_REPO_NAMES: ${{ secrets.PRIVATE_REPO_NAMES }}
+        run: |
+          if [ -z "$PRIVATE_REPO_NAMES" ]; then
+            echo "::error::PRIVATE_REPO_NAMES is not set. The contributors page is written only after a private-name check."
+            exit 1
+          fi
+          .github/scripts/private-names.sh fingerprint-check
+
+      - name: Build the contributors page
+        # It fetches the data (a few minutes). The workflow token reads public data only.
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RECOGNITION_OPT_OUT: ${{ secrets.RECOGNITION_OPT_OUT }}
+          PRIVATE_REPO_NAMES: ${{ secrets.PRIVATE_REPO_NAMES }}
+          # Fake terms for end-to-end tests only; normally unset.
+          PRIVATE_NAMES_EXTRA_TERMS: ${{ vars.PRIVATE_NAMES_EXTRA_TERMS }}
+        run: |
+          mkdir _contributors
+          node .github/scripts/build-contributors.mjs --out _contributors
+
+      - name: Upload the contributors page
+        # The page holds the data: keep it 1 day only.
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: contributors-page
+          path: understand-greenstand/_contributors/contributors.html
+          if-no-files-found: error
+          retention-days: 1
+
+  build:
+    needs: contributors
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Checkout Understand-Anything source (pinned)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Egonex-AI/Understand-Anything
+          ref: ${{ env.UA_REF }}
+          path: _ua
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          version: 10
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: _ua/pnpm-lock.yaml
+
+      - name: Install and build the dashboard (demo/static)
+        working-directory: _ua
+        run: |
+          set -euo pipefail
+          # Overlay the source-from-github viewer patch onto the pinned upstream ref
+          # (makes CodeViewer load source from GitHub raw when a per-repo config.json
+          # supplies sourceBaseUrl). working-directory is _ua, a git checkout.
+          git apply --verbose "${GITHUB_WORKSPACE}/understand-greenstand/viewer/source-from-github.patch"
+          pnpm install --frozen-lockfile
+          pnpm --filter @understand-anything/core build
+          # The repo layout differs across refs, so discover the dashboard package dir.
+          DASH_DIR="$(find . -type d -path '*/packages/dashboard' | head -1)"
+          echo "Dashboard dir: $DASH_DIR"
+          cd "$DASH_DIR"
+          # Static demo build, relative base + relative graph URLs so one bundle
+          # works from any subpath, loading ./knowledge-graph.json per directory.
+          VITE_GRAPH_URL=./knowledge-graph.json \
+          VITE_DOMAIN_GRAPH_URL=./domain-graph.json \
+            pnpm exec vite build --config vite.config.demo.ts --base=./
+          echo "DIST=$(pwd)/dist" >> "$GITHUB_ENV"
+
+      - name: Install markdown renderer
+        run: npm install marked@12
+
+      - name: Get Mermaid (pinned)
+        # Check the tarball against the pinned hash. Keep the license, the ESM entry, and its
+        # chunks (no source maps). npm pack runs no install scripts.
+        run: |
+          set -euo pipefail
+          mkdir _mermaid && cd _mermaid
+          npm pack "mermaid@${MERMAID_VERSION}" --silent
+          echo "${MERMAID_SHA512}  mermaid-${MERMAID_VERSION}.tgz" | sha512sum --check --strict
+          tar -xzf "mermaid-${MERMAID_VERSION}.tgz" --exclude='*.map' \
+            package/LICENSE package/dist/mermaid.esm.min.mjs package/dist/chunks/mermaid.esm.min
+
+      - name: Get Archivo (pinned)
+        # Check the tarball against the pinned hash. Keep the license (SIL Open Font License 1.1)
+        # and the variable font of the Latin letters, with its weight and width axes. npm pack runs
+        # no install scripts.
+        run: |
+          set -euo pipefail
+          mkdir _archivo && cd _archivo
+          npm pack "@fontsource-variable/archivo@${ARCHIVO_VERSION}" --silent
+          echo "${ARCHIVO_SHA512}  fontsource-variable-archivo-${ARCHIVO_VERSION}.tgz" | sha512sum --check --strict
+          tar -xzf "fontsource-variable-archivo-${ARCHIVO_VERSION}.tgz" \
+            package/LICENSE package/files/archivo-latin-wdth-normal.woff2
+
+      - name: Get the contributors page
+        # The page of the contributors job. This job has no secret.
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: contributors-page
+          path: understand-greenstand/_contributors
+
+      - name: Assemble the Pages site
+        run: |
+          set -euo pipefail
+          DIST="${DIST:?dashboard dist path not set by build step}"
+          OUT="_site"
+          rm -rf "$OUT"; mkdir -p "$OUT"
+          touch "$OUT/.nojekyll"
+          # Mermaid for the pages with a Mermaid block. render-md.mjs fails without it.
+          mkdir -p "$OUT/vendor/mermaid"
+          cp _mermaid/package/LICENSE _mermaid/package/dist/mermaid.esm.min.mjs "$OUT/vendor/mermaid/"
+          cp -r _mermaid/package/dist/chunks "$OUT/vendor/mermaid/"
+          # Archivo, the font of the headings of the site look. The page scripts (render-md.mjs,
+          # build-capture-journey.mjs, build-moved.mjs, build-landing.mjs) fail without it.
+          mkdir -p "$OUT/vendor/archivo"
+          cp _archivo/package/LICENSE _archivo/package/files/archivo-latin-wdth-normal.woff2 "$OUT/vendor/archivo/"
+          # The parcel field, the drawing in the legend rail of the site look. The page scripts fail
+          # without it.
+          node .github/scripts/build-parcel-field.mjs "$OUT"
+          for dir in repos/*/; do
+            repo="$(basename "$dir")"
+            [ -f "$dir/knowledge-graph.json" ] || continue
+            mkdir -p "$OUT/$repo"
+            # Viewer bundle + graph data (relative-base build works at any subpath).
+            cp -r "$DIST"/. "$OUT/$repo/"
+            cp "$dir/knowledge-graph.json" "$OUT/$repo/knowledge-graph.json"
+            [ -f "$dir/domain-graph.json" ] && cp "$dir/domain-graph.json" "$OUT/$repo/domain-graph.json"
+            if [ -f "$dir/meta.json" ]; then
+              cp "$dir/meta.json" "$OUT/$repo/meta.json"
+              # Per-repo config.json: point the viewer's source panel at GitHub raw at the
+              # analyzed commit, so "view source" loads the real code with no server.
+              sha="$(jq -r '.gitCommitHash // empty' "$dir/meta.json")"
+              if [ -n "$sha" ]; then
+                printf '{"sourceBaseUrl":"https://raw.githubusercontent.com/Greenstand/%s/%s/"}\n' \
+                  "$repo" "$sha" > "$OUT/$repo/config.json"
+                echo "  config.json: $repo @ $sha"
+              else
+                echo "  WARN: no gitCommitHash in $dir/meta.json; no config.json for $repo"
+              fi
+            fi
+            # Human docs: copy the raw markdown and render styled HTML beside the viewer.
+            if [ -f "$dir/ONBOARDING.md" ]; then
+              cp "$dir/ONBOARDING.md" "$OUT/$repo/ONBOARDING.md"
+              node .github/scripts/render-md.mjs "$dir/ONBOARDING.md" "$OUT/$repo/onboarding.html" "$repo: Onboarding" "./index.html" "Viewer"
+            fi
+            if [ -f "$dir/README.md" ]; then
+              cp "$dir/README.md" "$OUT/$repo/README.md"
+              node .github/scripts/render-md.mjs "$dir/README.md" "$OUT/$repo/readme.html" "$repo: README" "./index.html" "Viewer"
+            fi
+            if [ -f "$dir/GLOSSARY.md" ]; then
+              node .github/scripts/render-md.mjs "$dir/GLOSSARY.md" "$OUT/$repo/glossary.html" "$repo: Glossary" "./index.html" "Viewer"
+            fi
+            echo "  assembled: $repo"
+          done
+          # The estate glossary, linked from the landing page and from each repo glossary.
+          node .github/scripts/render-md.mjs GLOSSARY.md "$OUT/glossary.html" "Estate glossary" "./" "All viewers"
+          # The volunteer guide, linked from the landing page and from README.md.
+          node .github/scripts/render-md.mjs docs/contribute-to-greenstand.md "$OUT/contribute.html" "How to contribute to Greenstand" "./" "All viewers"
+          # The ecosystem maps, linked from the landing page and from the volunteer guide.
+          node .github/scripts/render-md.mjs ARCHITECTURE.md "$OUT/architecture.html" "How the Greenstand repos work together" "./" "All viewers"
+          # The shared-resource page, linked from the landing page, the ecosystem maps, the volunteer
+          # guide, README.md, and each per-repo README.
+          node .github/scripts/render-md.mjs docs/shared-resources.md "$OUT/shared-resources.html" "The shared resources of the code repos" "./" "All viewers"
+          # The capture journey: the illustrated page of each chapter (capture-journey-page.mjs) and
+          # the images, built from capture-journey.json. Chapter 1 (capture-journey.html) is linked
+          # from the landing page, the ecosystem maps, the volunteer guide, and README.md. Each other
+          # chapter (capture-journey-<id>.html, for example chapter 3, capture-journey-token.html)
+          # is linked from the chapters list of each chapter page and from the ecosystem maps.
+          node .github/scripts/build-capture-journey.mjs --site "$OUT"
+          # The roadmap page (roadmap.html, roadmap-page.mjs), built from roadmap.json and the pinned
+          # copy of the roadmap, linked from the landing page and README.md (Start here step 4).
+          node .github/scripts/build-roadmap.mjs --site "$OUT"
+          # Moved pages: the old subpath of a renamed repo sends readers to the new subpath.
+          node .github/scripts/build-moved.mjs "$OUT"
+          # The contributors page of the contributors job: the recognition of the last quarter and
+          # of the quarter to date, linked from the landing page, the volunteer guide, README.md, and
+          # CONTRIBUTING.md. It loads the font and the parcel field; build-landing.mjs fails when
+          # the page, the font, or the parcel field is missing.
+          cp _contributors/contributors.html "$OUT/"
+          # Landing index: the areas and links of estate.json and the steps of the Start here path
+          # (start-path.mjs), as in the README.md index.
+          # It fails if a page that the landing page links to is missing.
+          node .github/scripts/build-landing.mjs "$OUT"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: understand-greenstand/_site
+          # Since v4 the action drops dotfiles by default; keep _site/.nojekyll.
+          include-hidden-files: true
+          # The artifact holds the contributors page and its data: keep it 1 day only.
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

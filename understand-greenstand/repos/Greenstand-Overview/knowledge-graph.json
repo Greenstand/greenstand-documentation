@@ -1,0 +1,406 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "Greenstand-Overview",
+    "languages": [
+      "jpg",
+      "markdown",
+      "png",
+      "unknown"
+    ],
+    "frameworks": [],
+    "description": "Greenstand's central onboarding and overview repo for the Treetracker project: contributor guide, bylaws, token model, roadmap, team info, BDD guide, and license/code-of-conduct docs. Points to the treetracker-android app, treetracker-admin-client, treetracker-web-map-client, and treetracker-wallet-api services that make up the platform.",
+    "analyzedAt": "2026-09-03T19:35:18Z",
+    "gitCommitHash": "68617178870590e198bd045e835e718562235e55"
+  },
+  "nodes": [
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project entry-point document introducing the Treetracker platform (Android app, admin client, web map, wallet API) and explaining how to contribute, join the team, and find helpful project links.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "onboarding",
+        "contributing",
+        "overview"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:BDD-GUIDE.md",
+      "type": "document",
+      "name": "BDD-GUIDE.md",
+      "filePath": "BDD-GUIDE.md",
+      "summary": "Behaviour-Driven Development guide covering the Gherkin feature-file workflow for product stakeholders, WebdriverIO/Cucumber step-definition and page-object patterns for test engineers, and the development loop, reporting, and PR checklist for developers.",
+      "tags": [
+        "documentation",
+        "testing",
+        "bdd",
+        "guide",
+        "qa-process"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:Greenstand-Bilaws.md",
+      "type": "document",
+      "name": "Greenstand-Bilaws.md",
+      "filePath": "Greenstand-Bilaws.md",
+      "summary": "Legal bylaws of the Greenstand nonprofit corporation, covering offices, board of directors composition and powers, officer roles, contracts and deposits, fiscal year, and amendment procedures.",
+      "tags": [
+        "documentation",
+        "governance",
+        "legal",
+        "bylaws",
+        "nonprofit"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:Greenstand-Token.md",
+      "type": "document",
+      "name": "Greenstand-Token.md",
+      "filePath": "Greenstand-Token.md",
+      "summary": "Whitepaper describing the Greenstand Token framework: non-fungible and fungible tokens linked to environmental assets, token states, creation and trading mechanics, data requirements, verification, the Greenstand node network, and key terminology definitions.",
+      "tags": [
+        "documentation",
+        "tokenomics",
+        "whitepaper",
+        "blockchain",
+        "nft"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Long-form conceptual whitepaper with 42 headings covering token lifecycle, RVI (Relative Value Index) formulas, and network node economics."
+    },
+    {
+      "id": "document:Issues-lndex.md",
+      "type": "document",
+      "name": "Issues-lndex.md",
+      "filePath": "Issues-lndex.md",
+      "summary": "Index of links to GitHub issue trackers across the Treetracker ecosystem repos (Android, Admin Panel, Admin API, Web Map, Map API, Mobile API, Database) to help contributors find tickets to work on.",
+      "tags": [
+        "documentation",
+        "issue-tracking",
+        "index",
+        "onboarding"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:Roadmap.md",
+      "type": "document",
+      "name": "Roadmap.md",
+      "filePath": "Roadmap.md",
+      "summary": "Feature development roadmap for the Treetracker project spanning privacy enhancements, mobile and web map apps, the token trading API, cloud/DevOps, data analysis, admin panel, Keycloak auth, wallet admin client, RVI tooling, the Greenstand blockchain network, and documentation milestones.",
+      "tags": [
+        "documentation",
+        "roadmap",
+        "planning",
+        "product-strategy"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:TEAM.md",
+      "type": "document",
+      "name": "TEAM.md",
+      "filePath": "TEAM.md",
+      "summary": "Directory of Greenstand community governance and engineering team roles (executive director, board, admin panel, mobile, microservice/wallet, web map, ML, DBA, Keycloak, support teams) with leads and renewal dates, plus instructions to join or recommend a team.",
+      "tags": [
+        "documentation",
+        "team",
+        "governance",
+        "roles",
+        "organization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:License, Code of Conduct etc/CODE_OF_CONDUCT.md",
+      "type": "document",
+      "name": "CODE_OF_CONDUCT.md",
+      "filePath": "License, Code of Conduct etc/CODE_OF_CONDUCT.md",
+      "summary": "Contributor Covenant Code of Conduct establishing community standards, contributor responsibilities, and an enforcement policy for people participating in the Greenstand project.",
+      "tags": [
+        "documentation",
+        "code-of-conduct",
+        "community",
+        "governance"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:License, Code of Conduct etc/LICENSE",
+      "type": "document",
+      "name": "LICENSE",
+      "filePath": "License, Code of Conduct etc/LICENSE",
+      "summary": "Full text of the GNU Affero General Public License version 3 (AGPL-3.0), the open-source license governing use, modification, and distribution of Greenstand's software and this documentation repo.",
+      "tags": [
+        "license",
+        "legal",
+        "agpl",
+        "open-source"
+      ],
+      "complexity": "complex",
+      "languageNotes": "AGPL-3.0 adds a network-use clause (compared to plain GPL) requiring source disclosure for software run as a network service, relevant to Greenstand's server-side platform components."
+    },
+    {
+      "id": "document:Resrouces/Github Basics",
+      "type": "document",
+      "name": "Github Basics",
+      "filePath": "Resrouces/Github Basics",
+      "summary": "Short onboarding guide teaching new contributors basic Git and GitHub workflow: the fork-and-pull model, keeping a fork in sync by rebasing on the upstream master, and submitting focused pull requests.",
+      "tags": [
+        "documentation",
+        "git",
+        "github",
+        "onboarding",
+        "contributing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:Resrouces/Greenstand-Token-png.png",
+      "type": "document",
+      "name": "Greenstand-Token-png.png",
+      "filePath": "Resrouces/Greenstand-Token-png.png",
+      "summary": "Image asset depicting the Greenstand token/logo, used as a supporting resource for the token model documentation. Binary image; exact visual content was not inspected.",
+      "tags": [
+        "image",
+        "asset",
+        "token",
+        "branding"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:Resrouces/Old Tree Planting Flow Diagram.jpg",
+      "type": "document",
+      "name": "Old Tree Planting Flow Diagram.jpg",
+      "filePath": "Resrouces/Old Tree Planting Flow Diagram.jpg",
+      "summary": "Image asset showing an earlier version of the tree planting workflow diagram, kept as a reference resource. Binary image; exact visual content was not inspected.",
+      "tags": [
+        "image",
+        "asset",
+        "diagram",
+        "workflow"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:Resrouces/Project-Deliverables.md",
+      "type": "document",
+      "name": "Project-Deliverables.md",
+      "filePath": "Resrouces/Project-Deliverables.md",
+      "summary": "Outlines Greenstand's three-tier project deliverables roadmap: Tier 1 prototyping and project verification, Tier 2 widespread smallholder planter employment, and Tier 3 a sustained tree economy delivering long-term income from living trees.",
+      "tags": [
+        "documentation",
+        "roadmap",
+        "deliverables",
+        "planning"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:Resrouces/Tree Grower Support Model.png",
+      "type": "document",
+      "name": "Tree Grower Support Model.png",
+      "filePath": "Resrouces/Tree Grower Support Model.png",
+      "summary": "Image asset depicting the model for supporting tree growers within the Greenstand program, used as a reference diagram alongside the project's grower-support documentation. Binary image; exact visual content was not inspected.",
+      "tags": [
+        "image",
+        "asset",
+        "diagram",
+        "business-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:wiki-images/spatial-cluster-database-schema.png",
+      "type": "document",
+      "name": "spatial-cluster-database-schema.png",
+      "filePath": "wiki-images/spatial-cluster-database-schema.png",
+      "summary": "Image asset illustrating a spatial cluster database schema, used as a supporting diagram in the project's wiki documentation. Binary image; exact visual content was not inspected.",
+      "tags": [
+        "image",
+        "asset",
+        "database",
+        "schema"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:README.md",
+      "target": "document:BDD-GUIDE.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:Roadmap.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:TEAM.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:Issues-lndex.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Roadmap.md",
+      "target": "document:Greenstand-Token.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:TEAM.md",
+      "target": "document:Greenstand-Bilaws.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:Resrouces/Github Basics",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:onboarding-contributor-guide",
+      "name": "Onboarding & Contributor Guide",
+      "description": "Entry-point and how-to documents that orient new contributors: the project README, the BDD/testing workflow guide, the GitHub fork-and-pull basics, and the cross-repo issue index for finding work.",
+      "nodeIds": [
+        "document:README.md",
+        "document:BDD-GUIDE.md",
+        "document:Resrouces/Github Basics",
+        "document:Issues-lndex.md"
+      ]
+    },
+    {
+      "id": "layer:governance-legal",
+      "name": "Governance & Legal",
+      "description": "Formal organizational and legal documents: the nonprofit bylaws, the code of conduct, the AGPL-3.0 license text, and the team/role directory that defines who governs the project.",
+      "nodeIds": [
+        "document:Greenstand-Bilaws.md",
+        "document:License, Code of Conduct etc/CODE_OF_CONDUCT.md",
+        "document:License, Code of Conduct etc/LICENSE",
+        "document:TEAM.md"
+      ]
+    },
+    {
+      "id": "layer:product-strategy-planning",
+      "name": "Product Strategy & Planning",
+      "description": "Forward-looking planning documents describing the feature roadmap and the tiered, multi-year project deliverables strategy.",
+      "nodeIds": [
+        "document:Roadmap.md",
+        "document:Resrouces/Project-Deliverables.md"
+      ]
+    },
+    {
+      "id": "layer:token-economy",
+      "name": "Token Economy",
+      "description": "The whitepaper defining Greenstand's token model, covering token types, states, trading mechanics, and the verification network.",
+      "nodeIds": [
+        "document:Greenstand-Token.md"
+      ]
+    },
+    {
+      "id": "layer:visual-assets-diagrams",
+      "name": "Visual Assets & Diagrams",
+      "description": "Supporting image assets and diagrams referenced by the other documents, covering token branding, tree-planting workflow, grower support model, and database schema visuals.",
+      "nodeIds": [
+        "document:Resrouces/Greenstand-Token-png.png",
+        "document:Resrouces/Old Tree Planting Flow Diagram.jpg",
+        "document:Resrouces/Tree Grower Support Model.png",
+        "document:wiki-images/spatial-cluster-database-schema.png"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "README.md is the front door to this repo. It introduces the Treetracker platform, the Android app, admin client, web map, and wallet API, and points new contributors toward the team, the roadmap, and open issues. Every other document in this tour is reachable from links here, so it is the natural place to start.",
+      "nodeIds": [
+        "document:README.md"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Contributing to the Project",
+      "description": "Once you know what Treetracker is, the next question is how to actually contribute. Github Basics covers the fork-and-pull Git workflow contributors are expected to follow, while BDD-GUIDE.md explains the Behaviour-Driven Development process used across the ecosystem: writing Gherkin feature files, implementing WebdriverIO/Cucumber step definitions, and the PR checklist reviewers expect. Together these two documents are the practical, hands-on onboarding path referenced directly from README.md.",
+      "nodeIds": [
+        "document:Resrouces/Github Basics",
+        "document:BDD-GUIDE.md"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "Team and Governance",
+      "description": "TEAM.md lists the community and engineering teams, their leads, and how to join or recommend a team, giving you the human map of the organization. It links directly to Greenstand-Bilaws.md, the formal nonprofit bylaws that define the board of directors, officer roles, and how the organization is legally structured and amended. Understanding who runs the project, and under what legal structure, matters before you dive deeper into strategy or legal terms.",
+      "nodeIds": [
+        "document:TEAM.md",
+        "document:Greenstand-Bilaws.md"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Community Standards and Licensing",
+      "description": "Two documents set the ground rules for participation. CODE_OF_CONDUCT.md is the Contributor Covenant that governs behavior and enforcement in the community, while LICENSE is the full AGPL-3.0 text governing how Greenstand's software and documentation may be used, modified, and distributed. Both live together under License, Code of Conduct etc, reflecting their shared role as the legal and social baseline for anyone touching this codebase.",
+      "nodeIds": [
+        "document:License, Code of Conduct etc/CODE_OF_CONDUCT.md",
+        "document:License, Code of Conduct etc/LICENSE"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "Product Strategy and Finding Work",
+      "description": "With the organizational and legal context in place, Roadmap.md lays out where the product is headed: privacy features, mobile and web map apps, the token trading API, cloud/DevOps, and more. Project-Deliverables.md frames the same trajectory at a higher level, as a three-tier progression from prototyping to a sustained tree economy, while Issues-lndex.md (linked from README.md) is the practical index of GitHub issue trackers across the Treetracker ecosystem repos where you can find a ticket to pick up.",
+      "nodeIds": [
+        "document:Roadmap.md",
+        "document:Resrouces/Project-Deliverables.md",
+        "document:Issues-lndex.md"
+      ]
+    },
+    {
+      "order": 6,
+      "title": "The Token Economy",
+      "description": "Roadmap.md links forward to Greenstand-Token.md, the whitepaper defining Greenstand's token model in depth. It explains non-fungible and fungible tokens tied to environmental assets, how tokens are created, verified, and traded, and the node network that supports this economy. This is the most technical, domain-specific document in the repo and builds directly on the strategic context from Step 5.",
+      "nodeIds": [
+        "document:Greenstand-Token.md"
+      ],
+      "languageLesson": "Whitepapers like this one define domain terminology precisely before describing mechanics. Read the terminology section first; it disambiguates terms (token, node, asset) that are easy to conflate otherwise."
+    },
+    {
+      "order": 7,
+      "title": "Visual Assets and Diagrams",
+      "description": "The tour ends with the supporting images referenced across the repo's documents. Greenstand-Token-png.png illustrates the token concept from Step 6, Old Tree Planting Flow Diagram.jpg and Tree Grower Support Model.png visualize the field workflows and grower support model behind the roadmap in Step 5, and spatial-cluster-database-schema.png illustrates a database schema used elsewhere in the Treetracker ecosystem. These images are not meant to be read in isolation; they exist to make the concepts from earlier steps concrete.",
+      "nodeIds": [
+        "document:Resrouces/Greenstand-Token-png.png",
+        "document:Resrouces/Old Tree Planting Flow Diagram.jpg",
+        "document:Resrouces/Tree Grower Support Model.png",
+        "document:wiki-images/spatial-cluster-database-schema.png"
+      ]
+    }
+  ]
+}

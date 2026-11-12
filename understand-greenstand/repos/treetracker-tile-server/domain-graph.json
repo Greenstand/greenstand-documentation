@@ -1,0 +1,2704 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-tile-server",
+    "languages": [
+      "batch",
+      "cpp",
+      "dockerfile",
+      "html",
+      "javascript",
+      "json",
+      "makefile",
+      "markdown",
+      "powershell",
+      "python",
+      "shell",
+      "xml",
+      "yaml"
+    ],
+    "frameworks": [
+      "Express",
+      "Jest",
+      "Docker",
+      "GitHub Actions"
+    ],
+    "description": "Greenstand Treetracker map tile server: an Express service in greenstand/ that renders tree locations from the Treetracker PostGIS database into 256x256 PNG map tiles and UTF grid tiles for the Treetracker web map, with clusters at low zoom, single trees at high zoom, and planter, wallet, organization, and timeline filters. The repo is a fork of upstream node-mapnik, whose native Mapnik bindings do the rendering, and it ships the Docker image, Kubernetes manifests, and GitHub Actions pipelines that release and deploy the service.",
+    "analyzedAt": "2026-10-17T04:51:18Z",
+    "gitCommitHash": "b619c05043c17ce3d78dda1d3a1e6a2333cfa70a"
+  },
+  "nodes": [
+    {
+      "id": "domain:map-tile-serving",
+      "type": "domain",
+      "name": "Map Tile Serving",
+      "summary": "The Express service in greenstand/ answers slippy-map tile requests for the Treetracker web map. Each request gets a new 256x256 mapnik.Map that loads the per-tile Mapnik XML style and renders a PNG image or a UTF grid JSON for click and hover details. Every other path returns a version banner.",
+      "tags": [
+        "express",
+        "tile-rendering",
+        "mapnik",
+        "utf-grid",
+        "http-api"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Tile (z/x/y)",
+          "mapnik.Map",
+          "mapnik.Image",
+          "mapnik.Grid",
+          "UTF grid fields (id, latlon, count, type, zoom_to)",
+          "pg Pool",
+          "Config"
+        ],
+        "businessRules": [
+          "The server does not start unless MAXIMUM_ZOOM_LEVEL_USING_GLOBAL_DATASET and MAXIMUM_ZOOM_LEVEL_HANDLING_ZOOM_TARGET are defined.",
+          "Each tile request builds its own 256x256 mapnik.Map; the native Map.render rejects a Map that another render already uses.",
+          "The SQL bounds of a tile are the tile area plus a 100-pixel buffer, clipped to longitude +/-180 and latitude +/-85.0511.",
+          "Grid tiles render only layer l1 at resolution 4 and add the zoom_to field only at zoom 9 and below.",
+          "The query parameters userid, wallet, timeline, map_name, and icon go unchanged to the style builder.",
+          "The /new routes add newIcons: true, but Config.getXMLString ignores it, so they return the same tiles as the root routes.",
+          "A style or render error returns HTTP 500 with a JSON message."
+        ],
+        "crossDomainInteractions": [
+          "Calls Tile Stylesheet Composition (Config.getXMLString) for the Mapnik XML of each tile.",
+          "Release and Deployment starts the service with npm start, sets PORT and PG_POOL_SIZE, and routes /tiles/ gateway traffic to the tile routes."
+        ]
+      }
+    },
+    {
+      "id": "domain:tile-stylesheet-composition",
+      "type": "domain",
+      "name": "Tile Stylesheet Composition",
+      "summary": "Config.getXMLString in greenstand/config.js turns each tile request into a complete Mapnik XML document. For zoom 1 to 15 it inlines the tree clusters as GeoJSON that it gets through the cached PGPool. For other zoom levels it fills a PostGIS layer template with the DB_URL credentials and the tile SQL, so that Mapnik queries the trees at render time.",
+      "tags": [
+        "mapnik-xml",
+        "geojson",
+        "postgis",
+        "cache",
+        "template"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Config",
+          "PGPool",
+          "Mapnik XML templates (xml, xmlTree, xmlJson, xml2, xmlTree2, xmlTree3, xmlJson2, xmlJson3)",
+          "GeoJSON FeatureCollection",
+          "DB_URL",
+          "Layer l1",
+          "Icon set (o, ptk-b, ptk-s)"
+        ],
+        "businessRules": [
+          "Zoom levels 1 to 15 use an inline GeoJSON datasource; other zoom levels use a PostGIS datasource.",
+          "The tile SQL gets bounds never above zoom 15, always for map_name maps, never for wallet or userid maps, and otherwise only above MAXIMUM_ZOOM_LEVEL_USING_GLOBAL_DATASET.",
+          "The icon parameter picks the template: ptk-b gives the green icons, ptk-s gives the small green icons (GeoJSON clusters and PostGIS trees only), and o or no value gives the orange icons.",
+          "An empty query result becomes one placeholder cluster feature at [85,0] with id 99999.",
+          "An inline GeoJSON style larger than 5 MB fails with 'The data is too big'.",
+          "PGPool caches the finished XML by SQL text only, in an LRU cache of CACHE_SIZE entries that expire after CACHE_EXPIRE milliseconds (defaults 10000 entries and 4 minutes).",
+          "DB_URL must have the form postgresql://user:password@host:port/database."
+        ],
+        "crossDomainInteractions": [
+          "Gets the tile SQL from Tree Query Selection through Map.init and Map.getQuery.",
+          "Map Tile Serving calls getXMLString once for each tile request.",
+          "Release and Deployment supplies DB_URL, CACHE_SIZE, CACHE_EXPIRE, and MAXIMUM_ZOOM_LEVEL_USING_GLOBAL_DATASET."
+        ]
+      }
+    },
+    {
+      "id": "domain:tree-query-selection",
+      "type": "domain",
+      "name": "Tree Query Selection",
+      "summary": "The Map class in greenstand/Map.js selects one SQL builder from greenstand/sqls for each tile by map mode and zoom band. The builders write PostGIS SQL that returns region clusters, clusters made on the fly with ST_ClusterWithin, precomputed clusters, or single tree points. Each row has the type, id, latlon, count, and zoom_to values that the styles and UTF grids use, and the cluster rows also have a count_text label.",
+      "tags": [
+        "sql-builder",
+        "postgis",
+        "clustering",
+        "query-planning",
+        "treetracker-data"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Map (query planner)",
+          "SQLCase1 and SQLCase1WithZoomTarget (active_tree_region counts)",
+          "SQLCase2 and SQLCase2Wallet (tree points)",
+          "SQLCase3 (ST_ClusterWithin)",
+          "SQLCase4 (clusters table)",
+          "Timeline builders (SQLCase1Timeline, SQLCase2Timeline, SQLCase3Timeline)",
+          "trees",
+          "active_tree_region",
+          "region",
+          "clusters",
+          "planter",
+          "entity and entity_relationship",
+          "wallet.token and wallet.wallet"
+        ],
+        "businessRules": [
+          "The map mode follows this order: userid, then wallet, then map_name, then timeline, then the default map.",
+          "Config.getXMLString does not pass treeid, flavor, or token to Map.init, so the single tree mode and the flavor and token filters do not run from the tile routes.",
+          "Above zoom 15 every mode returns single active tree points.",
+          "From zoom 12 to 15 the default map reads precomputed clusters at zoom_level 14, and organization maps (except freetown and ffcphase1) and timeline maps cluster trees with ST_ClusterWithin.",
+          "Planter and wallet maps count the trees first: more than 2000 gives region clusters, and 2000 or fewer gives ST_ClusterWithin clusters.",
+          "A region cluster gets a zoom_to centroid only at zoom levels up to MAXIMUM_ZOOM_LEVEL_HANDLING_ZOOM_TARGET; the centroid is the most populated subregion two zoom levels deeper.",
+          "An organization map includes the trees of planters in up to 20 organizations of the entity_relationship hierarchy and the trees whose planting organization has that map_name.",
+          "The point and on-the-fly cluster queries read only active trees, the region counts read active_tree_region, and SQLCase4 reads the precomputed clusters table. Counts above 1000 show as thousands with a K suffix.",
+          "The builders put the filter values into the SQL text directly; they do not use bound parameters."
+        ],
+        "crossDomainInteractions": [
+          "Tile Stylesheet Composition calls Map.init and Map.getQuery for every tile.",
+          "Release and Deployment sets MAXIMUM_ZOOM_LEVEL_HANDLING_ZOOM_TARGET, which SQLCase1WithZoomTarget reads."
+        ]
+      }
+    },
+    {
+      "id": "domain:release-and-deployment",
+      "type": "domain",
+      "name": "Release and Deployment",
+      "summary": "GitHub Actions workflows, the Dockerfile, and the kustomize manifests in deployment/ release and run the tile server. A push to master or next cuts a semantic-release version, pushes the greenstand/treetracker-map-tile-server image to DockerHub, and applies the development overlay. Manual workflows deploy a chosen git tag to test or production on DigitalOcean Kubernetes, where an Ambassador Mapping exposes the server under /tiles/.",
+      "tags": [
+        "ci-cd",
+        "docker",
+        "kubernetes",
+        "kustomize",
+        "semantic-release"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "semantic-release version",
+          "Docker image greenstand/treetracker-map-tile-server",
+          "Base image greenstand/tile-server-base:first",
+          "Kustomize base and overlays (development, test, production, beta)",
+          "SealedSecret database-connection",
+          "Ambassador Mapping",
+          "Kubernetes Service and Deployment",
+          "DigitalOcean cluster"
+        ],
+        "businessRules": [
+          "Only pushes to master (release) or next (prerelease) of Greenstand/treetracker-tile-server, without 'skip-ci' in the head commit message, release and deploy.",
+          "The image tag is the package.json version.",
+          "A push deploys only to development; test and production get a chosen git tag through a manual workflow_dispatch.",
+          "DB_URL comes only from the database-connection SealedSecret, and each overlay supplies its own encrypted value.",
+          "The base runs 1 replica; the test overlay runs 6 replicas and uses the global dataset up to zoom 8; production runs 2 replicas with a 768Mi memory request, a 1536Mi memory limit, no CPU limit, and the global dataset up to zoom 15.",
+          "The gateway allows 60000 ms per request in the base and has no timeout in production.",
+          "The image build needs mapnik-config from the base image, because make release_base compiles the binding against the installed Mapnik.",
+          "The beta overlay (namespace tile-server-beta, prefix /tiles-next/) exists, but no workflow applies it."
+        ],
+        "crossDomainInteractions": [
+          "Starts Map Tile Serving with npm start and routes /tiles/ traffic to it on port 3000.",
+          "Supplies DB_URL, CACHE_SIZE, CACHE_EXPIRE, and MAXIMUM_ZOOM_LEVEL_USING_GLOBAL_DATASET to Tile Stylesheet Composition.",
+          "Supplies MAXIMUM_ZOOM_LEVEL_HANDLING_ZOOM_TARGET to Tree Query Selection."
+        ]
+      }
+    },
+    {
+      "id": "flow:start-tile-server",
+      "type": "flow",
+      "name": "Start Tile Server",
+      "summary": "npm start runs greenstand/server.js, which loads .env, loads app.js (pg Pool, Config, Mapnik fonts and plugins, CORS, and the static viewer), checks the two zoom thresholds, and listens on PORT.",
+      "tags": [
+        "bootstrap",
+        "express",
+        "environment"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "npm start (node --max-old-space-size=1024 greenstand/server.js)",
+        "entryType": "cli"
+      }
+    },
+    {
+      "id": "step:start-tile-server:load-environment",
+      "type": "step",
+      "name": "Load Environment Settings",
+      "summary": "server.js loads .env into process.env with dotenv and sets the default loglevel to info.",
+      "tags": [
+        "environment",
+        "dotenv"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/server.js",
+      "lineRange": [
+        1,
+        3
+      ]
+    },
+    {
+      "id": "step:start-tile-server:create-database-pool",
+      "type": "step",
+      "name": "Create Database Pool And Config",
+      "summary": "When server.js requires app.js, app.js creates one pg Pool from DB_URL with PG_POOL_SIZE connections (default 10) and gives it to a new Config, which sets up the PGPool cache.",
+      "tags": [
+        "database",
+        "connection-pool"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/app.js",
+      "lineRange": [
+        10,
+        18
+      ]
+    },
+    {
+      "id": "step:start-tile-server:register-mapnik-resources",
+      "type": "step",
+      "name": "Register Mapnik Fonts And Plugins",
+      "summary": "app.js calls register_default_fonts and register_default_input_plugins from lib/mapnik.js, which register the font and input plugin directories from the binding settings; the styles need the geojson and postgis plugins. It also registers the test/data/map-a fonts on a probe Map and sets the Mapnik logger to DEBUG.",
+      "tags": [
+        "mapnik",
+        "fonts",
+        "plugins"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/app.js",
+      "lineRange": [
+        21,
+        29
+      ]
+    },
+    {
+      "id": "step:start-tile-server:mount-middleware",
+      "type": "step",
+      "name": "Mount CORS And Viewer",
+      "summary": "app.js enables CORS for all origins and serves the greenstand/examples/viewer directory as static files under /viewer.",
+      "tags": [
+        "cors",
+        "static-files"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/app.js",
+      "lineRange": [
+        32,
+        42
+      ]
+    },
+    {
+      "id": "step:start-tile-server:assert-zoom-thresholds",
+      "type": "step",
+      "name": "Check Zoom Thresholds",
+      "summary": "server.js uses expect-runtime to stop the process when MAXIMUM_ZOOM_LEVEL_USING_GLOBAL_DATASET or MAXIMUM_ZOOM_LEVEL_HANDLING_ZOOM_TARGET is not defined. This check runs after app.js has loaded.",
+      "tags": [
+        "validation",
+        "environment"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/server.js",
+      "lineRange": [
+        7,
+        8
+      ]
+    },
+    {
+      "id": "step:start-tile-server:listen-on-port",
+      "type": "step",
+      "name": "Listen On Port",
+      "summary": "server.js starts the Express app on PORT (23300 in the local .env, 3000 in Kubernetes) and logs the port.",
+      "tags": [
+        "express",
+        "server"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/server.js",
+      "lineRange": [
+        11,
+        13
+      ]
+    },
+    {
+      "id": "flow:render-png-map-tile",
+      "type": "flow",
+      "name": "Render PNG Map Tile",
+      "summary": "A GET request for /:z/:x/:y.png builds a Mapnik map for the tile from the per-tile XML style, renders it with AGG into a 256x256 image, and returns the PNG bytes. The /new/:z/:x/:y.png route runs the same steps.",
+      "tags": [
+        "tile-rendering",
+        "png",
+        "http-get"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /:z/:x/:y.png (also GET /new/:z/:x/:y.png)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:render-png-map-tile:receive-tile-request",
+      "type": "step",
+      "name": "Receive Tile Request",
+      "summary": "The route reads z, x, and y from the path, copies the query string (userid, wallet, timeline, map_name, icon), and calls buildMapInstance. The /new route also adds newIcons: true, which has no effect.",
+      "tags": [
+        "api-handler",
+        "routing"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/app.js",
+      "lineRange": [
+        99,
+        104
+      ]
+    },
+    {
+      "id": "step:render-png-map-tile:compute-sql-bounds",
+      "type": "step",
+      "name": "Compute Buffered SQL Bounds",
+      "summary": "xyz_to_envelope_db_buffer converts the tile corners plus a 100-pixel buffer to lon/lat and clips them to +/-180 longitude and +/-85.0511 latitude. buildMapInstance joins the four numbers into the bounds string for the SQL.",
+      "tags": [
+        "geospatial",
+        "tile-math"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/sphericalmercator.js",
+      "lineRange": [
+        112,
+        132
+      ]
+    },
+    {
+      "id": "step:render-png-map-tile:request-tile-style",
+      "type": "step",
+      "name": "Request Tile Style",
+      "summary": "buildMapInstance creates a new 256x256 mapnik.Map with the test/data/map-a fonts and calls Config.getXMLString with zoomLevel, bounds, and the query parameters to get the Mapnik XML.",
+      "tags": [
+        "mapnik-xml",
+        "style"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/app.js",
+      "lineRange": [
+        45,
+        63
+      ]
+    },
+    {
+      "id": "step:render-png-map-tile:parse-style-into-map",
+      "type": "step",
+      "name": "Parse Style Into Map",
+      "summary": "buildMapInstance calls Map.fromString with strict mode and greenstand/ as the base path. The native fromString checks the arguments and queues AsyncMapFromString, which runs mapnik::load_map_string on a worker thread and returns the loaded Map.",
+      "tags": [
+        "mapnik",
+        "stylesheet-loading",
+        "async-worker"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/mapnik_map_from_string.cpp",
+      "lineRange": [
+        145,
+        205
+      ]
+    },
+    {
+      "id": "step:render-png-map-tile:set-tile-extent",
+      "type": "step",
+      "name": "Set Tile Extent",
+      "summary": "xyz_to_envelope converts the tile to a lon/lat box and projects it to a Web Mercator envelope with mapnik.Projection.forward. buildMapInstance sets this envelope as map.extent.",
+      "tags": [
+        "geospatial",
+        "projection"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/sphericalmercator.js",
+      "lineRange": [
+        79,
+        87
+      ]
+    },
+    {
+      "id": "step:render-png-map-tile:render-tile-image",
+      "type": "step",
+      "name": "Render Tile Image",
+      "summary": "The route calls map.render with a new 256x256 mapnik.Image. The Image branch of Map.render takes the Map in-use lock and queues AsyncRenderImage, which draws the map with agg_renderer on a worker thread.",
+      "tags": [
+        "rendering",
+        "agg",
+        "async-worker"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/mapnik_map_render.cpp",
+      "lineRange": [
+        550,
+        582
+      ]
+    },
+    {
+      "id": "step:render-png-map-tile:encode-png",
+      "type": "step",
+      "name": "Encode PNG",
+      "summary": "The route calls im.encode('png'). Image.encode queues AsyncEncode, which serializes the image with save_to_string and returns the bytes as a Buffer.",
+      "tags": [
+        "png",
+        "image-encoding"
+      ],
+      "complexity": "simple",
+      "filePath": "src/mapnik_image_encode.cpp",
+      "lineRange": [
+        194,
+        211
+      ]
+    },
+    {
+      "id": "step:render-png-map-tile:send-png-response",
+      "type": "step",
+      "name": "Send PNG Or Error",
+      "summary": "The route logs the render time and sends the buffer with Content-Type image/png. Any error in the steps above returns HTTP 500 with a JSON message.",
+      "tags": [
+        "http-response",
+        "error-handling"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/app.js",
+      "lineRange": [
+        116,
+        122
+      ]
+    },
+    {
+      "id": "flow:render-utf-grid-tile",
+      "type": "flow",
+      "name": "Render UTF Grid Tile",
+      "summary": "A GET request for /:z/:x/:y.grid.json builds the same Mapnik map as the PNG route, renders layer l1 into a UTF grid of feature ids, and returns the grid, keys, and feature data as JSON, so that the web map can show tree and cluster details. The /new/:z/:x/:y.grid.json route runs the same steps.",
+      "tags": [
+        "utf-grid",
+        "interactivity",
+        "http-get"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /:z/:x/:y.grid.json (also GET /new/:z/:x/:y.grid.json)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:render-utf-grid-tile:build-map-instance",
+      "type": "step",
+      "name": "Build Map Instance",
+      "summary": "The route calls buildMapInstance with z, x, y, and the query parameters. buildMapInstance computes the buffered bounds, gets the XML from Config.getXMLString, loads it with Map.fromString, and sets the Web Mercator extent.",
+      "tags": [
+        "mapnik",
+        "factory"
+      ],
+      "complexity": "moderate",
+      "filePath": "greenstand/app.js",
+      "lineRange": [
+        45,
+        97
+      ]
+    },
+    {
+      "id": "step:render-utf-grid-tile:choose-grid-fields",
+      "type": "step",
+      "name": "Choose Grid Fields",
+      "summary": "The route creates a 256x256 mapnik.Grid and asks for the id, latlon, count, and type fields. At zoom 9 and below it also asks for zoom_to.",
+      "tags": [
+        "utf-grid",
+        "business-rule"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/app.js",
+      "lineRange": [
+        132,
+        136
+      ]
+    },
+    {
+      "id": "step:render-utf-grid-tile:render-layer-into-grid",
+      "type": "step",
+      "name": "Render Layer Into Grid",
+      "summary": "The Grid branch of Map.render requires the layer option, resolves layer l1, adds the requested fields to the grid, takes the Map in-use lock, and queues AsyncRenderGrid, which runs grid_renderer over that layer.",
+      "tags": [
+        "rendering",
+        "utf-grid",
+        "async-worker"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/mapnik_map_render.cpp",
+      "lineRange": [
+        584,
+        688
+      ]
+    },
+    {
+      "id": "step:render-utf-grid-tile:encode-utf-grid",
+      "type": "step",
+      "name": "Encode UTF Grid",
+      "summary": "In the render callback the route calls grid.encodeSync with resolution 4 and features true. encodeSync runs grid2utf and write_features and returns an object with the grid rows, the keys, and the feature data for each key.",
+      "tags": [
+        "utf-grid",
+        "encoding"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/mapnik_grid.cpp",
+      "lineRange": [
+        367,
+        464
+      ]
+    },
+    {
+      "id": "step:render-utf-grid-tile:send-grid-response",
+      "type": "step",
+      "name": "Send Grid JSON Or Error",
+      "summary": "The route returns the object as application/json. Any error returns HTTP 500 with a JSON message.",
+      "tags": [
+        "http-response",
+        "error-handling"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/app.js",
+      "lineRange": [
+        149,
+        155
+      ]
+    },
+    {
+      "id": "flow:report-server-version",
+      "type": "flow",
+      "name": "Report Server Version",
+      "summary": "Any request that the tile routes and the viewer do not answer, including GET /, gets HTTP 200 with a welcome text that contains the package.json version. Clients can use it to see which release runs.",
+      "tags": [
+        "fallback",
+        "version",
+        "health-check"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "ALL * (any path that no earlier handler answers)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:report-server-version:fall-through-tile-routes",
+      "type": "step",
+      "name": "Fall Through The Tile Routes",
+      "summary": "app.use('*') is the last handler, so it gets every request method and path that the earlier handlers do not answer.",
+      "tags": [
+        "routing",
+        "fallback"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/app.js",
+      "lineRange": [
+        217,
+        217
+      ]
+    },
+    {
+      "id": "step:report-server-version:read-package-version",
+      "type": "step",
+      "name": "Read Package Version",
+      "summary": "The handler requires ../package.json to read the release version.",
+      "tags": [
+        "version"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/app.js",
+      "lineRange": [
+        218,
+        218
+      ]
+    },
+    {
+      "id": "step:report-server-version:send-version-banner",
+      "type": "step",
+      "name": "Send Version Banner",
+      "summary": "The handler sends HTTP 200 with the text 'Welcome to Greenstand tile server, version:' and the version.",
+      "tags": [
+        "http-response",
+        "version"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/app.js",
+      "lineRange": [
+        219,
+        220
+      ]
+    },
+    {
+      "id": "flow:compose-geojson-cluster-style",
+      "type": "flow",
+      "name": "Compose GeoJSON Cluster Style",
+      "summary": "For zoom 1 to 15, getXMLString gets the tile SQL, runs it through the cached PGPool, converts the rows to an inline GeoJSON FeatureCollection, and puts it into the cluster template of the chosen icon set.",
+      "tags": [
+        "geojson",
+        "mapnik-xml",
+        "clustering"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "Config.getXMLString({zoomLevel, bounds, userid, wallet, timeline, map_name, icon}), called by buildMapInstance for zoom 1 to 15",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:compose-geojson-cluster-style:decide-geojson-mode",
+      "type": "step",
+      "name": "Decide GeoJSON Mode",
+      "summary": "getXMLString reads zoomLevel, userid, wallet, timeline, map_name, bounds, and icon from the options and uses GeoJSON mode when the zoom is from 1 to 15.",
+      "tags": [
+        "business-rule",
+        "zoom-level"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/config.js",
+      "lineRange": [
+        111,
+        126
+      ]
+    },
+    {
+      "id": "step:compose-geojson-cluster-style:decide-bounds-use",
+      "type": "step",
+      "name": "Decide Bounds Use",
+      "summary": "checkUseBounds returns false above zoom 15, true for map_name maps, false for wallet and userid maps, and otherwise true only above MAXIMUM_ZOOM_LEVEL_USING_GLOBAL_DATASET. Without bounds the query covers the global dataset.",
+      "tags": [
+        "business-rule",
+        "query-planning"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/config.js",
+      "lineRange": [
+        128,
+        152
+      ]
+    },
+    {
+      "id": "step:compose-geojson-cluster-style:plan-tile-sql",
+      "type": "step",
+      "name": "Plan Tile SQL",
+      "summary": "getXMLString creates a Map query planner on the shared pg Pool, calls init with the zoom, userid, wallet, timeline, map_name, and the bounds when they apply, and gets the SQL from getQuery.",
+      "tags": [
+        "sql",
+        "query-planning"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/config.js",
+      "lineRange": [
+        153,
+        163
+      ]
+    },
+    {
+      "id": "step:compose-geojson-cluster-style:select-geojson-template",
+      "type": "step",
+      "name": "Select GeoJSON Template",
+      "summary": "getXML picks xmlJson2 for icon ptk-b, xmlJson3 for ptk-s, and xmlJson for o or no icon. The tree template branch for zoom above 15 never runs here, because GeoJSON mode stops at zoom 15.",
+      "tags": [
+        "template-selection",
+        "icons"
+      ],
+      "complexity": "moderate",
+      "filePath": "greenstand/config.js",
+      "lineRange": [
+        171,
+        246
+      ]
+    },
+    {
+      "id": "step:compose-geojson-cluster-style:fetch-rows-through-cache",
+      "type": "step",
+      "name": "Fetch Rows Through Cache",
+      "summary": "getXMLString calls pgPool.getQuery with the SQL and a result handler. A cache hit returns the finished XML at once; a miss runs the query once for all concurrent requests with the same SQL.",
+      "tags": [
+        "cache",
+        "database"
+      ],
+      "complexity": "moderate",
+      "filePath": "greenstand/PGPool.js",
+      "lineRange": [
+        65,
+        80
+      ]
+    },
+    {
+      "id": "step:compose-geojson-cluster-style:build-feature-collection",
+      "type": "step",
+      "name": "Build Feature Collection",
+      "summary": "The result handler turns each row into a GeoJSON Point feature with the count, count_text, id, latlon, type, and zoom_to properties. When there are no rows, it uses one placeholder cluster at [85,0] with id 99999.",
+      "tags": [
+        "geojson",
+        "serialization"
+      ],
+      "complexity": "moderate",
+      "filePath": "greenstand/config.js",
+      "lineRange": [
+        249,
+        261
+      ]
+    },
+    {
+      "id": "step:compose-geojson-cluster-style:inject-geojson-into-template",
+      "type": "step",
+      "name": "Inject GeoJSON Into Template",
+      "summary": "The result handler replaces the json_data placeholder of the inline GeoJSON datasource of layer l1 with the FeatureCollection. PGPool then caches this XML.",
+      "tags": [
+        "template",
+        "mapnik-xml"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/config.js",
+      "lineRange": [
+        262,
+        264
+      ]
+    },
+    {
+      "id": "step:compose-geojson-cluster-style:enforce-size-limit",
+      "type": "step",
+      "name": "Enforce Size Limit",
+      "summary": "getXMLString throws 'The data is too big' when the XML is larger than 5 MB, and otherwise returns the XML to buildMapInstance.",
+      "tags": [
+        "validation",
+        "business-rule"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/config.js",
+      "lineRange": [
+        265,
+        270
+      ]
+    },
+    {
+      "id": "flow:compose-postgis-tree-style",
+      "type": "flow",
+      "name": "Compose PostGIS Tree Style",
+      "summary": "For zoom levels outside 1 to 15 (single trees above zoom 15), getXMLString fills a PostGIS layer template with the database credentials from DB_URL and the tile SQL. Mapnik then runs the query through its PostGIS input plugin at render time.",
+      "tags": [
+        "postgis",
+        "mapnik-xml",
+        "tree-points"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Config.getXMLString, called by buildMapInstance for zoom levels outside 1 to 15",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:compose-postgis-tree-style:plan-tile-sql",
+      "type": "step",
+      "name": "Plan Tile SQL",
+      "summary": "getXMLString creates a Map query planner and gets the SQL from it. Above zoom 15 checkUseBounds returns false, and the code comment says that Mapnik adds the tile bounds itself. For zoom 0 on the default map, getQuery throws 'zoom level required', because SQLCase1.getZoomLevel treats 0 as missing.",
+      "tags": [
+        "sql",
+        "query-planning"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/config.js",
+      "lineRange": [
+        153,
+        163
+      ]
+    },
+    {
+      "id": "step:compose-postgis-tree-style:select-postgis-template",
+      "type": "step",
+      "name": "Select PostGIS Template",
+      "summary": "getXML picks a tree template above zoom 15 (xmlTree2 for ptk-b, xmlTree3 for ptk-s, xmlTree otherwise) and a cluster template below zoom 1 (xml2 for ptk-b, xml otherwise). Each template has a PostGIS datasource on layer l1 with the placeholder table SQL 'select * from trees'.",
+      "tags": [
+        "template-selection",
+        "icons"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/config.js",
+      "lineRange": [
+        272,
+        275
+      ]
+    },
+    {
+      "id": "step:compose-postgis-tree-style:fill-database-credentials",
+      "type": "step",
+      "name": "Fill Database Credentials",
+      "summary": "replace parses DB_URL as postgresql://user:password@host:port/database and swaps the template user postgres, host 172.17.0.2, port 5432, password greenstand, and database treetracker_dev for the real values.",
+      "tags": [
+        "database-credentials",
+        "string-templating"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/config.js",
+      "lineRange": [
+        16,
+        43
+      ]
+    },
+    {
+      "id": "step:compose-postgis-tree-style:inject-tile-sql",
+      "type": "step",
+      "name": "Inject Tile SQL",
+      "summary": "getXMLString replaces 'select * from trees' with the tile SQL and returns the XML. A timeline map above zoom 15 gets a {text, values} object from SQLCase2Timeline, so the table SQL becomes the string '[object Object]'.",
+      "tags": [
+        "sql",
+        "template"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/config.js",
+      "lineRange": [
+        276,
+        282
+      ]
+    },
+    {
+      "id": "flow:cache-and-coalesce-tile-queries",
+      "type": "flow",
+      "name": "Cache And Coalesce Tile Queries",
+      "summary": "PGPool puts an LRU cache in front of the pg Pool. Concurrent requests with the same SQL share one database query, and PGPool caches the post-processed result (the finished Mapnik XML) by SQL text.",
+      "tags": [
+        "cache",
+        "request-coalescing",
+        "database"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "PGPool.getQuery(sql, handleResult), called by Config.getXMLString in GeoJSON mode",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:cache-and-coalesce-tile-queries:check-lru-cache",
+      "type": "step",
+      "name": "Check LRU Cache",
+      "summary": "getQuery looks up the SQL text in the LRU cache and resolves with the cached value on a hit. The key does not include the icon, so a cached style for one icon set also answers requests for other icon sets with the same SQL.",
+      "tags": [
+        "cache",
+        "lookup"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/PGPool.js",
+      "lineRange": [
+        65,
+        72
+      ]
+    },
+    {
+      "id": "step:cache-and-coalesce-tile-queries:queue-callback-by-sql",
+      "type": "step",
+      "name": "Queue Callback By SQL",
+      "summary": "fetch adds the callback to the queue for that SQL. When a query for the same SQL is already running, the callback only waits.",
+      "tags": [
+        "request-coalescing",
+        "queue"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/PGPool.js",
+      "lineRange": [
+        25,
+        33
+      ]
+    },
+    {
+      "id": "step:cache-and-coalesce-tile-queries:run-one-database-query",
+      "type": "step",
+      "name": "Run One Database Query",
+      "summary": "The first caller marks the SQL as in flight and runs pool.query with the SQL text and no bound values.",
+      "tags": [
+        "database",
+        "async"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/PGPool.js",
+      "lineRange": [
+        34,
+        40
+      ]
+    },
+    {
+      "id": "step:cache-and-coalesce-tile-queries:post-process-result",
+      "type": "step",
+      "name": "Post-Process Result",
+      "summary": "fetch applies handleResult to the query result, which turns the rows into the GeoJSON-filled Mapnik XML.",
+      "tags": [
+        "transformation",
+        "mapnik-xml"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/PGPool.js",
+      "lineRange": [
+        41,
+        41
+      ]
+    },
+    {
+      "id": "step:cache-and-coalesce-tile-queries:drain-queue-and-store-result",
+      "type": "step",
+      "name": "Drain Queue And Store Result",
+      "summary": "fetch gives the same result to every queued callback, stores it in the cache under the SQL text, and clears the in-flight flag.",
+      "tags": [
+        "cache",
+        "request-coalescing"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/PGPool.js",
+      "lineRange": [
+        42,
+        48
+      ]
+    },
+    {
+      "id": "step:cache-and-coalesce-tile-queries:reject-waiting-requests-on-error",
+      "type": "step",
+      "name": "Reject Waiting Requests On Error",
+      "summary": "When the query or the handler fails, fetch clears the in-flight flag and gives the error to every queued callback, so each waiting tile request fails.",
+      "tags": [
+        "error-handling",
+        "request-coalescing"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/PGPool.js",
+      "lineRange": [
+        49,
+        56
+      ]
+    },
+    {
+      "id": "flow:select-default-map-query",
+      "type": "flow",
+      "name": "Select Default Map Query",
+      "summary": "Without userid, wallet, map_name, or timeline, Map.init picks the query by zoom: tree points above zoom 15, precomputed clusters from zoom 12 to 15, and region clusters with zoom targets below zoom 12.",
+      "tags": [
+        "query-planning",
+        "default-map",
+        "zoom-level"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Map.init with no userid, wallet, map_name, or timeline (plain tile request)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:select-default-map-query:read-map-settings",
+      "type": "step",
+      "name": "Read Map Settings",
+      "summary": "init stores treeid, zoom_level, userid, map_name, bounds, wallet, flavor, token, and timeline from the settings. The mode checks follow, and a plain tile request falls through to the default branch.",
+      "tags": [
+        "initialization",
+        "settings"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/Map.js",
+      "lineRange": [
+        19,
+        31
+      ]
+    },
+    {
+      "id": "step:select-default-map-query:pick-builder-by-zoom",
+      "type": "step",
+      "name": "Pick Builder By Zoom",
+      "summary": "The default branch uses SQLCase2 above zoom 15, SQLCase4 for zoom 12 to 15, and SQLCase1WithZoomTarget below zoom 12, and gives each builder the bounds that Config passes.",
+      "tags": [
+        "dispatcher",
+        "zoom-level"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/Map.js",
+      "lineRange": [
+        141,
+        156
+      ]
+    },
+    {
+      "id": "step:select-default-map-query:select-tree-points",
+      "type": "step",
+      "name": "Select Tree Points",
+      "summary": "SQLCase2.getQuery selects active trees with the geometry, GeoJSON latlon, id, lat, lon, and count 1, ordered by id descending. It adds a bounding box filter only when bounds are set; the tile routes do not set them above zoom 15.",
+      "tags": [
+        "sql-builder",
+        "tree-points"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/sqls/SQLCase2.js",
+      "lineRange": [
+        134,
+        159
+      ]
+    },
+    {
+      "id": "step:select-default-map-query:read-precomputed-clusters",
+      "type": "step",
+      "name": "Read Precomputed Clusters",
+      "summary": "SQLCase4.getQuery reads the clusters table at zoom_level 14 for every zoom from 12 to 15, with the location inside the bounds and a K-formatted count_text.",
+      "tags": [
+        "sql-builder",
+        "precomputed-data"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/sqls/SQLCase4.js",
+      "lineRange": [
+        22,
+        43
+      ]
+    },
+    {
+      "id": "step:select-default-map-query:count-trees-per-region",
+      "type": "step",
+      "name": "Count Trees Per Region",
+      "summary": "SQLCase1.getQuery counts the active_tree_region rows per region_id and centroid at the tile zoom level, inside the bounds when they are set. At zoom 2 it clamps the centroid longitude to 170.",
+      "tags": [
+        "sql-builder",
+        "clustering"
+      ],
+      "complexity": "moderate",
+      "filePath": "greenstand/sqls/SQLCase1.js",
+      "lineRange": [
+        118,
+        146
+      ]
+    },
+    {
+      "id": "step:select-default-map-query:add-zoom-targets",
+      "type": "step",
+      "name": "Add Zoom Targets",
+      "summary": "At zoom levels up to MAXIMUM_ZOOM_LEVEL_HANDLING_ZOOM_TARGET, SQLCase1WithZoomTarget wraps the region query and joins, for each region, the GeoJSON centroid of its most populated subregion at zoom + 2 as zoom_to. Above that level it returns the plain region query.",
+      "tags": [
+        "zoom-target",
+        "postgis"
+      ],
+      "complexity": "complex",
+      "filePath": "greenstand/sqls/SQLCase1WithZoomTarget.js",
+      "lineRange": [
+        6,
+        83
+      ]
+    },
+    {
+      "id": "flow:select-planter-map-query",
+      "type": "flow",
+      "name": "Select Planter Map Query",
+      "summary": "For a userid map, Map.init counts the trees of that planter first and then picks tree points, region clusters, or on-the-fly clusters by zoom and tree count. Planter maps always use the global dataset, without bounds.",
+      "tags": [
+        "query-planning",
+        "planter-map",
+        "zoom-level"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Map.init with userid (tile query parameter userid)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:select-planter-map-query:count-planter-trees",
+      "type": "step",
+      "name": "Count Planter Trees",
+      "summary": "init runs select count(*) from trees where planter_id = userid on the pg Pool before it picks a builder.",
+      "tags": [
+        "database",
+        "count"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/Map.js",
+      "lineRange": [
+        42,
+        53
+      ]
+    },
+    {
+      "id": "step:select-planter-map-query:select-planter-tree-points",
+      "type": "step",
+      "name": "Select Planter Tree Points",
+      "summary": "Above zoom 15, init uses SQLCase2 with the planter filter, which adds AND trees.planter_id = userid.",
+      "tags": [
+        "tree-points",
+        "planter-filter"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/Map.js",
+      "lineRange": [
+        54,
+        57
+      ]
+    },
+    {
+      "id": "step:select-planter-map-query:select-planter-region-clusters",
+      "type": "step",
+      "name": "Select Planter Region Clusters",
+      "summary": "Up to zoom 15 with more than 2000 trees, init uses SQLCase1WithZoomTarget with addFilterByUserId, which joins tree_region to trees and filters by planter_id.",
+      "tags": [
+        "clustering",
+        "planter-filter"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/Map.js",
+      "lineRange": [
+        58,
+        63
+      ]
+    },
+    {
+      "id": "step:select-planter-map-query:cluster-planter-trees-on-the-fly",
+      "type": "step",
+      "name": "Cluster Planter Trees On The Fly",
+      "summary": "With 2000 trees or fewer, init uses SQLCase3. Its getQuery unnests ST_ClusterWithin over the active trees of the planter, with a radius from getClusterRadius (10 degrees at zoom 1 down to 0.004 at zoom 15).",
+      "tags": [
+        "clustering",
+        "postgis"
+      ],
+      "complexity": "moderate",
+      "filePath": "greenstand/sqls/SQLCase3.js",
+      "lineRange": [
+        172,
+        198
+      ]
+    },
+    {
+      "id": "flow:select-wallet-map-query",
+      "type": "flow",
+      "name": "Select Wallet Map Query",
+      "summary": "For a wallet map, Map.init counts the tokens of the named wallet first and then picks wallet tree points, region clusters, or on-the-fly clusters. Wallet maps always use the global dataset, without bounds.",
+      "tags": [
+        "query-planning",
+        "wallet-map",
+        "tokens"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Map.init with wallet (tile query parameter wallet)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:select-wallet-map-query:count-wallet-tokens",
+      "type": "step",
+      "name": "Count Wallet Tokens",
+      "summary": "init counts the wallet.token rows joined to the wallet.wallet with the given name. The log line calls this count a count by userId.",
+      "tags": [
+        "database",
+        "count"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/Map.js",
+      "lineRange": [
+        71,
+        87
+      ]
+    },
+    {
+      "id": "step:select-wallet-map-query:select-wallet-tree-points",
+      "type": "step",
+      "name": "Select Wallet Tree Points",
+      "summary": "Above zoom 15, SQLCase2Wallet joins active trees to wallet.token on capture_id = lower(trees.uuid) and keeps only the rows whose wallet has the given name.",
+      "tags": [
+        "tree-points",
+        "wallet-filter"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/sqls/SQLCase2Wallet.js",
+      "lineRange": [
+        55,
+        86
+      ]
+    },
+    {
+      "id": "step:select-wallet-map-query:select-wallet-region-clusters",
+      "type": "step",
+      "name": "Select Wallet Region Clusters",
+      "summary": "Up to zoom 15 with more than 2000 tokens, SQLCase1WithZoomTarget joins tree_region to trees, wallet.token, and wallet.wallet and filters by wallet.wallet.name.",
+      "tags": [
+        "clustering",
+        "wallet-filter"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/sqls/SQLCase1.js",
+      "lineRange": [
+        21,
+        48
+      ]
+    },
+    {
+      "id": "step:select-wallet-map-query:cluster-wallet-trees-on-the-fly",
+      "type": "step",
+      "name": "Cluster Wallet Trees On The Fly",
+      "summary": "With 2000 tokens or fewer, SQLCase3.getJoin adds the wallet.token and wallet.wallet joins, and SQLCase3.getQuery clusters the matching active trees with ST_ClusterWithin.",
+      "tags": [
+        "clustering",
+        "wallet-filter"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/sqls/SQLCase3.js",
+      "lineRange": [
+        134,
+        150
+      ]
+    },
+    {
+      "id": "flow:select-organization-map-query",
+      "type": "flow",
+      "name": "Select Organization Map Query",
+      "summary": "For a map_name (organization) map, Map.init picks tree points, on-the-fly clusters, or region clusters by zoom, and every builder limits the trees to the organization hierarchy. Up to zoom 15, organization maps always use the tile bounds.",
+      "tags": [
+        "query-planning",
+        "organization-map",
+        "recursive-cte"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "Map.init with map_name (tile query parameter map_name)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:select-organization-map-query:pick-builder-by-zoom",
+      "type": "step",
+      "name": "Pick Builder By Zoom",
+      "summary": "init uses SQLCase2 above zoom 15, SQLCase3 for zoom 12 to 15 unless the map_name is freetown or ffcphase1, and SQLCase1WithZoomTarget otherwise.",
+      "tags": [
+        "dispatcher",
+        "zoom-level"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/Map.js",
+      "lineRange": [
+        105,
+        124
+      ]
+    },
+    {
+      "id": "step:select-organization-map-query:resolve-organization-trees",
+      "type": "step",
+      "name": "Resolve Organization Trees",
+      "summary": "getWith builds a recursive organization_children CTE over entity_relationship from the entity with that map_name. The org_tree_id CTE holds the trees of planters in the first 20 of these organizations plus the trees whose planting_organization_id is the map_name entity.",
+      "tags": [
+        "recursive-cte",
+        "organization-filter"
+      ],
+      "complexity": "complex",
+      "filePath": "greenstand/sqls/SQLCase1.js",
+      "lineRange": [
+        80,
+        116
+      ]
+    },
+    {
+      "id": "step:select-organization-map-query:filter-organization-tree-points",
+      "type": "step",
+      "name": "Filter Organization Tree Points",
+      "summary": "Above zoom 15, SQLCase2 keeps the trees whose planter is in the planter_in_org CTE or whose planting organization has the map_name.",
+      "tags": [
+        "tree-points",
+        "organization-filter"
+      ],
+      "complexity": "moderate",
+      "filePath": "greenstand/sqls/SQLCase2.js",
+      "lineRange": [
+        44,
+        70
+      ]
+    },
+    {
+      "id": "step:select-organization-map-query:cluster-organization-trees-on-the-fly",
+      "type": "step",
+      "name": "Cluster Organization Trees On The Fly",
+      "summary": "For zoom 12 to 15, SQLCase3 joins the trees to org_tree_id and clusters them with ST_ClusterWithin inside the bounds.",
+      "tags": [
+        "clustering",
+        "postgis"
+      ],
+      "complexity": "moderate",
+      "filePath": "greenstand/sqls/SQLCase3.js",
+      "lineRange": [
+        172,
+        198
+      ]
+    },
+    {
+      "id": "step:select-organization-map-query:add-organization-zoom-targets",
+      "type": "step",
+      "name": "Add Organization Zoom Targets",
+      "summary": "Below zoom 12, and for freetown and ffcphase1 from zoom 12 to 15, SQLCase1WithZoomTarget counts the organization trees per region through the org_tree_id join and adds zoom_to centroids up to MAXIMUM_ZOOM_LEVEL_HANDLING_ZOOM_TARGET.",
+      "tags": [
+        "zoom-target",
+        "organization-filter"
+      ],
+      "complexity": "complex",
+      "filePath": "greenstand/sqls/SQLCase1WithZoomTarget.js",
+      "lineRange": [
+        6,
+        83
+      ]
+    },
+    {
+      "id": "flow:select-timeline-map-query",
+      "type": "flow",
+      "name": "Select Timeline Map Query",
+      "summary": "For a timeline map, Map.init picks a timeline builder by zoom. Each builder keeps only the trees whose time_created is between the two dates of a 'YYYY-MM-DD_YYYY-MM-DD' value.",
+      "tags": [
+        "query-planning",
+        "timeline-filter",
+        "date-range"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Map.init with timeline (tile query parameter timeline)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:select-timeline-map-query:pick-builder-by-zoom",
+      "type": "step",
+      "name": "Pick Builder By Zoom",
+      "summary": "init uses SQLCase2Timeline above zoom 15, SQLCase3Timeline for zoom 12 to 15, and SQLCase1Timeline below zoom 12.",
+      "tags": [
+        "dispatcher",
+        "zoom-level"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/Map.js",
+      "lineRange": [
+        125,
+        140
+      ]
+    },
+    {
+      "id": "step:select-timeline-map-query:validate-timeline",
+      "type": "step",
+      "name": "Validate Timeline",
+      "summary": "addTimeline calls checkTimeline, which throws 'Wrong timeline' unless the value matches YYYY-MM-DD_YYYY-MM-DD. SQLCase3Timeline has the same check, but SQLCase2Timeline does not check the value.",
+      "tags": [
+        "validation",
+        "timeline-filter"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/sqls/SQLCase1Timeline.js",
+      "lineRange": [
+        10,
+        19
+      ]
+    },
+    {
+      "id": "step:select-timeline-map-query:count-region-trees-in-range",
+      "type": "step",
+      "name": "Count Region Trees In Range",
+      "summary": "SQLCase1Timeline replaces the parent joins with one join from tree_region to trees and adds trees.time_created > begin AND trees.time_created < end to the region counts.",
+      "tags": [
+        "clustering",
+        "date-range"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/sqls/SQLCase1Timeline.js",
+      "lineRange": [
+        21,
+        40
+      ]
+    },
+    {
+      "id": "step:select-timeline-map-query:cluster-trees-in-range",
+      "type": "step",
+      "name": "Cluster Trees In Range",
+      "summary": "SQLCase3Timeline drops all joins and filters trees.time_created by the range. The inherited SQLCase3.getQuery then clusters the trees with ST_ClusterWithin.",
+      "tags": [
+        "clustering",
+        "date-range"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/sqls/SQLCase3Timeline.js",
+      "lineRange": [
+        22,
+        43
+      ]
+    },
+    {
+      "id": "step:select-timeline-map-query:select-tree-points-in-range",
+      "type": "step",
+      "name": "Select Tree Points In Range",
+      "summary": "SQLCase2Timeline selects the id, lat, and lon of active trees in the bounds and the date range. It returns a {text, values} object instead of a SQL string, which the PostGIS style step cannot use.",
+      "tags": [
+        "tree-points",
+        "date-range"
+      ],
+      "complexity": "simple",
+      "filePath": "greenstand/sqls/SQLCase2Timeline.js",
+      "lineRange": [
+        38,
+        58
+      ]
+    },
+    {
+      "id": "flow:release-and-deploy-to-development",
+      "type": "flow",
+      "name": "Release And Deploy To Development",
+      "summary": "On a push to master or next, build-deploy.yml cuts a semantic-release version, builds the Docker image, pushes it to DockerHub with the package.json version as the tag, and applies the development overlay to the DigitalOcean cluster.",
+      "tags": [
+        "ci-cd",
+        "semantic-release",
+        "docker",
+        "kubernetes"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "push to master or next (.github/workflows/build-deploy.yml)",
+        "entryType": "event"
+      }
+    },
+    {
+      "id": "step:release-and-deploy-to-development:cut-semantic-release",
+      "type": "step",
+      "name": "Cut Semantic Release",
+      "summary": "The build job installs semantic-release on Node 18 and runs it. The .releaserc rules release from master, publish prereleases from next, and commit package.json and CHANGELOG.md as 'chore(release): <version> [skip ci]'.",
+      "tags": [
+        "semantic-release",
+        "versioning"
+      ],
+      "complexity": "moderate",
+      "filePath": ".github/workflows/build-deploy.yml",
+      "lineRange": [
+        14,
+        30
+      ]
+    },
+    {
+      "id": "step:release-and-deploy-to-development:read-package-version",
+      "type": "step",
+      "name": "Read Package Version",
+      "summary": "npm-get-version-action reads the version from package.json for the image tag.",
+      "tags": [
+        "versioning"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/build-deploy.yml",
+      "lineRange": [
+        38,
+        42
+      ]
+    },
+    {
+      "id": "step:release-and-deploy-to-development:build-container-image",
+      "type": "step",
+      "name": "Build Container Image",
+      "summary": "The Dockerfile starts from greenstand/tile-server-base:first, copies the repo to /app, installs build-essential, zlib1g-dev, ca-certificates, and Node.js 14.21.3, runs make release_base, and sets npm start as the command.",
+      "tags": [
+        "docker",
+        "containerization"
+      ],
+      "complexity": "moderate",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        1,
+        13
+      ]
+    },
+    {
+      "id": "step:release-and-deploy-to-development:compile-native-binding",
+      "type": "step",
+      "name": "Compile Native Binding",
+      "summary": "make release_base installs node-pre-gyp with npm install --ignore-scripts --clang, checks that mapnik-config is on the PATH, and runs node-pre-gyp configure build with the glibc workaround.",
+      "tags": [
+        "native-build",
+        "node-pre-gyp"
+      ],
+      "complexity": "moderate",
+      "filePath": "Makefile",
+      "lineRange": [
+        16,
+        29
+      ]
+    },
+    {
+      "id": "step:release-and-deploy-to-development:push-image-to-dockerhub",
+      "type": "step",
+      "name": "Push Image To DockerHub",
+      "summary": "The job sets up QEMU and Buildx, logs in to DockerHub, builds the Dockerfile, pushes greenstand/treetracker-map-tile-server:<version>, and saves the tag as an artifact.",
+      "tags": [
+        "docker",
+        "registry"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/build-deploy.yml",
+      "lineRange": [
+        43,
+        67
+      ]
+    },
+    {
+      "id": "step:release-and-deploy-to-development:set-image-tag-in-base",
+      "type": "step",
+      "name": "Set Image Tag In Base",
+      "summary": "The deploy job downloads the tag artifact, installs kustomize, and runs kustomize edit set image in deployment/base.",
+      "tags": [
+        "kustomize",
+        "image-tag"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/build-deploy.yml",
+      "lineRange": [
+        70,
+        98
+      ]
+    },
+    {
+      "id": "step:release-and-deploy-to-development:apply-development-overlay",
+      "type": "step",
+      "name": "Apply Development Overlay",
+      "summary": "The job saves the kubeconfig of the DEV_CLUSTER_NAME cluster with doctl and applies kustomize build deployment/overlays/development to the tile-server namespace with kubectl apply --wait.",
+      "tags": [
+        "kubernetes",
+        "deployment"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/build-deploy.yml",
+      "lineRange": [
+        99,
+        106
+      ]
+    },
+    {
+      "id": "flow:deploy-tag-to-test",
+      "type": "flow",
+      "name": "Deploy Tag To Test",
+      "summary": "A manual run of deploy-test.yml checks out a chosen git tag and applies the test overlay with the package.json version of that tag as the image tag. The workflow does not build an image, so the image for that version must already be in DockerHub.",
+      "tags": [
+        "ci-cd",
+        "test-environment",
+        "kubernetes"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "workflow_dispatch with input git-tag (.github/workflows/deploy-test.yml)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:deploy-tag-to-test:check-out-chosen-tag",
+      "type": "step",
+      "name": "Check Out Chosen Tag",
+      "summary": "The job checks out the git-tag input and reads the package.json version.",
+      "tags": [
+        "git",
+        "versioning"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/deploy-test.yml",
+      "lineRange": [
+        21,
+        28
+      ]
+    },
+    {
+      "id": "step:deploy-tag-to-test:set-image-tag-in-base",
+      "type": "step",
+      "name": "Set Image Tag In Base",
+      "summary": "The job installs kustomize and sets greenstand/treetracker-map-tile-server:<version> as the image in deployment/base.",
+      "tags": [
+        "kustomize",
+        "image-tag"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/deploy-test.yml",
+      "lineRange": [
+        29,
+        32
+      ]
+    },
+    {
+      "id": "step:deploy-tag-to-test:connect-to-test-cluster",
+      "type": "step",
+      "name": "Connect To Test Cluster",
+      "summary": "doctl authenticates with the DIGITALOCEAN_TOKEN secret and saves the kubeconfig of the TEST_CLUSTER_NAME cluster.",
+      "tags": [
+        "kubernetes",
+        "credentials"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/deploy-test.yml",
+      "lineRange": [
+        33,
+        38
+      ]
+    },
+    {
+      "id": "step:deploy-tag-to-test:apply-test-overlay",
+      "type": "step",
+      "name": "Apply Test Overlay",
+      "summary": "The job applies kustomize build deployment/overlays/test to the tile-server namespace.",
+      "tags": [
+        "kubernetes",
+        "deployment"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/deploy-test.yml",
+      "lineRange": [
+        39,
+        40
+      ]
+    },
+    {
+      "id": "step:deploy-tag-to-test:patch-test-deployment",
+      "type": "step",
+      "name": "Patch Test Deployment",
+      "summary": "The test overlay patch runs 6 replicas, sets MAXIMUM_ZOOM_LEVEL_USING_GLOBAL_DATASET to 8 so that tiles up to zoom 8 use the global dataset, and keeps MAXIMUM_ZOOM_LEVEL_HANDLING_ZOOM_TARGET at 6.",
+      "tags": [
+        "kustomize-patch",
+        "scaling"
+      ],
+      "complexity": "simple",
+      "filePath": "deployment/overlays/test/deployment.yaml",
+      "lineRange": [
+        1,
+        17
+      ]
+    },
+    {
+      "id": "flow:promote-tag-to-production",
+      "type": "flow",
+      "name": "Promote Tag To Production",
+      "summary": "A manual run of deploy-prod.yml checks out a chosen git tag and applies the production overlay to the production cluster with the package.json version of that tag as the image tag.",
+      "tags": [
+        "ci-cd",
+        "production",
+        "kubernetes"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "workflow_dispatch with input git-tag (.github/workflows/deploy-prod.yml)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:promote-tag-to-production:check-out-chosen-tag",
+      "type": "step",
+      "name": "Check Out Chosen Tag",
+      "summary": "The job checks out the git-tag input with actions/checkout@v4 and reads the package.json version.",
+      "tags": [
+        "git",
+        "versioning"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/deploy-prod.yml",
+      "lineRange": [
+        21,
+        28
+      ]
+    },
+    {
+      "id": "step:promote-tag-to-production:set-image-tag-in-base",
+      "type": "step",
+      "name": "Set Image Tag In Base",
+      "summary": "The job installs kustomize and sets greenstand/treetracker-map-tile-server:<version> as the image in deployment/base.",
+      "tags": [
+        "kustomize",
+        "image-tag"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/deploy-prod.yml",
+      "lineRange": [
+        29,
+        32
+      ]
+    },
+    {
+      "id": "step:promote-tag-to-production:connect-to-production-cluster",
+      "type": "step",
+      "name": "Connect To Production Cluster",
+      "summary": "doctl authenticates with the DIGITALOCEAN_PRODUCTION_TOKEN secret and saves the kubeconfig of the PRODUCTION_CLUSTER_NAME cluster.",
+      "tags": [
+        "kubernetes",
+        "credentials"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/deploy-prod.yml",
+      "lineRange": [
+        33,
+        38
+      ]
+    },
+    {
+      "id": "step:promote-tag-to-production:apply-production-overlay",
+      "type": "step",
+      "name": "Apply Production Overlay",
+      "summary": "The job applies kustomize build deployment/overlays/production to the tile-server namespace.",
+      "tags": [
+        "kubernetes",
+        "deployment"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/deploy-prod.yml",
+      "lineRange": [
+        39,
+        40
+      ]
+    },
+    {
+      "id": "step:promote-tag-to-production:patch-production-resources",
+      "type": "step",
+      "name": "Patch Production Resources",
+      "summary": "The production overlay runs 2 replicas with a 100m CPU request, a 768Mi memory request, a 1536Mi memory limit, and no CPU limit, and sets MAXIMUM_ZOOM_LEVEL_USING_GLOBAL_DATASET to 15. A comment asks to cap the glibc malloc arenas, but the env list has no variable for that.",
+      "tags": [
+        "resource-limits",
+        "kustomize-patch"
+      ],
+      "complexity": "moderate",
+      "filePath": "deployment/overlays/production/deployment.yaml",
+      "lineRange": [
+        1,
+        56
+      ]
+    },
+    {
+      "id": "step:promote-tag-to-production:patch-production-route",
+      "type": "step",
+      "name": "Patch Production Route",
+      "summary": "The production Mapping patch turns off the gateway timeout (timeout_ms 0) and allows only GET requests from https://prod-k8s.treetracker.org.",
+      "tags": [
+        "api-gateway",
+        "cors"
+      ],
+      "complexity": "simple",
+      "filePath": "deployment/overlays/production/mapping.yaml",
+      "lineRange": [
+        1,
+        13
+      ]
+    },
+    {
+      "id": "flow:redeploy-tag-to-development",
+      "type": "flow",
+      "name": "Redeploy Tag To Development",
+      "summary": "A manual run of deploy-dev.yml applies the development overlay again for a chosen git tag. deploy-dev-next.yml is a similar workflow for the tile-server-next namespace, but the deployment-next/ directory that it uses is not in the repo.",
+      "tags": [
+        "ci-cd",
+        "development-environment",
+        "kubernetes"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "workflow_dispatch with input git-tag (.github/workflows/deploy-dev.yml)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:redeploy-tag-to-development:check-out-chosen-tag",
+      "type": "step",
+      "name": "Check Out Chosen Tag",
+      "summary": "The job checks out the git-tag input and reads the package.json version.",
+      "tags": [
+        "git",
+        "versioning"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/deploy-dev.yml",
+      "lineRange": [
+        21,
+        28
+      ]
+    },
+    {
+      "id": "step:redeploy-tag-to-development:set-image-tag-in-base",
+      "type": "step",
+      "name": "Set Image Tag In Base",
+      "summary": "The job installs kustomize and sets greenstand/treetracker-map-tile-server:<version> as the image in deployment/base.",
+      "tags": [
+        "kustomize",
+        "image-tag"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/deploy-dev.yml",
+      "lineRange": [
+        29,
+        32
+      ]
+    },
+    {
+      "id": "step:redeploy-tag-to-development:connect-to-cluster",
+      "type": "step",
+      "name": "Connect To Cluster",
+      "summary": "doctl saves the kubeconfig of the cluster in the TEST_CLUSTER_NAME secret, not DEV_CLUSTER_NAME as build-deploy.yml uses.",
+      "tags": [
+        "kubernetes",
+        "credentials"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/deploy-dev.yml",
+      "lineRange": [
+        33,
+        38
+      ]
+    },
+    {
+      "id": "step:redeploy-tag-to-development:apply-development-overlay",
+      "type": "step",
+      "name": "Apply Development Overlay",
+      "summary": "The job applies kustomize build deployment/overlays/development to the tile-server namespace.",
+      "tags": [
+        "kubernetes",
+        "deployment"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/deploy-dev.yml",
+      "lineRange": [
+        39,
+        40
+      ]
+    },
+    {
+      "id": "flow:route-gateway-tile-traffic",
+      "type": "flow",
+      "name": "Route Gateway Tile Traffic",
+      "summary": "In the cluster, the Ambassador Mapping sends requests under /tiles/ to the treetracker-tile-server Service, which forwards them to the Express server on container port 3000.",
+      "tags": [
+        "api-gateway",
+        "kubernetes",
+        "routing"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "HTTP request to /tiles/{z}/{x}/{y}.png or /tiles/{z}/{x}/{y}.grid.json on the cluster gateway",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:route-gateway-tile-traffic:match-tiles-prefix",
+      "type": "step",
+      "name": "Match Tiles Prefix",
+      "summary": "The base Mapping matches the /tiles/ prefix, rewrites it to /, and allows 60000 ms per request, so that slow renders do not time out at the gateway.",
+      "tags": [
+        "ambassador",
+        "routing"
+      ],
+      "complexity": "simple",
+      "filePath": "deployment/base/mapping.yaml",
+      "lineRange": [
+        1,
+        9
+      ]
+    },
+    {
+      "id": "step:route-gateway-tile-traffic:apply-environment-cors-policy",
+      "type": "step",
+      "name": "Apply Environment CORS Policy",
+      "summary": "The development Mapping patch allows any origin with GET, POST, PATCH, PUT, and OPTIONS. The test and production patches allow only GET, from test-k8s.treetracker.org and prod-k8s.treetracker.org.",
+      "tags": [
+        "cors",
+        "ambassador"
+      ],
+      "complexity": "simple",
+      "filePath": "deployment/overlays/development/mapping.yaml",
+      "lineRange": [
+        1,
+        11
+      ]
+    },
+    {
+      "id": "step:route-gateway-tile-traffic:forward-to-service",
+      "type": "step",
+      "name": "Forward To Service",
+      "summary": "The Service selects the pods with app=treetracker-tile-server and forwards port 80 to target port 3000.",
+      "tags": [
+        "networking",
+        "service-discovery"
+      ],
+      "complexity": "simple",
+      "filePath": "deployment/base/service.yaml",
+      "lineRange": [
+        1,
+        12
+      ]
+    },
+    {
+      "id": "step:route-gateway-tile-traffic:run-tile-server-container",
+      "type": "step",
+      "name": "Run Tile Server Container",
+      "summary": "The Deployment runs the greenstand/treetracker-map-tile-server image with PORT 3000, PG_POOL_SIZE 20, CACHE_SIZE 10000, CACHE_EXPIRE 60000, both zoom thresholds at 6, and DB_URL from the db key of the database-connection SealedSecret. It declares containerPort 80, but the server listens on PORT 3000.",
+      "tags": [
+        "kubernetes",
+        "environment-variables"
+      ],
+      "complexity": "moderate",
+      "filePath": "deployment/base/deployment.yaml",
+      "lineRange": [
+        37,
+        61
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:map-tile-serving",
+      "target": "flow:start-tile-server",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:start-tile-server",
+      "target": "step:start-tile-server:load-environment",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:start-tile-server",
+      "target": "step:start-tile-server:create-database-pool",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:start-tile-server",
+      "target": "step:start-tile-server:register-mapnik-resources",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:start-tile-server",
+      "target": "step:start-tile-server:mount-middleware",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:start-tile-server",
+      "target": "step:start-tile-server:assert-zoom-thresholds",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:start-tile-server",
+      "target": "step:start-tile-server:listen-on-port",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:map-tile-serving",
+      "target": "flow:render-png-map-tile",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:render-png-map-tile",
+      "target": "step:render-png-map-tile:receive-tile-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:render-png-map-tile",
+      "target": "step:render-png-map-tile:compute-sql-bounds",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:render-png-map-tile",
+      "target": "step:render-png-map-tile:request-tile-style",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:render-png-map-tile",
+      "target": "step:render-png-map-tile:parse-style-into-map",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:render-png-map-tile",
+      "target": "step:render-png-map-tile:set-tile-extent",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:render-png-map-tile",
+      "target": "step:render-png-map-tile:render-tile-image",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:render-png-map-tile",
+      "target": "step:render-png-map-tile:encode-png",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:render-png-map-tile",
+      "target": "step:render-png-map-tile:send-png-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:map-tile-serving",
+      "target": "flow:render-utf-grid-tile",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:render-utf-grid-tile",
+      "target": "step:render-utf-grid-tile:build-map-instance",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:render-utf-grid-tile",
+      "target": "step:render-utf-grid-tile:choose-grid-fields",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:render-utf-grid-tile",
+      "target": "step:render-utf-grid-tile:render-layer-into-grid",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:render-utf-grid-tile",
+      "target": "step:render-utf-grid-tile:encode-utf-grid",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:render-utf-grid-tile",
+      "target": "step:render-utf-grid-tile:send-grid-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:map-tile-serving",
+      "target": "flow:report-server-version",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:report-server-version",
+      "target": "step:report-server-version:fall-through-tile-routes",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:report-server-version",
+      "target": "step:report-server-version:read-package-version",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:report-server-version",
+      "target": "step:report-server-version:send-version-banner",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "domain:tile-stylesheet-composition",
+      "target": "flow:compose-geojson-cluster-style",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:compose-geojson-cluster-style",
+      "target": "step:compose-geojson-cluster-style:decide-geojson-mode",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:compose-geojson-cluster-style",
+      "target": "step:compose-geojson-cluster-style:decide-bounds-use",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:compose-geojson-cluster-style",
+      "target": "step:compose-geojson-cluster-style:plan-tile-sql",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:compose-geojson-cluster-style",
+      "target": "step:compose-geojson-cluster-style:select-geojson-template",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:compose-geojson-cluster-style",
+      "target": "step:compose-geojson-cluster-style:fetch-rows-through-cache",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:compose-geojson-cluster-style",
+      "target": "step:compose-geojson-cluster-style:build-feature-collection",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:compose-geojson-cluster-style",
+      "target": "step:compose-geojson-cluster-style:inject-geojson-into-template",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:compose-geojson-cluster-style",
+      "target": "step:compose-geojson-cluster-style:enforce-size-limit",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:tile-stylesheet-composition",
+      "target": "flow:compose-postgis-tree-style",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:compose-postgis-tree-style",
+      "target": "step:compose-postgis-tree-style:plan-tile-sql",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:compose-postgis-tree-style",
+      "target": "step:compose-postgis-tree-style:select-postgis-template",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:compose-postgis-tree-style",
+      "target": "step:compose-postgis-tree-style:fill-database-credentials",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:compose-postgis-tree-style",
+      "target": "step:compose-postgis-tree-style:inject-tile-sql",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "domain:tile-stylesheet-composition",
+      "target": "flow:cache-and-coalesce-tile-queries",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:cache-and-coalesce-tile-queries",
+      "target": "step:cache-and-coalesce-tile-queries:check-lru-cache",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:cache-and-coalesce-tile-queries",
+      "target": "step:cache-and-coalesce-tile-queries:queue-callback-by-sql",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:cache-and-coalesce-tile-queries",
+      "target": "step:cache-and-coalesce-tile-queries:run-one-database-query",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:cache-and-coalesce-tile-queries",
+      "target": "step:cache-and-coalesce-tile-queries:post-process-result",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:cache-and-coalesce-tile-queries",
+      "target": "step:cache-and-coalesce-tile-queries:drain-queue-and-store-result",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:cache-and-coalesce-tile-queries",
+      "target": "step:cache-and-coalesce-tile-queries:reject-waiting-requests-on-error",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:tree-query-selection",
+      "target": "flow:select-default-map-query",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:select-default-map-query",
+      "target": "step:select-default-map-query:read-map-settings",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:select-default-map-query",
+      "target": "step:select-default-map-query:pick-builder-by-zoom",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:select-default-map-query",
+      "target": "step:select-default-map-query:select-tree-points",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:select-default-map-query",
+      "target": "step:select-default-map-query:read-precomputed-clusters",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:select-default-map-query",
+      "target": "step:select-default-map-query:count-trees-per-region",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:select-default-map-query",
+      "target": "step:select-default-map-query:add-zoom-targets",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:tree-query-selection",
+      "target": "flow:select-planter-map-query",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:select-planter-map-query",
+      "target": "step:select-planter-map-query:count-planter-trees",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:select-planter-map-query",
+      "target": "step:select-planter-map-query:select-planter-tree-points",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:select-planter-map-query",
+      "target": "step:select-planter-map-query:select-planter-region-clusters",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:select-planter-map-query",
+      "target": "step:select-planter-map-query:cluster-planter-trees-on-the-fly",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "domain:tree-query-selection",
+      "target": "flow:select-wallet-map-query",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:select-wallet-map-query",
+      "target": "step:select-wallet-map-query:count-wallet-tokens",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:select-wallet-map-query",
+      "target": "step:select-wallet-map-query:select-wallet-tree-points",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:select-wallet-map-query",
+      "target": "step:select-wallet-map-query:select-wallet-region-clusters",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:select-wallet-map-query",
+      "target": "step:select-wallet-map-query:cluster-wallet-trees-on-the-fly",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "domain:tree-query-selection",
+      "target": "flow:select-organization-map-query",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:select-organization-map-query",
+      "target": "step:select-organization-map-query:pick-builder-by-zoom",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:select-organization-map-query",
+      "target": "step:select-organization-map-query:resolve-organization-trees",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:select-organization-map-query",
+      "target": "step:select-organization-map-query:filter-organization-tree-points",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:select-organization-map-query",
+      "target": "step:select-organization-map-query:cluster-organization-trees-on-the-fly",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:select-organization-map-query",
+      "target": "step:select-organization-map-query:add-organization-zoom-targets",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:tree-query-selection",
+      "target": "flow:select-timeline-map-query",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:select-timeline-map-query",
+      "target": "step:select-timeline-map-query:pick-builder-by-zoom",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:select-timeline-map-query",
+      "target": "step:select-timeline-map-query:validate-timeline",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:select-timeline-map-query",
+      "target": "step:select-timeline-map-query:count-region-trees-in-range",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:select-timeline-map-query",
+      "target": "step:select-timeline-map-query:cluster-trees-in-range",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:select-timeline-map-query",
+      "target": "step:select-timeline-map-query:select-tree-points-in-range",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:release-and-deployment",
+      "target": "flow:release-and-deploy-to-development",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:release-and-deploy-to-development",
+      "target": "step:release-and-deploy-to-development:cut-semantic-release",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:release-and-deploy-to-development",
+      "target": "step:release-and-deploy-to-development:read-package-version",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:release-and-deploy-to-development",
+      "target": "step:release-and-deploy-to-development:build-container-image",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:release-and-deploy-to-development",
+      "target": "step:release-and-deploy-to-development:compile-native-binding",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:release-and-deploy-to-development",
+      "target": "step:release-and-deploy-to-development:push-image-to-dockerhub",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:release-and-deploy-to-development",
+      "target": "step:release-and-deploy-to-development:set-image-tag-in-base",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:release-and-deploy-to-development",
+      "target": "step:release-and-deploy-to-development:apply-development-overlay",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:release-and-deployment",
+      "target": "flow:deploy-tag-to-test",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:deploy-tag-to-test",
+      "target": "step:deploy-tag-to-test:check-out-chosen-tag",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:deploy-tag-to-test",
+      "target": "step:deploy-tag-to-test:set-image-tag-in-base",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:deploy-tag-to-test",
+      "target": "step:deploy-tag-to-test:connect-to-test-cluster",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:deploy-tag-to-test",
+      "target": "step:deploy-tag-to-test:apply-test-overlay",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:deploy-tag-to-test",
+      "target": "step:deploy-tag-to-test:patch-test-deployment",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:release-and-deployment",
+      "target": "flow:promote-tag-to-production",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:promote-tag-to-production",
+      "target": "step:promote-tag-to-production:check-out-chosen-tag",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:promote-tag-to-production",
+      "target": "step:promote-tag-to-production:set-image-tag-in-base",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:promote-tag-to-production",
+      "target": "step:promote-tag-to-production:connect-to-production-cluster",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:promote-tag-to-production",
+      "target": "step:promote-tag-to-production:apply-production-overlay",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:promote-tag-to-production",
+      "target": "step:promote-tag-to-production:patch-production-resources",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:promote-tag-to-production",
+      "target": "step:promote-tag-to-production:patch-production-route",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:release-and-deployment",
+      "target": "flow:redeploy-tag-to-development",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:redeploy-tag-to-development",
+      "target": "step:redeploy-tag-to-development:check-out-chosen-tag",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:redeploy-tag-to-development",
+      "target": "step:redeploy-tag-to-development:set-image-tag-in-base",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:redeploy-tag-to-development",
+      "target": "step:redeploy-tag-to-development:connect-to-cluster",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:redeploy-tag-to-development",
+      "target": "step:redeploy-tag-to-development:apply-development-overlay",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "domain:release-and-deployment",
+      "target": "flow:route-gateway-tile-traffic",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:route-gateway-tile-traffic",
+      "target": "step:route-gateway-tile-traffic:match-tiles-prefix",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:route-gateway-tile-traffic",
+      "target": "step:route-gateway-tile-traffic:apply-environment-cors-policy",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:route-gateway-tile-traffic",
+      "target": "step:route-gateway-tile-traffic:forward-to-service",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:route-gateway-tile-traffic",
+      "target": "step:route-gateway-tile-traffic:run-tile-server-container",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "domain:map-tile-serving",
+      "target": "domain:tile-stylesheet-composition",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "buildMapInstance calls Config.getXMLString with the zoom, the buffered bounds, and the query parameters to get the Mapnik XML for each tile.",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:tile-stylesheet-composition",
+      "target": "domain:tree-query-selection",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Config.getXMLString creates a Map query planner on the shared pg Pool, calls init with zoom, userid, wallet, timeline, map_name, and bounds, and takes the tile SQL from getQuery.",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:release-and-deployment",
+      "target": "domain:map-tile-serving",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The image runs npm start (greenstand/server.js), the Deployment sets PORT and PG_POOL_SIZE, and the Ambassador Mapping and Service route /tiles/ requests to the Express tile routes on port 3000.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:release-and-deployment",
+      "target": "domain:tile-stylesheet-composition",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The Deployment injects DB_URL from the database-connection SealedSecret, which replace() writes into the PostGIS templates, and sets CACHE_SIZE, CACHE_EXPIRE, and MAXIMUM_ZOOM_LEVEL_USING_GLOBAL_DATASET for PGPool and checkUseBounds.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:release-and-deployment",
+      "target": "domain:tree-query-selection",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The Deployment sets MAXIMUM_ZOOM_LEVEL_HANDLING_ZOOM_TARGET, which decides up to which zoom SQLCase1WithZoomTarget adds zoom_to centroids.",
+      "weight": 0.4
+    }
+  ],
+  "layers": [],
+  "tour": []
+}

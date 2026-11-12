@@ -1,0 +1,1370 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-api",
+    "languages": [
+      "javascript",
+      "sql"
+    ],
+    "frameworks": [
+      "Express",
+      "Knex",
+      "Joi",
+      "Rascal/amqplib",
+      "Swagger"
+    ],
+    "description": "Greenstand TreeTracker API: manages the flow of field-collected tree plantings from grower-submitted captures through spatial matching into verified trees, with tagging, grower accounts, S3 image storage, and an asynchronous domain-event backbone over RabbitMQ.",
+    "analyzedAt": "2026-09-02T21:42:21.471896Z",
+    "gitCommitHash": "85258c8ee5f1cae66a3de3e7d8b3b37faf1ae35c"
+  },
+  "nodes": [
+    {
+      "id": "domain:capture-management",
+      "type": "domain",
+      "name": "Capture Management",
+      "summary": "Handles ingestion and lifecycle of captures, the field photos submitted when a grower plants a tree. Validates and persists capture records, then raises capture-created domain events for downstream matching and verification.",
+      "tags": [
+        "captures",
+        "ingestion",
+        "field-data",
+        "validation"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Capture",
+          "CaptureTag",
+          "DomainEvent"
+        ],
+        "businessRules": [
+          "A capture must pass Joi validation before persistence",
+          "Capture writes run inside a DB transaction",
+          "Creating a capture raises a capture-created domain event"
+        ],
+        "crossDomainInteractions": [
+          "Publishes capture-created events to Domain Events & Messaging",
+          "Feeds captures into Tree Management for potential-match resolution",
+          "Associates tags via Tagging"
+        ]
+      }
+    },
+    {
+      "id": "domain:tree-management",
+      "type": "domain",
+      "name": "Tree Management",
+      "summary": "Manages verified trees (matched plantings) including CRUD, spatial potential-match resolution between captures and trees via PostGIS, and legacy-tree approval against the legacy TreeTracker API.",
+      "tags": [
+        "trees",
+        "matching",
+        "postgis",
+        "verification"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Tree",
+          "TreeTag"
+        ],
+        "businessRules": [
+          "Potential matches resolve captures to trees using spatial (PostGIS) queries",
+          "Tree creation raises a tree-created domain event",
+          "Legacy trees are approved through an authenticated external API call"
+        ],
+        "crossDomainInteractions": [
+          "Consumes captures from Capture Management for matching",
+          "Publishes tree-created events to Domain Events & Messaging",
+          "Associates tags via Tagging"
+        ]
+      }
+    },
+    {
+      "id": "domain:grower-account-management",
+      "type": "domain",
+      "name": "Grower Account Management",
+      "summary": "Manages grower accounts, the people who plant and photograph trees, including list, create, update, and upsert operations. Also handles grower profile images stored in S3 object storage.",
+      "tags": [
+        "growers",
+        "accounts",
+        "profiles",
+        "image-upload"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "GrowerAccount",
+          "GrowerAccountImage"
+        ],
+        "businessRules": [
+          "Grower accounts support idempotent upsert",
+          "Grower images are stored in S3, not the database",
+          "Image upload and record persistence are transactional with rollback and temp-file cleanup on failure"
+        ],
+        "crossDomainInteractions": [
+          "Grower accounts are the actors that submit captures in Capture Management"
+        ]
+      }
+    },
+    {
+      "id": "domain:tagging",
+      "type": "domain",
+      "name": "Tagging",
+      "summary": "Maintains the shared tag vocabulary and associates tags with both captures and trees. Provides tag CRUD and the association endpoints used to classify field data.",
+      "tags": [
+        "tags",
+        "classification",
+        "associations",
+        "metadata"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Tag",
+          "CaptureTag",
+          "TreeTag"
+        ],
+        "businessRules": [
+          "Tags are shared across captures and trees",
+          "A tag association links exactly one tag to one capture or tree"
+        ],
+        "crossDomainInteractions": [
+          "Classifies captures owned by Capture Management",
+          "Classifies trees owned by Tree Management"
+        ]
+      }
+    },
+    {
+      "id": "domain:domain-events-messaging",
+      "type": "domain",
+      "name": "Domain Events & Messaging",
+      "summary": "Owns the asynchronous domain event backbone: an event store plus a RabbitMQ (rascal) broker that publishes and subscribes to domain events such as capture-created, tree-created, and raw-capture rejection. Dispatches consumed messages to registered handlers.",
+      "tags": [
+        "events",
+        "messaging",
+        "rabbitmq",
+        "rascal",
+        "async"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "DomainEvent"
+        ],
+        "businessRules": [
+          "Domain events are persisted before publication and marked sent on publish",
+          "Consumed messages are dispatched to a registered handler within a DB session",
+          "Rejected raw captures produce a rejection event"
+        ],
+        "crossDomainInteractions": [
+          "Receives capture-created events from Capture Management",
+          "Receives tree-created events from Tree Management",
+          "Applies consumed events back as capture updates in Capture Management"
+        ]
+      }
+    },
+    {
+      "id": "flow:capture-ingestion",
+      "type": "flow",
+      "name": "Capture Ingestion",
+      "summary": "Validates and persists a new capture, then raises and publishes a capture-created domain event within a transaction.",
+      "tags": [
+        "captures",
+        "create",
+        "transaction",
+        "events"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "POST /captures",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:capture-ingestion:validate-payload",
+      "type": "step",
+      "name": "Validate capture payload",
+      "summary": "Validate the request body against the capture Joi create schema.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/captureHandler/schemas.js"
+    },
+    {
+      "id": "step:capture-ingestion:open-transaction",
+      "type": "step",
+      "name": "Open DB transaction",
+      "summary": "Open a database Session and begin a transaction for the write.",
+      "tags": [
+        "transaction",
+        "session"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/CaptureService.js"
+    },
+    {
+      "id": "step:capture-ingestion:persist-capture",
+      "type": "step",
+      "name": "Persist capture record",
+      "summary": "Create the capture record through the Capture model and repository.",
+      "tags": [
+        "persistence",
+        "captures"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/Capture.js"
+    },
+    {
+      "id": "step:capture-ingestion:raise-event",
+      "type": "step",
+      "name": "Raise capture-created event",
+      "summary": "Emit a capture-created domain event and persist it to the event store.",
+      "tags": [
+        "events",
+        "domain-event"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/DomainEvent.js"
+    },
+    {
+      "id": "step:capture-ingestion:publish-event",
+      "type": "step",
+      "name": "Publish event to queue",
+      "summary": "Publish the capture-created event to RabbitMQ and mark it sent.",
+      "tags": [
+        "messaging",
+        "rabbitmq"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/QueueService.js"
+    },
+    {
+      "id": "step:capture-ingestion:commit",
+      "type": "step",
+      "name": "Commit transaction",
+      "summary": "Commit the transaction, or roll back on failure.",
+      "tags": [
+        "transaction"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/CaptureService.js"
+    },
+    {
+      "id": "flow:capture-query",
+      "type": "flow",
+      "name": "Capture Query",
+      "summary": "Lists captures with filtering, pagination, and next/prev navigation links.",
+      "tags": [
+        "captures",
+        "read",
+        "pagination"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /captures",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:capture-query:parse-filters",
+      "type": "step",
+      "name": "Parse filters and paging",
+      "summary": "Extract filter, limit, and offset options from the query string.",
+      "tags": [
+        "query",
+        "pagination"
+      ],
+      "complexity": "simple",
+      "filePath": "server/utils/helper.js"
+    },
+    {
+      "id": "step:capture-query:query-captures",
+      "type": "step",
+      "name": "Query captures",
+      "summary": "Run the filtered capture query through the repository.",
+      "tags": [
+        "captures",
+        "read"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/repositories/CaptureRepository.js"
+    },
+    {
+      "id": "step:capture-query:count-total",
+      "type": "step",
+      "name": "Count total",
+      "summary": "Count total matching captures for pagination metadata.",
+      "tags": [
+        "pagination",
+        "count"
+      ],
+      "complexity": "simple",
+      "filePath": "server/repositories/CaptureRepository.js"
+    },
+    {
+      "id": "step:capture-query:build-links",
+      "type": "step",
+      "name": "Build next/prev links",
+      "summary": "Build next and prev pagination URLs and return the response.",
+      "tags": [
+        "pagination",
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/utils/helper.js"
+    },
+    {
+      "id": "flow:tree-registration",
+      "type": "flow",
+      "name": "Tree Registration",
+      "summary": "Validates and creates a tree, then publishes a tree-created domain event.",
+      "tags": [
+        "trees",
+        "create",
+        "events"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "POST /trees",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:tree-registration:validate-payload",
+      "type": "step",
+      "name": "Validate tree payload",
+      "summary": "Validate the request body against the tree Joi schema.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/treeHandler/schemas.js"
+    },
+    {
+      "id": "step:tree-registration:open-transaction",
+      "type": "step",
+      "name": "Open DB transaction",
+      "summary": "Open a Session and begin a transaction for the tree write.",
+      "tags": [
+        "transaction"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/TreeService.js"
+    },
+    {
+      "id": "step:tree-registration:persist-tree",
+      "type": "step",
+      "name": "Persist tree record",
+      "summary": "Create the tree record through the Tree model and repository.",
+      "tags": [
+        "persistence",
+        "trees"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/tree.js"
+    },
+    {
+      "id": "step:tree-registration:publish-event",
+      "type": "step",
+      "name": "Publish tree-created event",
+      "summary": "Publish a tree-created domain event to RabbitMQ.",
+      "tags": [
+        "messaging",
+        "events"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/QueueService.js"
+    },
+    {
+      "id": "step:tree-registration:commit",
+      "type": "step",
+      "name": "Commit transaction",
+      "summary": "Commit the transaction, or roll back on failure.",
+      "tags": [
+        "transaction"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/TreeService.js"
+    },
+    {
+      "id": "flow:capture-tree-matching",
+      "type": "flow",
+      "name": "Capture-to-Tree Matching",
+      "summary": "Resolves potential matching trees for a given capture using spatial PostGIS queries.",
+      "tags": [
+        "matching",
+        "postgis",
+        "spatial",
+        "trees"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "GET /trees/potential_matches",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:capture-tree-matching:validate-capture",
+      "type": "step",
+      "name": "Validate capture reference",
+      "summary": "Validate the capture id and match query parameters.",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/treeHandler/index.js"
+    },
+    {
+      "id": "step:capture-tree-matching:spatial-query",
+      "type": "step",
+      "name": "Run spatial match query",
+      "summary": "Run the PostGIS potential-match query against nearby trees.",
+      "tags": [
+        "postgis",
+        "spatial",
+        "matching"
+      ],
+      "complexity": "complex",
+      "filePath": "server/repositories/TreeRepository.js"
+    },
+    {
+      "id": "step:capture-tree-matching:shape-results",
+      "type": "step",
+      "name": "Shape match results",
+      "summary": "Shape the matched trees into the response format.",
+      "tags": [
+        "response",
+        "matching"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/tree.js"
+    },
+    {
+      "id": "flow:legacy-tree-approval",
+      "type": "flow",
+      "name": "Legacy Tree Approval",
+      "summary": "Approves a legacy tree by issuing an authenticated PATCH to the legacy TreeTracker API.",
+      "tags": [
+        "legacy",
+        "integration",
+        "approval"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "event/service",
+        "entryType": "event"
+      }
+    },
+    {
+      "id": "step:legacy-tree-approval:build-payload",
+      "type": "step",
+      "name": "Build approval payload",
+      "summary": "Build the organization approval payload for the legacy tree.",
+      "tags": [
+        "legacy",
+        "payload"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/LegacyAPIService.js"
+    },
+    {
+      "id": "step:legacy-tree-approval:authenticate",
+      "type": "step",
+      "name": "Authenticate request",
+      "summary": "Attach authentication for the legacy API call.",
+      "tags": [
+        "auth",
+        "integration"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/LegacyAPIService.js"
+    },
+    {
+      "id": "step:legacy-tree-approval:send-patch",
+      "type": "step",
+      "name": "Send approval PATCH",
+      "summary": "Issue the authenticated axios PATCH to approve the legacy tree.",
+      "tags": [
+        "http-client",
+        "legacy"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/LegacyAPIService.js"
+    },
+    {
+      "id": "flow:grower-account-upsert",
+      "type": "flow",
+      "name": "Grower Account Upsert",
+      "summary": "Creates or updates a grower account idempotently.",
+      "tags": [
+        "growers",
+        "upsert",
+        "create",
+        "update"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "POST /grower_accounts",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:grower-account-upsert:validate-payload",
+      "type": "step",
+      "name": "Validate grower payload",
+      "summary": "Validate the grower account request body against the Joi schema.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/growerAccountHandler/schemas.js"
+    },
+    {
+      "id": "step:grower-account-upsert:lookup-existing",
+      "type": "step",
+      "name": "Look up existing account",
+      "summary": "Look up any existing grower account to decide create vs update.",
+      "tags": [
+        "lookup",
+        "growers"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/GrowerAccount.js"
+    },
+    {
+      "id": "step:grower-account-upsert:upsert-record",
+      "type": "step",
+      "name": "Upsert account record",
+      "summary": "Create or update the grower account record within a session.",
+      "tags": [
+        "persistence",
+        "upsert"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/GrowerAccountService.js"
+    },
+    {
+      "id": "step:grower-account-upsert:return-account",
+      "type": "step",
+      "name": "Return account",
+      "summary": "Shape and return the grower account response.",
+      "tags": [
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/growerAccountHandler/index.js"
+    },
+    {
+      "id": "flow:grower-image-upload",
+      "type": "flow",
+      "name": "Grower Account Image Upload",
+      "summary": "Uploads a grower profile image to S3 and persists the image record transactionally.",
+      "tags": [
+        "images",
+        "s3",
+        "upload",
+        "growers"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "POST /grower_accounts/{id}/image",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:grower-image-upload:validate-grower",
+      "type": "step",
+      "name": "Validate grower id",
+      "summary": "Validate the grower account id and image request input.",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/growerAccountImageHandler/index.js"
+    },
+    {
+      "id": "step:grower-image-upload:upload-s3",
+      "type": "step",
+      "name": "Upload image to S3",
+      "summary": "Upload the image buffer to the configured S3 bucket.",
+      "tags": [
+        "s3",
+        "upload"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/S3Service.js"
+    },
+    {
+      "id": "step:grower-image-upload:persist-record",
+      "type": "step",
+      "name": "Persist image record",
+      "summary": "Persist the grower account image record within a transaction.",
+      "tags": [
+        "persistence",
+        "images"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/GrowerAccountImageService.js"
+    },
+    {
+      "id": "step:grower-image-upload:rollback-cleanup",
+      "type": "step",
+      "name": "Roll back and clean up",
+      "summary": "On failure, roll back the transaction and clean up temp files.",
+      "tags": [
+        "rollback",
+        "cleanup"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/GrowerAccountImageService.js"
+    },
+    {
+      "id": "flow:tag-management",
+      "type": "flow",
+      "name": "Tag Management",
+      "summary": "Provides CRUD for the shared tag vocabulary.",
+      "tags": [
+        "tags",
+        "crud"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "POST /tags",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:tag-management:validate-tag",
+      "type": "step",
+      "name": "Validate tag payload",
+      "summary": "Validate the tag request body against the Joi schema.",
+      "tags": [
+        "validation",
+        "joi"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/tagHandler/schemas.js"
+    },
+    {
+      "id": "step:tag-management:persist-tag",
+      "type": "step",
+      "name": "Persist tag",
+      "summary": "Create or update the tag through the Tag model.",
+      "tags": [
+        "persistence",
+        "tags"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/Tag.js"
+    },
+    {
+      "id": "step:tag-management:list-tags",
+      "type": "step",
+      "name": "List tags",
+      "summary": "List tags with filtering and pagination.",
+      "tags": [
+        "read",
+        "pagination"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/tagHandler/index.js"
+    },
+    {
+      "id": "flow:capture-tag-assignment",
+      "type": "flow",
+      "name": "Capture Tag Assignment",
+      "summary": "Attaches tags to a capture.",
+      "tags": [
+        "tags",
+        "captures",
+        "association"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "POST /captures/{id}/tags",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:capture-tag-assignment:validate-input",
+      "type": "step",
+      "name": "Validate capture and tags",
+      "summary": "Validate the capture id and the tag association payload.",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/captureHandler/schemas.js"
+    },
+    {
+      "id": "step:capture-tag-assignment:attach-tags",
+      "type": "step",
+      "name": "Attach tags to capture",
+      "summary": "Attach the tags to the capture via the CaptureTag model.",
+      "tags": [
+        "association",
+        "tags"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/CaptureTag.js"
+    },
+    {
+      "id": "step:capture-tag-assignment:return-association",
+      "type": "step",
+      "name": "Return association",
+      "summary": "Return the resulting capture-tag associations.",
+      "tags": [
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/CaptureTagService.js"
+    },
+    {
+      "id": "flow:tree-tag-assignment",
+      "type": "flow",
+      "name": "Tree Tag Assignment",
+      "summary": "Attaches tags to a tree.",
+      "tags": [
+        "tags",
+        "trees",
+        "association"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "POST /trees/{id}/tags",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:tree-tag-assignment:validate-input",
+      "type": "step",
+      "name": "Validate tree and tags",
+      "summary": "Validate the tree id and the tag association payload.",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/treeHandler/schemas.js"
+    },
+    {
+      "id": "step:tree-tag-assignment:attach-tags",
+      "type": "step",
+      "name": "Attach tags to tree",
+      "summary": "Attach the tags to the tree via the TreeTag model.",
+      "tags": [
+        "association",
+        "tags"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/models/TreeTag.js"
+    },
+    {
+      "id": "step:tree-tag-assignment:return-association",
+      "type": "step",
+      "name": "Return association",
+      "summary": "Return the resulting tree-tag associations.",
+      "tags": [
+        "response"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/TreeTagService.js"
+    },
+    {
+      "id": "flow:event-publication",
+      "type": "flow",
+      "name": "Event Publication",
+      "summary": "Persists a domain event and publishes it to the RabbitMQ broker.",
+      "tags": [
+        "events",
+        "publish",
+        "rabbitmq"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "domain event raised",
+        "entryType": "event"
+      }
+    },
+    {
+      "id": "step:event-publication:raise-event",
+      "type": "step",
+      "name": "Raise domain event",
+      "summary": "Raise the domain event and set its pending state.",
+      "tags": [
+        "events",
+        "domain-event"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/DomainEvent.js"
+    },
+    {
+      "id": "step:event-publication:persist-event",
+      "type": "step",
+      "name": "Persist event",
+      "summary": "Persist the event to the event store as pending.",
+      "tags": [
+        "persistence",
+        "event-store"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/repositories/EventRepository.js"
+    },
+    {
+      "id": "step:event-publication:publish",
+      "type": "step",
+      "name": "Publish to broker",
+      "summary": "Publish the event to the RabbitMQ (rascal) broker.",
+      "tags": [
+        "messaging",
+        "rabbitmq"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/QueueService.js"
+    },
+    {
+      "id": "step:event-publication:mark-sent",
+      "type": "step",
+      "name": "Mark event sent",
+      "summary": "Update the domain event status to sent on successful publish.",
+      "tags": [
+        "events",
+        "status"
+      ],
+      "complexity": "simple",
+      "filePath": "server/services/QueueService.js"
+    },
+    {
+      "id": "flow:event-consumption",
+      "type": "flow",
+      "name": "Event Consumption",
+      "summary": "Subscribes to the queue, receives messages, and dispatches them to registered handlers.",
+      "tags": [
+        "events",
+        "consume",
+        "subscribe",
+        "rabbitmq"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "queue subscription",
+        "entryType": "event"
+      }
+    },
+    {
+      "id": "step:event-consumption:subscribe",
+      "type": "step",
+      "name": "Subscribe to queue",
+      "summary": "Subscribe to the RabbitMQ queue through the broker.",
+      "tags": [
+        "messaging",
+        "subscribe"
+      ],
+      "complexity": "simple",
+      "filePath": "server/infra/RabbitMQ/RabbitMQ.js"
+    },
+    {
+      "id": "step:event-consumption:receive-message",
+      "type": "step",
+      "name": "Receive message",
+      "summary": "Receive an incoming domain event message.",
+      "tags": [
+        "messaging",
+        "receive"
+      ],
+      "complexity": "simple",
+      "filePath": "server/models/DomainEvent.js"
+    },
+    {
+      "id": "step:event-consumption:dispatch-handler",
+      "type": "step",
+      "name": "Dispatch to handler",
+      "summary": "Dispatch the message to its registered event handler.",
+      "tags": [
+        "events",
+        "dispatch"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/EventHandlerService.js"
+    },
+    {
+      "id": "step:event-consumption:apply-update",
+      "type": "step",
+      "name": "Apply capture update",
+      "summary": "Apply the handled event as a capture update within a session.",
+      "tags": [
+        "captures",
+        "update"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/EventHandlerService.js"
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:capture-management",
+      "target": "flow:capture-ingestion",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:capture-ingestion",
+      "target": "step:capture-ingestion:validate-payload",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:capture-ingestion",
+      "target": "step:capture-ingestion:open-transaction",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:capture-ingestion",
+      "target": "step:capture-ingestion:persist-capture",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:capture-ingestion",
+      "target": "step:capture-ingestion:raise-event",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:capture-ingestion",
+      "target": "step:capture-ingestion:publish-event",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:capture-ingestion",
+      "target": "step:capture-ingestion:commit",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:capture-management",
+      "target": "flow:capture-query",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:capture-query",
+      "target": "step:capture-query:parse-filters",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:capture-query",
+      "target": "step:capture-query:query-captures",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:capture-query",
+      "target": "step:capture-query:count-total",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:capture-query",
+      "target": "step:capture-query:build-links",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:tree-management",
+      "target": "flow:tree-registration",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:tree-registration",
+      "target": "step:tree-registration:validate-payload",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:tree-registration",
+      "target": "step:tree-registration:open-transaction",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:tree-registration",
+      "target": "step:tree-registration:persist-tree",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:tree-registration",
+      "target": "step:tree-registration:publish-event",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:tree-registration",
+      "target": "step:tree-registration:commit",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:tree-management",
+      "target": "flow:capture-tree-matching",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:capture-tree-matching",
+      "target": "step:capture-tree-matching:validate-capture",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:capture-tree-matching",
+      "target": "step:capture-tree-matching:spatial-query",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:capture-tree-matching",
+      "target": "step:capture-tree-matching:shape-results",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:tree-management",
+      "target": "flow:legacy-tree-approval",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:legacy-tree-approval",
+      "target": "step:legacy-tree-approval:build-payload",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:legacy-tree-approval",
+      "target": "step:legacy-tree-approval:authenticate",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:legacy-tree-approval",
+      "target": "step:legacy-tree-approval:send-patch",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:grower-account-management",
+      "target": "flow:grower-account-upsert",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:grower-account-upsert",
+      "target": "step:grower-account-upsert:validate-payload",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:grower-account-upsert",
+      "target": "step:grower-account-upsert:lookup-existing",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:grower-account-upsert",
+      "target": "step:grower-account-upsert:upsert-record",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:grower-account-upsert",
+      "target": "step:grower-account-upsert:return-account",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:grower-account-management",
+      "target": "flow:grower-image-upload",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:grower-image-upload",
+      "target": "step:grower-image-upload:validate-grower",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:grower-image-upload",
+      "target": "step:grower-image-upload:upload-s3",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:grower-image-upload",
+      "target": "step:grower-image-upload:persist-record",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:grower-image-upload",
+      "target": "step:grower-image-upload:rollback-cleanup",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:tagging",
+      "target": "flow:tag-management",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:tag-management",
+      "target": "step:tag-management:validate-tag",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:tag-management",
+      "target": "step:tag-management:persist-tag",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:tag-management",
+      "target": "step:tag-management:list-tags",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:tagging",
+      "target": "flow:capture-tag-assignment",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:capture-tag-assignment",
+      "target": "step:capture-tag-assignment:validate-input",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:capture-tag-assignment",
+      "target": "step:capture-tag-assignment:attach-tags",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:capture-tag-assignment",
+      "target": "step:capture-tag-assignment:return-association",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:tagging",
+      "target": "flow:tree-tag-assignment",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:tree-tag-assignment",
+      "target": "step:tree-tag-assignment:validate-input",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:tree-tag-assignment",
+      "target": "step:tree-tag-assignment:attach-tags",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:tree-tag-assignment",
+      "target": "step:tree-tag-assignment:return-association",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:domain-events-messaging",
+      "target": "flow:event-publication",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:event-publication",
+      "target": "step:event-publication:raise-event",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:event-publication",
+      "target": "step:event-publication:persist-event",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:event-publication",
+      "target": "step:event-publication:publish",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:event-publication",
+      "target": "step:event-publication:mark-sent",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:domain-events-messaging",
+      "target": "flow:event-consumption",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:event-consumption",
+      "target": "step:event-consumption:subscribe",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:event-consumption",
+      "target": "step:event-consumption:receive-message",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:event-consumption",
+      "target": "step:event-consumption:dispatch-handler",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:event-consumption",
+      "target": "step:event-consumption:apply-update",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:capture-management",
+      "target": "domain:domain-events-messaging",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Capture ingestion raises and publishes capture-created events.",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:tree-management",
+      "target": "domain:domain-events-messaging",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Tree registration publishes tree-created events.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:domain-events-messaging",
+      "target": "domain:capture-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Consumed events are applied as capture updates.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:capture-management",
+      "target": "domain:tree-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Captures are resolved to trees via potential-match spatial queries.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:capture-management",
+      "target": "domain:tagging",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Captures are classified with tag associations.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:tree-management",
+      "target": "domain:tagging",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Trees are classified with tag associations.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:grower-account-management",
+      "target": "domain:capture-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Grower accounts are the actors that submit captures.",
+      "weight": 0.5
+    }
+  ],
+  "layers": [],
+  "tour": []
+}

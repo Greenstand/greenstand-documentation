@@ -1,0 +1,936 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-admin-api",
+    "languages": ["typescript", "javascript"],
+    "frameworks": ["LoopBack 4", "Express", "PostgreSQL (PostGIS)", "RabbitMQ"],
+    "description": "REST API backend for the Greenstand Treetracker Admin Panel. It lets administrators verify, approve, reject, and manage tree-capture data collected in the field, along with the growers, organizations, species, and tags around each capture. Verification decisions raise domain events that publish over RabbitMQ to downstream field-data services.",
+    "analyzedAt": "2026-09-03T05:24:24.310878+00:00",
+    "gitCommitHash": "1f25d3e63c2a0d13190427c21a61f7cd99e9b898"
+  },
+  "nodes": [
+    {
+      "id": "domain:capture-verification",
+      "type": "domain",
+      "name": "Capture Verification",
+      "summary": "The core domain. It manages tree-capture records collected by the Treetracker mobile app and lets admins browse, search, and verify them. A verify action approves or rejects a capture, records a domain event, and publishes the outcome to downstream services over RabbitMQ.",
+      "tags": ["trees", "capture", "verification", "messaging", "core-domain"],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": ["Trees (capture)", "DomainEvent", "TreeTag", "Species"],
+        "businessRules": [
+          "A verification event is raised only when approval changes or an active capture is rejected (not approved and not active while previously active).",
+          "The capture update, the domain event insert, and the commit run inside one READ_COMMITTED transaction; any failure rolls back the whole change.",
+          "The domain event is marked 'sent' only after the RabbitMQ publish succeeds (outbox pattern).",
+          "Event publishing is gated by the enableVerificationPublishing feature flag."
+        ],
+        "crossDomainInteractions": [
+          "Every capture endpoint is guarded by the Identity & Access Control policy check.",
+          "Organization-scoped variants restrict captures to a caller's entity and planter ids.",
+          "Captures reference species and tags from the Species & Tag Catalog."
+        ]
+      }
+    },
+    {
+      "id": "domain:grower-management",
+      "type": "domain",
+      "name": "Grower Management",
+      "summary": "Manages planters (growers), the people who collect captures in the field, and their registration records. It exposes organization-scoped listing, lookup, selfie retrieval, and profile updates over raw parameterized SQL.",
+      "tags": ["planter", "grower", "registration", "profile"],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": ["Planter", "PlanterRegistration"],
+        "businessRules": [
+          "Grower queries are filtered by the caller's organization scope when an organization id is present.",
+          "Organization-scoped planter access checks the requested entity id against the caller's allowed entity ids."
+        ],
+        "crossDomainInteractions": [
+          "Guarded by the Identity & Access Control policy check.",
+          "Uses Organization Management to resolve the caller's entity ids and where-clause scope.",
+          "Growers are linked to the captures they collect in Capture Verification."
+        ]
+      }
+    },
+    {
+      "id": "domain:organization-management",
+      "type": "domain",
+      "name": "Organization Management",
+      "summary": "Manages stakeholder organizations and provides the organization-scoping mechanism that other domains reuse for access control. It resolves the set of entity ids under an organization and builds the where clauses that restrict data to that scope.",
+      "tags": ["organization", "stakeholder", "scoping", "authorization"],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": ["Organization"],
+        "businessRules": [
+          "An organization resolves to a set of entity ids that define its data scope.",
+          "Queries for scoped resources receive an organization-derived where clause before execution."
+        ],
+        "crossDomainInteractions": [
+          "Supplies entity-id resolution and where-clause scoping used by Capture Verification and Grower Management."
+        ]
+      }
+    },
+    {
+      "id": "domain:identity-access-control",
+      "type": "domain",
+      "name": "Identity & Access Control",
+      "summary": "Handles admin authentication, role-and-policy authorization, and audit logging. Login issues a JWT carrying the user roles; the isAuth middleware enforces policy-based permissions per route; the audit middleware records every successful auditable action.",
+      "tags": ["authentication", "authorization", "jwt", "rbac", "audit"],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": ["AdminUser", "AdminRole", "Policy", "AuditRecord"],
+        "businessRules": [
+          "Passwords are verified against a stored hash before a JWT is issued.",
+          "A composite policy object is built from the union of a user's roles.",
+          "Each API route pattern maps to a named permission that isAuth must satisfy.",
+          "User roles are refreshed on each request and the JWT is re-signed when they change."
+        ],
+        "crossDomainInteractions": [
+          "Guards every controller in Capture Verification, Grower Management, Organization Management, and Species & Tag Catalog.",
+          "The audit trail records mutations across all domains."
+        ]
+      }
+    },
+    {
+      "id": "domain:species-tag-catalog",
+      "type": "domain",
+      "name": "Species & Tag Catalog",
+      "summary": "Maintains the reference catalog of tree species and the tags applied to captures. It supports full CRUD, capture-count aggregation per species, and merging duplicate species into one.",
+      "tags": ["species", "tag", "catalog", "taxonomy", "crud"],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": ["Species", "Tag", "TreeTag"],
+        "businessRules": [
+          "Species mutations require policy-based authorization.",
+          "Combining species reassigns captures from the merged species to the surviving species.",
+          "Tags carry active and public flags that govern visibility."
+        ],
+        "crossDomainInteractions": [
+          "Species and tags are referenced by captures in Capture Verification.",
+          "Guarded by the Identity & Access Control policy check."
+        ]
+      }
+    },
+
+    {
+      "id": "flow:browse-captures",
+      "type": "flow",
+      "name": "Browse and Search Captures",
+      "summary": "Lists, counts, looks up, and geospatially searches tree captures using LoopBack filters translated to parameterized SQL.",
+      "tags": ["trees", "query", "geospatial", "read"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "GET /trees", "entryType": "http" }
+    },
+    {
+      "id": "flow:verify-capture",
+      "type": "flow",
+      "name": "Verify, Approve, or Reject Capture",
+      "summary": "Updates a capture in a transaction, raises a VerifyCaptureProcessed domain event when the verification state changes, and publishes it to RabbitMQ using an outbox pattern.",
+      "tags": ["trees", "verification", "transaction", "domain-event", "messaging"],
+      "complexity": "complex",
+      "domainMeta": { "entryPoint": "PATCH /trees/{id}", "entryType": "http" }
+    },
+    {
+      "id": "flow:manage-tree-tags",
+      "type": "flow",
+      "name": "Manage Tree Tags",
+      "summary": "Associates tags with captures, lists a capture's tags, and removes tag associations through the trees relation accessor.",
+      "tags": ["tree-tag", "association", "crud"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "POST /trees/{id}/tree-tags", "entryType": "http" }
+    },
+
+    {
+      "id": "flow:browse-growers",
+      "type": "flow",
+      "name": "Browse and Find Growers",
+      "summary": "Counts and lists growers within the caller's organization scope, looks them up by id, and returns their selfies.",
+      "tags": ["planter", "query", "org-scope", "read"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "GET /planters", "entryType": "http" }
+    },
+    {
+      "id": "flow:update-grower",
+      "type": "flow",
+      "name": "Update Grower Profile",
+      "summary": "Updates a grower record after checking the caller's authorization and organization-scoped access to the entity.",
+      "tags": ["planter", "update", "org-scope"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "PATCH /planters/{id}", "entryType": "http" }
+    },
+    {
+      "id": "flow:query-planter-registrations",
+      "type": "flow",
+      "name": "Query Planter Registrations",
+      "summary": "Finds planter-registration records with filtered SQL, enforcing entity-id access checks in the organization-scoped variant.",
+      "tags": ["planter-registration", "query", "sql"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "GET /planterRegistrations", "entryType": "http" }
+    },
+
+    {
+      "id": "flow:browse-organizations",
+      "type": "flow",
+      "name": "Browse Organizations",
+      "summary": "Counts and lists organizations, finds them by parent organization, and looks them up by id.",
+      "tags": ["organization", "query", "read"],
+      "complexity": "simple",
+      "domainMeta": { "entryPoint": "GET /organizations", "entryType": "http" }
+    },
+    {
+      "id": "flow:resolve-organization-scope",
+      "type": "flow",
+      "name": "Resolve Organization Scope",
+      "summary": "Resolves the entity ids belonging to an organization and builds the organization-scoped where clause that other domains apply to their queries.",
+      "tags": ["organization", "authorization", "scoping"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "OrganizationRepository.getEntityIdsByOrganizationId", "entryType": "manual" }
+    },
+
+    {
+      "id": "flow:admin-login",
+      "type": "flow",
+      "name": "Admin Login",
+      "summary": "Authenticates an admin by username and password, loads roles and policy, and issues a signed JWT.",
+      "tags": ["authentication", "login", "jwt", "password"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "POST /auth/login", "entryType": "http" }
+    },
+    {
+      "id": "flow:authorize-request",
+      "type": "flow",
+      "name": "Authorize Request",
+      "summary": "The isAuth middleware verifies the JWT, refreshes user roles, matches the route to a named permission, and allows or denies the request.",
+      "tags": ["authorization", "middleware", "jwt", "rbac"],
+      "complexity": "complex",
+      "domainMeta": { "entryPoint": "isAuth middleware", "entryType": "manual" }
+    },
+    {
+      "id": "flow:audit-action",
+      "type": "flow",
+      "name": "Audit Action",
+      "summary": "The audit middleware decodes the JWT, inspects the response outcome, and persists a record of each successful auditable action.",
+      "tags": ["audit", "logging", "middleware"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "audit middleware", "entryType": "manual" }
+    },
+    {
+      "id": "flow:manage-admin-users",
+      "type": "flow",
+      "name": "Manage Admin Users",
+      "summary": "Creates admin users, updates their roles, changes passwords, and lists users.",
+      "tags": ["admin-user", "role", "crud"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "POST /auth/admin_users", "entryType": "http" }
+    },
+
+    {
+      "id": "flow:manage-species",
+      "type": "flow",
+      "name": "Manage Species",
+      "summary": "Provides species CRUD plus capture-count aggregation and merging of duplicate species, all under policy-based authorization.",
+      "tags": ["species", "crud", "aggregation", "merge"],
+      "complexity": "complex",
+      "domainMeta": { "entryPoint": "GET /species", "entryType": "http" }
+    },
+    {
+      "id": "flow:manage-tags",
+      "type": "flow",
+      "name": "Manage Tags",
+      "summary": "Provides full CRUD over the tag catalog applied to captures.",
+      "tags": ["tag", "crud"],
+      "complexity": "moderate",
+      "domainMeta": { "entryPoint": "GET /tags", "entryType": "http" }
+    },
+
+    {
+      "id": "step:browse-captures:authorize-request",
+      "type": "step",
+      "name": "Authorize request",
+      "summary": "The isAuth middleware confirms the JWT and the caller's permission before the capture query runs.",
+      "tags": ["authorization", "middleware"],
+      "complexity": "moderate",
+      "filePath": "src/js/auth.js",
+      "lineRange": [477, 671]
+    },
+    {
+      "id": "step:browse-captures:build-filter-query",
+      "type": "step",
+      "name": "Build filter query",
+      "summary": "buildFilterQuery translates the LoopBack filter into a parameterized SQL statement with where, order, and pagination.",
+      "tags": ["sql", "query-builder"],
+      "complexity": "moderate",
+      "filePath": "src/js/buildFilterQuery.js",
+      "lineRange": [11, 53]
+    },
+    {
+      "id": "step:browse-captures:count-captures",
+      "type": "step",
+      "name": "Count captures",
+      "summary": "Returns the number of captures matching the filter.",
+      "tags": ["trees", "count"],
+      "complexity": "simple",
+      "filePath": "src/controllers/trees.controller.ts",
+      "lineRange": [41, 68]
+    },
+    {
+      "id": "step:browse-captures:list-captures",
+      "type": "step",
+      "name": "List captures",
+      "summary": "Returns the filtered page of capture records.",
+      "tags": ["trees", "list"],
+      "complexity": "simple",
+      "filePath": "src/controllers/trees.controller.ts",
+      "lineRange": [69, 99]
+    },
+    {
+      "id": "step:browse-captures:geospatial-near-search",
+      "type": "step",
+      "name": "Geospatial near-search",
+      "summary": "Finds captures near a coordinate using the PostGIS-backed near endpoint.",
+      "tags": ["trees", "geospatial", "postgis"],
+      "complexity": "moderate",
+      "filePath": "src/controllers/trees.controller.ts",
+      "lineRange": [116, 154]
+    },
+
+    {
+      "id": "step:verify-capture:begin-transaction",
+      "type": "step",
+      "name": "Begin transaction",
+      "summary": "Opens a READ_COMMITTED datasource transaction around the verification update.",
+      "tags": ["transaction", "database"],
+      "complexity": "simple",
+      "filePath": "src/controllers/trees.controller.ts",
+      "lineRange": [166, 168]
+    },
+    {
+      "id": "step:verify-capture:load-stored-capture",
+      "type": "step",
+      "name": "Load stored capture",
+      "summary": "Reads the current capture to compare its approval and active state against the incoming change.",
+      "tags": ["trees", "read"],
+      "complexity": "simple",
+      "filePath": "src/controllers/trees.controller.ts",
+      "lineRange": [172, 173]
+    },
+    {
+      "id": "step:verify-capture:detect-verification-change",
+      "type": "step",
+      "name": "Detect verification change",
+      "summary": "Determines whether approval changed or an active capture was rejected, which decides if an event is raised.",
+      "tags": ["verification", "business-rule"],
+      "complexity": "moderate",
+      "filePath": "src/controllers/trees.controller.ts",
+      "lineRange": [176, 187]
+    },
+    {
+      "id": "step:verify-capture:record-domain-event",
+      "type": "step",
+      "name": "Record domain event",
+      "summary": "Inserts a VerifyCaptureProcessed domain event with status 'raised' inside the transaction (outbox pattern).",
+      "tags": ["domain-event", "outbox"],
+      "complexity": "moderate",
+      "filePath": "src/controllers/trees.controller.ts",
+      "lineRange": [188, 198]
+    },
+    {
+      "id": "step:verify-capture:update-capture",
+      "type": "step",
+      "name": "Update capture",
+      "summary": "Persists the approval, rejection reason, and other changes to the capture record.",
+      "tags": ["trees", "update"],
+      "complexity": "simple",
+      "filePath": "src/controllers/trees.controller.ts",
+      "lineRange": [200, 200]
+    },
+    {
+      "id": "step:verify-capture:commit-transaction",
+      "type": "step",
+      "name": "Commit transaction",
+      "summary": "Commits the capture update and the domain-event insert atomically; a failure rolls both back.",
+      "tags": ["transaction", "commit"],
+      "complexity": "simple",
+      "filePath": "src/controllers/trees.controller.ts",
+      "lineRange": [201, 213]
+    },
+    {
+      "id": "step:verify-capture:publish-verification-event",
+      "type": "step",
+      "name": "Publish verification event",
+      "summary": "Publishes the event to RabbitMQ after commit and marks the domain event 'sent' on success.",
+      "tags": ["messaging", "rabbitmq", "outbox"],
+      "complexity": "moderate",
+      "filePath": "src/controllers/trees.controller.ts",
+      "lineRange": [202, 209]
+    },
+
+    {
+      "id": "step:manage-tree-tags:associate-tag",
+      "type": "step",
+      "name": "Associate tag with capture",
+      "summary": "Creates a tree-tag relation linking a tag to a capture.",
+      "tags": ["tree-tag", "create"],
+      "complexity": "simple",
+      "filePath": "src/controllers/treesTreeTag.controller.ts",
+      "lineRange": [21, 110]
+    },
+    {
+      "id": "step:manage-tree-tags:list-capture-tags",
+      "type": "step",
+      "name": "List capture tags",
+      "summary": "Returns the tags associated with a capture through the relation accessor.",
+      "tags": ["tree-tag", "list"],
+      "complexity": "simple",
+      "filePath": "src/controllers/treesTreeTag.controller.ts",
+      "lineRange": [21, 110]
+    },
+    {
+      "id": "step:manage-tree-tags:remove-tag",
+      "type": "step",
+      "name": "Remove tag association",
+      "summary": "Deletes a tree-tag relation, unlinking the tag from the capture.",
+      "tags": ["tree-tag", "delete"],
+      "complexity": "simple",
+      "filePath": "src/controllers/treeTag.controller.ts",
+      "lineRange": [22, 115]
+    },
+
+    {
+      "id": "step:browse-growers:authorize-request",
+      "type": "step",
+      "name": "Authorize request",
+      "summary": "The isAuth middleware confirms the caller's permission to read growers.",
+      "tags": ["authorization", "middleware"],
+      "complexity": "moderate",
+      "filePath": "src/js/auth.js",
+      "lineRange": [477, 671]
+    },
+    {
+      "id": "step:browse-growers:build-org-scope",
+      "type": "step",
+      "name": "Apply organization scope",
+      "summary": "Resolves the caller's entity ids and adds the organization where clause to the grower query.",
+      "tags": ["org-scope", "authorization"],
+      "complexity": "moderate",
+      "filePath": "src/repositories/planter.repository.ts",
+      "lineRange": [18, 206]
+    },
+    {
+      "id": "step:browse-growers:count-growers",
+      "type": "step",
+      "name": "Count growers",
+      "summary": "Runs countWithOrg to return the number of growers in scope.",
+      "tags": ["planter", "count"],
+      "complexity": "moderate",
+      "filePath": "src/controllers/planter.controller.ts",
+      "lineRange": [29, 140]
+    },
+    {
+      "id": "step:browse-growers:list-growers",
+      "type": "step",
+      "name": "List growers",
+      "summary": "Runs findWithOrg to return the filtered page of grower records.",
+      "tags": ["planter", "list"],
+      "complexity": "moderate",
+      "filePath": "src/controllers/planter.controller.ts",
+      "lineRange": [29, 140]
+    },
+    {
+      "id": "step:browse-growers:get-selfies",
+      "type": "step",
+      "name": "Get grower selfies",
+      "summary": "Returns the selfie images captured during a grower's registrations.",
+      "tags": ["planter", "selfies"],
+      "complexity": "simple",
+      "filePath": "src/controllers/planter.controller.ts",
+      "lineRange": [29, 140]
+    },
+
+    {
+      "id": "step:update-grower:authorize-request",
+      "type": "step",
+      "name": "Authorize request",
+      "summary": "The isAuth middleware confirms the caller may update growers.",
+      "tags": ["authorization", "middleware"],
+      "complexity": "moderate",
+      "filePath": "src/js/auth.js",
+      "lineRange": [477, 671]
+    },
+    {
+      "id": "step:update-grower:check-entity-access",
+      "type": "step",
+      "name": "Check entity access",
+      "summary": "Validates the requested grower's entity id against the caller's allowed organization scope.",
+      "tags": ["org-scope", "validation"],
+      "complexity": "moderate",
+      "filePath": "src/repositories/planter.repository.ts",
+      "lineRange": [18, 206]
+    },
+    {
+      "id": "step:update-grower:persist-update",
+      "type": "step",
+      "name": "Persist update",
+      "summary": "Writes the changed grower fields back to the database.",
+      "tags": ["planter", "update"],
+      "complexity": "simple",
+      "filePath": "src/controllers/planter.controller.ts",
+      "lineRange": [29, 140]
+    },
+
+    {
+      "id": "step:query-planter-registrations:check-access",
+      "type": "step",
+      "name": "Check organization access",
+      "summary": "Enforces the entity-id access check before running the registration query in the org-scoped variant.",
+      "tags": ["org-scope", "validation"],
+      "complexity": "moderate",
+      "filePath": "src/controllers/planterOrganization.controller.ts",
+      "lineRange": [31, 228]
+    },
+    {
+      "id": "step:query-planter-registrations:build-filter-query",
+      "type": "step",
+      "name": "Build filter query",
+      "summary": "buildFilterQuery assembles the parameterized SQL for the registration lookup.",
+      "tags": ["sql", "query-builder"],
+      "complexity": "moderate",
+      "filePath": "src/js/buildFilterQuery.js",
+      "lineRange": [11, 53]
+    },
+    {
+      "id": "step:query-planter-registrations:execute-query",
+      "type": "step",
+      "name": "Execute registration query",
+      "summary": "Runs the SQL through the planter repository and returns the registration records.",
+      "tags": ["planter-registration", "read"],
+      "complexity": "simple",
+      "filePath": "src/controllers/planterRegistration.controller.ts",
+      "lineRange": [7, 72]
+    },
+
+    {
+      "id": "step:browse-organizations:count-organizations",
+      "type": "step",
+      "name": "Count organizations",
+      "summary": "Returns the number of organizations matching the filter.",
+      "tags": ["organization", "count"],
+      "complexity": "simple",
+      "filePath": "src/controllers/organization.controller.ts",
+      "lineRange": [22, 106]
+    },
+    {
+      "id": "step:browse-organizations:list-organizations",
+      "type": "step",
+      "name": "List organizations",
+      "summary": "Returns the filtered list of organizations.",
+      "tags": ["organization", "list"],
+      "complexity": "simple",
+      "filePath": "src/controllers/organization.controller.ts",
+      "lineRange": [22, 106]
+    },
+    {
+      "id": "step:browse-organizations:find-by-parent-org",
+      "type": "step",
+      "name": "Find by parent organization",
+      "summary": "Returns child organizations under a given parent organization.",
+      "tags": ["organization", "hierarchy"],
+      "complexity": "simple",
+      "filePath": "src/controllers/organization.controller.ts",
+      "lineRange": [22, 106]
+    },
+    {
+      "id": "step:browse-organizations:find-by-id",
+      "type": "step",
+      "name": "Find organization by id",
+      "summary": "Looks up a single organization by its id.",
+      "tags": ["organization", "lookup"],
+      "complexity": "simple",
+      "filePath": "src/controllers/organization.controller.ts",
+      "lineRange": [22, 106]
+    },
+
+    {
+      "id": "step:resolve-organization-scope:resolve-entity-ids",
+      "type": "step",
+      "name": "Resolve entity ids",
+      "summary": "Resolves the set of entity ids that belong to a given organization id.",
+      "tags": ["organization", "scoping"],
+      "complexity": "moderate",
+      "filePath": "src/repositories/organization.repository.ts",
+      "lineRange": [7, 42]
+    },
+    {
+      "id": "step:resolve-organization-scope:build-where-clause",
+      "type": "step",
+      "name": "Build organization where clause",
+      "summary": "Builds the where clause that restricts a query to the organization's entity ids.",
+      "tags": ["organization", "sql", "authorization"],
+      "complexity": "moderate",
+      "filePath": "src/repositories/organization.repository.ts",
+      "lineRange": [7, 42]
+    },
+    {
+      "id": "step:resolve-organization-scope:apply-to-query",
+      "type": "step",
+      "name": "Apply scope to query",
+      "summary": "Merges the organization where clause into the caller's filter before execution.",
+      "tags": ["organization", "scoping"],
+      "complexity": "simple",
+      "filePath": "src/repositories/organization.repository.ts",
+      "lineRange": [7, 42]
+    },
+
+    {
+      "id": "step:admin-login:receive-credentials",
+      "type": "step",
+      "name": "Receive credentials",
+      "summary": "Reads the username and password from the login request body.",
+      "tags": ["login", "input"],
+      "complexity": "simple",
+      "filePath": "src/js/auth.js",
+      "lineRange": [185, 197]
+    },
+    {
+      "id": "step:admin-login:verify-password",
+      "type": "step",
+      "name": "Verify password",
+      "summary": "Hashes the supplied password and compares it against the stored passwordHash.",
+      "tags": ["password", "security"],
+      "complexity": "moderate",
+      "filePath": "src/js/auth.js",
+      "lineRange": [198, 202]
+    },
+    {
+      "id": "step:admin-login:load-roles-and-policy",
+      "type": "step",
+      "name": "Load roles and policy",
+      "summary": "Loads the user's roles and builds a composite policy object from them.",
+      "tags": ["rbac", "policy"],
+      "complexity": "moderate",
+      "filePath": "src/js/auth.js",
+      "lineRange": [203, 217]
+    },
+    {
+      "id": "step:admin-login:sign-jwt",
+      "type": "step",
+      "name": "Sign JWT",
+      "summary": "Signs a JWT containing the user identity and roles with the shared secret.",
+      "tags": ["jwt", "security"],
+      "complexity": "simple",
+      "filePath": "src/js/auth.js",
+      "lineRange": [218, 218]
+    },
+    {
+      "id": "step:admin-login:return-token",
+      "type": "step",
+      "name": "Return token",
+      "summary": "Returns the token and user details in the login response.",
+      "tags": ["login", "response"],
+      "complexity": "simple",
+      "filePath": "src/js/auth.js",
+      "lineRange": [231, 262]
+    },
+
+    {
+      "id": "step:authorize-request:verify-jwt",
+      "type": "step",
+      "name": "Verify JWT",
+      "summary": "Verifies the request JWT signature and decodes its claims.",
+      "tags": ["jwt", "authorization"],
+      "complexity": "moderate",
+      "filePath": "src/js/auth.js",
+      "lineRange": [477, 520]
+    },
+    {
+      "id": "step:authorize-request:refresh-roles",
+      "type": "step",
+      "name": "Refresh user roles",
+      "summary": "Reloads the user's roles and re-signs the token when they have changed.",
+      "tags": ["rbac", "jwt"],
+      "complexity": "moderate",
+      "filePath": "src/js/auth.js",
+      "lineRange": [521, 560]
+    },
+    {
+      "id": "step:authorize-request:match-permission",
+      "type": "step",
+      "name": "Match route permission",
+      "summary": "Matches the request route pattern to a named policy permission the user must hold.",
+      "tags": ["rbac", "policy"],
+      "complexity": "complex",
+      "filePath": "src/js/auth.js",
+      "lineRange": [561, 640]
+    },
+    {
+      "id": "step:authorize-request:allow-or-deny",
+      "type": "step",
+      "name": "Allow or deny",
+      "summary": "Passes the request through or rejects it based on the permission check.",
+      "tags": ["authorization", "decision"],
+      "complexity": "simple",
+      "filePath": "src/js/auth.js",
+      "lineRange": [641, 671]
+    },
+
+    {
+      "id": "step:audit-action:decode-jwt",
+      "type": "step",
+      "name": "Decode JWT",
+      "summary": "Decodes the JWT to identify the acting admin user.",
+      "tags": ["audit", "jwt"],
+      "complexity": "simple",
+      "filePath": "src/js/Audit.js",
+      "lineRange": [23, 45]
+    },
+    {
+      "id": "step:audit-action:inspect-outcome",
+      "type": "step",
+      "name": "Inspect response outcome",
+      "summary": "Intercepts the response and determines whether the action succeeded and is auditable.",
+      "tags": ["audit", "middleware"],
+      "complexity": "moderate",
+      "filePath": "src/js/Audit.js",
+      "lineRange": [46, 77]
+    },
+    {
+      "id": "step:audit-action:persist-record",
+      "type": "step",
+      "name": "Persist audit record",
+      "summary": "Writes the action details to the audit table via the Audit class did method.",
+      "tags": ["audit", "persistence"],
+      "complexity": "moderate",
+      "filePath": "src/js/Audit.js",
+      "lineRange": [79, 131]
+    },
+
+    {
+      "id": "step:manage-admin-users:create-admin-user",
+      "type": "step",
+      "name": "Create admin user",
+      "summary": "Creates a new admin user record with a hashed password.",
+      "tags": ["admin-user", "create"],
+      "complexity": "moderate",
+      "filePath": "src/js/auth.js",
+      "lineRange": [385, 425]
+    },
+    {
+      "id": "step:manage-admin-users:update-roles",
+      "type": "step",
+      "name": "Update user roles",
+      "summary": "Assigns or revokes roles for an admin user.",
+      "tags": ["admin-user", "rbac"],
+      "complexity": "moderate",
+      "filePath": "src/js/auth.js",
+      "lineRange": [307, 338]
+    },
+    {
+      "id": "step:manage-admin-users:change-password",
+      "type": "step",
+      "name": "Change password",
+      "summary": "Updates an admin user's password hash.",
+      "tags": ["admin-user", "password"],
+      "complexity": "simple",
+      "filePath": "src/js/auth.js",
+      "lineRange": [293, 306]
+    },
+    {
+      "id": "step:manage-admin-users:list-users",
+      "type": "step",
+      "name": "List admin users",
+      "summary": "Returns the list of admin users.",
+      "tags": ["admin-user", "list"],
+      "complexity": "simple",
+      "filePath": "src/js/auth.js",
+      "lineRange": [339, 359]
+    },
+
+    {
+      "id": "step:manage-species:authorize-policy",
+      "type": "step",
+      "name": "Authorize by policy",
+      "summary": "Applies user-policy authorization before any species mutation.",
+      "tags": ["authorization", "policy"],
+      "complexity": "moderate",
+      "filePath": "src/controllers/species.controller.ts",
+      "lineRange": [25, 187]
+    },
+    {
+      "id": "step:manage-species:list-species",
+      "type": "step",
+      "name": "List species",
+      "summary": "Returns species records with count and lookup support.",
+      "tags": ["species", "list"],
+      "complexity": "simple",
+      "filePath": "src/controllers/species.controller.ts",
+      "lineRange": [25, 187]
+    },
+    {
+      "id": "step:manage-species:aggregate-capture-count",
+      "type": "step",
+      "name": "Aggregate capture count",
+      "summary": "Counts how many captures belong to each species.",
+      "tags": ["species", "aggregation"],
+      "complexity": "moderate",
+      "filePath": "src/controllers/species.controller.ts",
+      "lineRange": [25, 187]
+    },
+    {
+      "id": "step:manage-species:combine-species",
+      "type": "step",
+      "name": "Combine species",
+      "summary": "Merges duplicate species and reassigns their captures to the surviving species.",
+      "tags": ["species", "merge"],
+      "complexity": "complex",
+      "filePath": "src/controllers/species.controller.ts",
+      "lineRange": [25, 187]
+    },
+    {
+      "id": "step:manage-species:mutate-species",
+      "type": "step",
+      "name": "Create, update, or delete species",
+      "summary": "Persists species create, update, and delete operations.",
+      "tags": ["species", "crud"],
+      "complexity": "moderate",
+      "filePath": "src/controllers/species.controller.ts",
+      "lineRange": [25, 187]
+    },
+
+    {
+      "id": "step:manage-tags:list-tags",
+      "type": "step",
+      "name": "List tags",
+      "summary": "Returns tags with count and lookup-by-id support.",
+      "tags": ["tag", "list"],
+      "complexity": "simple",
+      "filePath": "src/controllers/tag.controller.ts",
+      "lineRange": [22, 115]
+    },
+    {
+      "id": "step:manage-tags:create-tag",
+      "type": "step",
+      "name": "Create tag",
+      "summary": "Creates a new tag with its active and public flags.",
+      "tags": ["tag", "create"],
+      "complexity": "simple",
+      "filePath": "src/controllers/tag.controller.ts",
+      "lineRange": [22, 115]
+    },
+    {
+      "id": "step:manage-tags:update-tag",
+      "type": "step",
+      "name": "Update tag",
+      "summary": "Updates an existing tag record.",
+      "tags": ["tag", "update"],
+      "complexity": "simple",
+      "filePath": "src/controllers/tag.controller.ts",
+      "lineRange": [22, 115]
+    },
+    {
+      "id": "step:manage-tags:delete-tag",
+      "type": "step",
+      "name": "Delete tag",
+      "summary": "Removes a tag from the catalog.",
+      "tags": ["tag", "delete"],
+      "complexity": "simple",
+      "filePath": "src/controllers/tag.controller.ts",
+      "lineRange": [22, 115]
+    }
+  ],
+  "edges": [
+    { "source": "domain:capture-verification", "target": "flow:browse-captures", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:capture-verification", "target": "flow:verify-capture", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:capture-verification", "target": "flow:manage-tree-tags", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:grower-management", "target": "flow:browse-growers", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:grower-management", "target": "flow:update-grower", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:grower-management", "target": "flow:query-planter-registrations", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:organization-management", "target": "flow:browse-organizations", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:organization-management", "target": "flow:resolve-organization-scope", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:identity-access-control", "target": "flow:admin-login", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:identity-access-control", "target": "flow:authorize-request", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:identity-access-control", "target": "flow:audit-action", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:identity-access-control", "target": "flow:manage-admin-users", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:species-tag-catalog", "target": "flow:manage-species", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:species-tag-catalog", "target": "flow:manage-tags", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:browse-captures", "target": "step:browse-captures:authorize-request", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:browse-captures", "target": "step:browse-captures:build-filter-query", "type": "flow_step", "direction": "forward", "weight": 0.4 },
+    { "source": "flow:browse-captures", "target": "step:browse-captures:count-captures", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:browse-captures", "target": "step:browse-captures:list-captures", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:browse-captures", "target": "step:browse-captures:geospatial-near-search", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:verify-capture", "target": "step:verify-capture:begin-transaction", "type": "flow_step", "direction": "forward", "weight": 0.1 },
+    { "source": "flow:verify-capture", "target": "step:verify-capture:load-stored-capture", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:verify-capture", "target": "step:verify-capture:detect-verification-change", "type": "flow_step", "direction": "forward", "weight": 0.4 },
+    { "source": "flow:verify-capture", "target": "step:verify-capture:record-domain-event", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:verify-capture", "target": "step:verify-capture:update-capture", "type": "flow_step", "direction": "forward", "weight": 0.7 },
+    { "source": "flow:verify-capture", "target": "step:verify-capture:commit-transaction", "type": "flow_step", "direction": "forward", "weight": 0.9 },
+    { "source": "flow:verify-capture", "target": "step:verify-capture:publish-verification-event", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:manage-tree-tags", "target": "step:manage-tree-tags:associate-tag", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:manage-tree-tags", "target": "step:manage-tree-tags:list-capture-tags", "type": "flow_step", "direction": "forward", "weight": 0.7 },
+    { "source": "flow:manage-tree-tags", "target": "step:manage-tree-tags:remove-tag", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:browse-growers", "target": "step:browse-growers:authorize-request", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:browse-growers", "target": "step:browse-growers:build-org-scope", "type": "flow_step", "direction": "forward", "weight": 0.4 },
+    { "source": "flow:browse-growers", "target": "step:browse-growers:count-growers", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:browse-growers", "target": "step:browse-growers:list-growers", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:browse-growers", "target": "step:browse-growers:get-selfies", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:update-grower", "target": "step:update-grower:authorize-request", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:update-grower", "target": "step:update-grower:check-entity-access", "type": "flow_step", "direction": "forward", "weight": 0.7 },
+    { "source": "flow:update-grower", "target": "step:update-grower:persist-update", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:query-planter-registrations", "target": "step:query-planter-registrations:check-access", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:query-planter-registrations", "target": "step:query-planter-registrations:build-filter-query", "type": "flow_step", "direction": "forward", "weight": 0.7 },
+    { "source": "flow:query-planter-registrations", "target": "step:query-planter-registrations:execute-query", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:browse-organizations", "target": "step:browse-organizations:count-organizations", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:browse-organizations", "target": "step:browse-organizations:list-organizations", "type": "flow_step", "direction": "forward", "weight": 0.5 },
+    { "source": "flow:browse-organizations", "target": "step:browse-organizations:find-by-parent-org", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:browse-organizations", "target": "step:browse-organizations:find-by-id", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:resolve-organization-scope", "target": "step:resolve-organization-scope:resolve-entity-ids", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:resolve-organization-scope", "target": "step:resolve-organization-scope:build-where-clause", "type": "flow_step", "direction": "forward", "weight": 0.7 },
+    { "source": "flow:resolve-organization-scope", "target": "step:resolve-organization-scope:apply-to-query", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:admin-login", "target": "step:admin-login:receive-credentials", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:admin-login", "target": "step:admin-login:verify-password", "type": "flow_step", "direction": "forward", "weight": 0.4 },
+    { "source": "flow:admin-login", "target": "step:admin-login:load-roles-and-policy", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:admin-login", "target": "step:admin-login:sign-jwt", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:admin-login", "target": "step:admin-login:return-token", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:authorize-request", "target": "step:authorize-request:verify-jwt", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:authorize-request", "target": "step:authorize-request:refresh-roles", "type": "flow_step", "direction": "forward", "weight": 0.5 },
+    { "source": "flow:authorize-request", "target": "step:authorize-request:match-permission", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:authorize-request", "target": "step:authorize-request:allow-or-deny", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:audit-action", "target": "step:audit-action:decode-jwt", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:audit-action", "target": "step:audit-action:inspect-outcome", "type": "flow_step", "direction": "forward", "weight": 0.7 },
+    { "source": "flow:audit-action", "target": "step:audit-action:persist-record", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:manage-admin-users", "target": "step:manage-admin-users:create-admin-user", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:manage-admin-users", "target": "step:manage-admin-users:update-roles", "type": "flow_step", "direction": "forward", "weight": 0.5 },
+    { "source": "flow:manage-admin-users", "target": "step:manage-admin-users:change-password", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:manage-admin-users", "target": "step:manage-admin-users:list-users", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:manage-species", "target": "step:manage-species:authorize-policy", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:manage-species", "target": "step:manage-species:list-species", "type": "flow_step", "direction": "forward", "weight": 0.4 },
+    { "source": "flow:manage-species", "target": "step:manage-species:aggregate-capture-count", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:manage-species", "target": "step:manage-species:combine-species", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:manage-species", "target": "step:manage-species:mutate-species", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:manage-tags", "target": "step:manage-tags:list-tags", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:manage-tags", "target": "step:manage-tags:create-tag", "type": "flow_step", "direction": "forward", "weight": 0.5 },
+    { "source": "flow:manage-tags", "target": "step:manage-tags:update-tag", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:manage-tags", "target": "step:manage-tags:delete-tag", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "domain:capture-verification", "target": "domain:identity-access-control", "type": "cross_domain", "direction": "forward", "description": "Every capture endpoint passes through the isAuth policy check and the audit middleware.", "weight": 0.7 },
+    { "source": "domain:capture-verification", "target": "domain:organization-management", "type": "cross_domain", "direction": "forward", "description": "Organization-scoped capture variants restrict data to the caller's entity and planter ids.", "weight": 0.6 },
+    { "source": "domain:capture-verification", "target": "domain:species-tag-catalog", "type": "cross_domain", "direction": "forward", "description": "Captures reference species and tags from the catalog.", "weight": 0.5 },
+    { "source": "domain:grower-management", "target": "domain:identity-access-control", "type": "cross_domain", "direction": "forward", "description": "Grower endpoints are guarded by the isAuth policy check.", "weight": 0.6 },
+    { "source": "domain:grower-management", "target": "domain:organization-management", "type": "cross_domain", "direction": "forward", "description": "Grower queries reuse organization scope to resolve entity ids and where clauses.", "weight": 0.6 },
+    { "source": "domain:species-tag-catalog", "target": "domain:identity-access-control", "type": "cross_domain", "direction": "forward", "description": "Species mutations require policy-based authorization.", "weight": 0.5 }
+  ],
+  "layers": [],
+  "tour": []
+}

@@ -1,0 +1,13 @@
+# Scratch clones of source repos used only to generate docs
+/.scratch/
+/tmp/
+
+# Node / dashboard build artifacts
+node_modules/
+dist/
+.env
+.env.local
+
+# OS noise
+.DS_Store
+Thumbs.db

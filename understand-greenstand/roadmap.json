@@ -1,0 +1,39 @@
+{
+  "source": {
+    "repo": "Greenstand-Overview",
+    "path": "Roadmap.md",
+    "commit": "d7f97da8ce6dd9d828514ecd52e1f5faa6925baf",
+    "date": "2025-12-04",
+    "license": "AGPL-3.0"
+  },
+  "boards": "https://github.com/orgs/Greenstand/projects?query=is%3Aopen",
+  "sections": {
+    "Roadmap for Treetracker Project": {"group": "Intro"},
+    "Development Targets (Core Functionality)": {"group": "Intro"},
+    "Privacy Enhancements": {"group": "Across the estate"},
+    "Android Tree Tracker": {"group": "Mobile"},
+    "Android Greenstand Token Trading App": {"group": "Wallet", "bestGuess": "treetracker-wallet-app holds an Expo mobile wallet with a Keycloak sign-in; the items are wallet features"},
+    "iOS Greenstand Token Trading App": {"group": "Wallet", "bestGuess": "the same Expo mobile wallet runs on iOS"},
+    "iOS Tree Tracker": {"group": "Outside the documented estate"},
+    "Web Map": {"group": "Web map"},
+    "Greenstand Token Trading API": {"group": "Wallet", "bestGuess": "the items (trades between wallets, wallet creation) are what treetracker-wallet-api does"},
+    "General API Needs": {"group": "Across the estate"},
+    "Cloud": {"group": "Infrastructure", "bestGuess": "monitoring, Ansible, blue/green deploys, Solr, and Keycloak are in treetracker-infrastructure"},
+    "Data Analysis": {"group": "Outside the documented estate"},
+    "Capture Matching Tool": {"group": "Admin", "bestGuess": "the Admin Panel section lists the capture matching deployment"},
+    "Track File Tool": {"group": "Outside the documented estate"},
+    "Database Denormalization Project": {"group": "Data ingest", "bestGuess": "treetracker-airflow-dags builds the denormalized reporting tables"},
+    "Dev OPs": {"group": "Infrastructure", "bestGuess": "release channels and environments are deploy work"},
+    "Admin Panel": {"group": "Admin"},
+    "Key Cloak Projet": {"group": "Across the estate"},
+    "Wallet Admin Client": {"group": "Wallet"},
+    "Data Pipeline": {"group": "Data ingest", "bestGuess": "treetracker-airflow-dags is the data pipeline of the estate"},
+    "RVI Tool": {"group": "Outside the documented estate"},
+    "Domain Migration": {"group": "Across the estate"},
+    "Payment for SAAS": {"group": "Outside the documented estate"},
+    "Greenstand Blockchain Network": {"group": "Outside the documented estate"},
+    "Operational": {"group": "Across the estate"},
+    "Documentation": {"group": "Across the estate"},
+    "Miles Stones": {"group": "Milestones"}
+  }
+}

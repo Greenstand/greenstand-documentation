@@ -1,0 +1,1090 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "images-api",
+    "languages": [
+      "dockerfile",
+      "javascript",
+      "json",
+      "markdown",
+      "shell",
+      "yaml"
+    ],
+    "frameworks": [
+      "Docker",
+      "Express",
+      "GitHub Actions",
+      "Mocha"
+    ],
+    "description": "A Greenstand microservice that exposes a RESTful image resize API built with Express. It uses a layered MVC-like structure (protocol, service, and model layers) with a PostgreSQL database via Knex and Sharp for image processing.",
+    "analyzedAt": "2026-09-03T03:25:45Z",
+    "gitCommitHash": "9d761d1697fd84c6a58c1da3fae2f8834c63ddc5"
+  },
+  "nodes": [
+    {
+      "id": "domain:image-processing",
+      "type": "domain",
+      "name": "Image Processing & Delivery",
+      "summary": "The core business domain of the service. It fetches a remote source image, validates the requested resize parameters, applies Sharp transforms, and streams the resulting image back to the caller. Two GET endpoints expose an original-image path and a parameterized resize path.",
+      "tags": [
+        "image-processing",
+        "sharp",
+        "resize",
+        "core-domain",
+        "streaming"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Image",
+          "Domain",
+          "ResizeParams (height, width, rotation, quality)"
+        ],
+        "businessRules": [
+          "Resize parameters are validated with Joi before any transform runs",
+          "Params encode height/width/rotation/quality in a compact form (e.g. h=100,w=100)",
+          "When no params are supplied the original image buffer is returned unchanged",
+          "Output transforms produce a JPEG buffer streamed back to the client"
+        ],
+        "crossDomainInteractions": [
+          "Receives dispatched requests from the API Request Lifecycle middleware and router",
+          "Throws HttpError/Joi/Axios errors that the global error handler converts to HTTP responses"
+        ]
+      }
+    },
+    {
+      "id": "domain:api-request-lifecycle",
+      "type": "domain",
+      "name": "API Request Lifecycle",
+      "summary": "The Express protocol layer that boots the service and shapes every request and response. It loads environment config, wires CORS, JSON parsing, and a content-type guard, dispatches routes through an async wrapper, and centralizes error translation.",
+      "tags": [
+        "express",
+        "middleware",
+        "bootstrap",
+        "error-handling",
+        "routing"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Request",
+          "Response",
+          "Middleware",
+          "HttpError",
+          "Express App"
+        ],
+        "businessRules": [
+          "Non-JSON POST requests are rejected with HTTP 415 by the content-type guard",
+          "Every async route handler is wrapped so rejected promises reach the global error handler",
+          "The global error handler maps HttpError, Joi ValidationError, and Axios errors, defaulting to 500",
+          "Environment config is loaded per NODE_ENV before the app starts listening"
+        ],
+        "crossDomainInteractions": [
+          "Dispatches HTTP requests to the image-resize handlers",
+          "Translates errors thrown by the image and data layers into HTTP responses"
+        ]
+      }
+    },
+    {
+      "id": "domain:data-persistence",
+      "type": "domain",
+      "name": "Data Persistence",
+      "summary": "A Knex/Postgres persistence scaffold for future repositories. It provides a transactional session abstraction and a generic base repository with CRUD and filtered-query helpers. The current resize flow is stateless, so this layer is groundwork rather than an active path.",
+      "tags": [
+        "database",
+        "knex",
+        "postgres",
+        "repository",
+        "transaction"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "BaseRepository",
+          "Session",
+          "Knex Connection",
+          "Postgres Table"
+        ],
+        "businessRules": [
+          "Data access runs inside a transaction session with explicit begin/commit/rollback",
+          "Filter objects are translated recursively into chained Knex where clauses",
+          "Repository failures raise HttpError carrying an HTTP status and a rollback flag"
+        ],
+        "crossDomainInteractions": [
+          "Repository errors surface as HttpError that the API Request Lifecycle error handler translates"
+        ]
+      }
+    },
+    {
+      "id": "domain:build-and-deployment",
+      "type": "domain",
+      "name": "Build & Deployment",
+      "summary": "The delivery lifecycle that takes the service from commit to production. GitHub Actions lint and test the code, semantic-release versions it, Docker packages it, and Kustomize overlays promote the image tag across development, test, and production Kubernetes environments.",
+      "tags": [
+        "ci-cd",
+        "docker",
+        "kubernetes",
+        "kustomize",
+        "release"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Docker Image",
+          "Kustomize Overlay",
+          "Kubernetes Deployment",
+          "semantic-release Version"
+        ],
+        "businessRules": [
+          "Pull requests must pass ESLint and integration tests before merge",
+          "Push to main triggers a semantic-release version, Docker build/push, and dev overlay bump",
+          "Production and test promotions are manual workflow_dispatch runs gated to the Greenstand organization",
+          "Environment overlays differ only by image tag over a shared Kustomize base"
+        ],
+        "crossDomainInteractions": [
+          "Containerizes and deploys the running Express app defined by the API Request Lifecycle"
+        ]
+      }
+    },
+    {
+      "id": "flow:serve-resized-image",
+      "type": "flow",
+      "name": "Serve Resized Image",
+      "summary": "Handles a parameterized image request: parses the arbitrary-depth image URL and resize params from the path, fetches the source image, validates and applies the transforms, and streams the resized JPEG back.",
+      "tags": [
+        "image-processing",
+        "resize",
+        "http",
+        "streaming"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /img/:domain/:params/:image",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:serve-image",
+      "type": "flow",
+      "name": "Serve Image",
+      "summary": "Handles a plain image request for a given domain and image identifier: validates the request params, resizes through the service, and pipes the resulting stream back to the client.",
+      "tags": [
+        "image-processing",
+        "http",
+        "streaming"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "GET /img/:domain/:image",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:application-bootstrap",
+      "type": "flow",
+      "name": "Application Bootstrap",
+      "summary": "Starts the microservice: loads the per-environment dotenv file, configures the log level, builds the Express app factory, and begins listening on the configured port.",
+      "tags": [
+        "bootstrap",
+        "express",
+        "configuration",
+        "startup"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "node . (server.js)",
+        "entryType": "cli"
+      }
+    },
+    {
+      "id": "flow:request-middleware-chain",
+      "type": "flow",
+      "name": "Request Middleware Chain",
+      "summary": "The per-request pipeline every call passes through: CORS and JSON parsing, a content-type guard that rejects non-JSON POSTs with 415, route dispatch via an async wrapper, and centralized error translation.",
+      "tags": [
+        "middleware",
+        "express",
+        "error-handling",
+        "routing"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Any HTTP request to the Express app",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "flow:repository-data-access",
+      "type": "flow",
+      "name": "Repository Data Access",
+      "summary": "The transactional persistence path for future repositories: open a Knex session, build a filtered query, run a CRUD operation, and commit or roll back based on the outcome.",
+      "tags": [
+        "database",
+        "knex",
+        "crud",
+        "transaction"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "BaseRepository method call within a Session",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:continuous-integration",
+      "type": "flow",
+      "name": "Pull Request CI",
+      "summary": "Validates every pull request to main: installs dependencies, runs ESLint, and executes the integration test suite in a Node container.",
+      "tags": [
+        "ci-cd",
+        "linting",
+        "testing",
+        "continuous-integration"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "pull_request to main branch",
+        "entryType": "event"
+      }
+    },
+    {
+      "id": "flow:build-and-deploy-dev",
+      "type": "flow",
+      "name": "Build & Deploy to Dev",
+      "summary": "Runs on push to main: lints and tests, publishes a semantic-release version, builds and pushes the Docker image to DockerHub, and bumps the development Kustomize overlay for GitOps deployment.",
+      "tags": [
+        "ci-cd",
+        "docker",
+        "release",
+        "deployment"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "push to main branch",
+        "entryType": "event"
+      }
+    },
+    {
+      "id": "flow:promote-to-production",
+      "type": "flow",
+      "name": "Promote to Production",
+      "summary": "A manually dispatched workflow that promotes a given image tag to the production Kustomize overlay and commits the bump, gated to the Greenstand organization.",
+      "tags": [
+        "ci-cd",
+        "deployment",
+        "production",
+        "kubernetes"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "workflow_dispatch with a required git-tag input",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:serve-resized-image:dispatch-route",
+      "type": "step",
+      "name": "Dispatch Route",
+      "summary": "The Express router matches the image-resize GET URL and dispatches it to the handler, wrapped by the async error-handling wrapper.",
+      "tags": [
+        "routing",
+        "express"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routes.js"
+    },
+    {
+      "id": "step:serve-resized-image:parse-url-params",
+      "type": "step",
+      "name": "Parse URL and Resize Params",
+      "summary": "resizeImageArbitraryDepth parses the arbitrary-depth image URL and the h/w/r/q resize parameters from the request path.",
+      "tags": [
+        "url-parsing",
+        "validation",
+        "controller"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/handlers/resizeImageHandler.js",
+      "lineRange": [
+        25,
+        59
+      ]
+    },
+    {
+      "id": "step:serve-resized-image:fetch-remote-image",
+      "type": "step",
+      "name": "Fetch Remote Image",
+      "summary": "resizeImage downloads the source image from its URL over HTTP via axios before any transform.",
+      "tags": [
+        "image-processing",
+        "http",
+        "async"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/ResizeImageService.js",
+      "lineRange": [
+        5,
+        52
+      ]
+    },
+    {
+      "id": "step:serve-resized-image:validate-params",
+      "type": "step",
+      "name": "Validate Resize Params",
+      "summary": "Joi schemas validate the height, width, rotation, and quality parameters, failing fast on invalid input.",
+      "tags": [
+        "validation",
+        "joi",
+        "image-processing"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/ResizeImageService.js",
+      "lineRange": [
+        5,
+        52
+      ]
+    },
+    {
+      "id": "step:serve-resized-image:transform-image",
+      "type": "step",
+      "name": "Apply Sharp Transforms",
+      "summary": "Sharp chains resize, rotate, and jpeg transforms and produces the output buffer; the original buffer is returned when no params apply.",
+      "tags": [
+        "image-processing",
+        "sharp"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/ResizeImageService.js",
+      "lineRange": [
+        5,
+        52
+      ]
+    },
+    {
+      "id": "step:serve-resized-image:stream-response",
+      "type": "step",
+      "name": "Stream Response",
+      "summary": "The handler streams the resulting image buffer back to the client in the HTTP response.",
+      "tags": [
+        "streaming",
+        "api-handler"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/resizeImageHandler.js",
+      "lineRange": [
+        25,
+        59
+      ]
+    },
+    {
+      "id": "step:serve-resized-image:handle-errors",
+      "type": "step",
+      "name": "Handle Errors",
+      "summary": "The global error handler translates HttpError, Joi ValidationError, and Axios errors from the resize path into proper HTTP status codes and JSON bodies.",
+      "tags": [
+        "error-handling",
+        "middleware"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/utils/utils.js",
+      "lineRange": [
+        35,
+        66
+      ]
+    },
+    {
+      "id": "step:serve-image:dispatch-route",
+      "type": "step",
+      "name": "Dispatch Route",
+      "summary": "The router matches GET /img/:domain/:image and dispatches it to resizeImageGet through the async wrapper.",
+      "tags": [
+        "routing",
+        "express"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routes.js"
+    },
+    {
+      "id": "step:serve-image:validate-request-params",
+      "type": "step",
+      "name": "Validate Request Params",
+      "summary": "resizeImageGet validates the incoming image request parameters before delegating to the service.",
+      "tags": [
+        "validation",
+        "controller"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/resizeImageHandler.js",
+      "lineRange": [
+        12,
+        23
+      ]
+    },
+    {
+      "id": "step:serve-image:resize-image",
+      "type": "step",
+      "name": "Resize Image",
+      "summary": "The handler delegates to ResizeImageService to fetch and transform the image.",
+      "tags": [
+        "image-processing",
+        "sharp"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/services/ResizeImageService.js",
+      "lineRange": [
+        5,
+        52
+      ]
+    },
+    {
+      "id": "step:serve-image:pipe-stream",
+      "type": "step",
+      "name": "Pipe Stream",
+      "summary": "The resulting image stream is piped back into the HTTP response.",
+      "tags": [
+        "streaming",
+        "api-handler"
+      ],
+      "complexity": "simple",
+      "filePath": "server/handlers/resizeImageHandler.js",
+      "lineRange": [
+        12,
+        23
+      ]
+    },
+    {
+      "id": "step:application-bootstrap:load-environment",
+      "type": "step",
+      "name": "Load Environment Config",
+      "summary": "server.js loads the per-environment dotenv file via .env.${NODE_ENV} before requiring the app.",
+      "tags": [
+        "configuration",
+        "bootstrap"
+      ],
+      "complexity": "simple",
+      "filePath": "server/server.js"
+    },
+    {
+      "id": "step:application-bootstrap:configure-logging",
+      "type": "step",
+      "name": "Configure Logging",
+      "summary": "setup.js sets the loglevel default from NODE_LOG_LEVEL, falling back to info.",
+      "tags": [
+        "logging",
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "server/setup.js"
+    },
+    {
+      "id": "step:application-bootstrap:build-app",
+      "type": "step",
+      "name": "Build Express App",
+      "summary": "app.js constructs the Express application, wiring CORS, JSON parsing, the content-type guard, the router, and the global error handler.",
+      "tags": [
+        "express",
+        "bootstrap",
+        "middleware"
+      ],
+      "complexity": "simple",
+      "filePath": "server/app.js"
+    },
+    {
+      "id": "step:application-bootstrap:start-listening",
+      "type": "step",
+      "name": "Start Listening",
+      "summary": "server.js starts the Express app listening on the configured port.",
+      "tags": [
+        "server",
+        "bootstrap"
+      ],
+      "complexity": "simple",
+      "filePath": "server/server.js"
+    },
+    {
+      "id": "step:request-middleware-chain:cors-json-parsing",
+      "type": "step",
+      "name": "CORS and JSON Parsing",
+      "summary": "The app applies CORS and JSON body parsing to the incoming request.",
+      "tags": [
+        "middleware",
+        "express"
+      ],
+      "complexity": "simple",
+      "filePath": "server/app.js"
+    },
+    {
+      "id": "step:request-middleware-chain:content-type-guard",
+      "type": "step",
+      "name": "Content-Type Guard",
+      "summary": "A guard middleware rejects non-JSON POST requests with HTTP 415.",
+      "tags": [
+        "middleware",
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "server/app.js"
+    },
+    {
+      "id": "step:request-middleware-chain:route-dispatch",
+      "type": "step",
+      "name": "Route Dispatch",
+      "summary": "The API router matches the request URL and forwards it to the correct handler.",
+      "tags": [
+        "routing",
+        "express"
+      ],
+      "complexity": "simple",
+      "filePath": "server/routes.js"
+    },
+    {
+      "id": "step:request-middleware-chain:async-error-wrapping",
+      "type": "step",
+      "name": "Async Error Wrapping",
+      "summary": "handlerWrapper runs the async handler and forwards any rejected promise to next(), enabling throw-based error flow.",
+      "tags": [
+        "middleware",
+        "async",
+        "error-handling"
+      ],
+      "complexity": "simple",
+      "filePath": "server/utils/utils.js",
+      "lineRange": [
+        26,
+        33
+      ]
+    },
+    {
+      "id": "step:request-middleware-chain:global-error-handling",
+      "type": "step",
+      "name": "Global Error Handling",
+      "summary": "errorHandler maps HttpError, Joi ValidationError, and Axios errors to status codes and JSON bodies, defaulting to 500.",
+      "tags": [
+        "error-handling",
+        "middleware"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/utils/utils.js",
+      "lineRange": [
+        35,
+        66
+      ]
+    },
+    {
+      "id": "step:repository-data-access:open-session",
+      "type": "step",
+      "name": "Open Session",
+      "summary": "Session wraps the shared Knex connection and begins a transaction for the operation.",
+      "tags": [
+        "database",
+        "transaction",
+        "knex"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/database/Session.js",
+      "lineRange": [
+        11,
+        49
+      ]
+    },
+    {
+      "id": "step:repository-data-access:build-query",
+      "type": "step",
+      "name": "Build Filtered Query",
+      "summary": "BaseRepository translates nested and/or filter objects into chained Knex where clauses via a recursive whereBuilder.",
+      "tags": [
+        "database",
+        "query-parsing",
+        "knex"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/repositories/BaseRepository.js",
+      "lineRange": [
+        4,
+        120
+      ]
+    },
+    {
+      "id": "step:repository-data-access:execute-crud",
+      "type": "step",
+      "name": "Execute CRUD Operation",
+      "summary": "BaseRepository runs getById, getByFilter, countByFilter, update, or create against the configured table.",
+      "tags": [
+        "database",
+        "crud",
+        "repository"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/repositories/BaseRepository.js",
+      "lineRange": [
+        4,
+        120
+      ]
+    },
+    {
+      "id": "step:repository-data-access:commit-or-rollback",
+      "type": "step",
+      "name": "Commit or Rollback",
+      "summary": "Session commits on success or rolls back when an HttpError with shouldRollback() is raised.",
+      "tags": [
+        "database",
+        "transaction",
+        "error-handling"
+      ],
+      "complexity": "moderate",
+      "filePath": "server/database/Session.js",
+      "lineRange": [
+        11,
+        49
+      ]
+    },
+    {
+      "id": "step:continuous-integration:install-dependencies",
+      "type": "step",
+      "name": "Install Dependencies",
+      "summary": "The PR workflow installs npm dependencies in a Node container.",
+      "tags": [
+        "ci-cd",
+        "npm"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/treetracker-api-pull-request-ci.yml"
+    },
+    {
+      "id": "step:continuous-integration:run-eslint",
+      "type": "step",
+      "name": "Run ESLint",
+      "summary": "The workflow runs ESLint to enforce code style on the pull request.",
+      "tags": [
+        "ci-cd",
+        "linting"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/treetracker-api-pull-request-ci.yml"
+    },
+    {
+      "id": "step:continuous-integration:run-integration-tests",
+      "type": "step",
+      "name": "Run Integration Tests",
+      "summary": "The workflow executes the Mocha/Supertest integration suite against the app.",
+      "tags": [
+        "ci-cd",
+        "testing"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/treetracker-api-pull-request-ci.yml"
+    },
+    {
+      "id": "step:build-and-deploy-dev:run-tests-lint",
+      "type": "step",
+      "name": "Lint and Test",
+      "summary": "The build-deploy-dev test job lints and runs integration tests before release.",
+      "tags": [
+        "ci-cd",
+        "testing",
+        "linting"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/treetracker-api-build-deploy-dev.yml"
+    },
+    {
+      "id": "step:build-and-deploy-dev:semantic-release-version",
+      "type": "step",
+      "name": "Semantic Release Version",
+      "summary": "The release job publishes a semantic-release version and updates the changelog.",
+      "tags": [
+        "ci-cd",
+        "release",
+        "versioning"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/treetracker-api-build-deploy-dev.yml"
+    },
+    {
+      "id": "step:build-and-deploy-dev:build-push-docker",
+      "type": "step",
+      "name": "Build and Push Docker Image",
+      "summary": "The release job builds the node:16-alpine Docker image and pushes it to DockerHub.",
+      "tags": [
+        "ci-cd",
+        "docker",
+        "containerization"
+      ],
+      "complexity": "moderate",
+      "filePath": "Dockerfile"
+    },
+    {
+      "id": "step:build-and-deploy-dev:update-dev-overlay",
+      "type": "step",
+      "name": "Update Dev Overlay",
+      "summary": "The release job bumps the container image tag in the development Kustomize overlay for GitOps deployment.",
+      "tags": [
+        "ci-cd",
+        "kustomize",
+        "deployment"
+      ],
+      "complexity": "simple",
+      "filePath": "deployment/overlays/development/kustomization.yaml"
+    },
+    {
+      "id": "step:promote-to-production:dispatch-with-tag",
+      "type": "step",
+      "name": "Dispatch with Tag",
+      "summary": "The workflow is manually dispatched with a required git-tag input, gated to the Greenstand organization.",
+      "tags": [
+        "ci-cd",
+        "deployment"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/treetracker-api-deploy-prod.yml"
+    },
+    {
+      "id": "step:promote-to-production:update-prod-overlay",
+      "type": "step",
+      "name": "Update Production Overlay",
+      "summary": "The workflow promotes the given image tag to the production Kustomize overlay.",
+      "tags": [
+        "ci-cd",
+        "kustomize",
+        "production"
+      ],
+      "complexity": "simple",
+      "filePath": "deployment/overlays/production/kustomization.yaml"
+    },
+    {
+      "id": "step:promote-to-production:commit-bump",
+      "type": "step",
+      "name": "Commit Bump",
+      "summary": "The workflow commits the image tag bump to record the production promotion.",
+      "tags": [
+        "ci-cd",
+        "deployment",
+        "gitops"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/treetracker-api-deploy-prod.yml"
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:image-processing",
+      "target": "flow:serve-resized-image",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:image-processing",
+      "target": "flow:serve-image",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:api-request-lifecycle",
+      "target": "flow:application-bootstrap",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:api-request-lifecycle",
+      "target": "flow:request-middleware-chain",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:data-persistence",
+      "target": "flow:repository-data-access",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:build-and-deployment",
+      "target": "flow:continuous-integration",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:build-and-deployment",
+      "target": "flow:build-and-deploy-dev",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:build-and-deployment",
+      "target": "flow:promote-to-production",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:serve-resized-image",
+      "target": "step:serve-resized-image:dispatch-route",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:serve-resized-image",
+      "target": "step:serve-resized-image:parse-url-params",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:serve-resized-image",
+      "target": "step:serve-resized-image:fetch-remote-image",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:serve-resized-image",
+      "target": "step:serve-resized-image:validate-params",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:serve-resized-image",
+      "target": "step:serve-resized-image:transform-image",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:serve-resized-image",
+      "target": "step:serve-resized-image:stream-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:serve-resized-image",
+      "target": "step:serve-resized-image:handle-errors",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:serve-image",
+      "target": "step:serve-image:dispatch-route",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:serve-image",
+      "target": "step:serve-image:validate-request-params",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:serve-image",
+      "target": "step:serve-image:resize-image",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:serve-image",
+      "target": "step:serve-image:pipe-stream",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:application-bootstrap",
+      "target": "step:application-bootstrap:load-environment",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:application-bootstrap",
+      "target": "step:application-bootstrap:configure-logging",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:application-bootstrap",
+      "target": "step:application-bootstrap:build-app",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:application-bootstrap",
+      "target": "step:application-bootstrap:start-listening",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:request-middleware-chain",
+      "target": "step:request-middleware-chain:cors-json-parsing",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:request-middleware-chain",
+      "target": "step:request-middleware-chain:content-type-guard",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:request-middleware-chain",
+      "target": "step:request-middleware-chain:route-dispatch",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:request-middleware-chain",
+      "target": "step:request-middleware-chain:async-error-wrapping",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:request-middleware-chain",
+      "target": "step:request-middleware-chain:global-error-handling",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:repository-data-access",
+      "target": "step:repository-data-access:open-session",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:repository-data-access",
+      "target": "step:repository-data-access:build-query",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:repository-data-access",
+      "target": "step:repository-data-access:execute-crud",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:repository-data-access",
+      "target": "step:repository-data-access:commit-or-rollback",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:continuous-integration",
+      "target": "step:continuous-integration:install-dependencies",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:continuous-integration",
+      "target": "step:continuous-integration:run-eslint",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:continuous-integration",
+      "target": "step:continuous-integration:run-integration-tests",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "flow:build-and-deploy-dev",
+      "target": "step:build-and-deploy-dev:run-tests-lint",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:build-and-deploy-dev",
+      "target": "step:build-and-deploy-dev:semantic-release-version",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:build-and-deploy-dev",
+      "target": "step:build-and-deploy-dev:build-push-docker",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:build-and-deploy-dev",
+      "target": "step:build-and-deploy-dev:update-dev-overlay",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:promote-to-production",
+      "target": "step:promote-to-production:dispatch-with-tag",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:promote-to-production",
+      "target": "step:promote-to-production:update-prod-overlay",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:promote-to-production",
+      "target": "step:promote-to-production:commit-bump",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "domain:api-request-lifecycle",
+      "target": "domain:image-processing",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The router and middleware chain dispatch HTTP image requests to the resize handlers and translate their errors into HTTP responses.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:data-persistence",
+      "target": "domain:api-request-lifecycle",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Repository failures raise HttpError with a rollback flag that the global error handler converts to HTTP responses.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:build-and-deployment",
+      "target": "domain:api-request-lifecycle",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The pipeline containerizes and deploys the running Express app that serves the request lifecycle.",
+      "weight": 0.6
+    }
+  ],
+  "layers": [],
+  "tour": []
+}

@@ -1,0 +1,583 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "Greenstand-Overview",
+    "languages": ["Markdown"],
+    "frameworks": [],
+    "description": "A pure documentation/onboarding repository for Greenstand's Treetracker project. It contains no application code. It describes, in prose, the org's contributor workflow, governance structure, token economy concept, and product roadmap. The flows below are documentation-described processes, not code-implemented business logic.",
+    "analyzedAt": "2026-09-03T00:00:00Z",
+    "gitCommitHash": "68617178870590e198bd045e835e718562235e55"
+  },
+  "nodes": [
+    {
+      "id": "domain:contributor-onboarding",
+      "type": "domain",
+      "name": "Contributor Onboarding & Development Workflow",
+      "summary": "Documentation-described process for how a new contributor learns about the Treetracker platform, finds a repo to work on, and submits code using BDD and Git fork-and-pull conventions. No code implements this; it is narrated across README.md, BDD-GUIDE.md, and the Github Basics guide.",
+      "tags": ["onboarding", "contributor-workflow", "documentation-only"],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": ["Contributor", "Feature file", "Pull request", "Repository"],
+        "businessRules": [
+          "New work should be described as a Gherkin feature file before step definitions are written.",
+          "Changes are proposed via fork-and-pull rather than direct pushes to upstream repos."
+        ],
+        "crossDomainInteractions": [
+          "Points contributors to governance/code-of-conduct expectations before they contribute.",
+          "Points contributors to the issue index (Product Strategy & Planning) to find work items."
+        ]
+      }
+    },
+    {
+      "id": "domain:governance-legal",
+      "type": "domain",
+      "name": "Governance & Legal",
+      "summary": "Documentation-described nonprofit governance and legal framework: corporate bylaws, community team roles, code of conduct, and licensing. Describes how the organization and its contributors are structured and expected to behave, not code logic.",
+      "tags": ["governance", "legal", "documentation-only"],
+      "complexity": "simple",
+      "domainMeta": {
+        "entities": ["Board of Directors", "Officer", "Community role", "Code of Conduct", "AGPL-3.0 License"],
+        "businessRules": [
+          "Corporate governance is defined by the bylaws document.",
+          "All contributors are bound by the Contributor Covenant Code of Conduct.",
+          "Project code is licensed under AGPL-3.0."
+        ],
+        "crossDomainInteractions": [
+          "Defines the behavioral and legal ground rules referenced by the onboarding domain."
+        ]
+      }
+    },
+    {
+      "id": "domain:token-economy",
+      "type": "domain",
+      "name": "Token Economy (Greenstand Token)",
+      "summary": "Documentation-described concept for an NFT/fungible token framework linking digital tokens to real-world environmental assets (trees), covering token states, creation, verification, and trading. This is a whitepaper concept described in Greenstand-Token.md, not an implemented system in this repo.",
+      "tags": ["token-economy", "whitepaper", "documentation-only"],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": ["Token", "Environmental asset", "Token state", "Node network"],
+        "businessRules": [
+          "A token is linked to a specific environmental asset (e.g., a planted tree).",
+          "Tokens move through defined states from creation to trade to retirement.",
+          "Token authenticity is verified through a distributed node network."
+        ],
+        "crossDomainInteractions": [
+          "Referenced by the product roadmap as a strategic initiative."
+        ]
+      }
+    },
+    {
+      "id": "domain:product-strategy-planning",
+      "type": "domain",
+      "name": "Product Strategy & Planning",
+      "summary": "Documentation-described process for how the Treetracker ecosystem plans and tracks feature work: a tiered deliverables roadmap and a cross-repo issue index that contributors use to find work.",
+      "tags": ["planning", "roadmap", "documentation-only"],
+      "complexity": "simple",
+      "domainMeta": {
+        "entities": ["Roadmap tier", "Deliverable", "GitHub issue", "Repository"],
+        "businessRules": [
+          "Deliverables are organized into tiers of increasing scope/maturity.",
+          "The token economy is one of the strategic roadmap items."
+        ],
+        "crossDomainInteractions": [
+          "Feeds work items to contributors via the issue index.",
+          "Incorporates the token economy concept as a roadmap item."
+        ]
+      }
+    },
+    {
+      "id": "flow:project-onboarding",
+      "type": "flow",
+      "name": "Project Onboarding",
+      "summary": "How a newcomer reads the README to understand the Treetracker platform's components (Android app, admin client, web map, wallet API) and finds where to plug in.",
+      "tags": ["onboarding", "documentation-described"],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "README.md",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:bdd-feature-development",
+      "type": "flow",
+      "name": "BDD Feature Development",
+      "summary": "The documented Gherkin/Cucumber/WebdriverIO workflow: write a feature file, implement step definitions, run tests locally, and prepare a PR using the checklist.",
+      "tags": ["bdd", "testing", "documentation-described"],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "BDD-GUIDE.md",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:github-fork-and-pull",
+      "type": "flow",
+      "name": "GitHub Fork-and-Pull Contribution",
+      "summary": "The documented Git workflow contributors follow to fork a Treetracker repo, make changes on a branch, and submit a pull request.",
+      "tags": ["git", "contributor-workflow", "documentation-described"],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "Resrouces/Github Basics",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:nonprofit-governance-structure",
+      "type": "flow",
+      "name": "Nonprofit Governance Structure",
+      "summary": "How the organization's legal bylaws define board/officer roles, and how TEAM.md maps those to community/engineering roles.",
+      "tags": ["governance", "documentation-described"],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "Greenstand-Bilaws.md",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:code-of-conduct-enforcement",
+      "type": "flow",
+      "name": "Code of Conduct Enforcement",
+      "summary": "The documented expectations, reporting path, and enforcement approach for community behavior, per the Contributor Covenant.",
+      "tags": ["code-of-conduct", "documentation-described"],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "License, Code of Conduct etc/CODE_OF_CONDUCT.md",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:token-creation-and-verification",
+      "type": "flow",
+      "name": "Token Creation and Verification",
+      "summary": "The whitepaper-described lifecycle of linking a token to an environmental asset, minting it, assigning it a state, and verifying it through the node network.",
+      "tags": ["token-economy", "documentation-described"],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Greenstand-Token.md",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:token-trading-lifecycle",
+      "type": "flow",
+      "name": "Token Trading Lifecycle",
+      "summary": "The whitepaper-described process of listing a verified token for trade, transacting an ownership transfer, and settling the updated state across the node network.",
+      "tags": ["token-economy", "documentation-described"],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Greenstand-Token.md",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:roadmap-planning",
+      "type": "flow",
+      "name": "Roadmap Planning",
+      "summary": "How feature work is organized into tiered deliverables and prioritized, including strategic items like the token economy.",
+      "tags": ["planning", "documentation-described"],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "Roadmap.md",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:issue-tracking-navigation",
+      "type": "flow",
+      "name": "Issue Tracking Navigation",
+      "summary": "How a contributor uses the cross-repo issue index to find a repository and an issue to work on.",
+      "tags": ["planning", "documentation-described"],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "Issues-lndex.md",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:project-onboarding:read-readme",
+      "type": "step",
+      "name": "Read project README",
+      "summary": "Contributor reads README.md to learn what the Treetracker platform is.",
+      "tags": ["onboarding"],
+      "complexity": "simple",
+      "filePath": "README.md"
+    },
+    {
+      "id": "step:project-onboarding:identify-components",
+      "type": "step",
+      "name": "Identify platform components",
+      "summary": "Contributor identifies the Android app, admin client, web map, and wallet API as the platform's main parts.",
+      "tags": ["onboarding"],
+      "complexity": "simple",
+      "filePath": "README.md"
+    },
+    {
+      "id": "step:project-onboarding:find-related-docs",
+      "type": "step",
+      "name": "Follow links to related docs",
+      "summary": "Contributor follows README links to BDD-GUIDE.md, Roadmap.md, TEAM.md, Issues-lndex.md, and the Github Basics guide.",
+      "tags": ["onboarding"],
+      "complexity": "simple",
+      "filePath": "README.md"
+    },
+    {
+      "id": "step:project-onboarding:join-team",
+      "type": "step",
+      "name": "Find a team role to join",
+      "summary": "Contributor consults TEAM.md to see governance and engineering roles and where they fit.",
+      "tags": ["onboarding"],
+      "complexity": "simple",
+      "filePath": "TEAM.md"
+    },
+    {
+      "id": "step:bdd-feature-development:write-feature-file",
+      "type": "step",
+      "name": "Write Gherkin feature file",
+      "summary": "Author writes a .feature file describing desired behavior in Given/When/Then form.",
+      "tags": ["bdd"],
+      "complexity": "simple",
+      "filePath": "BDD-GUIDE.md"
+    },
+    {
+      "id": "step:bdd-feature-development:implement-step-definitions",
+      "type": "step",
+      "name": "Implement step definitions",
+      "summary": "Author implements WebdriverIO/Cucumber step definitions matching the feature file's Gherkin steps.",
+      "tags": ["bdd"],
+      "complexity": "moderate",
+      "filePath": "BDD-GUIDE.md"
+    },
+    {
+      "id": "step:bdd-feature-development:run-tests-locally",
+      "type": "step",
+      "name": "Run tests locally",
+      "summary": "Author runs the Cucumber/WebdriverIO suite locally to confirm the new scenario passes.",
+      "tags": ["bdd", "testing"],
+      "complexity": "simple",
+      "filePath": "BDD-GUIDE.md"
+    },
+    {
+      "id": "step:bdd-feature-development:apply-pr-checklist",
+      "type": "step",
+      "name": "Apply PR checklist",
+      "summary": "Author runs through the documented PR checklist before requesting review.",
+      "tags": ["bdd"],
+      "complexity": "simple",
+      "filePath": "BDD-GUIDE.md"
+    },
+    {
+      "id": "step:bdd-feature-development:submit-for-review",
+      "type": "step",
+      "name": "Submit for review",
+      "summary": "Author opens the pull request for team review, completing the development loop.",
+      "tags": ["bdd"],
+      "complexity": "simple",
+      "filePath": "BDD-GUIDE.md"
+    },
+    {
+      "id": "step:github-fork-and-pull:fork-repo",
+      "type": "step",
+      "name": "Fork the repository",
+      "summary": "Contributor forks the upstream Treetracker repo into their own GitHub account.",
+      "tags": ["git"],
+      "complexity": "simple",
+      "filePath": "Resrouces/Github Basics"
+    },
+    {
+      "id": "step:github-fork-and-pull:clone-and-branch",
+      "type": "step",
+      "name": "Clone and create a branch",
+      "summary": "Contributor clones their fork locally and creates a feature branch.",
+      "tags": ["git"],
+      "complexity": "simple",
+      "filePath": "Resrouces/Github Basics"
+    },
+    {
+      "id": "step:github-fork-and-pull:commit-changes",
+      "type": "step",
+      "name": "Commit changes",
+      "summary": "Contributor commits their changes to the feature branch.",
+      "tags": ["git"],
+      "complexity": "simple",
+      "filePath": "Resrouces/Github Basics"
+    },
+    {
+      "id": "step:github-fork-and-pull:push-branch",
+      "type": "step",
+      "name": "Push branch to fork",
+      "summary": "Contributor pushes the feature branch to their fork on GitHub.",
+      "tags": ["git"],
+      "complexity": "simple",
+      "filePath": "Resrouces/Github Basics"
+    },
+    {
+      "id": "step:github-fork-and-pull:open-pull-request",
+      "type": "step",
+      "name": "Open pull request",
+      "summary": "Contributor opens a pull request from their fork's branch against the upstream repo.",
+      "tags": ["git"],
+      "complexity": "simple",
+      "filePath": "Resrouces/Github Basics"
+    },
+    {
+      "id": "step:nonprofit-governance-structure:define-bylaws-roles",
+      "type": "step",
+      "name": "Define board and officer roles",
+      "summary": "The bylaws document establishes the nonprofit's board of directors and officer roles.",
+      "tags": ["governance"],
+      "complexity": "simple",
+      "filePath": "Greenstand-Bilaws.md"
+    },
+    {
+      "id": "step:nonprofit-governance-structure:map-community-roles",
+      "type": "step",
+      "name": "Map community and engineering roles",
+      "summary": "TEAM.md lists the community governance and engineering roles that operationalize the bylaws.",
+      "tags": ["governance"],
+      "complexity": "simple",
+      "filePath": "TEAM.md"
+    },
+    {
+      "id": "step:nonprofit-governance-structure:align-responsibilities",
+      "type": "step",
+      "name": "Align responsibilities",
+      "summary": "Community roles are aligned with the legal governance structure defined in the bylaws.",
+      "tags": ["governance"],
+      "complexity": "simple",
+      "filePath": "TEAM.md"
+    },
+    {
+      "id": "step:code-of-conduct-enforcement:define-expected-behavior",
+      "type": "step",
+      "name": "Define expected behavior",
+      "summary": "Code of Conduct sets out the standards of behavior expected from all community members.",
+      "tags": ["code-of-conduct"],
+      "complexity": "simple",
+      "filePath": "License, Code of Conduct etc/CODE_OF_CONDUCT.md"
+    },
+    {
+      "id": "step:code-of-conduct-enforcement:define-unacceptable-behavior",
+      "type": "step",
+      "name": "Define unacceptable behavior",
+      "summary": "Code of Conduct lists examples of unacceptable behavior.",
+      "tags": ["code-of-conduct"],
+      "complexity": "simple",
+      "filePath": "License, Code of Conduct etc/CODE_OF_CONDUCT.md"
+    },
+    {
+      "id": "step:code-of-conduct-enforcement:reporting-process",
+      "type": "step",
+      "name": "Report a violation",
+      "summary": "Community member reports a violation through the documented reporting channel.",
+      "tags": ["code-of-conduct"],
+      "complexity": "simple",
+      "filePath": "License, Code of Conduct etc/CODE_OF_CONDUCT.md"
+    },
+    {
+      "id": "step:code-of-conduct-enforcement:enforcement-action",
+      "type": "step",
+      "name": "Take enforcement action",
+      "summary": "Maintainers take corrective action in response to a reported violation.",
+      "tags": ["code-of-conduct"],
+      "complexity": "simple",
+      "filePath": "License, Code of Conduct etc/CODE_OF_CONDUCT.md"
+    },
+    {
+      "id": "step:token-creation-and-verification:link-to-asset",
+      "type": "step",
+      "name": "Link token to environmental asset",
+      "summary": "A token is associated with a specific real-world environmental asset, such as a planted tree.",
+      "tags": ["token-economy"],
+      "complexity": "moderate",
+      "filePath": "Greenstand-Token.md"
+    },
+    {
+      "id": "step:token-creation-and-verification:mint-token",
+      "type": "step",
+      "name": "Mint the token",
+      "summary": "An NFT or fungible token is created (minted) to represent the linked asset.",
+      "tags": ["token-economy"],
+      "complexity": "moderate",
+      "filePath": "Greenstand-Token.md"
+    },
+    {
+      "id": "step:token-creation-and-verification:assign-state",
+      "type": "step",
+      "name": "Assign initial token state",
+      "summary": "The token is assigned an initial state within the token state framework.",
+      "tags": ["token-economy"],
+      "complexity": "simple",
+      "filePath": "Greenstand-Token.md"
+    },
+    {
+      "id": "step:token-creation-and-verification:verify-via-nodes",
+      "type": "step",
+      "name": "Verify via node network",
+      "summary": "The token's authenticity and asset linkage are verified through the distributed node network.",
+      "tags": ["token-economy"],
+      "complexity": "moderate",
+      "filePath": "Greenstand-Token.md"
+    },
+    {
+      "id": "step:token-trading-lifecycle:list-for-trade",
+      "type": "step",
+      "name": "List token for trade",
+      "summary": "A verified token is listed as available for trade.",
+      "tags": ["token-economy"],
+      "complexity": "simple",
+      "filePath": "Greenstand-Token.md"
+    },
+    {
+      "id": "step:token-trading-lifecycle:transact-transfer",
+      "type": "step",
+      "name": "Transact ownership transfer",
+      "summary": "Ownership of the token is transferred between parties as part of a trade.",
+      "tags": ["token-economy"],
+      "complexity": "moderate",
+      "filePath": "Greenstand-Token.md"
+    },
+    {
+      "id": "step:token-trading-lifecycle:update-state",
+      "type": "step",
+      "name": "Update token state",
+      "summary": "The token's state is updated to reflect the completed trade.",
+      "tags": ["token-economy"],
+      "complexity": "simple",
+      "filePath": "Greenstand-Token.md"
+    },
+    {
+      "id": "step:token-trading-lifecycle:settle-on-network",
+      "type": "step",
+      "name": "Settle on node network",
+      "summary": "The updated ownership and state are settled and propagated across the node network.",
+      "tags": ["token-economy"],
+      "complexity": "moderate",
+      "filePath": "Greenstand-Token.md"
+    },
+    {
+      "id": "step:roadmap-planning:define-deliverable-tiers",
+      "type": "step",
+      "name": "Define deliverable tiers",
+      "summary": "Project-Deliverables.md organizes planned work into three tiers of increasing scope.",
+      "tags": ["planning"],
+      "complexity": "simple",
+      "filePath": "Resrouces/Project-Deliverables.md"
+    },
+    {
+      "id": "step:roadmap-planning:prioritize-features",
+      "type": "step",
+      "name": "Prioritize features",
+      "summary": "Roadmap.md prioritizes features to be built across the ecosystem.",
+      "tags": ["planning"],
+      "complexity": "simple",
+      "filePath": "Roadmap.md"
+    },
+    {
+      "id": "step:roadmap-planning:link-token-initiative",
+      "type": "step",
+      "name": "Link token economy initiative",
+      "summary": "The roadmap references the Greenstand Token whitepaper as a strategic initiative.",
+      "tags": ["planning", "token-economy"],
+      "complexity": "simple",
+      "filePath": "Roadmap.md"
+    },
+    {
+      "id": "step:issue-tracking-navigation:browse-index",
+      "type": "step",
+      "name": "Browse issue index",
+      "summary": "Contributor browses Issues-lndex.md, which links to issue trackers across Treetracker repos.",
+      "tags": ["planning"],
+      "complexity": "simple",
+      "filePath": "Issues-lndex.md"
+    },
+    {
+      "id": "step:issue-tracking-navigation:select-repo",
+      "type": "step",
+      "name": "Select a repository",
+      "summary": "Contributor selects the specific repo relevant to the area they want to work on.",
+      "tags": ["planning"],
+      "complexity": "simple",
+      "filePath": "Issues-lndex.md"
+    },
+    {
+      "id": "step:issue-tracking-navigation:find-issue",
+      "type": "step",
+      "name": "Find an applicable issue",
+      "summary": "Contributor finds an open issue in the selected repo matching their interest or skill.",
+      "tags": ["planning"],
+      "complexity": "simple",
+      "filePath": "Issues-lndex.md"
+    },
+    {
+      "id": "step:issue-tracking-navigation:begin-contribution",
+      "type": "step",
+      "name": "Begin contribution",
+      "summary": "Contributor begins work on the chosen issue, feeding into the fork-and-pull workflow.",
+      "tags": ["planning"],
+      "complexity": "simple",
+      "filePath": "Issues-lndex.md"
+    }
+  ],
+  "edges": [
+    { "source": "domain:contributor-onboarding", "target": "flow:project-onboarding", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:contributor-onboarding", "target": "flow:bdd-feature-development", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:contributor-onboarding", "target": "flow:github-fork-and-pull", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:governance-legal", "target": "flow:nonprofit-governance-structure", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:governance-legal", "target": "flow:code-of-conduct-enforcement", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:token-economy", "target": "flow:token-creation-and-verification", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:token-economy", "target": "flow:token-trading-lifecycle", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:product-strategy-planning", "target": "flow:roadmap-planning", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+    { "source": "domain:product-strategy-planning", "target": "flow:issue-tracking-navigation", "type": "contains_flow", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:project-onboarding", "target": "step:project-onboarding:read-readme", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:project-onboarding", "target": "step:project-onboarding:identify-components", "type": "flow_step", "direction": "forward", "weight": 0.5 },
+    { "source": "flow:project-onboarding", "target": "step:project-onboarding:find-related-docs", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:project-onboarding", "target": "step:project-onboarding:join-team", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:bdd-feature-development", "target": "step:bdd-feature-development:write-feature-file", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:bdd-feature-development", "target": "step:bdd-feature-development:implement-step-definitions", "type": "flow_step", "direction": "forward", "weight": 0.4 },
+    { "source": "flow:bdd-feature-development", "target": "step:bdd-feature-development:run-tests-locally", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:bdd-feature-development", "target": "step:bdd-feature-development:apply-pr-checklist", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:bdd-feature-development", "target": "step:bdd-feature-development:submit-for-review", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:github-fork-and-pull", "target": "step:github-fork-and-pull:fork-repo", "type": "flow_step", "direction": "forward", "weight": 0.2 },
+    { "source": "flow:github-fork-and-pull", "target": "step:github-fork-and-pull:clone-and-branch", "type": "flow_step", "direction": "forward", "weight": 0.4 },
+    { "source": "flow:github-fork-and-pull", "target": "step:github-fork-and-pull:commit-changes", "type": "flow_step", "direction": "forward", "weight": 0.6 },
+    { "source": "flow:github-fork-and-pull", "target": "step:github-fork-and-pull:push-branch", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:github-fork-and-pull", "target": "step:github-fork-and-pull:open-pull-request", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:nonprofit-governance-structure", "target": "step:nonprofit-governance-structure:define-bylaws-roles", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:nonprofit-governance-structure", "target": "step:nonprofit-governance-structure:map-community-roles", "type": "flow_step", "direction": "forward", "weight": 0.7 },
+    { "source": "flow:nonprofit-governance-structure", "target": "step:nonprofit-governance-structure:align-responsibilities", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:code-of-conduct-enforcement", "target": "step:code-of-conduct-enforcement:define-expected-behavior", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:code-of-conduct-enforcement", "target": "step:code-of-conduct-enforcement:define-unacceptable-behavior", "type": "flow_step", "direction": "forward", "weight": 0.5 },
+    { "source": "flow:code-of-conduct-enforcement", "target": "step:code-of-conduct-enforcement:reporting-process", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:code-of-conduct-enforcement", "target": "step:code-of-conduct-enforcement:enforcement-action", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:token-creation-and-verification", "target": "step:token-creation-and-verification:link-to-asset", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:token-creation-and-verification", "target": "step:token-creation-and-verification:mint-token", "type": "flow_step", "direction": "forward", "weight": 0.5 },
+    { "source": "flow:token-creation-and-verification", "target": "step:token-creation-and-verification:assign-state", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:token-creation-and-verification", "target": "step:token-creation-and-verification:verify-via-nodes", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:token-trading-lifecycle", "target": "step:token-trading-lifecycle:list-for-trade", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:token-trading-lifecycle", "target": "step:token-trading-lifecycle:transact-transfer", "type": "flow_step", "direction": "forward", "weight": 0.5 },
+    { "source": "flow:token-trading-lifecycle", "target": "step:token-trading-lifecycle:update-state", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:token-trading-lifecycle", "target": "step:token-trading-lifecycle:settle-on-network", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:roadmap-planning", "target": "step:roadmap-planning:define-deliverable-tiers", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:roadmap-planning", "target": "step:roadmap-planning:prioritize-features", "type": "flow_step", "direction": "forward", "weight": 0.7 },
+    { "source": "flow:roadmap-planning", "target": "step:roadmap-planning:link-token-initiative", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "flow:issue-tracking-navigation", "target": "step:issue-tracking-navigation:browse-index", "type": "flow_step", "direction": "forward", "weight": 0.3 },
+    { "source": "flow:issue-tracking-navigation", "target": "step:issue-tracking-navigation:select-repo", "type": "flow_step", "direction": "forward", "weight": 0.5 },
+    { "source": "flow:issue-tracking-navigation", "target": "step:issue-tracking-navigation:find-issue", "type": "flow_step", "direction": "forward", "weight": 0.8 },
+    { "source": "flow:issue-tracking-navigation", "target": "step:issue-tracking-navigation:begin-contribution", "type": "flow_step", "direction": "forward", "weight": 1.0 },
+
+    { "source": "domain:contributor-onboarding", "target": "domain:governance-legal", "type": "cross_domain", "direction": "forward", "description": "Onboarding docs point contributors to the Code of Conduct and team governance structure before they contribute.", "weight": 0.5 },
+    { "source": "domain:contributor-onboarding", "target": "domain:product-strategy-planning", "type": "cross_domain", "direction": "forward", "description": "README links to the issue index so contributors can find work items.", "weight": 0.5 },
+    { "source": "domain:product-strategy-planning", "target": "domain:token-economy", "type": "cross_domain", "direction": "forward", "description": "The roadmap references the Greenstand Token whitepaper as a strategic initiative.", "weight": 0.4 }
+  ],
+  "layers": [],
+  "tour": []
+}

@@ -1,0 +1,43 @@
+name: "Understand Greenstand: Wrong docs"
+description: >-
+  A page, a graph, or a glossary of the Understand Greenstand docs
+  (greenstand.github.io/greenstand-documentation) is wrong, or the source repo changed since the
+  snapshot.
+title: "Understand Greenstand: Wrong docs: "
+labels: ["understand-greenstand", "bug", "documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for the report. These docs describe a snapshot of each source repo. A bug in
+        Greenstand's code goes to its source repo, not here.
+  - type: input
+    id: repo
+    attributes:
+      label: Repo
+      description: >-
+        The source repo that the page describes, for example treetracker-api. Leave it empty
+        if the problem is not about one repo.
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: A link to the page, the viewer, or the file with the problem.
+      placeholder: https://
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What is wrong
+      description: >-
+        Quote the text. For a graph in the viewer, name the view (structure or domain) and the
+        node.
+    validations:
+      required: true
+  - type: textarea
+    id: right
+    attributes:
+      label: What is right
+      description: >-
+        Tell what the docs should say. If you can, link the source code that shows it.

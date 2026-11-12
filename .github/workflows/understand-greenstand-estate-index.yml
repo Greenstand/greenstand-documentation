@@ -1,0 +1,220 @@
+name: "Understand Greenstand: Estate index"
+
+# Fails when the README.md estate index does not match estate.json and repos/*/meta.json,
+# when a repos/<name>/ directory has no estate.json entry, or when it lacks a file that the
+# index links to. Fix: run `node .github/scripts/build-index.mjs` and commit README.md.
+# Also fails when an ecosystem map in ARCHITECTURE.md is stale, when ecosystem.json has an
+# error, or when a repo was regenerated after its edges were checked. Fix: run
+# `node .github/scripts/build-ecosystem-maps.mjs` and follow its errors.
+# Also fails when a glossary (repos/<name>/GLOSSARY.md, or the estate GLOSSARY.md) does not
+# match the domain graphs. The estate glossary also lists the resources of shared-resources.json.
+# Thus a change of shared-resources.json can make it stale. Fix: run
+# `node .github/scripts/build-glossary.mjs`.
+# Also fails when the Start here or Regenerating section of a per-repo README
+# (repos/<name>/README.md) is missing or stale. The Start here section comes from estate.json,
+# the graph, shared-resources.json, and the title of docs/shared-resources.md. Thus a change of
+# shared-resources.json can make it stale. Also fails when the Start here section is not first.
+# Also fails when that README has an em dash, tells how to view the graphs outside the Start here
+# section, or has a Regenerating heading that the script does not write. Fix: run
+# `node .github/scripts/build-repo-readmes.mjs`, or edit the line that the error names.
+# Also fails when an onboarding guide (repos/<name>/ONBOARDING.md) has a wrong title, a table, or
+# an em dash outside code. Fix: run `node .github/scripts/build-onboarding.mjs`. If the first line
+# of a guide is not a title, run /understand-anything:understand-onboard again.
+# Also fails when a line of edited text or of a per-repo README names a former name of a
+# renamed repo (formerNames in estate.json). Fix: run
+# `node .github/scripts/check-former-names.mjs` and use the new name on each line that it names.
+# Also fails when a graph (repos/<name>/knowledge-graph.json) has a node for a file of .ua/,
+# a reference to a node that the graph does not have, or a wrong project block (also in
+# domain-graph.json). Fix: regenerate the repo with --exclude ".ua/" (docs/regenerating.md,
+# step 2), remove the reference, or correct the project block (step 2).
+# Also fails when the built text of the shared-resource page (docs/shared-resources.md) is stale,
+# when shared-resources.json has an error, when a repo was regenerated after its facts were
+# checked, when the ## heading of a resource is not its name with its id as the anchor, or when
+# the sections are not in the order of the resources in shared-resources.json. The heading of a
+# resource is the ## heading above its blocks or, for a resource with no evidence (no blocks),
+# its one ## heading. Fix: run `node .github/scripts/build-shared-resources.mjs` and
+# follow its errors.
+# When a push or a pull request changes shared-resources.json, also fails when a name is not in
+# its cited lines at the snapshot (the script reads them through the GitHub API). Fix the
+# evidence entry that the error names.
+# Also fails when the text copy of a chapter of the capture journey (docs/capture-journey*.md) is
+# stale, when a text copy belongs to no chapter, when capture-journey.json has an error, or when
+# the image directory docs/capture-journey/ does not hold exactly the images of the data file.
+# Also fails when a drawing in the site look (an SVG of docs/capture-journey/ with the site color
+# block) has stale site colors, uses a color that is not one of its 5 neutral colors, or has a
+# character with no glyph in its drawing font. Fix: run
+# `node .github/scripts/build-capture-journey.mjs` and follow its errors.
+# When a push or a pull request changes capture-journey.json, its images, or the code that builds
+# and checks them, also fails when GitHub does not hold a capture journey fact: a name is not in
+# its cited lines at the commit of the entry, a repo is not public, the issue of a "Not working
+# today" flag is not open, or an image is not the file of its source. Fix the entry that the
+# error names.
+# Also fails when the text copy of the roadmap page (docs/roadmap.md) is stale, when roadmap.json has
+# an error, when a section of the pinned copy of the roadmap (sources/<repo>/<path>) has no entry in
+# roadmap.json or an entry names no section, when a shown section has a relative link or an HTML
+# tag, or when the notice of the pinned copy (sources/<repo>/README.md) does not name the snapshot.
+# Fix: run `node .github/scripts/build-roadmap.mjs` and follow its errors.
+# When a push or a pull request changes roadmap.json, the pinned copy, or the code that builds and
+# checks them, also fails when GitHub does not hold the snapshot: the pinned copy is not the file at
+# the commit, the commit is not the last change of the file there, the date or the license is
+# different, or marked counts a different number of items in a section. Fix the entry that the
+# error names, or move the snapshot (docs/regenerating.md, "Move the roadmap snapshot").
+# Also fails when a color of the site look (.github/scripts/site-colors.mjs) is missing or not
+# readable: a text color has a contrast below 4.5:1 on a background or on the parcel field, an
+# area color is near a state color, two area colors look alike, also for readers with red-green
+# color blindness, or the parcel field is stronger than 1.25:1 to the ground or has no ink. Fix:
+# run `node .github/scripts/check-site-colors.mjs` and change the color or the ink share that the
+# error names.
+# Also fails when recognition.json (the bot list and the exclusion list of the contributors page)
+# has an error: a key that is not known, an account id that is not a whole number or is on the list
+# 2 times, an exclusion URL that is not a pull request, a comment, or a review of a Greenstand repo,
+# or an entry with no reason. Fix: run `node .github/scripts/build-contributors.mjs --check` and
+# follow its errors.
+# When a push or a pull request changes recognition.json, also fails when GitHub does not hold an
+# entry: a bot account id that is no account, or an excluded pull request, comment, or review that
+# is gone (or a comment that is not on its pull request). Fix the entry that the error names.
+# It runs only when our files change (understand-greenstand/ and our files in .github/), so a
+# change to other content of this repo starts no run.
+
+on:
+  push:
+    paths:
+      - "understand-greenstand/**"
+      - ".github/workflows/understand-greenstand-*.yml"
+      - ".github/ISSUE_TEMPLATE/understand-greenstand-*.yml"
+  pull_request:
+    paths:
+      - "understand-greenstand/**"
+      - ".github/workflows/understand-greenstand-*.yml"
+      - ".github/ISSUE_TEMPLATE/understand-greenstand-*.yml"
+
+permissions:
+  contents: read
+
+# Our files live in the folder understand-greenstand/ of this repo: each run step starts there.
+defaults:
+  run:
+    working-directory: understand-greenstand
+
+concurrency:
+  group: understand-greenstand-estate-index-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  estate-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Check the estate index
+        run: node .github/scripts/build-index.mjs --check
+
+      - name: Check the ecosystem maps
+        run: node .github/scripts/build-ecosystem-maps.mjs --check
+
+      - name: Check the glossaries
+        run: node .github/scripts/build-glossary.mjs --check
+
+      - name: Check the per-repo READMEs
+        run: node .github/scripts/build-repo-readmes.mjs --check
+
+      - name: Check the onboarding guides
+        run: node .github/scripts/build-onboarding.mjs --check
+
+      - name: Check for former names
+        run: node .github/scripts/check-former-names.mjs
+
+      - name: Check the graphs
+        run: node .github/scripts/check-graphs.mjs
+
+      - name: Check the shared-resource page
+        run: node .github/scripts/build-shared-resources.mjs --check
+
+      - name: Check the capture journey
+        run: node .github/scripts/build-capture-journey.mjs --check
+
+      - name: Check the roadmap page
+        run: node .github/scripts/build-roadmap.mjs --check
+
+      - name: Check the colors of the site look
+        run: node .github/scripts/check-site-colors.mjs
+
+      - name: Check the lists of the contributors page
+        run: node .github/scripts/build-contributors.mjs --check
+
+      # Only when shared-resources.json changes: the step reads GitHub, and the other steps stay
+      # offline. BASE is the commit before the push, or the base of the pull request. When it is
+      # not known (a new branch), the step runs.
+      - name: Check the evidence of the shared-resource facts
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [[ "$BASE" =~ ^[0-9a-f]{40}$ && "$BASE" != 0000000000000000000000000000000000000000 ]] \
+            && git fetch --quiet --no-tags --depth=1 origin "$BASE" \
+            && git diff --quiet "$BASE" HEAD -- shared-resources.json; then
+            echo "shared-resources.json did not change since ${BASE:0:7}: no evidence check"
+          else
+            node .github/scripts/build-shared-resources.mjs --evidence
+          fi
+
+      # Only when the data, the images, or the code that builds and checks them changes: the step
+      # reads GitHub. BASE as in the step above; when it is not known (a new branch), the step runs.
+      - name: Check the evidence of the capture journey facts
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [[ "$BASE" =~ ^[0-9a-f]{40}$ && "$BASE" != 0000000000000000000000000000000000000000 ]] \
+            && git fetch --quiet --no-tags --depth=1 origin "$BASE" \
+            && git diff --quiet "$BASE" HEAD -- capture-journey.json docs/capture-journey \
+              .github/scripts/build-capture-journey.mjs .github/scripts/capture-journey-page.mjs \
+              .github/scripts/estate.mjs; then
+            echo "the capture journey data, images, and code did not change since ${BASE:0:7}: no evidence check"
+          else
+            node .github/scripts/build-capture-journey.mjs --evidence
+          fi
+
+      # Only when the data, the pinned copy, or the code that builds and checks them changes: the step
+      # reads GitHub, and it needs marked (the renderer of the page) to compare the item counts. BASE
+      # as in the steps above; when it is not known (a new branch), the step runs.
+      - name: Check the roadmap snapshot on GitHub
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [[ "$BASE" =~ ^[0-9a-f]{40}$ && "$BASE" != 0000000000000000000000000000000000000000 ]] \
+            && git fetch --quiet --no-tags --depth=1 origin "$BASE" \
+            && git diff --quiet "$BASE" HEAD -- roadmap.json sources \
+              .github/scripts/build-roadmap.mjs .github/scripts/roadmap-page.mjs .github/scripts/roadmap-source.mjs \
+              .github/scripts/estate.mjs; then
+            echo "the roadmap data, the pinned copy, and the code did not change since ${BASE:0:7}: no snapshot check"
+          else
+            npm install --no-save --no-audit --no-fund marked@12
+            node .github/scripts/build-roadmap.mjs --evidence
+          fi
+
+      # Only when recognition.json changes: the step reads GitHub. BASE as in the steps above; when
+      # it is not known (a new branch), the step runs.
+      - name: Check the entries of the contributors page lists on GitHub
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [[ "$BASE" =~ ^[0-9a-f]{40}$ && "$BASE" != 0000000000000000000000000000000000000000 ]] \
+            && git fetch --quiet --no-tags --depth=1 origin "$BASE" \
+            && git diff --quiet "$BASE" HEAD -- recognition.json; then
+            echo "recognition.json did not change since ${BASE:0:7}: no evidence check"
+          else
+            node .github/scripts/build-contributors.mjs --evidence
+          fi

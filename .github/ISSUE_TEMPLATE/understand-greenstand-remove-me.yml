@@ -1,0 +1,36 @@
+name: "Understand Greenstand: Remove me from the contributors page"
+description: >-
+  Take your GitHub account off the contributors page of
+  greenstand.github.io/greenstand-documentation, or put it back.
+title: "Understand Greenstand: Contributors page: remove me"
+labels: ["understand-greenstand"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The contributors page shows public GitHub activity in the public Greenstand repos. Use this
+        form to take your name off the page, or to put it back.
+
+        - We change the account that opens this issue. Open it with your own GitHub account. We
+          cannot remove another person.
+        - We make the change within 7 days. Then your name is on no part of the page.
+        - The page keeps no past quarters, and this repo keeps no copy of the data.
+  - type: dropdown
+    id: request
+    attributes:
+      label: Request
+      options:
+        - Remove my account from the contributors page
+        - Put my account back on the contributors page
+    validations:
+      required: true
+  - type: dropdown
+    id: delete
+    attributes:
+      label: Delete this issue after the change?
+      description: This issue shows your request in public. We can delete it after the change.
+      options:
+        - "No"
+        - "Yes"
+    validations:
+      required: true

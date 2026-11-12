@@ -1,0 +1,4715 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-admin-api",
+    "languages": [
+      "dockerfile",
+      "html",
+      "javascript",
+      "json",
+      "markdown",
+      "shell",
+      "typescript",
+      "yaml"
+    ],
+    "frameworks": [
+      "Docker",
+      "Docker Compose",
+      "GitHub Actions",
+      "Jest"
+    ],
+    "description": "Treetracker Admin API Server",
+    "analyzedAt": "2026-09-03T05:24:24.310878+00:00",
+    "gitCommitHash": "1f25d3e63c2a0d13190427c21a61f7cd99e9b898"
+  },
+  "nodes": [
+    {
+      "id": "file:src/__tests__/integration/integration.ts",
+      "type": "file",
+      "name": "integration.ts",
+      "filePath": "src/__tests__/integration/integration.ts",
+      "summary": "End-to-end integration test suite that boots the ExpressServer, seeds the database, and exercises the tree, planter, and organization API endpoints.",
+      "tags": [
+        "test",
+        "integration-test",
+        "api-handler",
+        "seed"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/__tests__/seed/seed.ts",
+      "type": "file",
+      "name": "seed.ts",
+      "filePath": "src/__tests__/seed/seed.ts",
+      "summary": "Test fixture module that connects to the datasource and re-exports seed helpers to populate and clear database tables for integration tests.",
+      "tags": [
+        "test",
+        "seed",
+        "fixture",
+        "database"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/application.ts",
+      "type": "file",
+      "name": "application.ts",
+      "filePath": "src/application.ts",
+      "summary": "Defines the LoopBack 4 application class wiring the custom sequence, REST explorer, and boot components for the Treetracker Admin API.",
+      "tags": [
+        "entry-point",
+        "loopback",
+        "bootstrap",
+        "application"
+      ],
+      "complexity": "simple",
+      "languageNotes": "LoopBack 4 application composed via mixins (RestApplication, BootMixin, RepositoryMixin)."
+    },
+    {
+      "id": "file:src/config.js",
+      "type": "file",
+      "name": "config.js",
+      "filePath": "src/config.js",
+      "summary": "Central runtime configuration object exposing the JWT secret and database settings read from environment variables.",
+      "tags": [
+        "config",
+        "configuration",
+        "environment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/datasources/config.ts",
+      "type": "file",
+      "name": "config.ts",
+      "filePath": "src/datasources/config.ts",
+      "summary": "Datasource configuration providing the PostgreSQL connection settings and a getDatasource helper used by the persistence layer.",
+      "tags": [
+        "config",
+        "datasource",
+        "database",
+        "postgres"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/datasources/treetracker.datasource.ts",
+      "type": "file",
+      "name": "treetracker.datasource.ts",
+      "filePath": "src/datasources/treetracker.datasource.ts",
+      "summary": "LoopBack juggler datasource binding for the Treetracker PostgreSQL database, injectable across repositories.",
+      "tags": [
+        "datasource",
+        "database",
+        "loopback",
+        "postgres"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/index.ts",
+      "summary": "Production entry point that constructs the ExpressServer, boots it, and starts listening for requests.",
+      "tags": [
+        "entry-point",
+        "bootstrap",
+        "server"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/indexTest.ts",
+      "type": "file",
+      "name": "indexTest.ts",
+      "filePath": "src/indexTest.ts",
+      "summary": "Test-mode entry point that clears and re-seeds the database before booting the ExpressServer for local integration runs.",
+      "tags": [
+        "entry-point",
+        "bootstrap",
+        "seed",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/js/Audit.js",
+      "type": "file",
+      "name": "Audit.js",
+      "filePath": "src/js/Audit.js",
+      "summary": "Express audit middleware that decodes the JWT, inspects request outcomes, and records auditable actions to the database via the Audit class.",
+      "tags": [
+        "middleware",
+        "audit",
+        "logging",
+        "database",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/js/Audit.test.js",
+      "type": "file",
+      "name": "Audit.test.js",
+      "filePath": "src/js/Audit.test.js",
+      "summary": "Unit tests for the audit middleware, verifying JWT handling and that auditable actions are persisted correctly.",
+      "tags": [
+        "test",
+        "unit-test",
+        "middleware",
+        "audit"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/js/auth.int.test.js",
+      "type": "file",
+      "name": "auth.int.test.js",
+      "filePath": "src/js/auth.int.test.js",
+      "summary": "Integration tests exercising the authentication and authorization middleware against real login and permission-guarded routes.",
+      "tags": [
+        "test",
+        "integration-test",
+        "authentication",
+        "authorization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/js/auth.js",
+      "type": "file",
+      "name": "auth.js",
+      "filePath": "src/js/auth.js",
+      "summary": "Core authentication and authorization module providing login, JWT issuance, password hashing, and the isAuth middleware that enforces policy-based route permissions.",
+      "tags": [
+        "authentication",
+        "authorization",
+        "middleware",
+        "security",
+        "api-handler",
+        "tested"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Express router combining bcrypt/HMAC password hashing, JWT signing, and a policy object model for role-based access control."
+    },
+    {
+      "id": "file:src/js/auth.test.js",
+      "type": "file",
+      "name": "auth.test.js",
+      "filePath": "src/js/auth.test.js",
+      "summary": "Extensive unit test suite for the auth module covering token verification, role updates, and permission enforcement across many route patterns.",
+      "tags": [
+        "test",
+        "unit-test",
+        "authentication",
+        "authorization"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/migrate.ts",
+      "type": "file",
+      "name": "migrate.ts",
+      "filePath": "src/migrate.ts",
+      "summary": "Database migration script that boots the LoopBack application and runs schema migration, optionally preserving existing tables.",
+      "tags": [
+        "migration",
+        "database",
+        "script",
+        "entry-point"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/sequence.ts",
+      "type": "file",
+      "name": "sequence.ts",
+      "filePath": "src/sequence.ts",
+      "summary": "Defines the application's custom LoopBack request-handling sequence via the MiddlewareSequence mixin.",
+      "tags": [
+        "loopback",
+        "middleware",
+        "sequence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/server.ts",
+      "type": "file",
+      "name": "server.ts",
+      "filePath": "src/server.ts",
+      "summary": "Express wrapper that mounts CORS, JSON parsing, the audit and auth middleware, static assets, and the LoopBack application, exposing boot, start, and stop lifecycle methods.",
+      "tags": [
+        "server",
+        "express",
+        "middleware",
+        "bootstrap"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/tests/seed/seed.ts",
+      "type": "file",
+      "name": "seed.ts",
+      "filePath": "src/tests/seed/seed.ts",
+      "summary": "Seed data module defining roles, entities, planters, and trees with seed and clear functions that populate or truncate the test database tables.",
+      "tags": [
+        "seed",
+        "fixture",
+        "database",
+        "test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/application.ts:TreetrackerAdminApiApplication",
+      "type": "class",
+      "name": "TreetrackerAdminApiApplication",
+      "filePath": "src/application.ts",
+      "lineRange": [
+        12,
+        37
+      ],
+      "summary": "LoopBack RestApplication subclass that configures the custom sequence, static assets, and REST explorer component.",
+      "tags": [
+        "loopback",
+        "application",
+        "bootstrap"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/datasources/treetracker.datasource.ts:TreetrackerDataSource",
+      "type": "class",
+      "name": "TreetrackerDataSource",
+      "filePath": "src/datasources/treetracker.datasource.ts",
+      "lineRange": [
+        6,
+        15
+      ],
+      "summary": "Injectable LoopBack juggler datasource for the Treetracker PostgreSQL database.",
+      "tags": [
+        "datasource",
+        "database",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/index.ts:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "src/index.ts",
+      "lineRange": [
+        5,
+        11
+      ],
+      "summary": "Bootstraps the ExpressServer, boots the application, and starts the HTTP listener.",
+      "tags": [
+        "entry-point",
+        "bootstrap"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/indexTest.ts:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "src/indexTest.ts",
+      "lineRange": [
+        6,
+        16
+      ],
+      "summary": "Clears and re-seeds the database, then boots and starts the ExpressServer for test runs.",
+      "tags": [
+        "entry-point",
+        "bootstrap",
+        "seed"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/js/Audit.js:auditMiddleware",
+      "type": "function",
+      "name": "auditMiddleware",
+      "filePath": "src/js/Audit.js",
+      "lineRange": [
+        23,
+        77
+      ],
+      "summary": "Express middleware that intercepts responses, verifies the JWT, and records successful auditable actions on completion.",
+      "tags": [
+        "middleware",
+        "audit",
+        "logging"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/js/Audit.js:Audit",
+      "type": "class",
+      "name": "Audit",
+      "filePath": "src/js/Audit.js",
+      "lineRange": [
+        79,
+        131
+      ],
+      "summary": "Audit record writer that connects to the datasource pool and persists action details via its did method.",
+      "tags": [
+        "audit",
+        "database",
+        "persistence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/js/auth.js:init",
+      "type": "function",
+      "name": "init",
+      "filePath": "src/js/auth.js",
+      "lineRange": [
+        426,
+        465
+      ],
+      "summary": "Initializes the auth schema by ensuring required admin user, role, and permission tables and seed rows exist.",
+      "tags": [
+        "initialization",
+        "database",
+        "authentication"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/js/auth.js:isAuth",
+      "type": "function",
+      "name": "isAuth",
+      "filePath": "src/js/auth.js",
+      "lineRange": [
+        477,
+        671
+      ],
+      "summary": "Authorization middleware that verifies the JWT, refreshes user roles, and enforces policy-based permissions across the API route patterns.",
+      "tags": [
+        "middleware",
+        "authorization",
+        "security",
+        "jwt"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/migrate.ts:migrate",
+      "type": "function",
+      "name": "migrate",
+      "filePath": "src/migrate.ts",
+      "lineRange": [
+        3,
+        15
+      ],
+      "summary": "Boots the LoopBack application and runs schema migration, preserving existing tables when the --rebuild flag is absent.",
+      "tags": [
+        "migration",
+        "database",
+        "script"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/server.ts:ExpressServer",
+      "type": "class",
+      "name": "ExpressServer",
+      "filePath": "src/server.ts",
+      "lineRange": [
+        20,
+        75
+      ],
+      "summary": "Express server wrapper mounting middleware and static assets, delegating to the LoopBack app, and exposing boot, start, and stop lifecycle methods.",
+      "tags": [
+        "server",
+        "express",
+        "bootstrap",
+        "lifecycle"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/tests/seed/seed.ts:seed",
+      "type": "function",
+      "name": "seed",
+      "filePath": "src/tests/seed/seed.ts",
+      "lineRange": [
+        167,
+        256
+      ],
+      "summary": "Populates the test database with roles, entities, entity relationships, planters, and trees.",
+      "tags": [
+        "seed",
+        "fixture",
+        "database"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/tests/seed/seed.ts:clear",
+      "type": "function",
+      "name": "clear",
+      "filePath": "src/tests/seed/seed.ts",
+      "lineRange": [
+        258,
+        267
+      ],
+      "summary": "Truncates all seeded test tables to reset database state between runs.",
+      "tags": [
+        "seed",
+        "cleanup",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/controllers/adminUser.controller.ts",
+      "type": "file",
+      "name": "adminUser.controller.ts",
+      "filePath": "src/controllers/adminUser.controller.ts",
+      "summary": "LoopBack 4 REST controller exposing admin user endpoints, wiring the AdminUserRepository via dependency injection.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "rest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/controllers/organization.controller.ts",
+      "type": "file",
+      "name": "organization.controller.ts",
+      "filePath": "src/controllers/organization.controller.ts",
+      "summary": "REST controller providing organization count, list, lookup-by-parent-org, and find-by-id endpoints backed by OrganizationRepository.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "rest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/controllers/planter.controller.ts",
+      "type": "file",
+      "name": "planter.controller.ts",
+      "filePath": "src/controllers/planter.controller.ts",
+      "summary": "REST controller for planter resources, exposing count, list, find-by-id, selfies lookup, and update endpoints with organization-scoped filtering.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "rest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/controllers/planterOrganization.controller.ts",
+      "type": "file",
+      "name": "planterOrganization.controller.ts",
+      "filePath": "src/controllers/planterOrganization.controller.ts",
+      "summary": "Organization-scoped planter controller enforcing entity-id access checks and delegating planter-registration queries built via buildFilterQuery.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "validation",
+        "rest"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/controllers/species.controller.ts",
+      "type": "file",
+      "name": "species.controller.ts",
+      "filePath": "src/controllers/species.controller.ts",
+      "summary": "REST controller for species CRUD plus capture-count aggregation and species combining, applying user-policy authorization.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "validation",
+        "rest"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/controllers/tag.controller.ts",
+      "type": "file",
+      "name": "tag.controller.ts",
+      "filePath": "src/controllers/tag.controller.ts",
+      "summary": "REST controller exposing tag count, list, find-by-id, update, create, and delete endpoints backed by TagRepository.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "rest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/controllers/treeTag.controller.ts",
+      "type": "file",
+      "name": "treeTag.controller.ts",
+      "filePath": "src/controllers/treeTag.controller.ts",
+      "summary": "REST controller providing CRUD endpoints for tree-tag associations backed by TreeTagRepository.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "rest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/controllers/trees.controller.ts",
+      "type": "file",
+      "name": "trees.controller.ts",
+      "filePath": "src/controllers/trees.controller.ts",
+      "summary": "Core trees REST controller with count, list, find-by-id, geospatial near-search, and transactional update that emits domain events and publishes RabbitMQ messages.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "messaging",
+        "rest"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Uses a manual datasource transaction with commit/rollback around domain-event creation and message publishing."
+    },
+    {
+      "id": "file:src/controllers/treesOrganization.controller.ts",
+      "type": "file",
+      "name": "treesOrganization.controller.ts",
+      "filePath": "src/controllers/treesOrganization.controller.ts",
+      "summary": "Organization-scoped trees controller enforcing entity-id and planter-id access checks across count, list, find-by-id, near-search, and update endpoints.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "validation",
+        "rest"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/controllers/treesTreeTag.controller.ts",
+      "type": "file",
+      "name": "treesTreeTag.controller.ts",
+      "filePath": "src/controllers/treesTreeTag.controller.ts",
+      "summary": "Nested REST controller managing tree-tag relations through the trees repository relation accessor.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "rest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/models/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/models/index.ts",
+      "summary": "Barrel file re-exporting all domain model definitions for convenient import across controllers and repositories.",
+      "tags": [
+        "barrel",
+        "entry-point",
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/repositories/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/repositories/index.ts",
+      "summary": "Barrel file re-exporting all repository classes for convenient import across the controller layer.",
+      "tags": [
+        "barrel",
+        "entry-point",
+        "data-access"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/controllers/adminUser.controller.ts:AdminUserController",
+      "type": "class",
+      "name": "AdminUserController",
+      "filePath": "src/controllers/adminUser.controller.ts",
+      "lineRange": [
+        22,
+        98
+      ],
+      "summary": "LoopBack controller class injecting AdminUserRepository to serve admin user endpoints.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/controllers/organization.controller.ts:OrganizationController",
+      "type": "class",
+      "name": "OrganizationController",
+      "filePath": "src/controllers/organization.controller.ts",
+      "lineRange": [
+        22,
+        106
+      ],
+      "summary": "Controller handling organization count, find, find-by-parent-org, and find-by-id operations.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/controllers/planter.controller.ts:PlanterController",
+      "type": "class",
+      "name": "PlanterController",
+      "filePath": "src/controllers/planter.controller.ts",
+      "lineRange": [
+        29,
+        140
+      ],
+      "summary": "Controller serving planter count, find, find-by-id, selfies, and update endpoints with organization where-clause filtering.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/controllers/planterOrganization.controller.ts:PlanterOrganizationController",
+      "type": "class",
+      "name": "PlanterOrganizationController",
+      "filePath": "src/controllers/planterOrganization.controller.ts",
+      "lineRange": [
+        31,
+        228
+      ],
+      "summary": "Organization-scoped planter controller with access checks and planter-registration query execution via buildFilterQuery.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/controllers/species.controller.ts:SpeciesController",
+      "type": "class",
+      "name": "SpeciesController",
+      "filePath": "src/controllers/species.controller.ts",
+      "lineRange": [
+        25,
+        187
+      ],
+      "summary": "Species controller supporting CRUD, capture-count aggregation, species combine, and policy-based authorization.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/controllers/tag.controller.ts:TagController",
+      "type": "class",
+      "name": "TagController",
+      "filePath": "src/controllers/tag.controller.ts",
+      "lineRange": [
+        22,
+        115
+      ],
+      "summary": "Controller exposing full CRUD operations for tags via TagRepository.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/controllers/treeTag.controller.ts:TreeTagController",
+      "type": "class",
+      "name": "TreeTagController",
+      "filePath": "src/controllers/treeTag.controller.ts",
+      "lineRange": [
+        22,
+        117
+      ],
+      "summary": "Controller exposing full CRUD operations for tree-tag records via TreeTagRepository.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/controllers/trees.controller.ts:TreesController",
+      "type": "class",
+      "name": "TreesController",
+      "filePath": "src/controllers/trees.controller.ts",
+      "lineRange": [
+        33,
+        215
+      ],
+      "summary": "Trees controller with count, find, find-by-id, near-search, and a transactional update that records domain events and publishes messages.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "messaging"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/controllers/treesOrganization.controller.ts:TreesOrganizationController",
+      "type": "class",
+      "name": "TreesOrganizationController",
+      "filePath": "src/controllers/treesOrganization.controller.ts",
+      "lineRange": [
+        30,
+        215
+      ],
+      "summary": "Organization-scoped trees controller enforcing entity-id and planter-id access checks across all read and update endpoints.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/controllers/treesTreeTag.controller.ts:TreesTreeTagController",
+      "type": "class",
+      "name": "TreesTreeTagController",
+      "filePath": "src/controllers/treesTreeTag.controller.ts",
+      "lineRange": [
+        21,
+        110
+      ],
+      "summary": "Nested controller managing tree-tag relations through the trees repository relation accessor.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "loopback"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/controllers/planterRegistration.controller.ts",
+      "type": "file",
+      "name": "planterRegistration.controller.ts",
+      "filePath": "src/controllers/planterRegistration.controller.ts",
+      "summary": "LoopBack REST controller exposing find and findById endpoints for planter registrations, building filtered SQL queries and delegating execution to the planter repository.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "rest",
+        "loopback"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/datasources/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/datasources/index.ts",
+      "summary": "Barrel file re-exporting the datasource modules for the application.",
+      "tags": [
+        "barrel",
+        "entry-point",
+        "datasource"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/js/buildFilterQuery.js",
+      "type": "file",
+      "name": "buildFilterQuery.js",
+      "filePath": "src/js/buildFilterQuery.js",
+      "summary": "Utility that translates a LoopBack filter object into a parameterized SQL query using the datasource connector, applying where clauses, ordering, and pagination.",
+      "tags": [
+        "utility",
+        "sql",
+        "query-builder",
+        "serialization"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Reaches into private LoopBack connector internals (_sanitizeQuery, _coerce, _buildWhere) to assemble raw SQL."
+    },
+    {
+      "id": "file:src/repositories/adminUser.repository.ts",
+      "type": "file",
+      "name": "adminUser.repository.ts",
+      "filePath": "src/repositories/adminUser.repository.ts",
+      "summary": "LoopBack default CRUD repository binding the AdminUser model to the treetracker datasource.",
+      "tags": [
+        "data-model",
+        "repository",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/repositories/domainEvent.repository.ts",
+      "type": "file",
+      "name": "domainEvent.repository.ts",
+      "filePath": "src/repositories/domainEvent.repository.ts",
+      "summary": "LoopBack default CRUD repository binding the DomainEvent model to the treetracker datasource.",
+      "tags": [
+        "data-model",
+        "repository",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/repositories/organization.repository.ts",
+      "type": "file",
+      "name": "organization.repository.ts",
+      "filePath": "src/repositories/organization.repository.ts",
+      "summary": "Repository for organizations that resolves entity ids by organization id and applies organization-scoped where clauses to filters.",
+      "tags": [
+        "data-model",
+        "repository",
+        "loopback",
+        "authorization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/repositories/planter.repository.ts",
+      "type": "file",
+      "name": "planter.repository.ts",
+      "filePath": "src/repositories/planter.repository.ts",
+      "summary": "Planter repository with organization-scoped access control and custom findWithOrg/countWithOrg methods that join planter registrations and run parameterized SQL.",
+      "tags": [
+        "data-model",
+        "repository",
+        "loopback",
+        "authorization",
+        "sql"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/repositories/planterRegistration.repository.ts",
+      "type": "file",
+      "name": "planterRegistration.repository.ts",
+      "filePath": "src/repositories/planterRegistration.repository.ts",
+      "summary": "LoopBack default CRUD repository binding the PlanterRegistration model to the treetracker datasource.",
+      "tags": [
+        "data-model",
+        "repository",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/repositories/species.repository.ts",
+      "type": "file",
+      "name": "species.repository.ts",
+      "filePath": "src/repositories/species.repository.ts",
+      "summary": "LoopBack default CRUD repository binding the Species model to the treetracker datasource.",
+      "tags": [
+        "data-model",
+        "repository",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/repositories/tag.repository.ts",
+      "type": "file",
+      "name": "tag.repository.ts",
+      "filePath": "src/repositories/tag.repository.ts",
+      "summary": "LoopBack default CRUD repository binding the Tag model to the treetracker datasource.",
+      "tags": [
+        "data-model",
+        "repository",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/repositories/treeTag.repository.ts",
+      "type": "file",
+      "name": "treeTag.repository.ts",
+      "filePath": "src/repositories/treeTag.repository.ts",
+      "summary": "LoopBack default CRUD repository binding the TreeTag join model to the treetracker datasource.",
+      "tags": [
+        "data-model",
+        "repository",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/repositories/trees.repository.ts",
+      "type": "file",
+      "name": "trees.repository.ts",
+      "filePath": "src/repositories/trees.repository.ts",
+      "summary": "Trees repository with organization-scoped access control and custom findWithTagId/countWithTagId methods that join tree tags and run parameterized SQL.",
+      "tags": [
+        "data-model",
+        "repository",
+        "loopback",
+        "authorization",
+        "sql"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/controllers/planterRegistration.controller.ts:PlanterRegistrationController",
+      "type": "class",
+      "name": "PlanterRegistrationController",
+      "filePath": "src/controllers/planterRegistration.controller.ts",
+      "lineRange": [
+        7,
+        72
+      ],
+      "summary": "REST controller injecting the planter repository and exposing find and findById handlers that build filtered queries and return planter registration data.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "rest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/js/buildFilterQuery.js:buildFilterQuery",
+      "type": "function",
+      "name": "buildFilterQuery",
+      "filePath": "src/js/buildFilterQuery.js",
+      "lineRange": [
+        11,
+        53
+      ],
+      "summary": "Builds a parameterized SQL statement from a select statement and a LoopBack filter, applying where, order by, and pagination via the connector.",
+      "tags": [
+        "utility",
+        "sql",
+        "query-builder"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/repositories/adminUser.repository.ts:AdminUserRepository",
+      "type": "class",
+      "name": "AdminUserRepository",
+      "filePath": "src/repositories/adminUser.repository.ts",
+      "lineRange": [
+        6,
+        16
+      ],
+      "summary": "Default CRUD repository for the AdminUser model wired to the treetracker datasource.",
+      "tags": [
+        "repository",
+        "data-model",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/repositories/domainEvent.repository.ts:DomainEventRepository",
+      "type": "class",
+      "name": "DomainEventRepository",
+      "filePath": "src/repositories/domainEvent.repository.ts",
+      "lineRange": [
+        6,
+        16
+      ],
+      "summary": "Default CRUD repository for the DomainEvent model wired to the treetracker datasource.",
+      "tags": [
+        "repository",
+        "data-model",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/repositories/organization.repository.ts:OrganizationRepository",
+      "type": "class",
+      "name": "OrganizationRepository",
+      "filePath": "src/repositories/organization.repository.ts",
+      "lineRange": [
+        7,
+        42
+      ],
+      "summary": "Organization repository resolving entity ids by organization id and applying organization-scoped where clauses to queries.",
+      "tags": [
+        "repository",
+        "data-model",
+        "authorization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/repositories/planter.repository.ts:PlanterRepository",
+      "type": "class",
+      "name": "PlanterRepository",
+      "filePath": "src/repositories/planter.repository.ts",
+      "lineRange": [
+        18,
+        206
+      ],
+      "summary": "Planter repository providing organization-scoped id resolution, where-clause construction, and custom findWithOrg/countWithOrg methods that join registrations and run raw SQL.",
+      "tags": [
+        "repository",
+        "data-model",
+        "authorization",
+        "sql"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/repositories/planterRegistration.repository.ts:PlanterRegistrationRepository",
+      "type": "class",
+      "name": "PlanterRegistrationRepository",
+      "filePath": "src/repositories/planterRegistration.repository.ts",
+      "lineRange": [
+        6,
+        16
+      ],
+      "summary": "Default CRUD repository for the PlanterRegistration model wired to the treetracker datasource.",
+      "tags": [
+        "repository",
+        "data-model",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/repositories/species.repository.ts:SpeciesRepository",
+      "type": "class",
+      "name": "SpeciesRepository",
+      "filePath": "src/repositories/species.repository.ts",
+      "lineRange": [
+        6,
+        16
+      ],
+      "summary": "Default CRUD repository for the Species model wired to the treetracker datasource.",
+      "tags": [
+        "repository",
+        "data-model",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/repositories/tag.repository.ts:TagRepository",
+      "type": "class",
+      "name": "TagRepository",
+      "filePath": "src/repositories/tag.repository.ts",
+      "lineRange": [
+        6,
+        16
+      ],
+      "summary": "Default CRUD repository for the Tag model wired to the treetracker datasource.",
+      "tags": [
+        "repository",
+        "data-model",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/repositories/treeTag.repository.ts:TreeTagRepository",
+      "type": "class",
+      "name": "TreeTagRepository",
+      "filePath": "src/repositories/treeTag.repository.ts",
+      "lineRange": [
+        6,
+        16
+      ],
+      "summary": "Default CRUD repository for the TreeTag join model wired to the treetracker datasource.",
+      "tags": [
+        "repository",
+        "data-model",
+        "loopback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/repositories/trees.repository.ts:TreesRepository",
+      "type": "class",
+      "name": "TreesRepository",
+      "filePath": "src/repositories/trees.repository.ts",
+      "lineRange": [
+        17,
+        204
+      ],
+      "summary": "Trees repository providing organization-scoped id resolution, where-clause construction, and custom findWithTagId/countWithTagId methods that join tree tags and run raw SQL.",
+      "tags": [
+        "repository",
+        "data-model",
+        "authorization",
+        "sql"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "service:Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "Dockerfile",
+      "summary": "Single-stage Docker build on the node:12.19.0-alpine base image that installs dependencies with npm ci, builds the app, and runs it via `node .`.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "deployment",
+        "build-system"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Copies package manifests before source to leverage Docker layer caching for dependency installs."
+    },
+    {
+      "id": "service:Dockerfile:node",
+      "type": "service",
+      "name": "node",
+      "filePath": "Dockerfile",
+      "summary": "Build stage based on node:12.19.0-alpine that compiles and runs the Treetracker Admin API server.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "build-stage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:.dockerignore",
+      "type": "service",
+      "name": ".dockerignore",
+      "filePath": ".dockerignore",
+      "summary": "Docker build context exclusion list that keeps unwanted files out of the image build.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "pipeline:.github/workflows/codeql-analysis.yml",
+      "type": "pipeline",
+      "name": "codeql-analysis.yml",
+      "filePath": ".github/workflows/codeql-analysis.yml",
+      "summary": "GitHub Actions workflow running GitHub CodeQL static security analysis on JavaScript, triggered on push and pull request to master plus a weekly cron schedule.",
+      "tags": [
+        "ci-cd",
+        "security",
+        "code-analysis",
+        "infrastructure"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses a language matrix and the official github/codeql-action steps (init, autobuild, analyze)."
+    },
+    {
+      "id": "pipeline:.github/workflows/treetracker-admin-api-build-deploy.yml",
+      "type": "pipeline",
+      "name": "treetracker-admin-api-build-deploy.yml",
+      "filePath": ".github/workflows/treetracker-admin-api-build-deploy.yml",
+      "summary": "Primary CI/CD pipeline that lints, builds and tests the API, then on push to master publishes a semantic-release version, builds and pushes a Docker image to DockerHub, and bumps the development kustomize image tag.",
+      "tags": [
+        "ci-cd",
+        "deployment",
+        "docker",
+        "kubernetes",
+        "infrastructure"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Two-stage job graph (test then release) using needs; combines semantic-release, docker buildx and kustomize image tagging."
+    },
+    {
+      "id": "pipeline:.github/workflows/treetracker-admin-api-deploy-prod.yml",
+      "type": "pipeline",
+      "name": "treetracker-admin-api-deploy-prod.yml",
+      "filePath": ".github/workflows/treetracker-admin-api-deploy-prod.yml",
+      "summary": "Manually dispatched workflow that updates the production kustomize overlay image tag to a chosen git tag and commits the change, driving a GitOps production deployment.",
+      "tags": [
+        "ci-cd",
+        "deployment",
+        "kubernetes",
+        "gitops",
+        "infrastructure"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Triggered via workflow_dispatch with a required git-tag input; edits deployment/overlays/production via kustomize."
+    },
+    {
+      "id": "pipeline:.github/workflows/treetracker-admin-api-deploy-test.yml",
+      "type": "pipeline",
+      "name": "treetracker-admin-api-deploy-test.yml",
+      "filePath": ".github/workflows/treetracker-admin-api-deploy-test.yml",
+      "summary": "Manually dispatched workflow that updates the test kustomize overlay image tag to a chosen git tag and commits the change, driving a GitOps test-environment deployment.",
+      "tags": [
+        "ci-cd",
+        "deployment",
+        "kubernetes",
+        "gitops",
+        "infrastructure"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Triggered via workflow_dispatch with a required git-tag input; edits deployment/overlays/test via kustomize."
+    },
+    {
+      "id": "step:.github/workflows/codeql-analysis.yml:analyze",
+      "type": "pipeline",
+      "name": "analyze",
+      "filePath": ".github/workflows/codeql-analysis.yml",
+      "summary": "Job that checks out the repository, initializes CodeQL for JavaScript, autobuilds and performs the CodeQL security analysis.",
+      "tags": [
+        "ci-cd",
+        "security",
+        "code-analysis"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:.github/workflows/treetracker-admin-api-build-deploy.yml:test",
+      "type": "pipeline",
+      "name": "test",
+      "filePath": ".github/workflows/treetracker-admin-api-build-deploy.yml",
+      "summary": "Test job that installs dependencies with npm ci, runs ESLint, builds the API and runs the CI test suite on Node.js 12.x.",
+      "tags": [
+        "ci-cd",
+        "test",
+        "lint",
+        "build"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:.github/workflows/treetracker-admin-api-build-deploy.yml:release",
+      "type": "pipeline",
+      "name": "release",
+      "filePath": ".github/workflows/treetracker-admin-api-build-deploy.yml",
+      "summary": "Release job that runs semantic-release, builds and pushes the Docker image to DockerHub, and updates the development kustomize overlay with the new image tag.",
+      "tags": [
+        "ci-cd",
+        "deployment",
+        "docker",
+        "release"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:.github/workflows/treetracker-admin-api-deploy-prod.yml:deploy-test",
+      "type": "pipeline",
+      "name": "deploy-test",
+      "filePath": ".github/workflows/treetracker-admin-api-deploy-prod.yml",
+      "summary": "Job that installs kustomize, sets the production overlay image tag to the dispatched git tag, and commits and pushes the change.",
+      "tags": [
+        "ci-cd",
+        "deployment",
+        "kubernetes",
+        "gitops"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:.github/workflows/treetracker-admin-api-deploy-test.yml:deploy-test",
+      "type": "pipeline",
+      "name": "deploy-test",
+      "filePath": ".github/workflows/treetracker-admin-api-deploy-test.yml",
+      "summary": "Job that installs kustomize, sets the test overlay image tag to the dispatched git tag, and commits and pushes the change.",
+      "tags": [
+        "ci-cd",
+        "deployment",
+        "kubernetes",
+        "gitops"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.env",
+      "type": "config",
+      "name": ".env",
+      "filePath": ".env",
+      "summary": "Environment variable file defining the Docker IMAGE name, VERSION tag, and CONTAINER_NAME used for building and running the admin API container.",
+      "tags": [
+        "configuration",
+        "environment",
+        "docker",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.mocharc.json",
+      "type": "config",
+      "name": ".mocharc.json",
+      "filePath": ".mocharc.json",
+      "summary": "Mocha test runner configuration enabling recursive test discovery and a required setup module for the test suite.",
+      "tags": [
+        "configuration",
+        "testing",
+        "mocha",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.yo-rc.json",
+      "type": "config",
+      "name": ".yo-rc.json",
+      "filePath": ".yo-rc.json",
+      "summary": "Yeoman configuration marking the project as scaffolded with the LoopBack generator (generator-loopback).",
+      "tags": [
+        "configuration",
+        "loopback",
+        "scaffolding",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:CHANGELOG.md",
+      "type": "document",
+      "name": "CHANGELOG.md",
+      "filePath": "CHANGELOG.md",
+      "summary": "Auto-generated release changelog tracking features, bug fixes, and reverts across versions 2.4 through 2.26 of the Treetracker admin project.",
+      "tags": [
+        "documentation",
+        "changelog",
+        "release-notes",
+        "versioning"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Follows the conventional-changelog format with compare links per semantic version."
+    },
+    {
+      "id": "document:DEVELOPING.md",
+      "type": "document",
+      "name": "DEVELOPING.md",
+      "filePath": "DEVELOPING.md",
+      "summary": "Developer guide covering VSCode setup and the development workflow for contributing to the API server.",
+      "tags": [
+        "documentation",
+        "development",
+        "guide",
+        "onboarding"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Primary project documentation with a quick-start guide, code style rules, testing instructions, and Docker-based local development setup for the Treetracker Admin API.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "overview",
+        "getting-started"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "NPM manifest for the Treetracker Admin API server defining scripts, runtime and dev dependencies, LoopBack tooling, and the Node engine constraints.",
+      "tags": [
+        "configuration",
+        "npm",
+        "dependencies",
+        "build-system"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "LoopBack-based project; scripts wire up mocha tests, nodemon dev server, and build tooling."
+    },
+    {
+      "id": "document:rematchTutorial.md",
+      "type": "document",
+      "name": "rematchTutorial.md",
+      "filePath": "rematchTutorial.md",
+      "summary": "In-depth tutorial explaining Redux and the Rematch abstraction, with usage patterns and a unit-test example for state management.",
+      "tags": [
+        "documentation",
+        "tutorial",
+        "rematch",
+        "redux"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "tsconfig.json",
+      "summary": "TypeScript compiler configuration extending a shared LoopBack base config and scoping compilation to the source include paths.",
+      "tags": [
+        "configuration",
+        "typescript",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/base/database-connection-sealed-secret.yaml",
+      "type": "config",
+      "name": "database-connection-sealed-secret.yaml",
+      "filePath": "deployment/base/database-connection-sealed-secret.yaml",
+      "summary": "Bitnami SealedSecret holding the encrypted PostgreSQL connection string, decrypted in-cluster into the 'database-connection' secret consumed by the API deployment.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "security",
+        "database",
+        "secret"
+      ],
+      "complexity": "simple",
+      "languageNotes": "SealedSecret (bitnami.com/v1alpha1) lets encrypted secrets live safely in version control."
+    },
+    {
+      "id": "config:deployment/base/kustomization.yaml",
+      "type": "config",
+      "name": "kustomization.yaml",
+      "filePath": "deployment/base/kustomization.yaml",
+      "summary": "Kustomize base that aggregates the deployment, service, Ambassador mapping, and sealed secret manifests into a single deployable resource set.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "kustomize",
+        "orchestration",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/base/namespace.yaml",
+      "type": "config",
+      "name": "namespace.yaml",
+      "filePath": "deployment/base/namespace.yaml",
+      "summary": "Defines the 'admin-api' Kubernetes namespace that isolates the Treetracker Admin API resources.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "namespace",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/base/rabbitmq-sealedsecret.yaml",
+      "type": "config",
+      "name": "rabbitmq-sealedsecret.yaml",
+      "filePath": "deployment/base/rabbitmq-sealedsecret.yaml",
+      "summary": "Bitnami SealedSecret holding the encrypted RabbitMQ connection URL, decrypted into the 'treetracker-rabbitmq-connection' secret for the message queue integration.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "security",
+        "messaging",
+        "secret"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/base/treetracker-admin-api-deployment.yaml",
+      "type": "config",
+      "name": "treetracker-admin-api-deployment.yaml",
+      "filePath": "deployment/base/treetracker-admin-api-deployment.yaml",
+      "summary": "Kubernetes Deployment running two replicas of the greenstand/treetracker-admin-api container, wiring JWT, database, and RabbitMQ secrets into environment variables with DigitalOcean node affinity.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "deployment",
+        "containerization",
+        "infrastructure"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses secretKeyRef to inject sealed-secret values and nodeAffinity to pin pods to a specific DOKS node pool."
+    },
+    {
+      "id": "config:deployment/base/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "type": "config",
+      "name": "treetracker-admin-api-jwt-sealed-secret.yaml",
+      "filePath": "deployment/base/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "summary": "Bitnami SealedSecret holding the encrypted JWT signing secret, decrypted into the 'treetracker-api-jwt' secret used for API authentication.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "security",
+        "authentication",
+        "secret"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/base/treetracker-admin-api-mapping.yaml",
+      "type": "config",
+      "name": "treetracker-admin-api-mapping.yaml",
+      "filePath": "deployment/base/treetracker-admin-api-mapping.yaml",
+      "summary": "Ambassador Mapping that routes external '/api/admin/' traffic to the treetracker-admin-api service, rewriting the path to root with no timeout.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "routing",
+        "ambassador",
+        "api-gateway"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses Ambassador getambassador.io/v2 Mapping for ingress-style path routing."
+    },
+    {
+      "id": "config:deployment/base/treetracker-admin-api-service.yaml",
+      "type": "config",
+      "name": "treetracker-admin-api-service.yaml",
+      "filePath": "deployment/base/treetracker-admin-api-service.yaml",
+      "summary": "Kubernetes Service exposing the admin API pods on port 80 and forwarding to container targetPort 3000 via the app selector.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "service",
+        "networking",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/overlays/development/database-connection-sealed-secret.yaml",
+      "type": "config",
+      "name": "database-connection-sealed-secret.yaml",
+      "filePath": "deployment/overlays/development/database-connection-sealed-secret.yaml",
+      "summary": "Bitnami SealedSecret holding the encrypted database connection credentials for the development environment, patched into the base deployment.",
+      "tags": [
+        "configuration",
+        "security",
+        "secret",
+        "kubernetes",
+        "database"
+      ],
+      "complexity": "simple",
+      "languageNotes": "SealedSecret kind lets encrypted credentials live safely in git; the controller decrypts them into a native Secret in-cluster."
+    },
+    {
+      "id": "config:deployment/overlays/development/kustomization.yaml",
+      "type": "config",
+      "name": "kustomization.yaml",
+      "filePath": "deployment/overlays/development/kustomization.yaml",
+      "summary": "Kustomize development overlay that layers strategic-merge patches and secrets onto the base manifests and pins the admin API image to tag 2.26.3.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "kustomize",
+        "deployment",
+        "orchestration"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Kustomize overlay composing a base with patchesStrategicMerge and an image tag override."
+    },
+    {
+      "id": "config:deployment/overlays/development/patch-enable-verify-publishing.yaml",
+      "type": "config",
+      "name": "patch-enable-verify-publishing.yaml",
+      "filePath": "deployment/overlays/development/patch-enable-verify-publishing.yaml",
+      "summary": "Strategic-merge patch that enables the verify/publishing feature toggle on the admin API deployment for the development environment.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "deployment",
+        "patch",
+        "feature-flag"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/overlays/development/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "type": "config",
+      "name": "treetracker-admin-api-jwt-sealed-secret.yaml",
+      "filePath": "deployment/overlays/development/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "summary": "Bitnami SealedSecret carrying the encrypted JWT signing key used by the admin API for authentication in the development environment.",
+      "tags": [
+        "configuration",
+        "security",
+        "secret",
+        "kubernetes",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/overlays/development/treetracker-admin-api-mapping.yaml",
+      "type": "config",
+      "name": "treetracker-admin-api-mapping.yaml",
+      "filePath": "deployment/overlays/development/treetracker-admin-api-mapping.yaml",
+      "summary": "Ambassador Mapping that routes external traffic to the admin API and sets CORS origins, methods, and allowed headers for the development environment.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "routing",
+        "ambassador",
+        "cors"
+      ],
+      "complexity": "simple",
+      "languageNotes": "getambassador.io/v2 Mapping is the Ambassador Edge Stack routing/CORS primitive."
+    },
+    {
+      "id": "config:deployment/overlays/development/treetracker-dev-rabbitmq-sealedsecret.yaml",
+      "type": "config",
+      "name": "treetracker-dev-rabbitmq-sealedsecret.yaml",
+      "filePath": "deployment/overlays/development/treetracker-dev-rabbitmq-sealedsecret.yaml",
+      "summary": "Bitnami SealedSecret holding the encrypted RabbitMQ connection credentials used by the admin API in the development environment.",
+      "tags": [
+        "configuration",
+        "security",
+        "secret",
+        "kubernetes",
+        "messaging"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/overlays/production/kustomization.yaml",
+      "type": "config",
+      "name": "kustomization.yaml",
+      "filePath": "deployment/overlays/production/kustomization.yaml",
+      "summary": "Kustomize production overlay that references the base deployment, pins the treetracker-admin-api image to tag 2.25.5, and applies strategic-merge patches for the mapping and sealed secrets.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "kustomize",
+        "deployment",
+        "orchestration"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Kustomize overlay layering a production environment on top of ../../base via patchesStrategicMerge and image tag override."
+    },
+    {
+      "id": "config:deployment/overlays/production/database-connection-sealed-secret.yaml",
+      "type": "config",
+      "name": "database-connection-sealed-secret.yaml",
+      "filePath": "deployment/overlays/production/database-connection-sealed-secret.yaml",
+      "summary": "Bitnami SealedSecret holding the encrypted production database connection string for the admin-api namespace.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "sealed-secret",
+        "security",
+        "database"
+      ],
+      "complexity": "simple",
+      "languageNotes": "SealedSecret (bitnami.com/v1alpha1) stores encryptedData that the sealed-secrets controller decrypts into a native Secret at runtime."
+    },
+    {
+      "id": "config:deployment/overlays/production/rabbitmq-sealedsecret.yaml",
+      "type": "config",
+      "name": "rabbitmq-sealedsecret.yaml",
+      "filePath": "deployment/overlays/production/rabbitmq-sealedsecret.yaml",
+      "summary": "Bitnami SealedSecret holding the encrypted RabbitMQ message-queue connection string for the admin-api namespace.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "sealed-secret",
+        "security",
+        "messaging"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/overlays/production/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "type": "config",
+      "name": "treetracker-admin-api-jwt-sealed-secret.yaml",
+      "filePath": "deployment/overlays/production/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "summary": "Bitnami SealedSecret holding the encrypted JWT signing secret used by the treetracker admin API for authentication.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "sealed-secret",
+        "security",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/overlays/production/treetracker-admin-api-mapping.yaml",
+      "type": "config",
+      "name": "treetracker-admin-api-mapping.yaml",
+      "filePath": "deployment/overlays/production/treetracker-admin-api-mapping.yaml",
+      "summary": "Ambassador Mapping that defines CORS policy (allowed origins, methods, and headers) for the production treetracker admin API ingress.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "ambassador",
+        "ingress",
+        "cors"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Ambassador Mapping (getambassador.io/v2) configures API gateway routing and CORS at the edge."
+    },
+    {
+      "id": "config:deployment/overlays/test/database-connection-sealed-secret.yaml",
+      "type": "config",
+      "name": "database-connection-sealed-secret.yaml",
+      "filePath": "deployment/overlays/test/database-connection-sealed-secret.yaml",
+      "summary": "Bitnami SealedSecret holding the encrypted database connection string for the admin-api namespace in the test environment.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "security",
+        "sealed-secret",
+        "database"
+      ],
+      "complexity": "simple",
+      "languageNotes": "SealedSecret CRD (bitnami.com/v1alpha1); encryptedData is decrypted in-cluster by the sealed-secrets controller."
+    },
+    {
+      "id": "config:deployment/overlays/test/kustomization.yaml",
+      "type": "config",
+      "name": "kustomization.yaml",
+      "filePath": "deployment/overlays/test/kustomization.yaml",
+      "summary": "Kustomize test overlay that layers the base manifests, pins the container image tag 2.25.5, and strategic-merge patches the mapping and sealed-secret resources.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "kustomize",
+        "orchestration",
+        "deployment"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Kustomize overlay referencing ../../base with patchesStrategicMerge and an image tag override."
+    },
+    {
+      "id": "config:deployment/overlays/test/rabbitmq-sealedsecret.yaml",
+      "type": "config",
+      "name": "rabbitmq-sealedsecret.yaml",
+      "filePath": "deployment/overlays/test/rabbitmq-sealedsecret.yaml",
+      "summary": "Bitnami SealedSecret placeholder for the RabbitMQ message-queue connection used by the admin-api in the test environment.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "security",
+        "sealed-secret",
+        "messaging"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/overlays/test/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "type": "config",
+      "name": "treetracker-admin-api-jwt-sealed-secret.yaml",
+      "filePath": "deployment/overlays/test/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "summary": "Bitnami SealedSecret carrying the encrypted JWT signing key for the treetracker admin API in the test environment.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "security",
+        "sealed-secret",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deployment/overlays/test/treetracker-admin-api-mapping.yaml",
+      "type": "config",
+      "name": "treetracker-admin-api-mapping.yaml",
+      "filePath": "deployment/overlays/test/treetracker-admin-api-mapping.yaml",
+      "summary": "Ambassador Mapping defining CORS origins, methods, and headers routing for the treetracker admin API in the test environment.",
+      "tags": [
+        "configuration",
+        "kubernetes",
+        "routing",
+        "cors",
+        "api-gateway"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Ambassador Mapping CRD (getambassador.io/v2) configuring edge CORS policy."
+    },
+    {
+      "id": "service:dev/dockerfiles/Dockerfile.API",
+      "type": "service",
+      "name": "Dockerfile.API",
+      "filePath": "dev/dockerfiles/Dockerfile.API",
+      "summary": "Development Docker image for the admin API server, built on node:8.12-slim with nodemon installed globally for live-reload during local development.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "development",
+        "api"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses nodemon as the entrypoint for auto-restart on code changes; relies on a bind-mounted source directory rather than COPYing code into the image."
+    },
+    {
+      "id": "service:dev/dockerfiles/Dockerfile.ReverseProxy",
+      "type": "service",
+      "name": "Dockerfile.ReverseProxy",
+      "filePath": "dev/dockerfiles/Dockerfile.ReverseProxy",
+      "summary": "Nginx reverse proxy image that installs the admin proxy configuration and a custom 502 error page for the local development stack.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "reverse-proxy",
+        "nginx"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Overrides the default nginx.conf and provides a custom 502 fallback page via COPY."
+    },
+    {
+      "id": "service:dev/dockerfiles/Dockerfile.Web",
+      "type": "service",
+      "name": "Dockerfile.Web",
+      "filePath": "dev/dockerfiles/Dockerfile.Web",
+      "summary": "Development Docker image for the admin web frontend, built on node:8.12-slim, exposing port 3001 and starting the app via npm start.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "development",
+        "web"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Exposes port 3001 and expects source to be bind-mounted at /opt/admin-web rather than copied in."
+    },
+    {
+      "id": "file:dev/scripts/build.sh",
+      "type": "file",
+      "name": "build.sh",
+      "filePath": "dev/scripts/build.sh",
+      "summary": "Builds Docker images for the reverse proxy, admin web, and admin API from their dedicated Dockerfiles.",
+      "tags": [
+        "script",
+        "build-system",
+        "containerization",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:dev/scripts/docker-clear-images.sh",
+      "type": "file",
+      "name": "docker-clear-images.sh",
+      "filePath": "dev/scripts/docker-clear-images.sh",
+      "summary": "Force-removes all local Docker images to reset the development image cache.",
+      "tags": [
+        "script",
+        "cleanup",
+        "containerization",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:dev/scripts/docker-remove-containers.sh",
+      "type": "file",
+      "name": "docker-remove-containers.sh",
+      "filePath": "dev/scripts/docker-remove-containers.sh",
+      "summary": "Force-removes all Docker containers to clear the development environment state.",
+      "tags": [
+        "script",
+        "cleanup",
+        "containerization",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:dev/scripts/down.sh",
+      "type": "file",
+      "name": "down.sh",
+      "filePath": "dev/scripts/down.sh",
+      "summary": "Stops the docker-compose development stack and lists running containers for verification.",
+      "tags": [
+        "script",
+        "orchestration",
+        "containerization",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:dev/scripts/install.sh",
+      "type": "file",
+      "name": "install.sh",
+      "filePath": "dev/scripts/install.sh",
+      "summary": "Installs npm dependencies for both the client and server packages of the project.",
+      "tags": [
+        "script",
+        "build-system",
+        "dependencies",
+        "development"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:dev/scripts/logs-api.sh",
+      "type": "file",
+      "name": "logs-api.sh",
+      "filePath": "dev/scripts/logs-api.sh",
+      "summary": "Follows the live Docker logs of the treetracker-admin-api container.",
+      "tags": [
+        "script",
+        "monitoring",
+        "containerization",
+        "development"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:dev/scripts/logs-web.sh",
+      "type": "file",
+      "name": "logs-web.sh",
+      "filePath": "dev/scripts/logs-web.sh",
+      "summary": "Follows the live Docker logs of the treetracker-admin-web container.",
+      "tags": [
+        "script",
+        "monitoring",
+        "containerization",
+        "development"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:dev/scripts/setup.sh",
+      "type": "file",
+      "name": "setup.sh",
+      "filePath": "dev/scripts/setup.sh",
+      "summary": "Orchestrates a full local environment setup by running install, build, down, and up scripts in sequence.",
+      "tags": [
+        "script",
+        "entry-point",
+        "orchestration",
+        "development"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:dev/scripts/up.sh",
+      "type": "file",
+      "name": "up.sh",
+      "filePath": "dev/scripts/up.sh",
+      "summary": "Starts the docker-compose development stack in detached mode and lists running containers.",
+      "tags": [
+        "script",
+        "orchestration",
+        "containerization",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.eslintignore",
+      "type": "file",
+      "name": ".eslintignore",
+      "filePath": ".eslintignore",
+      "summary": "Lists paths excluded from ESLint linting such as build output and generated files.",
+      "tags": [
+        "configuration",
+        "linting",
+        "ignore-file"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.huskyrc",
+      "type": "file",
+      "name": ".huskyrc",
+      "filePath": ".huskyrc",
+      "summary": "Husky configuration wiring Git hooks (e.g. pre-commit, commit-msg) to lint and commit checks.",
+      "tags": [
+        "configuration",
+        "git-hooks",
+        "development"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.npmrc",
+      "type": "file",
+      "name": ".npmrc",
+      "filePath": ".npmrc",
+      "summary": "npm client configuration controlling registry and install behavior for the project.",
+      "tags": [
+        "configuration",
+        "npm",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.nvmrc",
+      "type": "file",
+      "name": ".nvmrc",
+      "filePath": ".nvmrc",
+      "summary": "Pins the Node.js version used for development and CI via nvm.",
+      "tags": [
+        "configuration",
+        "node",
+        "development"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.prettierignore",
+      "type": "file",
+      "name": ".prettierignore",
+      "filePath": ".prettierignore",
+      "summary": "Lists paths excluded from Prettier code formatting.",
+      "tags": [
+        "configuration",
+        "formatting",
+        "ignore-file"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.releaserc",
+      "type": "file",
+      "name": ".releaserc",
+      "filePath": ".releaserc",
+      "summary": "semantic-release configuration defining the release branch and plugin pipeline for automated versioning, changelog, npm publish, and GitHub releases.",
+      "tags": [
+        "configuration",
+        "ci-cd",
+        "release",
+        "automation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:CODEOWNERS",
+      "type": "file",
+      "name": "CODEOWNERS",
+      "filePath": "CODEOWNERS",
+      "summary": "Defines GitHub code owners responsible for reviewing changes to specific paths.",
+      "tags": [
+        "configuration",
+        "governance",
+        "code-review"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:commitlint.config.js",
+      "type": "file",
+      "name": "commitlint.config.js",
+      "filePath": "commitlint.config.js",
+      "summary": "commitlint configuration extending conventional-commit rules to enforce commit message format.",
+      "tags": [
+        "configuration",
+        "linting",
+        "git-hooks"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:dev/compose/docker-compose.yml",
+      "type": "service",
+      "name": "docker-compose.yml",
+      "filePath": "dev/compose/docker-compose.yml",
+      "summary": "Local development stack composing the reverse-proxy, admin-web, and admin-api containers with mounted source volumes and exposed ports.",
+      "tags": [
+        "orchestration",
+        "infrastructure",
+        "containerization",
+        "development"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:dev/etc/502.html",
+      "type": "file",
+      "name": "502.html",
+      "filePath": "dev/etc/502.html",
+      "summary": "Custom HTML page served by the reverse proxy when an upstream returns a 502 error.",
+      "tags": [
+        "markup",
+        "error-page",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:dev/etc/nginx-reverse-proxy-admin.conf",
+      "type": "file",
+      "name": "nginx-reverse-proxy-admin.conf",
+      "filePath": "dev/etc/nginx-reverse-proxy-admin.conf",
+      "summary": "Nginx reverse-proxy configuration routing traffic to the admin-web and admin-api upstreams, handling websocket upgrades and a custom 502 error page.",
+      "tags": [
+        "infrastructure",
+        "reverse-proxy",
+        "routing",
+        "configuration"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses upstream blocks and location matching with URI rewrite for /api/admin path stripping."
+    },
+    {
+      "id": "config:docs/api/spec/treetracker-admin.v1.yaml",
+      "type": "config",
+      "name": "treetracker-admin.v1.yaml",
+      "filePath": "docs/api/spec/treetracker-admin.v1.yaml",
+      "summary": "OpenAPI v1 specification for the Treetracker Admin API defining all paths, servers, and component schemas.",
+      "tags": [
+        "api-schema",
+        "documentation",
+        "openapi",
+        "schema-definition"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Large OpenAPI document with paths, servers, and reusable component schemas."
+    },
+    {
+      "id": "file:etc/treetracker-admin-api.service",
+      "type": "file",
+      "name": "treetracker-admin-api.service",
+      "filePath": "etc/treetracker-admin-api.service",
+      "summary": "systemd unit file that runs the admin API server as a service with restart-on-failure and environment configuration.",
+      "tags": [
+        "infrastructure",
+        "deployment",
+        "systemd",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:jest.config.js",
+      "type": "file",
+      "name": "jest.config.js",
+      "filePath": "jest.config.js",
+      "summary": "Jest test runner configuration defining test match patterns and environment for the project test suites.",
+      "tags": [
+        "configuration",
+        "test",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:public/express.html",
+      "type": "file",
+      "name": "express.html",
+      "filePath": "public/express.html",
+      "summary": "Static landing page served for the Express-based endpoints.",
+      "tags": [
+        "markup",
+        "static-page",
+        "public"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:public/index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "public/index.html",
+      "summary": "Default landing page for the admin API server linking to the OpenAPI spec and API explorer.",
+      "tags": [
+        "markup",
+        "static-page",
+        "entry-point"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:src/controllers/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "src/controllers/README.md",
+      "summary": "Documentation describing the purpose and conventions of the controllers directory.",
+      "tags": [
+        "documentation",
+        "controllers"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/controllers/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/controllers/index.ts",
+      "summary": "Barrel module re-exporting all controller classes (ping, trees, planter, species, tag, treeTag, organization) for centralized import.",
+      "tags": [
+        "barrel",
+        "entry-point",
+        "controllers"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/controllers/ping.controller.ts",
+      "type": "file",
+      "name": "ping.controller.ts",
+      "filePath": "src/controllers/ping.controller.ts",
+      "summary": "LoopBack controller exposing a health/ping endpoint that returns request metadata and a greeting.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "health-check"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/controllers/ping.controller.ts:PingController",
+      "type": "class",
+      "name": "PingController",
+      "filePath": "src/controllers/ping.controller.ts",
+      "lineRange": [
+        40,
+        58
+      ],
+      "summary": "Controller class with an injected request that serves the ping endpoint returning greeting, date, URL, and headers.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "health-check"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:src/datasources/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "src/datasources/README.md",
+      "summary": "Documentation describing the datasources directory.",
+      "tags": [
+        "documentation",
+        "datasources"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/js/db.test.js",
+      "type": "file",
+      "name": "db.test.js",
+      "filePath": "src/js/db.test.js",
+      "summary": "Test suite exercising database helper behavior.",
+      "tags": [
+        "test",
+        "database",
+        "unit-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/js/utils.js",
+      "type": "file",
+      "name": "utils.js",
+      "filePath": "src/js/utils.js",
+      "summary": "Utility helpers converting between camelCase and snake_case object keys and building SQL update/insert field clauses.",
+      "tags": [
+        "utility",
+        "serialization",
+        "database",
+        "sql",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/js/utils.js:convertCamel",
+      "type": "function",
+      "name": "convertCamel",
+      "filePath": "src/js/utils.js",
+      "lineRange": [
+        1,
+        21
+      ],
+      "summary": "Converts an object's snake_case keys to camelCase, returning a new object.",
+      "tags": [
+        "utility",
+        "serialization",
+        "transform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/js/utils.js:convertDB",
+      "type": "function",
+      "name": "convertDB",
+      "filePath": "src/js/utils.js",
+      "lineRange": [
+        23,
+        40
+      ],
+      "summary": "Converts an object's camelCase keys to snake_case for database storage.",
+      "tags": [
+        "utility",
+        "serialization",
+        "transform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/js/utils.js:buildUpdateFields",
+      "type": "function",
+      "name": "buildUpdateFields",
+      "filePath": "src/js/utils.js",
+      "lineRange": [
+        42,
+        57
+      ],
+      "summary": "Builds a SQL SET clause string from an object after converting keys to snake_case.",
+      "tags": [
+        "utility",
+        "sql",
+        "query-builder"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/js/utils.js:buildInsertFields",
+      "type": "function",
+      "name": "buildInsertFields",
+      "filePath": "src/js/utils.js",
+      "lineRange": [
+        59,
+        75
+      ],
+      "summary": "Builds SQL column and value lists for an INSERT statement from an object.",
+      "tags": [
+        "utility",
+        "sql",
+        "query-builder"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/js/utils.test.js",
+      "type": "file",
+      "name": "utils.test.js",
+      "filePath": "src/js/utils.test.js",
+      "summary": "Unit tests for the utils helpers verifying key-case conversion and SQL field building.",
+      "tags": [
+        "test",
+        "unit-test",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/messaging/RabbitMQMessaging.js",
+      "type": "file",
+      "name": "RabbitMQMessaging.js",
+      "filePath": "src/messaging/RabbitMQMessaging.js",
+      "summary": "RabbitMQ messaging helper that publishes a message payload through a broker and handles success/error callbacks.",
+      "tags": [
+        "messaging",
+        "rabbitmq",
+        "service"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/messaging/RabbitMQMessaging.js:publishMessage",
+      "type": "function",
+      "name": "publishMessage",
+      "filePath": "src/messaging/RabbitMQMessaging.js",
+      "lineRange": [
+        5,
+        16
+      ],
+      "summary": "Creates a broker, publishes the payload, and wires success and error handlers.",
+      "tags": [
+        "messaging",
+        "rabbitmq",
+        "event-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/messaging/config.js",
+      "type": "file",
+      "name": "config.js",
+      "filePath": "src/messaging/config.js",
+      "summary": "RabbitMQ messaging configuration defining the admin-verifications exchange, field-data verifications queue, bindings, and publications used by the messaging layer.",
+      "tags": [
+        "configuration",
+        "messaging",
+        "rabbitmq",
+        "service"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:src/models/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "src/models/README.md",
+      "summary": "Placeholder documentation stub for the models directory.",
+      "tags": [
+        "documentation",
+        "data-model",
+        "overview"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/models/adminUser.model.ts",
+      "type": "file",
+      "name": "adminUser.model.ts",
+      "filePath": "src/models/adminUser.model.ts",
+      "summary": "LoopBack model definition for the AdminUser entity holding admin credentials and account status flags.",
+      "tags": [
+        "data-model",
+        "loopback",
+        "entity",
+        "authentication"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/models/domainEvent.model.ts",
+      "type": "file",
+      "name": "domainEvent.model.ts",
+      "filePath": "src/models/domainEvent.model.ts",
+      "summary": "LoopBack model for DomainEvent records that persist event payloads and processing status for the messaging outbox pattern.",
+      "tags": [
+        "data-model",
+        "loopback",
+        "entity",
+        "event-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/models/organization.model.ts",
+      "type": "file",
+      "name": "organization.model.ts",
+      "filePath": "src/models/organization.model.ts",
+      "summary": "LoopBack model definition for the Organization entity with name, type, and stakeholder linkage.",
+      "tags": [
+        "data-model",
+        "loopback",
+        "entity"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/models/planter.model.ts",
+      "type": "file",
+      "name": "planter.model.ts",
+      "filePath": "src/models/planter.model.ts",
+      "summary": "LoopBack model for the Planter entity including contact details, organization linkage, and embedded planter registrations.",
+      "tags": [
+        "data-model",
+        "loopback",
+        "entity"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/models/planterRegistration.model.ts",
+      "type": "file",
+      "name": "planterRegistration.model.ts",
+      "filePath": "src/models/planterRegistration.model.ts",
+      "summary": "LoopBack model for PlanterRegistration records capturing registration geolocation and device identifier per planter.",
+      "tags": [
+        "data-model",
+        "loopback",
+        "entity"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/models/species.model.ts",
+      "type": "file",
+      "name": "species.model.ts",
+      "filePath": "src/models/species.model.ts",
+      "summary": "LoopBack model for the Species entity describing tree species with name, description, and value factor.",
+      "tags": [
+        "data-model",
+        "loopback",
+        "entity"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/models/tag.model.ts",
+      "type": "file",
+      "name": "tag.model.ts",
+      "filePath": "src/models/tag.model.ts",
+      "summary": "LoopBack model for the Tag entity representing named, public/active tags applied to trees.",
+      "tags": [
+        "data-model",
+        "loopback",
+        "entity"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/models/treeTag.model.ts",
+      "type": "file",
+      "name": "treeTag.model.ts",
+      "filePath": "src/models/treeTag.model.ts",
+      "summary": "LoopBack join model for TreeTag linking trees to tags through a many-to-many relationship.",
+      "tags": [
+        "data-model",
+        "loopback",
+        "entity",
+        "join-table"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/models/trees.model.ts",
+      "type": "file",
+      "name": "trees.model.ts",
+      "filePath": "src/models/trees.model.ts",
+      "summary": "LoopBack model for the Trees entity, the core capture record with geolocation, verification, approval, species, and embedded tree tags.",
+      "tags": [
+        "data-model",
+        "loopback",
+        "entity"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Large model with 27 properties reflecting the rich tree capture domain."
+    },
+    {
+      "id": "config:src/policy.json",
+      "type": "config",
+      "name": "policy.json",
+      "filePath": "src/policy.json",
+      "summary": "Authorization policy catalog defining named permissions for viewing and managing users, trees, and planters.",
+      "tags": [
+        "configuration",
+        "security",
+        "authorization",
+        "rbac"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:src/repositories/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "src/repositories/README.md",
+      "summary": "Placeholder documentation stub for the repositories directory.",
+      "tags": [
+        "documentation",
+        "overview"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/models/adminUser.model.ts:AdminUser",
+      "type": "class",
+      "name": "AdminUser",
+      "filePath": "src/models/adminUser.model.ts",
+      "lineRange": [
+        11,
+        112
+      ],
+      "summary": "Entity model class for admin users, defining id, username, password hash, email, and status flags.",
+      "tags": [
+        "data-model",
+        "entity",
+        "authentication"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/models/domainEvent.model.ts:DomainEvent",
+      "type": "class",
+      "name": "DomainEvent",
+      "filePath": "src/models/domainEvent.model.ts",
+      "lineRange": [
+        11,
+        67
+      ],
+      "summary": "Entity model class for domain events storing payload, status, and timestamps.",
+      "tags": [
+        "data-model",
+        "entity",
+        "event-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/models/organization.model.ts:Organization",
+      "type": "class",
+      "name": "Organization",
+      "filePath": "src/models/organization.model.ts",
+      "lineRange": [
+        11,
+        58
+      ],
+      "summary": "Entity model class for organizations with name, type, and stakeholder UUID.",
+      "tags": [
+        "data-model",
+        "entity"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/models/planter.model.ts:Planter",
+      "type": "class",
+      "name": "Planter",
+      "filePath": "src/models/planter.model.ts",
+      "lineRange": [
+        12,
+        209
+      ],
+      "summary": "Entity model class for planters holding personal, organizational, and image fields plus related registrations.",
+      "tags": [
+        "data-model",
+        "entity"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/models/planterRegistration.model.ts:PlanterRegistration",
+      "type": "class",
+      "name": "PlanterRegistration",
+      "filePath": "src/models/planterRegistration.model.ts",
+      "lineRange": [
+        11,
+        86
+      ],
+      "summary": "Entity model class for planter registration events with geolocation and device identifier.",
+      "tags": [
+        "data-model",
+        "entity"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/models/species.model.ts:Species",
+      "type": "class",
+      "name": "Species",
+      "filePath": "src/models/species.model.ts",
+      "lineRange": [
+        11,
+        110
+      ],
+      "summary": "Entity model class for tree species with uuid, name, description, and value factor.",
+      "tags": [
+        "data-model",
+        "entity"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/models/tag.model.ts:Tag",
+      "type": "class",
+      "name": "Tag",
+      "filePath": "src/models/tag.model.ts",
+      "lineRange": [
+        11,
+        93
+      ],
+      "summary": "Entity model class for tags with uuid, name, and active/public flags.",
+      "tags": [
+        "data-model",
+        "entity"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/models/treeTag.model.ts:TreeTag",
+      "type": "class",
+      "name": "TreeTag",
+      "filePath": "src/models/treeTag.model.ts",
+      "lineRange": [
+        11,
+        67
+      ],
+      "summary": "Join entity model class linking a tree to a tag by their identifiers.",
+      "tags": [
+        "data-model",
+        "entity",
+        "join-table"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/models/trees.model.ts:Trees",
+      "type": "class",
+      "name": "Trees",
+      "filePath": "src/models/trees.model.ts",
+      "lineRange": [
+        12,
+        395
+      ],
+      "summary": "Core entity model class for tree captures with geolocation, verification, approval, species, and tag relationships.",
+      "tags": [
+        "data-model",
+        "entity",
+        "core"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/__tests__/integration/integration.ts",
+      "target": "file:src/server.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/__tests__/integration/integration.ts",
+      "target": "file:src/tests/seed/seed.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/__tests__/seed/seed.ts",
+      "target": "file:src/datasources/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/__tests__/seed/seed.ts",
+      "target": "file:src/tests/seed/seed.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/application.ts",
+      "target": "file:src/sequence.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/datasources/treetracker.datasource.ts",
+      "target": "file:src/datasources/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/server.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/indexTest.ts",
+      "target": "file:src/server.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/indexTest.ts",
+      "target": "file:src/tests/seed/seed.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/js/Audit.js",
+      "target": "file:src/config.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/js/Audit.js",
+      "target": "file:src/datasources/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/js/Audit.test.js",
+      "target": "file:src/js/Audit.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/js/auth.int.test.js",
+      "target": "file:src/js/auth.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/js/auth.js",
+      "target": "file:src/config.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/js/auth.js",
+      "target": "file:src/datasources/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/js/auth.js",
+      "target": "file:src/js/utils.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/js/auth.test.js",
+      "target": "file:src/js/auth.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/migrate.ts",
+      "target": "file:src/application.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/server.ts",
+      "target": "file:src/application.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/server.ts",
+      "target": "file:src/js/Audit.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/server.ts",
+      "target": "file:src/js/auth.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/tests/seed/seed.ts",
+      "target": "file:src/datasources/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/application.ts",
+      "target": "class:src/application.ts:TreetrackerAdminApiApplication",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/application.ts",
+      "target": "class:src/application.ts:TreetrackerAdminApiApplication",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/datasources/treetracker.datasource.ts",
+      "target": "class:src/datasources/treetracker.datasource.ts:TreetrackerDataSource",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/datasources/treetracker.datasource.ts",
+      "target": "class:src/datasources/treetracker.datasource.ts:TreetrackerDataSource",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "function:src/index.ts:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "function:src/index.ts:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/indexTest.ts",
+      "target": "function:src/indexTest.ts:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/indexTest.ts",
+      "target": "function:src/indexTest.ts:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/js/Audit.js",
+      "target": "function:src/js/Audit.js:auditMiddleware",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/js/Audit.js",
+      "target": "function:src/js/Audit.js:auditMiddleware",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/js/Audit.js",
+      "target": "class:src/js/Audit.js:Audit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/js/auth.js",
+      "target": "function:src/js/auth.js:init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/js/auth.js",
+      "target": "function:src/js/auth.js:isAuth",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/migrate.ts",
+      "target": "function:src/migrate.ts:migrate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/migrate.ts",
+      "target": "function:src/migrate.ts:migrate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/server.ts",
+      "target": "class:src/server.ts:ExpressServer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/server.ts",
+      "target": "class:src/server.ts:ExpressServer",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/tests/seed/seed.ts",
+      "target": "function:src/tests/seed/seed.ts:seed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/tests/seed/seed.ts",
+      "target": "function:src/tests/seed/seed.ts:clear",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/js/Audit.js",
+      "target": "file:src/js/Audit.test.js",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/js/auth.js",
+      "target": "file:src/js/auth.test.js",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/js/auth.js",
+      "target": "file:src/js/auth.int.test.js",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/server.ts",
+      "target": "function:src/js/Audit.js:auditMiddleware",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/server.ts",
+      "target": "function:src/js/auth.js:isAuth",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/migrate.ts:migrate",
+      "target": "class:src/application.ts:TreetrackerAdminApiApplication",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:src/index.ts:main",
+      "target": "class:src/server.ts:ExpressServer",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:src/indexTest.ts:main",
+      "target": "class:src/server.ts:ExpressServer",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/controllers/adminUser.controller.ts",
+      "target": "file:src/repositories/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/organization.controller.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/organization.controller.ts",
+      "target": "file:src/repositories/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/planter.controller.ts",
+      "target": "file:src/controllers/trees.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/planter.controller.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/planter.controller.ts",
+      "target": "file:src/repositories/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/planterOrganization.controller.ts",
+      "target": "file:src/controllers/trees.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/planterOrganization.controller.ts",
+      "target": "file:src/js/buildFilterQuery.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/planterOrganization.controller.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/planterOrganization.controller.ts",
+      "target": "file:src/repositories/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/species.controller.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/species.controller.ts",
+      "target": "file:src/repositories/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/tag.controller.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/tag.controller.ts",
+      "target": "file:src/repositories/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/treeTag.controller.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/treeTag.controller.ts",
+      "target": "file:src/repositories/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/trees.controller.ts",
+      "target": "file:src/config.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/trees.controller.ts",
+      "target": "file:src/messaging/RabbitMQMessaging.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/trees.controller.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/trees.controller.ts",
+      "target": "file:src/repositories/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/treesOrganization.controller.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/treesOrganization.controller.ts",
+      "target": "file:src/repositories/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/treesTreeTag.controller.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/treesTreeTag.controller.ts",
+      "target": "file:src/repositories/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/adminUser.controller.ts",
+      "target": "class:src/controllers/adminUser.controller.ts:AdminUserController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/controllers/organization.controller.ts",
+      "target": "class:src/controllers/organization.controller.ts:OrganizationController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/controllers/planter.controller.ts",
+      "target": "class:src/controllers/planter.controller.ts:PlanterController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/controllers/planterOrganization.controller.ts",
+      "target": "class:src/controllers/planterOrganization.controller.ts:PlanterOrganizationController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/controllers/species.controller.ts",
+      "target": "class:src/controllers/species.controller.ts:SpeciesController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/controllers/tag.controller.ts",
+      "target": "class:src/controllers/tag.controller.ts:TagController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/controllers/treeTag.controller.ts",
+      "target": "class:src/controllers/treeTag.controller.ts:TreeTagController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/controllers/trees.controller.ts",
+      "target": "class:src/controllers/trees.controller.ts:TreesController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/controllers/treesOrganization.controller.ts",
+      "target": "class:src/controllers/treesOrganization.controller.ts:TreesOrganizationController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/controllers/treesTreeTag.controller.ts",
+      "target": "class:src/controllers/treesTreeTag.controller.ts:TreesTreeTagController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/controllers/adminUser.controller.ts",
+      "target": "class:src/controllers/adminUser.controller.ts:AdminUserController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/controllers/organization.controller.ts",
+      "target": "class:src/controllers/organization.controller.ts:OrganizationController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/controllers/planter.controller.ts",
+      "target": "class:src/controllers/planter.controller.ts:PlanterController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/controllers/planterOrganization.controller.ts",
+      "target": "class:src/controllers/planterOrganization.controller.ts:PlanterOrganizationController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/controllers/species.controller.ts",
+      "target": "class:src/controllers/species.controller.ts:SpeciesController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/controllers/tag.controller.ts",
+      "target": "class:src/controllers/tag.controller.ts:TagController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/controllers/treeTag.controller.ts",
+      "target": "class:src/controllers/treeTag.controller.ts:TreeTagController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/controllers/trees.controller.ts",
+      "target": "class:src/controllers/trees.controller.ts:TreesController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/controllers/treesOrganization.controller.ts",
+      "target": "class:src/controllers/treesOrganization.controller.ts:TreesOrganizationController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/controllers/treesTreeTag.controller.ts",
+      "target": "class:src/controllers/treesTreeTag.controller.ts:TreesTreeTagController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/controllers/planterRegistration.controller.ts",
+      "target": "file:src/js/buildFilterQuery.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/planterRegistration.controller.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/planterRegistration.controller.ts",
+      "target": "file:src/repositories/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/adminUser.repository.ts",
+      "target": "file:src/datasources/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/adminUser.repository.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/domainEvent.repository.ts",
+      "target": "file:src/datasources/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/domainEvent.repository.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/organization.repository.ts",
+      "target": "file:src/datasources/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/organization.repository.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/planter.repository.ts",
+      "target": "file:src/datasources/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/planter.repository.ts",
+      "target": "file:src/js/buildFilterQuery.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/planter.repository.ts",
+      "target": "file:src/js/utils.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/planter.repository.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/planter.repository.ts",
+      "target": "file:src/repositories/planterRegistration.repository.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/planterRegistration.repository.ts",
+      "target": "file:src/datasources/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/planterRegistration.repository.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/species.repository.ts",
+      "target": "file:src/datasources/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/species.repository.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/tag.repository.ts",
+      "target": "file:src/datasources/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/tag.repository.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/treeTag.repository.ts",
+      "target": "file:src/datasources/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/treeTag.repository.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/trees.repository.ts",
+      "target": "file:src/datasources/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/trees.repository.ts",
+      "target": "file:src/js/buildFilterQuery.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/trees.repository.ts",
+      "target": "file:src/models/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/repositories/trees.repository.ts",
+      "target": "file:src/repositories/treeTag.repository.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/planterRegistration.controller.ts",
+      "target": "class:src/controllers/planterRegistration.controller.ts:PlanterRegistrationController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/controllers/planterRegistration.controller.ts",
+      "target": "class:src/controllers/planterRegistration.controller.ts:PlanterRegistrationController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/js/buildFilterQuery.js",
+      "target": "function:src/js/buildFilterQuery.js:buildFilterQuery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/js/buildFilterQuery.js",
+      "target": "function:src/js/buildFilterQuery.js:buildFilterQuery",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/repositories/adminUser.repository.ts",
+      "target": "class:src/repositories/adminUser.repository.ts:AdminUserRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/repositories/adminUser.repository.ts",
+      "target": "class:src/repositories/adminUser.repository.ts:AdminUserRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/repositories/domainEvent.repository.ts",
+      "target": "class:src/repositories/domainEvent.repository.ts:DomainEventRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/repositories/domainEvent.repository.ts",
+      "target": "class:src/repositories/domainEvent.repository.ts:DomainEventRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/repositories/organization.repository.ts",
+      "target": "class:src/repositories/organization.repository.ts:OrganizationRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/repositories/organization.repository.ts",
+      "target": "class:src/repositories/organization.repository.ts:OrganizationRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/repositories/planter.repository.ts",
+      "target": "class:src/repositories/planter.repository.ts:PlanterRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/repositories/planter.repository.ts",
+      "target": "class:src/repositories/planter.repository.ts:PlanterRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/repositories/planterRegistration.repository.ts",
+      "target": "class:src/repositories/planterRegistration.repository.ts:PlanterRegistrationRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/repositories/planterRegistration.repository.ts",
+      "target": "class:src/repositories/planterRegistration.repository.ts:PlanterRegistrationRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/repositories/species.repository.ts",
+      "target": "class:src/repositories/species.repository.ts:SpeciesRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/repositories/species.repository.ts",
+      "target": "class:src/repositories/species.repository.ts:SpeciesRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/repositories/tag.repository.ts",
+      "target": "class:src/repositories/tag.repository.ts:TagRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/repositories/tag.repository.ts",
+      "target": "class:src/repositories/tag.repository.ts:TagRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/repositories/treeTag.repository.ts",
+      "target": "class:src/repositories/treeTag.repository.ts:TreeTagRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/repositories/treeTag.repository.ts",
+      "target": "class:src/repositories/treeTag.repository.ts:TreeTagRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/repositories/trees.repository.ts",
+      "target": "class:src/repositories/trees.repository.ts:TreesRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/repositories/trees.repository.ts",
+      "target": "class:src/repositories/trees.repository.ts:TreesRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/controllers/planterRegistration.controller.ts",
+      "target": "function:src/js/buildFilterQuery.js:buildFilterQuery",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/repositories/planter.repository.ts",
+      "target": "function:src/js/buildFilterQuery.js:buildFilterQuery",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/repositories/trees.repository.ts",
+      "target": "function:src/js/buildFilterQuery.js:buildFilterQuery",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "service:Dockerfile:node",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:.dockerignore",
+      "target": "service:Dockerfile",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "pipeline:.github/workflows/codeql-analysis.yml",
+      "target": "step:.github/workflows/codeql-analysis.yml:analyze",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:.github/workflows/treetracker-admin-api-build-deploy.yml",
+      "target": "step:.github/workflows/treetracker-admin-api-build-deploy.yml:test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:.github/workflows/treetracker-admin-api-build-deploy.yml",
+      "target": "step:.github/workflows/treetracker-admin-api-build-deploy.yml:release",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:.github/workflows/treetracker-admin-api-deploy-prod.yml",
+      "target": "step:.github/workflows/treetracker-admin-api-deploy-prod.yml:deploy-test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:.github/workflows/treetracker-admin-api-deploy-test.yml",
+      "target": "step:.github/workflows/treetracker-admin-api-deploy-test.yml:deploy-test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline:.github/workflows/treetracker-admin-api-build-deploy.yml",
+      "target": "service:Dockerfile",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:DEVELOPING.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:CHANGELOG.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "config:package.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:.mocharc.json",
+      "target": "config:package.json",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:deployment/base/kustomization.yaml",
+      "target": "config:deployment/base/treetracker-admin-api-deployment.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/kustomization.yaml",
+      "target": "config:deployment/base/treetracker-admin-api-mapping.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/kustomization.yaml",
+      "target": "config:deployment/base/treetracker-admin-api-service.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/kustomization.yaml",
+      "target": "config:deployment/base/database-connection-sealed-secret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/kustomization.yaml",
+      "target": "config:deployment/base/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/kustomization.yaml",
+      "target": "config:deployment/base/rabbitmq-sealedsecret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/treetracker-admin-api-deployment.yaml",
+      "target": "config:deployment/base/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/treetracker-admin-api-deployment.yaml",
+      "target": "config:deployment/base/database-connection-sealed-secret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/treetracker-admin-api-deployment.yaml",
+      "target": "config:deployment/base/rabbitmq-sealedsecret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/treetracker-admin-api-service.yaml",
+      "target": "config:deployment/base/treetracker-admin-api-deployment.yaml",
+      "type": "routes",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/base/treetracker-admin-api-mapping.yaml",
+      "target": "config:deployment/base/treetracker-admin-api-service.yaml",
+      "type": "routes",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/development/kustomization.yaml",
+      "target": "config:deployment/overlays/development/patch-enable-verify-publishing.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/development/kustomization.yaml",
+      "target": "config:deployment/overlays/development/treetracker-admin-api-mapping.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/development/kustomization.yaml",
+      "target": "config:deployment/overlays/development/database-connection-sealed-secret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/development/kustomization.yaml",
+      "target": "config:deployment/overlays/development/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/development/kustomization.yaml",
+      "target": "config:deployment/overlays/development/treetracker-dev-rabbitmq-sealedsecret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/production/kustomization.yaml",
+      "target": "config:deployment/overlays/production/treetracker-admin-api-mapping.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/production/kustomization.yaml",
+      "target": "config:deployment/overlays/production/database-connection-sealed-secret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/production/kustomization.yaml",
+      "target": "config:deployment/overlays/production/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/production/kustomization.yaml",
+      "target": "config:deployment/overlays/production/rabbitmq-sealedsecret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/test/kustomization.yaml",
+      "target": "config:deployment/overlays/test/treetracker-admin-api-mapping.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/test/kustomization.yaml",
+      "target": "config:deployment/overlays/test/database-connection-sealed-secret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/test/kustomization.yaml",
+      "target": "config:deployment/overlays/test/treetracker-admin-api-jwt-sealed-secret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:deployment/overlays/test/kustomization.yaml",
+      "target": "config:deployment/overlays/test/rabbitmq-sealedsecret.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:dev/scripts/setup.sh",
+      "target": "file:dev/scripts/install.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:dev/scripts/setup.sh",
+      "target": "file:dev/scripts/build.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:dev/scripts/setup.sh",
+      "target": "file:dev/scripts/down.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:dev/scripts/setup.sh",
+      "target": "file:dev/scripts/up.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/js/utils.test.js",
+      "target": "file:src/js/utils.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/messaging/RabbitMQMessaging.js",
+      "target": "file:src/messaging/config.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/controllers/ping.controller.ts",
+      "target": "class:src/controllers/ping.controller.ts:PingController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/controllers/ping.controller.ts",
+      "target": "class:src/controllers/ping.controller.ts:PingController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/js/utils.js",
+      "target": "function:src/js/utils.js:convertCamel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/js/utils.js",
+      "target": "function:src/js/utils.js:convertDB",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/js/utils.js",
+      "target": "function:src/js/utils.js:buildUpdateFields",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/js/utils.js",
+      "target": "function:src/js/utils.js:buildInsertFields",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/js/utils.js",
+      "target": "function:src/js/utils.js:convertCamel",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/js/utils.js",
+      "target": "function:src/js/utils.js:convertDB",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/js/utils.js",
+      "target": "function:src/js/utils.js:buildUpdateFields",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/js/utils.js",
+      "target": "function:src/js/utils.js:buildInsertFields",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/js/utils.js:buildUpdateFields",
+      "target": "function:src/js/utils.js:convertDB",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/js/utils.js:buildInsertFields",
+      "target": "function:src/js/utils.js:convertDB",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/messaging/RabbitMQMessaging.js",
+      "target": "function:src/messaging/RabbitMQMessaging.js:publishMessage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/messaging/RabbitMQMessaging.js",
+      "target": "function:src/messaging/RabbitMQMessaging.js:publishMessage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/js/utils.js",
+      "target": "file:src/js/utils.test.js",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:jest.config.js",
+      "target": "file:src/js/utils.test.js",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:jest.config.js",
+      "target": "file:src/js/db.test.js",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:src/controllers/README.md",
+      "target": "file:src/controllers/index.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:docs/api/spec/treetracker-admin.v1.yaml",
+      "target": "file:src/controllers/ping.controller.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:dev/etc/nginx-reverse-proxy-admin.conf",
+      "target": "file:dev/etc/502.html",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "service:dev/compose/docker-compose.yml",
+      "target": "file:dev/etc/nginx-reverse-proxy-admin.conf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/models/adminUser.model.ts",
+      "target": "class:src/models/adminUser.model.ts:AdminUser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/models/adminUser.model.ts",
+      "target": "class:src/models/adminUser.model.ts:AdminUser",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/models/domainEvent.model.ts",
+      "target": "class:src/models/domainEvent.model.ts:DomainEvent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/models/domainEvent.model.ts",
+      "target": "class:src/models/domainEvent.model.ts:DomainEvent",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/models/organization.model.ts",
+      "target": "class:src/models/organization.model.ts:Organization",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/models/organization.model.ts",
+      "target": "class:src/models/organization.model.ts:Organization",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/models/planter.model.ts",
+      "target": "class:src/models/planter.model.ts:Planter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/models/planter.model.ts",
+      "target": "class:src/models/planter.model.ts:Planter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/models/planter.model.ts",
+      "target": "file:src/models/planterRegistration.model.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/models/planterRegistration.model.ts",
+      "target": "class:src/models/planterRegistration.model.ts:PlanterRegistration",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/models/planterRegistration.model.ts",
+      "target": "class:src/models/planterRegistration.model.ts:PlanterRegistration",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/models/species.model.ts",
+      "target": "class:src/models/species.model.ts:Species",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/models/species.model.ts",
+      "target": "class:src/models/species.model.ts:Species",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/models/tag.model.ts",
+      "target": "class:src/models/tag.model.ts:Tag",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/models/tag.model.ts",
+      "target": "class:src/models/tag.model.ts:Tag",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/models/treeTag.model.ts",
+      "target": "class:src/models/treeTag.model.ts:TreeTag",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/models/treeTag.model.ts",
+      "target": "class:src/models/treeTag.model.ts:TreeTag",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/models/trees.model.ts",
+      "target": "class:src/models/trees.model.ts:Trees",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/models/trees.model.ts",
+      "target": "class:src/models/trees.model.ts:Trees",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/models/trees.model.ts",
+      "target": "file:src/models/treeTag.model.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "config:src/policy.json",
+      "target": "file:src/js/auth.js",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/js/auth.js",
+      "target": "config:src/policy.json",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/tests/seed/seed.ts",
+      "target": "config:src/policy.json",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:api",
+      "name": "API Layer",
+      "description": "LoopBack 4 REST controllers exposing tree, planter, organization, species and tag endpoints, plus the routing index and health-check ping controller.",
+      "nodeIds": [
+        "file:src/controllers/adminUser.controller.ts",
+        "file:src/controllers/organization.controller.ts",
+        "file:src/controllers/planter.controller.ts",
+        "file:src/controllers/planterOrganization.controller.ts",
+        "file:src/controllers/species.controller.ts",
+        "file:src/controllers/tag.controller.ts",
+        "file:src/controllers/treeTag.controller.ts",
+        "file:src/controllers/trees.controller.ts",
+        "file:src/controllers/treesOrganization.controller.ts",
+        "file:src/controllers/treesTreeTag.controller.ts",
+        "file:src/controllers/planterRegistration.controller.ts",
+        "file:src/controllers/index.ts",
+        "file:src/controllers/ping.controller.ts"
+      ]
+    },
+    {
+      "id": "layer:data",
+      "name": "Data Access Layer",
+      "description": "LoopBack entity models, repositories with raw SQL query building, and the PostgreSQL datasource bindings that back all persistence.",
+      "nodeIds": [
+        "file:src/datasources/config.ts",
+        "file:src/datasources/treetracker.datasource.ts",
+        "file:src/models/index.ts",
+        "file:src/repositories/index.ts",
+        "file:src/datasources/index.ts",
+        "file:src/repositories/adminUser.repository.ts",
+        "file:src/repositories/domainEvent.repository.ts",
+        "file:src/repositories/organization.repository.ts",
+        "file:src/repositories/planter.repository.ts",
+        "file:src/repositories/planterRegistration.repository.ts",
+        "file:src/repositories/species.repository.ts",
+        "file:src/repositories/tag.repository.ts",
+        "file:src/repositories/treeTag.repository.ts",
+        "file:src/repositories/trees.repository.ts",
+        "file:src/models/adminUser.model.ts",
+        "file:src/models/domainEvent.model.ts",
+        "file:src/models/organization.model.ts",
+        "file:src/models/planter.model.ts",
+        "file:src/models/planterRegistration.model.ts",
+        "file:src/models/species.model.ts",
+        "file:src/models/tag.model.ts",
+        "file:src/models/treeTag.model.ts",
+        "file:src/models/trees.model.ts"
+      ]
+    },
+    {
+      "id": "layer:application",
+      "name": "Application Core & Messaging",
+      "description": "LoopBack application bootstrap, server startup, custom sequence, migration runner, runtime config, authorization policy, and the RabbitMQ messaging publisher.",
+      "nodeIds": [
+        "file:src/application.ts",
+        "file:src/config.js",
+        "file:src/index.ts",
+        "file:src/indexTest.ts",
+        "file:src/migrate.ts",
+        "file:src/sequence.ts",
+        "file:src/server.ts",
+        "file:src/messaging/RabbitMQMessaging.js",
+        "file:src/messaging/config.js",
+        "config:src/policy.json"
+      ]
+    },
+    {
+      "id": "layer:utility",
+      "name": "Shared Utilities",
+      "description": "Cross-cutting JavaScript helpers for JWT auth, audit logging, filter-query construction, and generic utilities used across controllers and repositories.",
+      "nodeIds": [
+        "file:src/js/Audit.js",
+        "file:src/js/auth.js",
+        "file:src/js/buildFilterQuery.js",
+        "file:src/js/utils.js"
+      ]
+    },
+    {
+      "id": "layer:test",
+      "name": "Testing",
+      "description": "Integration and unit test suites plus database seed fixtures that boot the server and exercise API, auth, and utility behavior.",
+      "nodeIds": [
+        "file:src/__tests__/integration/integration.ts",
+        "file:src/__tests__/seed/seed.ts",
+        "file:src/js/Audit.test.js",
+        "file:src/js/auth.int.test.js",
+        "file:src/js/auth.test.js",
+        "file:src/tests/seed/seed.ts",
+        "file:src/js/db.test.js",
+        "file:src/js/utils.test.js"
+      ]
+    },
+    {
+      "id": "layer:infrastructure",
+      "name": "Infrastructure & Deployment",
+      "description": "Dockerfiles, docker-compose, Kubernetes Kustomize bases and overlays with SealedSecrets, local dev scripts, nginx reverse proxy, and the systemd service unit.",
+      "nodeIds": [
+        "service:Dockerfile",
+        "service:Dockerfile:node",
+        "service:.dockerignore",
+        "config:deployment/base/database-connection-sealed-secret.yaml",
+        "config:deployment/base/kustomization.yaml",
+        "config:deployment/base/namespace.yaml",
+        "config:deployment/base/rabbitmq-sealedsecret.yaml",
+        "config:deployment/base/treetracker-admin-api-deployment.yaml",
+        "config:deployment/base/treetracker-admin-api-jwt-sealed-secret.yaml",
+        "config:deployment/base/treetracker-admin-api-mapping.yaml",
+        "config:deployment/base/treetracker-admin-api-service.yaml",
+        "config:deployment/overlays/development/database-connection-sealed-secret.yaml",
+        "config:deployment/overlays/development/kustomization.yaml",
+        "config:deployment/overlays/development/patch-enable-verify-publishing.yaml",
+        "config:deployment/overlays/development/treetracker-admin-api-jwt-sealed-secret.yaml",
+        "config:deployment/overlays/development/treetracker-admin-api-mapping.yaml",
+        "config:deployment/overlays/development/treetracker-dev-rabbitmq-sealedsecret.yaml",
+        "config:deployment/overlays/production/kustomization.yaml",
+        "config:deployment/overlays/production/database-connection-sealed-secret.yaml",
+        "config:deployment/overlays/production/rabbitmq-sealedsecret.yaml",
+        "config:deployment/overlays/production/treetracker-admin-api-jwt-sealed-secret.yaml",
+        "config:deployment/overlays/production/treetracker-admin-api-mapping.yaml",
+        "config:deployment/overlays/test/database-connection-sealed-secret.yaml",
+        "config:deployment/overlays/test/kustomization.yaml",
+        "config:deployment/overlays/test/rabbitmq-sealedsecret.yaml",
+        "config:deployment/overlays/test/treetracker-admin-api-jwt-sealed-secret.yaml",
+        "config:deployment/overlays/test/treetracker-admin-api-mapping.yaml",
+        "service:dev/dockerfiles/Dockerfile.API",
+        "service:dev/dockerfiles/Dockerfile.ReverseProxy",
+        "service:dev/dockerfiles/Dockerfile.Web",
+        "file:dev/scripts/build.sh",
+        "file:dev/scripts/docker-clear-images.sh",
+        "file:dev/scripts/docker-remove-containers.sh",
+        "file:dev/scripts/down.sh",
+        "file:dev/scripts/install.sh",
+        "file:dev/scripts/logs-api.sh",
+        "file:dev/scripts/logs-web.sh",
+        "file:dev/scripts/setup.sh",
+        "file:dev/scripts/up.sh",
+        "service:dev/compose/docker-compose.yml",
+        "file:dev/etc/502.html",
+        "file:dev/etc/nginx-reverse-proxy-admin.conf",
+        "file:etc/treetracker-admin-api.service"
+      ]
+    },
+    {
+      "id": "layer:ci-cd",
+      "name": "CI/CD Pipelines",
+      "description": "GitHub Actions workflows for CodeQL analysis, build-and-deploy, and environment-specific production and test deployments.",
+      "nodeIds": [
+        "pipeline:.github/workflows/codeql-analysis.yml",
+        "pipeline:.github/workflows/treetracker-admin-api-build-deploy.yml",
+        "pipeline:.github/workflows/treetracker-admin-api-deploy-prod.yml",
+        "pipeline:.github/workflows/treetracker-admin-api-deploy-test.yml",
+        "step:.github/workflows/codeql-analysis.yml:analyze",
+        "step:.github/workflows/treetracker-admin-api-build-deploy.yml:test",
+        "step:.github/workflows/treetracker-admin-api-build-deploy.yml:release",
+        "step:.github/workflows/treetracker-admin-api-deploy-prod.yml:deploy-test",
+        "step:.github/workflows/treetracker-admin-api-deploy-test.yml:deploy-test"
+      ]
+    },
+    {
+      "id": "layer:documentation",
+      "name": "Documentation",
+      "description": "Project README, changelog, developing and tutorial guides, per-module READMEs, and the OpenAPI specification for the admin API.",
+      "nodeIds": [
+        "document:CHANGELOG.md",
+        "document:DEVELOPING.md",
+        "document:README.md",
+        "document:rematchTutorial.md",
+        "config:docs/api/spec/treetracker-admin.v1.yaml",
+        "document:src/controllers/README.md",
+        "document:src/datasources/README.md",
+        "document:src/models/README.md",
+        "document:src/repositories/README.md"
+      ]
+    },
+    {
+      "id": "layer:config",
+      "name": "Project Configuration",
+      "description": "Build, lint, formatting, release, package, and tooling configuration files plus served static HTML assets and ignore rules.",
+      "nodeIds": [
+        "config:.env",
+        "config:.mocharc.json",
+        "config:.yo-rc.json",
+        "config:package.json",
+        "config:tsconfig.json",
+        "file:.eslintignore",
+        "file:.huskyrc",
+        "file:.npmrc",
+        "file:.nvmrc",
+        "file:.prettierignore",
+        "file:.releaserc",
+        "file:CODEOWNERS",
+        "file:commitlint.config.js",
+        "file:jest.config.js",
+        "file:public/express.html",
+        "file:public/index.html"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "Start with the README to learn what the Treetracker Admin API does. It is the RESTful backend for the Greenstand Admin Panel, which verifies, processes, and manages tree-capture data collected by the Treetracker mobile app. The README gives the quick-start guide, code style rules, and Docker workflow that frame the rest of this tour.",
+      "nodeIds": [
+        "document:README.md",
+        "document:DEVELOPING.md"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Application Entry Point",
+      "description": "The production entry point constructs the ExpressServer, boots it, and starts listening for requests. The server module is an Express wrapper that mounts CORS, JSON parsing, the audit and auth middleware, static assets, and finally the LoopBack application. Together these two files show how a request reaches the framework.",
+      "nodeIds": [
+        "file:src/index.ts",
+        "file:src/server.ts"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "LoopBack 4 Application Core",
+      "description": "Building on the server from Step 2, the LoopBack application class wires the custom request-handling sequence, the REST explorer, and the boot components. The sequence file defines that pipeline through the MiddlewareSequence mixin. This is the heart of the framework: it discovers and binds controllers, repositories, and datasources at boot time.",
+      "nodeIds": [
+        "file:src/application.ts",
+        "file:src/sequence.ts"
+      ],
+      "languageLesson": "LoopBack 4 uses dependency injection and a boot phase: the Application class scans convention-based directories (controllers, repositories, models) and binds them into an IoC container, so wiring is declarative rather than manual."
+    },
+    {
+      "order": 4,
+      "title": "Configuration and Datasource",
+      "description": "The runtime config exposes the JWT secret and database settings read from environment variables. The datasource config supplies the PostgreSQL connection and a getDatasource helper, while the juggler datasource binding makes that connection injectable across every repository. These files are the foundation every data-access layer depends on.",
+      "nodeIds": [
+        "file:src/config.js",
+        "file:src/datasources/config.ts",
+        "file:src/datasources/treetracker.datasource.ts"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "Domain Models",
+      "description": "The models barrel re-exports every domain entity for convenient import across controllers and repositories. Trees is the core capture record with geolocation, verification, and approval fields; Planter, Organization, and Species describe the people and taxonomy around each capture. These LoopBack models define the vocabulary the whole API speaks.",
+      "nodeIds": [
+        "file:src/models/index.ts",
+        "file:src/models/trees.model.ts",
+        "file:src/models/planter.model.ts",
+        "file:src/models/organization.model.ts",
+        "file:src/models/species.model.ts"
+      ]
+    },
+    {
+      "order": 6,
+      "title": "Repositories and SQL Query Building",
+      "description": "The repositories barrel re-exports every repository for the controller layer. The Trees and Planter repositories add organization-scoped access control and custom find/count methods on top of the default LoopBack CRUD. The buildFilterQuery helper translates a LoopBack filter object into a parameterized SQL query, which is how the API supports rich filtering safely.",
+      "nodeIds": [
+        "file:src/repositories/index.ts",
+        "file:src/repositories/trees.repository.ts",
+        "file:src/repositories/planter.repository.ts",
+        "file:src/js/buildFilterQuery.js"
+      ],
+      "languageLesson": "Parameterized SQL (placeholders bound to values rather than string concatenation) prevents SQL injection while still letting callers compose dynamic where clauses and ordering."
+    },
+    {
+      "order": 7,
+      "title": "REST Controllers",
+      "description": "Controllers expose the HTTP surface. The controllers barrel lists them all, and the Trees controller is the richest: count, list, find-by-id, geospatial near-search, and a transactional update that emits domain events and publishes to RabbitMQ. The Planter and Organization controllers follow the same pattern with organization-scoped access checks.",
+      "nodeIds": [
+        "file:src/controllers/index.ts",
+        "file:src/controllers/trees.controller.ts",
+        "file:src/controllers/planter.controller.ts",
+        "file:src/controllers/organization.controller.ts"
+      ]
+    },
+    {
+      "order": 8,
+      "title": "Authentication and Authorization",
+      "description": "The auth module provides login, JWT issuance, password hashing, and the isAuth middleware that enforces policy-based routing. The policy catalog defines named permissions for viewing and managing users, trees, and planters. The audit middleware decodes the JWT, inspects each request outcome, and records auditable actions to the database, giving the platform a full access-control and accountability layer.",
+      "nodeIds": [
+        "file:src/js/auth.js",
+        "config:src/policy.json",
+        "file:src/js/Audit.js"
+      ],
+      "languageLesson": "A JWT carries signed claims (like user id and role) that the server verifies with a shared secret on every request, so authorization decisions need no session lookup."
+    },
+    {
+      "order": 9,
+      "title": "Event-Driven Messaging with RabbitMQ",
+      "description": "When the Trees controller updates a capture it emits a domain event and publishes to a message broker. The RabbitMQ helper publishes a payload and handles the connection, while the messaging config defines the admin-verifications exchange. The DomainEvent model and repository persist each event payload and its processing status, giving the system a reliable, replayable event trail.",
+      "nodeIds": [
+        "file:src/messaging/RabbitMQMessaging.js",
+        "file:src/messaging/config.js",
+        "file:src/models/domainEvent.model.ts",
+        "file:src/repositories/domainEvent.repository.ts"
+      ],
+      "languageLesson": "Publishing events to a broker exchange decouples the API from downstream consumers: the controller does not wait on them, and persisted domain events let a consumer replay work after a failure."
+    },
+    {
+      "order": 10,
+      "title": "Database Migration",
+      "description": "The migration script boots the LoopBack application and runs schema migration to align the PostgreSQL tables with the models from Step 5. Running this is how a fresh environment gets a working database before the server starts serving requests.",
+      "nodeIds": [
+        "file:src/migrate.ts"
+      ]
+    },
+    {
+      "order": 11,
+      "title": "Integration Testing and Seeding",
+      "description": "The integration suite boots the ExpressServer, seeds the database, and exercises the tree, planter, and organization endpoints end to end. The seed fixture connects to the datasource and re-exports helpers to populate and clear tables between runs. This shows how the project verifies the layers from Steps 2 through 9 work together.",
+      "nodeIds": [
+        "file:src/__tests__/integration/integration.ts",
+        "file:src/__tests__/seed/seed.ts",
+        "file:src/js/auth.int.test.js"
+      ]
+    },
+    {
+      "order": 12,
+      "title": "Containerization and Local Stack",
+      "description": "The Dockerfile packages the API on a node:12 Alpine base, installing dependencies with npm ci and building the TypeScript. The local development compose stack composes the reverse proxy, admin web, and admin API containers with mounted source volumes, so a contributor can run the whole system with one command.",
+      "nodeIds": [
+        "service:Dockerfile",
+        "service:dev/compose/docker-compose.yml"
+      ],
+      "languageLesson": "docker-compose declares each service, its image or build context, and its dependencies; mounted source volumes let code changes appear inside the container without a rebuild, which speeds up local development."
+    },
+    {
+      "order": 13,
+      "title": "Kubernetes Deployment",
+      "description": "Production runs on Kubernetes managed with Kustomize. The base Deployment runs two replicas of the container, and SealedSecrets hold the encrypted database and RabbitMQ connection strings that decrypt into the cluster. This ties the code from earlier steps to how it actually runs in production.",
+      "nodeIds": [
+        "config:deployment/base/treetracker-admin-api-deployment.yaml",
+        "config:deployment/base/kustomization.yaml",
+        "config:deployment/base/database-connection-sealed-secret.yaml",
+        "config:deployment/base/rabbitmq-sealedsecret.yaml"
+      ],
+      "languageLesson": "Kustomize layers environment-specific overlays over a shared base, so dev, test, and production reuse one manifest set with only image tags and secrets patched per environment."
+    },
+    {
+      "order": 14,
+      "title": "CI/CD Pipelines",
+      "description": "As a capstone, the build-and-deploy workflow lints, builds, and tests the API, then on push to master runs semantic-release and pushes the Docker image to DockerHub and updates the deployment overlay. The CodeQL workflow adds static security analysis on every push. These pipelines automate everything the earlier steps built.",
+      "nodeIds": [
+        "pipeline:.github/workflows/treetracker-admin-api-build-deploy.yml",
+        "pipeline:.github/workflows/codeql-analysis.yml"
+      ],
+      "languageLesson": "GitHub Actions workflows use `on` triggers to run `jobs` of sequential `steps`; a release job gated to the master branch keeps builds reproducible and deploys automatic."
+    }
+  ]
+}

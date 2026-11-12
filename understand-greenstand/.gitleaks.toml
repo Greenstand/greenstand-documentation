@@ -1,0 +1,7 @@
+# Shared config for gitleaks and betterleaks (betterleaks reads .gitleaks.toml when no
+# .betterleaks.toml exists). Keep each tool's default rules. Add an allowlist only for a
+# proven false positive; prefer a fingerprint in .gitleaksignore.
+title = "understand-greenstand"
+
+[extend]
+useDefault = true

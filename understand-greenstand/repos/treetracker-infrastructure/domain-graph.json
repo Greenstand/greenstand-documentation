@@ -1,0 +1,1972 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-infrastructure",
+    "languages": [
+      "config",
+      "css",
+      "dockerfile",
+      "enc",
+      "env-tfvars",
+      "html",
+      "javascript",
+      "markdown",
+      "properties",
+      "python",
+      "shell",
+      "terraform",
+      "txt",
+      "unknown",
+      "yaml"
+    ],
+    "frameworks": [
+      "Docker",
+      "Terraform",
+      "GitHub Actions"
+    ],
+    "description": "Infrastructure-as-code that provisions and operates the Greenstand treetracker platform across DigitalOcean and AWS: Kubernetes clusters, a managed PostgreSQL data tier, API gateway and identity, application and data workloads, observability and operational tooling.",
+    "analyzedAt": "2026-09-03T00:00:00Z",
+    "gitCommitHash": "a740d11ffe60cb8d7f05b5006cf80583bd267aa5"
+  },
+  "nodes": [
+    {
+      "id": "domain:cloud-cluster-provisioning",
+      "type": "domain",
+      "name": "Cloud & Cluster Provisioning",
+      "summary": "Provisions the foundational cloud substrate with Terraform: DigitalOcean Kubernetes (DOKS) clusters and node pools, AWS/DigitalOcean IAM access, DNS, the bastion host and remote state backends. Also manages Bitnami Sealed Secrets so credentials live safely in git before workloads deploy.",
+      "tags": [
+        "terraform",
+        "kubernetes",
+        "digitalocean",
+        "aws",
+        "iac",
+        "secrets"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "DOKS cluster",
+          "node pool",
+          "IAM user",
+          "bastion",
+          "Sealed Secret",
+          "remote state backend"
+        ],
+        "businessRules": [
+          "All state stored in S3-compatible DigitalOcean Spaces backends",
+          "Node pools segregate microservices, cloud-services and monitoring workloads",
+          "Credentials committed to git only as kubeseal-encrypted SealedSecrets"
+        ],
+        "crossDomainInteractions": [
+          "Provides clusters and secrets consumed by Ingress & Identity, Application & Data Platform and Observability",
+          "Establishes network and IAM foundation for the Database Platform"
+        ]
+      }
+    },
+    {
+      "id": "flow:provision-doks-cluster",
+      "type": "flow",
+      "name": "Provision DOKS Cluster",
+      "summary": "Terraform provisions a DigitalOcean Kubernetes cluster with dedicated microservices, cloud-services and monitoring node pools per environment.",
+      "tags": [
+        "terraform",
+        "kubernetes",
+        "provisioning"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "terraform apply (kubernetes/terraform)",
+        "entryType": "cli"
+      }
+    },
+    {
+      "id": "step:provision-doks-cluster:configure-provider",
+      "type": "step",
+      "name": "Configure provider & backend",
+      "summary": "Declare the DigitalOcean and Kubernetes providers and the Spaces remote state backend for the environment.",
+      "tags": [
+        "terraform",
+        "backend"
+      ],
+      "complexity": "simple",
+      "filePath": "kubernetes/terraform/dev/provider.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:provision-doks-cluster:set-variables",
+      "type": "step",
+      "name": "Set cluster variables",
+      "summary": "Supply cluster name and backend bucket via environment tfvars files.",
+      "tags": [
+        "terraform",
+        "config"
+      ],
+      "complexity": "simple",
+      "filePath": "kubernetes/terraform/prod/prod.env.tfvars",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:provision-doks-cluster:define-cluster",
+      "type": "step",
+      "name": "Define cluster & node pools",
+      "summary": "Declare the DOKS cluster plus autoscaling microservices, cloud-services and monitoring node pools.",
+      "tags": [
+        "kubernetes",
+        "autoscaling"
+      ],
+      "complexity": "moderate",
+      "filePath": "kubernetes/terraform/dev/cluster.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:provision-doks-cluster:apply",
+      "type": "step",
+      "name": "Apply Terraform",
+      "summary": "Run terraform apply to create the cluster and register its kubeconfig for downstream workloads.",
+      "tags": [
+        "terraform",
+        "apply"
+      ],
+      "complexity": "simple",
+      "filePath": "kubernetes/terraform/prod/backend-config.tfvars",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:provision-cloud-access",
+      "type": "flow",
+      "name": "Provision Cloud Access, DNS & Bastion",
+      "summary": "Terraform provisions scoped AWS/DigitalOcean IAM users and access keys, DNS records and the bastion host used to reach private resources.",
+      "tags": [
+        "terraform",
+        "iam",
+        "dns",
+        "bastion"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "terraform apply (aws_access, bastion)",
+        "entryType": "cli"
+      }
+    },
+    {
+      "id": "step:provision-cloud-access:define-iam-users",
+      "type": "step",
+      "name": "Define IAM users & policies",
+      "summary": "Provision scoped AWS IAM users, access keys and inline policies for services such as CloudFront and backups.",
+      "tags": [
+        "iam",
+        "aws"
+      ],
+      "complexity": "moderate",
+      "filePath": "aws_access/terraform/users.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:provision-cloud-access:provision-dns",
+      "type": "step",
+      "name": "Provision DNS records",
+      "summary": "Create DigitalOcean domain and CNAME records that alias service hosts to the cluster ingress.",
+      "tags": [
+        "dns",
+        "digitalocean"
+      ],
+      "complexity": "simple",
+      "filePath": "api_gateway/terraform/dns.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:provision-cloud-access:deploy-bastion",
+      "type": "step",
+      "name": "Deploy bastion host",
+      "summary": "Instantiate the external terraform-digitalocean-bastion module for secure access to private resources.",
+      "tags": [
+        "bastion",
+        "networking"
+      ],
+      "complexity": "simple",
+      "filePath": "bastion/bastion.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:provision-cloud-access:configure-state",
+      "type": "step",
+      "name": "Configure remote state",
+      "summary": "Store bastion and access Terraform state in the S3-compatible Spaces backend.",
+      "tags": [
+        "terraform",
+        "backend"
+      ],
+      "complexity": "simple",
+      "filePath": "bastion/backend.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:manage-sealed-secrets",
+      "type": "flow",
+      "name": "Manage Sealed Secrets",
+      "summary": "Encrypts Kubernetes credentials with kubeseal so they can be committed to git, and deploys the Sealed Secrets controller and web UI.",
+      "tags": [
+        "secrets",
+        "kubeseal",
+        "gitops"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "create-secret.sh",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:manage-sealed-secrets:create-secret",
+      "type": "step",
+      "name": "Seal a secret",
+      "summary": "Encrypt a plain Kubernetes secret into a SealedSecret with kubeseal for safe storage in git.",
+      "tags": [
+        "kubeseal",
+        "secrets"
+      ],
+      "complexity": "simple",
+      "filePath": "sealed-secrets/scripts/create-secret.sh",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:manage-sealed-secrets:create-db-secret",
+      "type": "step",
+      "name": "Seal database connection secret",
+      "summary": "Build the service database URI and seal it as the database-connection secret.",
+      "tags": [
+        "secrets",
+        "database"
+      ],
+      "complexity": "simple",
+      "filePath": "sealed-secrets/scripts/create-database-secret.sh",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:manage-sealed-secrets:deploy-web-ui",
+      "type": "step",
+      "name": "Deploy Sealed Secrets web UI",
+      "summary": "Ansible playbook deploys the sealed-secrets web UI to manage encrypted secrets.",
+      "tags": [
+        "ansible",
+        "deployment"
+      ],
+      "complexity": "simple",
+      "filePath": "sealed-secrets/sealed-secrets-web-playbook.yml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "domain:database-platform",
+      "type": "domain",
+      "name": "Database Platform",
+      "summary": "Provisions and governs the managed PostgreSQL data tier for the treetracker microservices: the DigitalOcean managed cluster with read replica, per-microservice schemas with least-privilege role grants, pgpool routing and S3 backup storage.",
+      "tags": [
+        "postgresql",
+        "terraform",
+        "database",
+        "grants",
+        "backup"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Managed Postgres cluster",
+          "microservice schema",
+          "role",
+          "grant",
+          "default privilege",
+          "backup bucket"
+        ],
+        "businessRules": [
+          "Fifteen per-microservice schemas each instantiated from the shared microservice_schema module",
+          "Roles receive least-privilege grants and default privileges per schema",
+          "Firewall rules restrict database access to trusted sources"
+        ],
+        "crossDomainInteractions": [
+          "Supplies the keycloak schema consumed by Ingress & Identity",
+          "Backs Airflow, CKAN and other services in the Application & Data Platform",
+          "Relies on Cloud & Cluster Provisioning for network and IAM foundation"
+        ]
+      }
+    },
+    {
+      "id": "flow:provision-managed-postgres",
+      "type": "flow",
+      "name": "Provision Managed Postgres",
+      "summary": "Terraform provisions the DigitalOcean managed PostgreSQL cluster, its databases, read replica and firewall rules.",
+      "tags": [
+        "terraform",
+        "postgresql",
+        "provisioning"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "terraform apply (database/terraform)",
+        "entryType": "cli"
+      }
+    },
+    {
+      "id": "step:provision-managed-postgres:declare-provider",
+      "type": "step",
+      "name": "Declare provider",
+      "summary": "Configure the DigitalOcean provider and do_token authentication for the database stack.",
+      "tags": [
+        "terraform",
+        "provider"
+      ],
+      "complexity": "simple",
+      "filePath": "database/terraform/provider.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:provision-managed-postgres:define-cluster",
+      "type": "step",
+      "name": "Define Postgres cluster",
+      "summary": "Declare the DigitalOcean managed PostgreSQL 11 cluster (2 nodes) serving as the production database.",
+      "tags": [
+        "postgresql",
+        "cluster"
+      ],
+      "complexity": "moderate",
+      "filePath": "database/terraform/database.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:provision-managed-postgres:define-databases",
+      "type": "step",
+      "name": "Define databases",
+      "summary": "Create per-service databases such as ckan within the managed cluster.",
+      "tags": [
+        "postgresql",
+        "database"
+      ],
+      "complexity": "simple",
+      "filePath": "database/terraform/database.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:provision-schema-grants",
+      "type": "flow",
+      "name": "Provision Schema & Grants",
+      "summary": "Fans out to per-microservice schemas via the reusable microservice_schema module, creating roles and least-privilege table and default privilege grants.",
+      "tags": [
+        "terraform",
+        "postgresql",
+        "grants",
+        "rbac"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "terraform apply (database-grants)",
+        "entryType": "cli"
+      }
+    },
+    {
+      "id": "step:provision-schema-grants:invoke-module",
+      "type": "step",
+      "name": "Invoke schema module",
+      "summary": "The prod root module fans out to fifteen per-microservice schemas through the microservice_schema submodule.",
+      "tags": [
+        "terraform",
+        "module"
+      ],
+      "complexity": "moderate",
+      "filePath": "database-grants/terraform/prod/main.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:provision-schema-grants:create-schema-role",
+      "type": "step",
+      "name": "Create schema & role",
+      "summary": "The microservice_schema module provisions a schema and its owning service role.",
+      "tags": [
+        "postgresql",
+        "schema"
+      ],
+      "complexity": "simple",
+      "filePath": "database-grants/terraform/prod/modules/microservice_schema/main.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:provision-schema-grants:grant-table-privileges",
+      "type": "step",
+      "name": "Grant table privileges",
+      "summary": "Grant SELECT/INSERT/UPDATE/DELETE on schema tables to the service role, e.g. s_keycloak.",
+      "tags": [
+        "grants",
+        "rbac"
+      ],
+      "complexity": "simple",
+      "filePath": "database-grants/terraform/prod/schemas/keycloak/main.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:provision-schema-grants:create-readonly-user",
+      "type": "step",
+      "name": "Create read-only user",
+      "summary": "Provision a cross-schema read-only role for reporting and analytics access.",
+      "tags": [
+        "grants",
+        "readonly"
+      ],
+      "complexity": "simple",
+      "filePath": "database-grants/terraform/prod/read-only-user.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:database-backup",
+      "type": "flow",
+      "name": "Database Backup Storage",
+      "summary": "Provisions the backup IAM user and S3-compatible bucket used to store managed PostgreSQL backups.",
+      "tags": [
+        "backup",
+        "s3",
+        "iam"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "terraform apply (database-backup-storage)",
+        "entryType": "cli"
+      }
+    },
+    {
+      "id": "step:database-backup:provision-backup-user",
+      "type": "step",
+      "name": "Provision backup IAM user",
+      "summary": "Create the database-backups IAM user with an access key and S3 backup policy.",
+      "tags": [
+        "iam",
+        "backup"
+      ],
+      "complexity": "simple",
+      "filePath": "aws_access/terraform/database-backups.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:database-backup:provision-backup-bucket",
+      "type": "step",
+      "name": "Provision backup bucket",
+      "summary": "Provision the production backups storage bucket for PostgreSQL dumps.",
+      "tags": [
+        "s3",
+        "backup"
+      ],
+      "complexity": "simple",
+      "filePath": "database-backup-storage/production-backups.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "domain:ingress-identity",
+      "type": "domain",
+      "name": "Ingress & Identity",
+      "summary": "Exposes backend services through the Ambassador API gateway and authenticates users with the Keycloak identity provider. Ambassador is the single ingress fronting every service; Keycloak runs a custom-themed image with realm and client configuration.",
+      "tags": [
+        "ambassador",
+        "ingress",
+        "keycloak",
+        "authentication",
+        "kubernetes"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Ambassador Mapping",
+          "ingress host",
+          "Keycloak realm",
+          "client",
+          "custom theme",
+          "SealedSecret"
+        ],
+        "businessRules": [
+          "Ambassador is the single ingress fronting every backend service",
+          "Keycloak credentials injected from SealedSecrets and stored in the keycloak Postgres schema",
+          "Service routes declared as Ambassador Mapping custom resources"
+        ],
+        "crossDomainInteractions": [
+          "Routes traffic to services in the Application & Data Platform",
+          "Uses the keycloak schema from the Database Platform",
+          "Depends on clusters and secrets from Cloud & Cluster Provisioning"
+        ]
+      }
+    },
+    {
+      "id": "flow:deploy-api-gateway",
+      "type": "flow",
+      "name": "Deploy API Gateway",
+      "summary": "Installs the Ambassador API gateway via an Ansible/Helm playbook, provisions its DNS and applies service Mappings.",
+      "tags": [
+        "ambassador",
+        "ingress",
+        "ansible"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "ambassador-playbook.yml",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:deploy-api-gateway:run-playbook",
+      "type": "step",
+      "name": "Run Ambassador playbook",
+      "summary": "Ansible playbook installs the Ambassador operator against the local cluster.",
+      "tags": [
+        "ansible",
+        "ambassador"
+      ],
+      "complexity": "simple",
+      "filePath": "api_gateway/ambassador-playbook.yml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-api-gateway:install-helm",
+      "type": "step",
+      "name": "Install via Helm",
+      "summary": "The ambassador role adds the Helm repo and installs the Ambassador API gateway chart.",
+      "tags": [
+        "helm",
+        "ambassador"
+      ],
+      "complexity": "simple",
+      "filePath": "api_gateway/roles/ambassador/tasks/main.yml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-api-gateway:provision-dns",
+      "type": "step",
+      "name": "Provision gateway DNS",
+      "summary": "Terraform provisions the ambassador host domain and www CNAME record.",
+      "tags": [
+        "dns",
+        "terraform"
+      ],
+      "complexity": "simple",
+      "filePath": "api_gateway/terraform/dns.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-api-gateway:apply-mappings",
+      "type": "step",
+      "name": "Apply service Mappings",
+      "summary": "Apply Ambassador Mapping resources that route HTTP prefixes to backend services.",
+      "tags": [
+        "ambassador",
+        "routing"
+      ],
+      "complexity": "simple",
+      "filePath": "api_gateway/mappings/README.md",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:deploy-keycloak",
+      "type": "flow",
+      "name": "Deploy Keycloak Identity",
+      "summary": "Builds the custom-themed Keycloak image and deploys it to Kubernetes with a Kustomize overlay, sealed credentials and an Ambassador route.",
+      "tags": [
+        "keycloak",
+        "authentication",
+        "kustomize",
+        "docker"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "keycloak/deploy.sh",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:deploy-keycloak:build-image",
+      "type": "step",
+      "name": "Build custom Keycloak image",
+      "summary": "Multi-stage Dockerfile bakes the treetracker theme onto the Keycloak 23.0 image with health and metrics enabled.",
+      "tags": [
+        "docker",
+        "keycloak"
+      ],
+      "complexity": "moderate",
+      "filePath": "keycloak/lib/docker/Dockerfile",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-keycloak:apply-base",
+      "type": "step",
+      "name": "Apply base deployment",
+      "summary": "Kubernetes Deployment wires the Keycloak server to Postgres and admin credentials from secrets.",
+      "tags": [
+        "kubernetes",
+        "deployment"
+      ],
+      "complexity": "simple",
+      "filePath": "keycloak/lib/kubernetes/base/deployment.yaml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-keycloak:apply-overlay",
+      "type": "step",
+      "name": "Apply production overlay",
+      "summary": "Kustomize production overlay layers the sealed-secret and environment patches onto the base.",
+      "tags": [
+        "kustomize",
+        "secrets"
+      ],
+      "complexity": "simple",
+      "filePath": "keycloak/lib/kubernetes/overlays/production/kustomization.yaml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-keycloak:route-mapping",
+      "type": "step",
+      "name": "Route /keycloak mapping",
+      "summary": "Ambassador Mapping routes the /keycloak/ prefix to the keycloak-service on port 8080.",
+      "tags": [
+        "ambassador",
+        "routing"
+      ],
+      "complexity": "simple",
+      "filePath": "keycloak/lib/kubernetes/base/mapping.yaml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-keycloak:run-deploy",
+      "type": "step",
+      "name": "Run deploy script",
+      "summary": "Interactive deploy script validates the kubectl context and applies the selected environment overlay.",
+      "tags": [
+        "deployment",
+        "script"
+      ],
+      "complexity": "simple",
+      "filePath": "keycloak/deploy.sh",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "domain:application-data-platform",
+      "type": "domain",
+      "name": "Application & Data Platform",
+      "summary": "Deploys the higher-level application workloads on the cluster: RabbitMQ messaging, Airflow workflow orchestration, the Solr/CKAN/OpenProject data platform and the S3-backed static web apps with CDN delivery.",
+      "tags": [
+        "rabbitmq",
+        "airflow",
+        "solr",
+        "ckan",
+        "static-sites",
+        "cdn"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "RabbitmqCluster",
+          "Airflow DAG",
+          "Solr Helm release",
+          "CKAN portal",
+          "static website",
+          "CDN images api"
+        ],
+        "businessRules": [
+          "Async service communication runs on a 3-replica RabbitMQ cluster",
+          "Airflow and CKAN connect to the managed PostgreSQL databases",
+          "Static sites are S3-backed and fronted by CloudFront"
+        ],
+        "crossDomainInteractions": [
+          "Consumes databases from the Database Platform",
+          "Sits behind Ingress & Identity routing",
+          "Runs on clusters from Cloud & Cluster Provisioning"
+        ]
+      }
+    },
+    {
+      "id": "flow:deploy-messaging",
+      "type": "flow",
+      "name": "Deploy Messaging (RabbitMQ)",
+      "summary": "Deploys a 3-replica RabbitmqCluster via the RabbitMQ Operator using Kustomize overlays per environment.",
+      "tags": [
+        "rabbitmq",
+        "messaging",
+        "kustomize"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "rabbitmq/deployment/deploy-test.sh",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:deploy-messaging:install-operator",
+      "type": "step",
+      "name": "Install RabbitMQ operator",
+      "summary": "Install the RabbitMQ Operator into Kubernetes via the Helm chart and Ansible.",
+      "tags": [
+        "rabbitmq",
+        "helm"
+      ],
+      "complexity": "simple",
+      "filePath": "rabbitmq/README.md",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-messaging:define-cluster",
+      "type": "step",
+      "name": "Define RabbitmqCluster",
+      "summary": "RabbitmqCluster custom resource defines a 3-replica broker with fixed CPU/memory limits.",
+      "tags": [
+        "rabbitmq",
+        "crd"
+      ],
+      "complexity": "simple",
+      "filePath": "rabbitmq/deployment/base/definition.yaml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-messaging:apply-overlay",
+      "type": "step",
+      "name": "Apply environment overlay",
+      "summary": "Kustomize overlay references the shared base for the target environment.",
+      "tags": [
+        "kustomize"
+      ],
+      "complexity": "simple",
+      "filePath": "rabbitmq/deployment/overlays/prod/kustomization.yaml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-messaging:deploy",
+      "type": "step",
+      "name": "Deploy to cluster",
+      "summary": "Deploy script switches kubectl context and applies the RabbitMQ kustomization.",
+      "tags": [
+        "deployment",
+        "script"
+      ],
+      "complexity": "simple",
+      "filePath": "rabbitmq/deployment/deploy-test.sh",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:deploy-workflow",
+      "type": "flow",
+      "name": "Deploy Workflow Orchestration (Airflow)",
+      "summary": "Installs Airflow on the DOKS cluster via an Ansible-driven Helm chart with per-environment Postgres connection settings.",
+      "tags": [
+        "airflow",
+        "ansible",
+        "helm"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "airflow/airflow-playbook.yml",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:deploy-workflow:run-playbook",
+      "type": "step",
+      "name": "Run Airflow playbook",
+      "summary": "Ansible playbook installs Airflow by applying the airflow role against localhost.",
+      "tags": [
+        "ansible",
+        "airflow"
+      ],
+      "complexity": "simple",
+      "filePath": "airflow/airflow-playbook.yml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-workflow:configure-vars",
+      "type": "step",
+      "name": "Configure group_vars",
+      "summary": "Set Postgres connection, base URL and deployment branch in the environment group_vars.",
+      "tags": [
+        "config",
+        "airflow"
+      ],
+      "complexity": "simple",
+      "filePath": "airflow/environments/development/group_vars/local",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-workflow:set-inventory",
+      "type": "step",
+      "name": "Set inventory",
+      "summary": "Ansible inventory targets the local host for the environment deployment.",
+      "tags": [
+        "ansible",
+        "inventory"
+      ],
+      "complexity": "simple",
+      "filePath": "airflow/environments/production/inventory",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:deploy-data-platform",
+      "type": "flow",
+      "name": "Deploy Data Platform (Solr/CKAN/OpenProject)",
+      "summary": "Deploys the Solr search engine, CKAN open-data portal and OpenProject onto the cluster with external Postgres wiring.",
+      "tags": [
+        "solr",
+        "ckan",
+        "openproject",
+        "search"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "terraform apply / kubectl apply",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:deploy-data-platform:deploy-solr",
+      "type": "step",
+      "name": "Deploy Solr",
+      "summary": "Helm release deploys the Apache Solr chart into the solr namespace via Terraform.",
+      "tags": [
+        "solr",
+        "helm"
+      ],
+      "complexity": "moderate",
+      "filePath": "solr/solr_chart/main.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-data-platform:wire-ckan-db",
+      "type": "step",
+      "name": "Wire CKAN database",
+      "summary": "Endpoints manifest maps the ckan-postgres service to the external managed PostgreSQL instance.",
+      "tags": [
+        "ckan",
+        "database"
+      ],
+      "complexity": "simple",
+      "filePath": "ckan/roles/ckan/files/ckan-database-endpoint.yaml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-data-platform:deploy-openproject",
+      "type": "step",
+      "name": "Deploy OpenProject",
+      "summary": "Apply the namespace, deployment, service and ingress manifests that run OpenProject.",
+      "tags": [
+        "openproject",
+        "kubernetes"
+      ],
+      "complexity": "simple",
+      "filePath": "openproject/deployment.yaml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:deploy-web-apps",
+      "type": "flow",
+      "name": "Deploy Static Web Apps & CDN",
+      "summary": "Provisions S3-backed static front-end sites (web map, wallet, admin panels) across environments and the CDN images API via Terraform.",
+      "tags": [
+        "static-sites",
+        "s3",
+        "cdn",
+        "terraform"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "terraform apply (web-apps)",
+        "entryType": "cli"
+      }
+    },
+    {
+      "id": "step:deploy-web-apps:provision-web-map",
+      "type": "step",
+      "name": "Provision web map site",
+      "summary": "Deploy the production web map static site with S3 redirect routing rules.",
+      "tags": [
+        "static-site",
+        "s3"
+      ],
+      "complexity": "simple",
+      "filePath": "web-apps/terraform/prod-web-map.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-web-apps:provision-wallet-admin",
+      "type": "step",
+      "name": "Provision wallet & admin sites",
+      "summary": "Provision the wallet and admin panel static sites via the shared Greenstand static website module.",
+      "tags": [
+        "static-site",
+        "terraform"
+      ],
+      "complexity": "simple",
+      "filePath": "web-apps/terraform-admin/prod-admin-panel.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-web-apps:provision-cdn",
+      "type": "step",
+      "name": "Provision CDN images API",
+      "summary": "Provision the cdn-images-api CloudFront delivery configuration.",
+      "tags": [
+        "cdn",
+        "cloudfront"
+      ],
+      "complexity": "simple",
+      "filePath": "cdn-images-api/main.tf",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "domain:observability",
+      "type": "domain",
+      "name": "Observability & Alerting",
+      "summary": "Observes the platform with a Prometheus/Grafana metrics stack, Loki log aggregation and Jaeger distributed tracing, all installed via Ansible playbooks, plus Botkube chat-ops alerting.",
+      "tags": [
+        "prometheus",
+        "grafana",
+        "loki",
+        "jaeger",
+        "monitoring",
+        "alerting"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Prometheus Operator",
+          "Grafana",
+          "Loki",
+          "Promtail",
+          "Jaeger",
+          "node_exporter"
+        ],
+        "businessRules": [
+          "Metrics, logs and traces installed via Ansible-driven Helm charts",
+          "Ambassador emits zipkin-format traces to the Jaeger collector",
+          "node_exporter runs on all server hosts"
+        ],
+        "crossDomainInteractions": [
+          "Configures tracing on the Ambassador gateway in Ingress & Identity",
+          "Monitors workloads across the Application & Data Platform",
+          "Runs on the monitoring node pool from Cloud & Cluster Provisioning"
+        ]
+      }
+    },
+    {
+      "id": "flow:deploy-metrics",
+      "type": "flow",
+      "name": "Deploy Metrics Stack",
+      "summary": "Installs the kube-prometheus-stack (Prometheus, Grafana, Alertmanager) and node_exporter via Ansible.",
+      "tags": [
+        "prometheus",
+        "grafana",
+        "ansible"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "prom-operator-playbook.yml",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:deploy-metrics:run-playbook",
+      "type": "step",
+      "name": "Run Prometheus playbook",
+      "summary": "Ansible playbook installs the Prometheus Operator via the prometheus_operator role.",
+      "tags": [
+        "ansible",
+        "prometheus"
+      ],
+      "complexity": "simple",
+      "filePath": "monitoring/prom-operator-playbook.yml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-metrics:configure-values",
+      "type": "step",
+      "name": "Configure stack values",
+      "summary": "Helm values configure Prometheus, Grafana and Alertmanager for the kube-prometheus-stack.",
+      "tags": [
+        "helm",
+        "config"
+      ],
+      "complexity": "moderate",
+      "filePath": "monitoring/roles/prometheus_operator/files/values.yaml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-metrics:install-exporter",
+      "type": "step",
+      "name": "Install node exporter",
+      "summary": "Ansible playbook installs Prometheus node_exporter on all server hosts.",
+      "tags": [
+        "prometheus",
+        "exporter"
+      ],
+      "complexity": "simple",
+      "filePath": "monitoring/exporter-playbook.yml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:deploy-logging",
+      "type": "flow",
+      "name": "Deploy Logging (Loki)",
+      "summary": "Installs the Loki logging stack with Promtail and Fluent-bit via Ansible and Helm.",
+      "tags": [
+        "loki",
+        "logging",
+        "ansible"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "loki role",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:deploy-logging:install-loki",
+      "type": "step",
+      "name": "Install Loki stack",
+      "summary": "Ansible role adds the Loki Helm repository and installs the loki-stack chart.",
+      "tags": [
+        "loki",
+        "helm"
+      ],
+      "complexity": "simple",
+      "filePath": "monitoring/roles/loki/tasks/main.yml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-logging:configure-loki",
+      "type": "step",
+      "name": "Configure Loki values",
+      "summary": "Helm values configure Loki, Promtail and Fluent-bit for log collection.",
+      "tags": [
+        "loki",
+        "config"
+      ],
+      "complexity": "simple",
+      "filePath": "monitoring/roles/loki/files/values.yaml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:deploy-tracing",
+      "type": "flow",
+      "name": "Deploy Tracing (Jaeger)",
+      "summary": "Deploys Jaeger distributed tracing and wires the Ambassador gateway to emit zipkin traces.",
+      "tags": [
+        "jaeger",
+        "tracing",
+        "ansible"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "tracing playbook",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:deploy-tracing:deploy-jaeger",
+      "type": "step",
+      "name": "Deploy Jaeger",
+      "summary": "Deploy the Jaeger distributed tracing backend via the tracing Ansible playbooks.",
+      "tags": [
+        "jaeger",
+        "tracing"
+      ],
+      "complexity": "simple",
+      "filePath": "tracing/README.md",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-tracing:configure-ambassador",
+      "type": "step",
+      "name": "Configure TracingService",
+      "summary": "Ambassador TracingService sends zipkin-format traces to the jaeger-collector.",
+      "tags": [
+        "ambassador",
+        "tracing"
+      ],
+      "complexity": "simple",
+      "filePath": "tracing/roles/trace_ambassador/files/trace-ambassador.yaml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:deploy-tracing:restart-ambassador",
+      "type": "step",
+      "name": "Restart Ambassador",
+      "summary": "Ansible role adds the tracing plugin and triggers a rolling restart of the ambassador deployment.",
+      "tags": [
+        "ambassador",
+        "restart"
+      ],
+      "complexity": "simple",
+      "filePath": "tracing/roles/trace_ambassador/tasks/main.yml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "domain:platform-ops-ci",
+      "type": "domain",
+      "name": "Platform Operations & CI",
+      "summary": "Day-to-day operations and continuous integration: shell scripts to authenticate to the DOKS clusters, provision tooling and export credentials, plus pre-commit and GitHub Actions CI that enforce Terraform formatting.",
+      "tags": [
+        "operations",
+        "ci",
+        "doctl",
+        "pre-commit",
+        "scripts"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "operator script",
+          "doctl kubeconfig",
+          "pre-commit hook",
+          "GitHub Actions workflow"
+        ],
+        "businessRules": [
+          "Operators authenticate to each DOKS cluster with doctl and helm",
+          "terraform_fmt runs on every commit via pre-commit",
+          "CI runs pre-commit on pull requests and pushes to master"
+        ],
+        "crossDomainInteractions": [
+          "Enables credentials and cluster access for Cloud & Cluster Provisioning",
+          "Validates Terraform across all provisioning domains"
+        ]
+      }
+    },
+    {
+      "id": "flow:cluster-access",
+      "type": "flow",
+      "name": "Cluster Access Setup",
+      "summary": "Operator scripts authenticate to DigitalOcean, save the kubeconfig for a target cluster and install required tooling.",
+      "tags": [
+        "doctl",
+        "kubernetes",
+        "tooling"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "scripts/doctl_setup.sh",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:cluster-access:export-credentials",
+      "type": "step",
+      "name": "Export DO credentials",
+      "summary": "Export production DigitalOcean credentials from ~/.netrc into AWS-style environment variables.",
+      "tags": [
+        "credentials",
+        "digitalocean"
+      ],
+      "complexity": "simple",
+      "filePath": "scripts/setup-production-tf-do-keys.sh",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:cluster-access:authenticate-doctl",
+      "type": "step",
+      "name": "Authenticate doctl",
+      "summary": "Authenticate to DigitalOcean and save the kubeconfig for a named Kubernetes cluster.",
+      "tags": [
+        "doctl",
+        "kubeconfig"
+      ],
+      "complexity": "simple",
+      "filePath": "scripts/doctl_setup.sh",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:cluster-access:install-tooling",
+      "type": "step",
+      "name": "Install tooling",
+      "summary": "Provision the host with Ansible, Docker, Helm 3 and the community.kubernetes collection.",
+      "tags": [
+        "ansible",
+        "helm"
+      ],
+      "complexity": "simple",
+      "filePath": "scripts/install-latest-ansible.sh",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:ci-validation",
+      "type": "flow",
+      "name": "CI Validation",
+      "summary": "Pre-commit and GitHub Actions enforce Terraform formatting on commits and pull requests.",
+      "tags": [
+        "ci",
+        "pre-commit",
+        "terraform"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "git push / pull request",
+        "entryType": "event"
+      }
+    },
+    {
+      "id": "step:ci-validation:configure-hooks",
+      "type": "step",
+      "name": "Configure pre-commit hooks",
+      "summary": "Pre-commit config runs the terraform_fmt hook on every commit.",
+      "tags": [
+        "pre-commit",
+        "terraform"
+      ],
+      "complexity": "simple",
+      "filePath": ".pre-commit-config.yaml",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:ci-validation:run-ci",
+      "type": "step",
+      "name": "Run CI workflow",
+      "summary": "GitHub Actions runs pre-commit hooks on pull requests and pushes to master with Terraform setup.",
+      "tags": [
+        "github-actions",
+        "ci"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/pre-commit.yaml",
+      "lineRange": [
+        0,
+        0
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:cloud-cluster-provisioning",
+      "target": "flow:provision-doks-cluster",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:provision-doks-cluster",
+      "target": "step:provision-doks-cluster:configure-provider",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:provision-doks-cluster",
+      "target": "step:provision-doks-cluster:set-variables",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:provision-doks-cluster",
+      "target": "step:provision-doks-cluster:define-cluster",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:provision-doks-cluster",
+      "target": "step:provision-doks-cluster:apply",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:cloud-cluster-provisioning",
+      "target": "flow:provision-cloud-access",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:provision-cloud-access",
+      "target": "step:provision-cloud-access:define-iam-users",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:provision-cloud-access",
+      "target": "step:provision-cloud-access:provision-dns",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:provision-cloud-access",
+      "target": "step:provision-cloud-access:deploy-bastion",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:provision-cloud-access",
+      "target": "step:provision-cloud-access:configure-state",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:cloud-cluster-provisioning",
+      "target": "flow:manage-sealed-secrets",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:manage-sealed-secrets",
+      "target": "step:manage-sealed-secrets:create-secret",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:manage-sealed-secrets",
+      "target": "step:manage-sealed-secrets:create-db-secret",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:manage-sealed-secrets",
+      "target": "step:manage-sealed-secrets:deploy-web-ui",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:database-platform",
+      "target": "flow:provision-managed-postgres",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:provision-managed-postgres",
+      "target": "step:provision-managed-postgres:declare-provider",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:provision-managed-postgres",
+      "target": "step:provision-managed-postgres:define-cluster",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:provision-managed-postgres",
+      "target": "step:provision-managed-postgres:define-databases",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:database-platform",
+      "target": "flow:provision-schema-grants",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:provision-schema-grants",
+      "target": "step:provision-schema-grants:invoke-module",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:provision-schema-grants",
+      "target": "step:provision-schema-grants:create-schema-role",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:provision-schema-grants",
+      "target": "step:provision-schema-grants:grant-table-privileges",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:provision-schema-grants",
+      "target": "step:provision-schema-grants:create-readonly-user",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:database-platform",
+      "target": "flow:database-backup",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:database-backup",
+      "target": "step:database-backup:provision-backup-user",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:database-backup",
+      "target": "step:database-backup:provision-backup-bucket",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:ingress-identity",
+      "target": "flow:deploy-api-gateway",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:deploy-api-gateway",
+      "target": "step:deploy-api-gateway:run-playbook",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:deploy-api-gateway",
+      "target": "step:deploy-api-gateway:install-helm",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:deploy-api-gateway",
+      "target": "step:deploy-api-gateway:provision-dns",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:deploy-api-gateway",
+      "target": "step:deploy-api-gateway:apply-mappings",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:ingress-identity",
+      "target": "flow:deploy-keycloak",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:deploy-keycloak",
+      "target": "step:deploy-keycloak:build-image",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:deploy-keycloak",
+      "target": "step:deploy-keycloak:apply-base",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:deploy-keycloak",
+      "target": "step:deploy-keycloak:apply-overlay",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:deploy-keycloak",
+      "target": "step:deploy-keycloak:route-mapping",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:deploy-keycloak",
+      "target": "step:deploy-keycloak:run-deploy",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:application-data-platform",
+      "target": "flow:deploy-messaging",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:deploy-messaging",
+      "target": "step:deploy-messaging:install-operator",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:deploy-messaging",
+      "target": "step:deploy-messaging:define-cluster",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:deploy-messaging",
+      "target": "step:deploy-messaging:apply-overlay",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:deploy-messaging",
+      "target": "step:deploy-messaging:deploy",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:application-data-platform",
+      "target": "flow:deploy-workflow",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:deploy-workflow",
+      "target": "step:deploy-workflow:run-playbook",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:deploy-workflow",
+      "target": "step:deploy-workflow:configure-vars",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:deploy-workflow",
+      "target": "step:deploy-workflow:set-inventory",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:application-data-platform",
+      "target": "flow:deploy-data-platform",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:deploy-data-platform",
+      "target": "step:deploy-data-platform:deploy-solr",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:deploy-data-platform",
+      "target": "step:deploy-data-platform:wire-ckan-db",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:deploy-data-platform",
+      "target": "step:deploy-data-platform:deploy-openproject",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:application-data-platform",
+      "target": "flow:deploy-web-apps",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:deploy-web-apps",
+      "target": "step:deploy-web-apps:provision-web-map",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:deploy-web-apps",
+      "target": "step:deploy-web-apps:provision-wallet-admin",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:deploy-web-apps",
+      "target": "step:deploy-web-apps:provision-cdn",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:observability",
+      "target": "flow:deploy-metrics",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:deploy-metrics",
+      "target": "step:deploy-metrics:run-playbook",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:deploy-metrics",
+      "target": "step:deploy-metrics:configure-values",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:deploy-metrics",
+      "target": "step:deploy-metrics:install-exporter",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:observability",
+      "target": "flow:deploy-logging",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:deploy-logging",
+      "target": "step:deploy-logging:install-loki",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:deploy-logging",
+      "target": "step:deploy-logging:configure-loki",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:observability",
+      "target": "flow:deploy-tracing",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:deploy-tracing",
+      "target": "step:deploy-tracing:deploy-jaeger",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:deploy-tracing",
+      "target": "step:deploy-tracing:configure-ambassador",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:deploy-tracing",
+      "target": "step:deploy-tracing:restart-ambassador",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:platform-ops-ci",
+      "target": "flow:cluster-access",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:cluster-access",
+      "target": "step:cluster-access:export-credentials",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:cluster-access",
+      "target": "step:cluster-access:authenticate-doctl",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:cluster-access",
+      "target": "step:cluster-access:install-tooling",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:platform-ops-ci",
+      "target": "flow:ci-validation",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:ci-validation",
+      "target": "step:ci-validation:configure-hooks",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:ci-validation",
+      "target": "step:ci-validation:run-ci",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:cloud-cluster-provisioning",
+      "target": "domain:database-platform",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Provides the network and IAM foundation the managed Postgres tier depends on",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:cloud-cluster-provisioning",
+      "target": "domain:ingress-identity",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Provides the DOKS cluster and sealed secrets that host the gateway and Keycloak",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:cloud-cluster-provisioning",
+      "target": "domain:application-data-platform",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Provides the cluster and node pools that run application workloads",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:cloud-cluster-provisioning",
+      "target": "domain:observability",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Provides the dedicated monitoring node pool for the observability stack",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:database-platform",
+      "target": "domain:ingress-identity",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Supplies the keycloak schema and role that back the identity provider",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:database-platform",
+      "target": "domain:application-data-platform",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Backs Airflow, CKAN and other services with managed Postgres databases",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:ingress-identity",
+      "target": "domain:application-data-platform",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Ambassador routes external HTTP traffic to application and data services",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:observability",
+      "target": "domain:ingress-identity",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Configures the Ambassador gateway to emit distributed traces to Jaeger",
+      "weight": 0.4
+    },
+    {
+      "source": "domain:platform-ops-ci",
+      "target": "domain:cloud-cluster-provisioning",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Operator scripts and CI supply credentials and validate the provisioning Terraform",
+      "weight": 0.5
+    }
+  ],
+  "layers": [],
+  "tour": []
+}

@@ -1,0 +1,1452 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-wallet-admin-client",
+    "languages": [
+      "css",
+      "html",
+      "javascript",
+      "json",
+      "markdown",
+      "yaml"
+    ],
+    "frameworks": [
+      "React",
+      "Sass"
+    ],
+    "description": "The admin panel for accessing wallets and executing all known API calls for the wallet API. Wallet owners use it to display and transfer tokens and transactions, create sub wallets, and configure their appearance.",
+    "analyzedAt": "2026-09-03T05:50:27Z",
+    "gitCommitHash": "62a60f30956b2c364ca0483509569e5fdcb7ed4b"
+  },
+  "nodes": [
+    {
+      "id": "domain:authentication-access",
+      "type": "domain",
+      "name": "Authentication & Access",
+      "summary": "Controls who can use the admin panel. Handles the login form, credential validation, JWT token persistence, route protection and session expiry, including automatic redirect on unauthorized API responses.",
+      "tags": [
+        "authentication",
+        "authorization",
+        "session",
+        "security"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Credentials",
+          "AuthToken (JWT)",
+          "Wallet identity",
+          "API key"
+        ],
+        "businessRules": [
+          "Wallet name, password and API key are all required to log in",
+          "Token and current wallet persist in localStorage; API key uses secure storage",
+          "Protected routes render only when a valid session exists",
+          "A 401 response clears the session and redirects to login"
+        ],
+        "crossDomainInteractions": [
+          "Supplies the auth token that every wallet, transfer and trust API call sends"
+        ]
+      }
+    },
+    {
+      "id": "domain:wallet-management",
+      "type": "domain",
+      "name": "Wallet Management",
+      "summary": "Lists the owner's wallets, opens a single wallet's detail view with token and pending-transfer stats, and creates new managed (sub) wallets. Wallets are the core account entity that all other domains act upon.",
+      "tags": [
+        "wallets",
+        "accounts",
+        "crud",
+        "data-table"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Wallet",
+          "Managed wallet",
+          "Wallet balance",
+          "Pending transfer count"
+        ],
+        "businessRules": [
+          "A wallet list is paginated, sorted and scoped to the owner",
+          "A new managed wallet name must pass client-side validation and be unique",
+          "A wallet detail view combines the wallet record with its pending transfers"
+        ],
+        "crossDomainInteractions": [
+          "Provides the wallet records and balances used by token transfers",
+          "Is the target entity updated by wallet customization"
+        ]
+      }
+    },
+    {
+      "id": "domain:token-transfers",
+      "type": "domain",
+      "name": "Token Transfers",
+      "summary": "Moves tokens between wallets and manages the resulting transfer records. Covers sending tokens to trusted and untrusted wallets with amount validation and confirmation, plus listing, filtering, accepting, declining and cancelling transfers.",
+      "tags": [
+        "transfers",
+        "tokens",
+        "payments",
+        "workflow"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Transfer",
+          "Pending transfer",
+          "Token amount",
+          "Sender wallet",
+          "Receiver wallet"
+        ],
+        "businessRules": [
+          "Available tokens equal in-wallet balance minus pending transfers",
+          "A transfer amount must be a positive number within the available balance",
+          "Sending to a trusted wallet completes directly; sending to an untrusted wallet creates a pending transfer",
+          "Only the receiver may accept or decline a pending transfer; only the sender may cancel it"
+        ],
+        "crossDomainInteractions": [
+          "Reads wallet balances and can create a wallet inline during a send",
+          "Branches on trusted versus untrusted status defined by trust relationships"
+        ]
+      }
+    },
+    {
+      "id": "domain:trust-relationships",
+      "type": "domain",
+      "name": "Trust Relationships",
+      "summary": "Establishes and manages trust links between wallets that permit direct token transfers. Handles requesting a new relationship, listing and filtering relationships, and accepting, declining or deleting them.",
+      "tags": [
+        "trust-relationship",
+        "permissions",
+        "wallets",
+        "workflow"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Trust relationship",
+          "Relationship request",
+          "Relationship type",
+          "Trusted wallet"
+        ],
+        "businessRules": [
+          "A relationship is created between a source and target wallet with a chosen relationship type",
+          "A requested relationship stays pending until the counterparty accepts or declines it",
+          "Either party may delete an existing relationship"
+        ],
+        "crossDomainInteractions": [
+          "Defines which wallets count as trusted for direct token transfers",
+          "Selects among the owner's wallets when creating a relationship"
+        ]
+      }
+    },
+    {
+      "id": "domain:wallet-customization",
+      "type": "domain",
+      "name": "Wallet Customization",
+      "summary": "Lets an owner edit a wallet's public profile: display name, about text, logo and hero image. Validates image uploads and persists the changes to the wallet record.",
+      "tags": [
+        "customization",
+        "profile",
+        "wallets",
+        "media-upload"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Wallet profile",
+          "Display name",
+          "About text",
+          "Logo image",
+          "Hero image"
+        ],
+        "businessRules": [
+          "Uploaded images must pass type and size validation before save",
+          "Profile changes save through a multipart wallet update"
+        ],
+        "crossDomainInteractions": [
+          "Updates the wallet entity owned by wallet management"
+        ]
+      }
+    },
+    {
+      "id": "flow:user-login",
+      "type": "flow",
+      "name": "User Login",
+      "summary": "Owner enters wallet, password and API key, the form validates each field, and valid credentials authenticate against the wallet API and open a protected session.",
+      "tags": [
+        "authentication",
+        "login",
+        "form"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "/login",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:logout-session-expiry",
+      "type": "flow",
+      "name": "Logout & Session Expiry",
+      "summary": "Owner logs out from the top menu, or an unauthorized API response ends the session; the token clears and the app redirects to login.",
+      "tags": [
+        "authentication",
+        "logout",
+        "session"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "TopMenu logout / 401 interceptor",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:browse-my-wallets",
+      "type": "flow",
+      "name": "Browse My Wallets",
+      "summary": "Loads the owner's wallets from the API, formats them into rows, and renders a paginated, sortable table.",
+      "tags": [
+        "wallets",
+        "listing",
+        "pagination"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "/wallets",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:view-wallet-details",
+      "type": "flow",
+      "name": "View Wallet Details",
+      "summary": "Loads a single wallet by id together with its pending transfers and renders the wallet header and information blocks.",
+      "tags": [
+        "wallets",
+        "detail",
+        "data-fetching"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "/wallet/:id",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:create-managed-wallet",
+      "type": "flow",
+      "name": "Create Managed Wallet",
+      "summary": "Owner opens the create dialog, enters and validates a wallet name, submits it to the API, and sees success or error feedback.",
+      "tags": [
+        "wallets",
+        "creation",
+        "validation"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Create wallet dialog",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:send-tokens",
+      "type": "flow",
+      "name": "Send Tokens",
+      "summary": "Owner selects sender and receiver wallets, reviews available tokens, enters and validates an amount, confirms, and the transfer posts to the trusted or untrusted endpoint.",
+      "tags": [
+        "transfers",
+        "tokens",
+        "send",
+        "validation"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "/send-tokens",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:manage-transfers",
+      "type": "flow",
+      "name": "Manage Transfers",
+      "summary": "Owner loads the transfers list, filters by status and date, opens a transfer in the side panel, and accepts, declines or cancels it before the list refreshes.",
+      "tags": [
+        "transfers",
+        "listing",
+        "actions",
+        "filter"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "/transfers",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:request-trust-relationship",
+      "type": "flow",
+      "name": "Request Trust Relationship",
+      "summary": "Owner opens the create dialog, selects the two wallets and a relationship type, submits the request, and sees success or error feedback.",
+      "tags": [
+        "trust-relationship",
+        "request",
+        "form"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "New relationship dialog",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:manage-trust-relationships",
+      "type": "flow",
+      "name": "Manage Trust Relationships",
+      "summary": "Owner loads relationships, filters them, opens one in the side panel, and accepts, declines or deletes it before the list refreshes.",
+      "tags": [
+        "trust-relationship",
+        "listing",
+        "actions",
+        "filter"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "/trust-relationships",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "flow:customize-wallet-appearance",
+      "type": "flow",
+      "name": "Customize Wallet Appearance",
+      "summary": "Owner edits display name and about text, uploads and validates logo and hero images, and saves the profile through a wallet update.",
+      "tags": [
+        "customization",
+        "profile",
+        "media-upload",
+        "validation"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "Customize wallet page",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:user-login:enter-credentials",
+      "type": "step",
+      "name": "Enter credentials",
+      "summary": "Owner types wallet name, password and API key into the login form.",
+      "tags": [
+        "form",
+        "input",
+        "auth"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/Login/Login.js",
+      "lineRange": [
+        37,
+        246
+      ]
+    },
+    {
+      "id": "step:user-login:validate-fields",
+      "type": "step",
+      "name": "Validate fields",
+      "summary": "Client-side validators check the wallet, password and API-key values and return field errors.",
+      "tags": [
+        "validation",
+        "auth"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/Login/loginValidator.js",
+      "lineRange": [
+        1,
+        29
+      ]
+    },
+    {
+      "id": "step:user-login:submit-credentials",
+      "type": "step",
+      "name": "Submit credentials to API",
+      "summary": "The form posts credentials to the login endpoint via the shared axios client.",
+      "tags": [
+        "api-handler",
+        "auth",
+        "http"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/utils/apiClient.js"
+    },
+    {
+      "id": "step:user-login:persist-token",
+      "type": "step",
+      "name": "Persist token and decode JWT",
+      "summary": "AuthProvider stores the token and wallet, decodes the JWT, and exposes the authenticated state.",
+      "tags": [
+        "state-management",
+        "auth",
+        "jwt"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/store/AuthProvider.js",
+      "lineRange": [
+        7,
+        82
+      ]
+    },
+    {
+      "id": "step:user-login:enter-protected-routes",
+      "type": "step",
+      "name": "Enter protected routes",
+      "summary": "ClientRoutes gates the application pages behind the authenticated session and renders them.",
+      "tags": [
+        "routing",
+        "authorization"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/components/Routes/ClientRoutes.js",
+      "lineRange": [
+        25,
+        127
+      ]
+    },
+    {
+      "id": "step:logout-session-expiry:trigger-logout",
+      "type": "step",
+      "name": "Trigger logout",
+      "summary": "Owner clicks logout in the top menu, which calls the auth context logout handler.",
+      "tags": [
+        "auth",
+        "logout",
+        "event-handler"
+      ],
+      "complexity": "simple",
+      "filePath": "src/components/layout/Menu/TopMenu/TopMenu.js",
+      "lineRange": [
+        10,
+        46
+      ]
+    },
+    {
+      "id": "step:logout-session-expiry:clear-session",
+      "type": "step",
+      "name": "Clear session state",
+      "summary": "AuthProvider removes the token and wallet from storage and resets the auth state.",
+      "tags": [
+        "auth",
+        "state-management"
+      ],
+      "complexity": "simple",
+      "filePath": "src/store/AuthProvider.js",
+      "lineRange": [
+        7,
+        82
+      ]
+    },
+    {
+      "id": "step:logout-session-expiry:unauthorized-redirect",
+      "type": "step",
+      "name": "Unauthorized redirect",
+      "summary": "The axios 401 interceptor forces a redirect to login when any API call is unauthorized.",
+      "tags": [
+        "auth",
+        "http",
+        "interceptor"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/utils/apiClient.js"
+    },
+    {
+      "id": "step:browse-my-wallets:fetch-wallets",
+      "type": "step",
+      "name": "Fetch wallets",
+      "summary": "getWallets requests a paginated, sorted, scoped wallet list and returns rows plus the total count.",
+      "tags": [
+        "api-handler",
+        "wallets",
+        "pagination"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/api/wallets.js",
+      "lineRange": [
+        17,
+        54
+      ]
+    },
+    {
+      "id": "step:browse-my-wallets:format-rows",
+      "type": "step",
+      "name": "Format wallet rows",
+      "summary": "WalletsContext holds the wallet list and prepares formatted rows for the table.",
+      "tags": [
+        "state-management",
+        "wallets",
+        "formatting"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/store/WalletsContext.js",
+      "lineRange": [
+        7,
+        81
+      ]
+    },
+    {
+      "id": "step:browse-my-wallets:render-table",
+      "type": "step",
+      "name": "Render wallet table",
+      "summary": "MyWallets renders the paginated wallet table and hosts the create-wallet action.",
+      "tags": [
+        "component",
+        "table",
+        "wallets"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/MyWallets/MyWallets.js",
+      "lineRange": [
+        24,
+        137
+      ]
+    },
+    {
+      "id": "step:view-wallet-details:fetch-wallet",
+      "type": "step",
+      "name": "Fetch wallet by id",
+      "summary": "getWalletById retrieves and maps a single wallet record.",
+      "tags": [
+        "api-handler",
+        "wallets"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/wallets.js",
+      "lineRange": [
+        56,
+        69
+      ]
+    },
+    {
+      "id": "step:view-wallet-details:fetch-pending-transfers",
+      "type": "step",
+      "name": "Fetch pending transfers",
+      "summary": "getPendingTransfers loads the wallet's pending transfers for the detail view.",
+      "tags": [
+        "api-handler",
+        "transfers"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/wallets.js",
+      "lineRange": [
+        113,
+        124
+      ]
+    },
+    {
+      "id": "step:view-wallet-details:render-detail",
+      "type": "step",
+      "name": "Render wallet detail",
+      "summary": "Wallet page manages loading and error state and renders the header and info blocks.",
+      "tags": [
+        "component",
+        "wallets",
+        "detail"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/Wallet/Wallet.js",
+      "lineRange": [
+        20,
+        128
+      ]
+    },
+    {
+      "id": "step:create-managed-wallet:open-dialog",
+      "type": "step",
+      "name": "Open create dialog",
+      "summary": "CreateManagedWallet renders the trigger button and opens the creation dialog.",
+      "tags": [
+        "component",
+        "wallets",
+        "dialog"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/MyWallets/CreateManagedWallet/CreateManagedWallet.js",
+      "lineRange": [
+        18,
+        46
+      ]
+    },
+    {
+      "id": "step:create-managed-wallet:validate-name",
+      "type": "step",
+      "name": "Validate wallet name",
+      "summary": "The dialog validates the entered wallet name before submission.",
+      "tags": [
+        "validation",
+        "wallets"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/MyWallets/CreateManagedWallet/CreateManagedWallet.js",
+      "lineRange": [
+        48,
+        174
+      ]
+    },
+    {
+      "id": "step:create-managed-wallet:submit-create",
+      "type": "step",
+      "name": "Submit wallet creation",
+      "summary": "createWallet posts the new wallet name and returns the created wallet.",
+      "tags": [
+        "api-handler",
+        "wallets",
+        "mutation"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/wallets.js",
+      "lineRange": [
+        71,
+        88
+      ]
+    },
+    {
+      "id": "step:create-managed-wallet:show-feedback",
+      "type": "step",
+      "name": "Show result feedback",
+      "summary": "The dialog shows a success message or a duplicate-name error after the API responds.",
+      "tags": [
+        "ui",
+        "notification"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/MyWallets/CreateManagedWallet/CreateManagedWallet.js",
+      "lineRange": [
+        48,
+        174
+      ]
+    },
+    {
+      "id": "step:send-tokens:select-wallets",
+      "type": "step",
+      "name": "Select sender and receiver",
+      "summary": "SelectWallet searches and paginates wallets so the owner can pick sender and receiver.",
+      "tags": [
+        "component",
+        "wallets",
+        "search"
+      ],
+      "complexity": "complex",
+      "filePath": "src/pages/SendTokens/SendTokensForm/SelectWallet.js",
+      "lineRange": [
+        6,
+        294
+      ]
+    },
+    {
+      "id": "step:send-tokens:compute-available-tokens",
+      "type": "step",
+      "name": "Compute available tokens",
+      "summary": "TokenInfoBlock derives available tokens as in-wallet balance minus pending transfers.",
+      "tags": [
+        "component",
+        "tokens",
+        "calculation"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/SendTokens/TokenInfoBlock/TokenInfoBlock.js",
+      "lineRange": [
+        23,
+        77
+      ]
+    },
+    {
+      "id": "step:send-tokens:validate-amount",
+      "type": "step",
+      "name": "Validate token amount",
+      "summary": "The send form validates the requested token amount against the available balance.",
+      "tags": [
+        "validation",
+        "form",
+        "tokens"
+      ],
+      "complexity": "complex",
+      "filePath": "src/pages/SendTokens/SendTokensForm/SendTokensForm.js",
+      "lineRange": [
+        9,
+        313
+      ]
+    },
+    {
+      "id": "step:send-tokens:confirm-transfer",
+      "type": "step",
+      "name": "Confirm transfer",
+      "summary": "ConfirmDialog summarizes sender, receiver and amount and prompts the owner to confirm.",
+      "tags": [
+        "dialog",
+        "confirmation",
+        "tokens"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/SendTokens/SendTokensForm/confirmDialog/ConfirmDialog.js",
+      "lineRange": [
+        61,
+        94
+      ]
+    },
+    {
+      "id": "step:send-tokens:submit-transfer",
+      "type": "step",
+      "name": "Submit transfer",
+      "summary": "sendTokenHandlers posts the transfer to the trusted or untrusted endpoint with success and error handling.",
+      "tags": [
+        "api-handler",
+        "tokens",
+        "async"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/SendTokens/helpers/sendTokenHandlers.js",
+      "lineRange": [
+        5,
+        99
+      ]
+    },
+    {
+      "id": "step:send-tokens:refresh-balances",
+      "type": "step",
+      "name": "Refresh balances",
+      "summary": "SendTokens reloads wallet balances after a successful transfer.",
+      "tags": [
+        "state-management",
+        "wallets",
+        "refresh"
+      ],
+      "complexity": "complex",
+      "filePath": "src/pages/SendTokens/SendTokens.js",
+      "lineRange": [
+        31,
+        313
+      ]
+    },
+    {
+      "id": "step:manage-transfers:load-transfers",
+      "type": "step",
+      "name": "Load transfers",
+      "summary": "TransfersContext fetches transfers and pending transfers, formats rows, and paginates them.",
+      "tags": [
+        "state-management",
+        "transfers",
+        "data-fetching"
+      ],
+      "complexity": "complex",
+      "filePath": "src/store/TransfersContext.js",
+      "lineRange": [
+        12,
+        258
+      ]
+    },
+    {
+      "id": "step:manage-transfers:filter-transfers",
+      "type": "step",
+      "name": "Filter transfers",
+      "summary": "TableFilters filters transfers by status and by a date range that builds a query where-object.",
+      "tags": [
+        "filter",
+        "transfers",
+        "date"
+      ],
+      "complexity": "complex",
+      "filePath": "src/pages/MyTransfers/TableFilters.js",
+      "lineRange": [
+        38,
+        221
+      ]
+    },
+    {
+      "id": "step:manage-transfers:open-side-panel",
+      "type": "step",
+      "name": "Open transfer side panel",
+      "summary": "Selecting a row opens the side panel with the transfer's details and available actions.",
+      "tags": [
+        "component",
+        "transfers",
+        "panel"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/MyTransfers/TransferSidePanel.js",
+      "lineRange": [
+        25,
+        179
+      ]
+    },
+    {
+      "id": "step:manage-transfers:accept-decline-cancel",
+      "type": "step",
+      "name": "Accept, decline or cancel",
+      "summary": "Transfer API calls accept or decline a pending transfer, or cancel an outgoing one, based on ownership.",
+      "tags": [
+        "api-handler",
+        "transfers",
+        "mutation"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/api/transfers.js",
+      "lineRange": [
+        45,
+        100
+      ]
+    },
+    {
+      "id": "step:manage-transfers:refetch-list",
+      "type": "step",
+      "name": "Refetch transfers",
+      "summary": "After an action, the context refetches the transfers list and pending count.",
+      "tags": [
+        "state-management",
+        "transfers",
+        "refresh"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/store/TransfersContext.js",
+      "lineRange": [
+        12,
+        258
+      ]
+    },
+    {
+      "id": "step:request-trust-relationship:open-dialog",
+      "type": "step",
+      "name": "Open request dialog",
+      "summary": "CreateTrustRelationship opens the new relationship dialog.",
+      "tags": [
+        "component",
+        "trust-relationship",
+        "dialog"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/TrustRelationship/CreateTrustRelationship/CreateTrustRelationship.js",
+      "lineRange": [
+        33,
+        60
+      ]
+    },
+    {
+      "id": "step:request-trust-relationship:select-wallets-and-type",
+      "type": "step",
+      "name": "Select wallets and type",
+      "summary": "The dialog collects the source and target wallets and the relationship type.",
+      "tags": [
+        "form",
+        "trust-relationship"
+      ],
+      "complexity": "complex",
+      "filePath": "src/pages/TrustRelationship/CreateTrustRelationship/CreateTrustRelationship.js",
+      "lineRange": [
+        62,
+        279
+      ]
+    },
+    {
+      "id": "step:request-trust-relationship:submit-request",
+      "type": "step",
+      "name": "Submit relationship request",
+      "summary": "requestTrustRelationship posts a new trust relationship between the two wallets.",
+      "tags": [
+        "api-handler",
+        "trust-relationship",
+        "mutation"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/trust_relationships.js",
+      "lineRange": [
+        43,
+        64
+      ]
+    },
+    {
+      "id": "step:request-trust-relationship:show-feedback",
+      "type": "step",
+      "name": "Show result feedback",
+      "summary": "The dialog shows success or error feedback after the request completes.",
+      "tags": [
+        "ui",
+        "notification"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/TrustRelationship/CreateTrustRelationship/CreateTrustRelationship.js",
+      "lineRange": [
+        62,
+        279
+      ]
+    },
+    {
+      "id": "step:manage-trust-relationships:load-relationships",
+      "type": "step",
+      "name": "Load relationships",
+      "summary": "getTrustRelationships fetches filtered, paginated relationships plus the total count.",
+      "tags": [
+        "api-handler",
+        "trust-relationship",
+        "query"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/trust_relationships.js",
+      "lineRange": [
+        5,
+        29
+      ]
+    },
+    {
+      "id": "step:manage-trust-relationships:filter-relationships",
+      "type": "step",
+      "name": "Filter relationships",
+      "summary": "TrustRelationshipsFilters narrows the list by state, request type, relationship type and date range.",
+      "tags": [
+        "filter",
+        "trust-relationship"
+      ],
+      "complexity": "complex",
+      "filePath": "src/pages/TrustRelationship/TrustRelationshipsFilters.js",
+      "lineRange": [
+        41,
+        308
+      ]
+    },
+    {
+      "id": "step:manage-trust-relationships:open-side-panel",
+      "type": "step",
+      "name": "Open relationship side panel",
+      "summary": "Selecting a row opens the side panel with relationship details and actions.",
+      "tags": [
+        "component",
+        "trust-relationship",
+        "drawer"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/TrustRelationship/trustRelationshipSidePanel.js",
+      "lineRange": [
+        25,
+        175
+      ]
+    },
+    {
+      "id": "step:manage-trust-relationships:accept-decline-delete",
+      "type": "step",
+      "name": "Accept, decline or delete",
+      "summary": "Trust relationship API calls accept, decline or delete a relationship by id.",
+      "tags": [
+        "api-handler",
+        "trust-relationship",
+        "mutation"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/trust_relationships.js",
+      "lineRange": [
+        66,
+        131
+      ]
+    },
+    {
+      "id": "step:manage-trust-relationships:refetch-list",
+      "type": "step",
+      "name": "Refetch relationships",
+      "summary": "TrustRelationshipsContext reloads the relationship list after an action.",
+      "tags": [
+        "state-management",
+        "trust-relationship",
+        "refresh"
+      ],
+      "complexity": "complex",
+      "filePath": "src/store/TrustRelationshipsContext.js",
+      "lineRange": [
+        15,
+        320
+      ]
+    },
+    {
+      "id": "step:customize-wallet-appearance:edit-fields",
+      "type": "step",
+      "name": "Edit profile fields",
+      "summary": "Owner edits the display name and about text on the customize page.",
+      "tags": [
+        "form",
+        "customization"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/CustomizeWallet/CustomizeWallet.js",
+      "lineRange": [
+        20,
+        466
+      ]
+    },
+    {
+      "id": "step:customize-wallet-appearance:upload-images",
+      "type": "step",
+      "name": "Upload logo and hero image",
+      "summary": "Owner selects logo and hero images through the hidden file input.",
+      "tags": [
+        "media-upload",
+        "customization"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/CustomizeWallet/CustomizeWallet.js",
+      "lineRange": [
+        20,
+        466
+      ]
+    },
+    {
+      "id": "step:customize-wallet-appearance:validate-images",
+      "type": "step",
+      "name": "Validate images",
+      "summary": "The page validates image type and size before allowing a save.",
+      "tags": [
+        "validation",
+        "media-upload"
+      ],
+      "complexity": "moderate",
+      "filePath": "src/pages/CustomizeWallet/CustomizeWallet.js",
+      "lineRange": [
+        20,
+        466
+      ]
+    },
+    {
+      "id": "step:customize-wallet-appearance:save-profile",
+      "type": "step",
+      "name": "Save profile",
+      "summary": "updateWallet patches the wallet with multipart form data to persist the profile.",
+      "tags": [
+        "api-handler",
+        "wallets",
+        "mutation"
+      ],
+      "complexity": "simple",
+      "filePath": "src/api/wallets.js",
+      "lineRange": [
+        90,
+        111
+      ]
+    },
+    {
+      "id": "step:customize-wallet-appearance:show-feedback",
+      "type": "step",
+      "name": "Show result feedback",
+      "summary": "The page shows a timed success or error message after the save.",
+      "tags": [
+        "ui",
+        "notification"
+      ],
+      "complexity": "simple",
+      "filePath": "src/pages/CustomizeWallet/CustomizeWallet.js",
+      "lineRange": [
+        20,
+        466
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:authentication-access",
+      "target": "flow:user-login",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:authentication-access",
+      "target": "flow:logout-session-expiry",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:wallet-management",
+      "target": "flow:browse-my-wallets",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:wallet-management",
+      "target": "flow:view-wallet-details",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:wallet-management",
+      "target": "flow:create-managed-wallet",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:token-transfers",
+      "target": "flow:send-tokens",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:token-transfers",
+      "target": "flow:manage-transfers",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:trust-relationships",
+      "target": "flow:request-trust-relationship",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:trust-relationships",
+      "target": "flow:manage-trust-relationships",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:wallet-customization",
+      "target": "flow:customize-wallet-appearance",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:user-login",
+      "target": "step:user-login:enter-credentials",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:user-login",
+      "target": "step:user-login:validate-fields",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:user-login",
+      "target": "step:user-login:submit-credentials",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:user-login",
+      "target": "step:user-login:persist-token",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:user-login",
+      "target": "step:user-login:enter-protected-routes",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:logout-session-expiry",
+      "target": "step:logout-session-expiry:trigger-logout",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:logout-session-expiry",
+      "target": "step:logout-session-expiry:clear-session",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:logout-session-expiry",
+      "target": "step:logout-session-expiry:unauthorized-redirect",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:browse-my-wallets",
+      "target": "step:browse-my-wallets:fetch-wallets",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:browse-my-wallets",
+      "target": "step:browse-my-wallets:format-rows",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:browse-my-wallets",
+      "target": "step:browse-my-wallets:render-table",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:view-wallet-details",
+      "target": "step:view-wallet-details:fetch-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:view-wallet-details",
+      "target": "step:view-wallet-details:fetch-pending-transfers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:view-wallet-details",
+      "target": "step:view-wallet-details:render-detail",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:create-managed-wallet",
+      "target": "step:create-managed-wallet:open-dialog",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:create-managed-wallet",
+      "target": "step:create-managed-wallet:validate-name",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:create-managed-wallet",
+      "target": "step:create-managed-wallet:submit-create",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:create-managed-wallet",
+      "target": "step:create-managed-wallet:show-feedback",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:send-tokens",
+      "target": "step:send-tokens:select-wallets",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:send-tokens",
+      "target": "step:send-tokens:compute-available-tokens",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:send-tokens",
+      "target": "step:send-tokens:validate-amount",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:send-tokens",
+      "target": "step:send-tokens:confirm-transfer",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:send-tokens",
+      "target": "step:send-tokens:submit-transfer",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:send-tokens",
+      "target": "step:send-tokens:refresh-balances",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:manage-transfers",
+      "target": "step:manage-transfers:load-transfers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:manage-transfers",
+      "target": "step:manage-transfers:filter-transfers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:manage-transfers",
+      "target": "step:manage-transfers:open-side-panel",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:manage-transfers",
+      "target": "step:manage-transfers:accept-decline-cancel",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:manage-transfers",
+      "target": "step:manage-transfers:refetch-list",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:request-trust-relationship",
+      "target": "step:request-trust-relationship:open-dialog",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:request-trust-relationship",
+      "target": "step:request-trust-relationship:select-wallets-and-type",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:request-trust-relationship",
+      "target": "step:request-trust-relationship:submit-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:request-trust-relationship",
+      "target": "step:request-trust-relationship:show-feedback",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:manage-trust-relationships",
+      "target": "step:manage-trust-relationships:load-relationships",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:manage-trust-relationships",
+      "target": "step:manage-trust-relationships:filter-relationships",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:manage-trust-relationships",
+      "target": "step:manage-trust-relationships:open-side-panel",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:manage-trust-relationships",
+      "target": "step:manage-trust-relationships:accept-decline-delete",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:manage-trust-relationships",
+      "target": "step:manage-trust-relationships:refetch-list",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:customize-wallet-appearance",
+      "target": "step:customize-wallet-appearance:edit-fields",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:customize-wallet-appearance",
+      "target": "step:customize-wallet-appearance:upload-images",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:customize-wallet-appearance",
+      "target": "step:customize-wallet-appearance:validate-images",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:customize-wallet-appearance",
+      "target": "step:customize-wallet-appearance:save-profile",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:customize-wallet-appearance",
+      "target": "step:customize-wallet-appearance:show-feedback",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:authentication-access",
+      "target": "domain:wallet-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Login supplies the auth token and API key that every wallet API call sends.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:token-transfers",
+      "target": "domain:wallet-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Sending tokens reads wallet balances and can create a wallet inline during the flow.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:token-transfers",
+      "target": "domain:trust-relationships",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The send flow branches on trusted versus untrusted status defined by trust relationships.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:wallet-customization",
+      "target": "domain:wallet-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Customization updates the wallet entity owned by wallet management via updateWallet.",
+      "weight": 0.5
+    }
+  ]
+}

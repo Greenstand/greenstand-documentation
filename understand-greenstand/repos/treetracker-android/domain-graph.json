@@ -1,0 +1,2197 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-android",
+    "languages": [
+      "kotlin",
+      "xml",
+      "gradle",
+      "toml",
+      "yaml",
+      "json",
+      "properties",
+      "shell",
+      "batch",
+      "markdown"
+    ],
+    "frameworks": [
+      "Jetpack Compose",
+      "Koin",
+      "Room",
+      "Retrofit",
+      "OkHttp",
+      "Kotlin Coroutines",
+      "Kotlinx Serialization",
+      "Firebase",
+      "AWS S3 SDK",
+      "Coil",
+      "CameraX",
+      "MapLibre"
+    ],
+    "description": "Grower-facing Android app for capturing trees as geotagged photos, managing grower accounts and wallets, and syncing captures to the Treetracker backend.",
+    "analyzedAt": "2026-09-03T05:17:57Z",
+    "gitCommitHash": "949d9624a8782ea2805d67e1ff7dfae7ef97e4cd"
+  },
+  "nodes": [
+    {
+      "id": "domain:tree-capture",
+      "type": "domain",
+      "name": "Tree Capture",
+      "summary": "Core grower-facing flow to capture a tree as a geotagged photo. Manages camera, GPS convergence, image review with an optional note, and persistence of the tree record for later sync.",
+      "tags": [
+        "capture",
+        "camera",
+        "gps",
+        "core"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Tree",
+          "TreeCapture",
+          "Session",
+          "Location",
+          "TreeAttribute"
+        ],
+        "businessRules": [
+          "GPS accuracy must converge below a configured threshold before capture",
+          "Every tree binds to an active capture session, user and wallet",
+          "A captured image needs review and approval before the tree persists"
+        ],
+        "crossDomainInteractions": [
+          "Uses the active grower from Grower Onboarding",
+          "Uses the selected wallet and organization from Organization & Wallet",
+          "Feeds captured trees into Data Sync & Upload"
+        ]
+      }
+    },
+    {
+      "id": "domain:grower-onboarding",
+      "type": "domain",
+      "name": "Grower Onboarding & Identity",
+      "summary": "Handles grower (planter) sign-up, selection of the active grower, and profile management. Collects name and email/phone credentials and registers the grower with the backend.",
+      "tags": [
+        "signup",
+        "identity",
+        "user",
+        "onboarding"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "User",
+          "PlanterInfo",
+          "PlanterCheckIn",
+          "Wallet"
+        ],
+        "businessRules": [
+          "A grower needs a first and last name plus a valid email or phone credential",
+          "Credentials pass validation before registration",
+          "A user record tracks upload state for backend registration"
+        ],
+        "crossDomainInteractions": [
+          "Provides the active grower to Tree Capture",
+          "Registration payloads flow into Data Sync & Upload",
+          "Messaging targets a selected grower/wallet"
+        ]
+      }
+    },
+    {
+      "id": "domain:organization-wallet",
+      "type": "domain",
+      "name": "Organization & Wallet Selection",
+      "summary": "Manages the organization a grower belongs to and the destination wallet that receives captured trees. Supports adding new organizations and wallets during onboarding and capture setup.",
+      "tags": [
+        "organization",
+        "wallet",
+        "onboarding",
+        "capture-setup"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Organization",
+          "Wallet",
+          "User",
+          "CaptureSetup"
+        ],
+        "businessRules": [
+          "Captured trees route to a chosen destination wallet",
+          "An organization identifier configures the capture flow",
+          "A new wallet or org can be added on demand"
+        ],
+        "crossDomainInteractions": [
+          "Supplies capture setup (wallet/org) to Tree Capture",
+          "Org and wallet config sync via Data Sync & Upload"
+        ]
+      }
+    },
+    {
+      "id": "domain:data-sync",
+      "type": "domain",
+      "name": "Data Sync & Upload",
+      "summary": "Background orchestration that uploads growers, sessions, trees, location tracks, device config, and messages to the Treetracker API and image/data bundles to object storage. Runs as a WorkManager worker with progress notifications.",
+      "tags": [
+        "sync",
+        "upload",
+        "background",
+        "api",
+        "storage"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "UploadBundle",
+          "NewTreeRequest",
+          "SessionRequest",
+          "TracksRequest",
+          "DeviceConfigRequest",
+          "RegistrationRequest"
+        ],
+        "businessRules": [
+          "Sync runs only when internet is available",
+          "Sync steps run in a fixed order and propagate failures",
+          "Uploaded records are marked to avoid re-upload",
+          "Images upload to object storage and are referenced by URL"
+        ],
+        "crossDomainInteractions": [
+          "Consumes captured trees from Tree Capture",
+          "Uploads grower registrations from Grower Onboarding",
+          "Uploads message bundles from Grower Messaging",
+          "Reports progress to the Dashboard"
+        ]
+      }
+    },
+    {
+      "id": "domain:messaging",
+      "type": "domain",
+      "name": "Grower Messaging",
+      "summary": "Two-way messaging between growers and the platform: direct chat, announcements, and surveys. Syncs paginated messages from the API, persists them locally, and uploads unsent messages and survey responses.",
+      "tags": [
+        "messaging",
+        "chat",
+        "survey",
+        "announcement"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Message",
+          "Survey",
+          "Question",
+          "MessageEntity",
+          "Wallet"
+        ],
+        "businessRules": [
+          "Messages sync per wallet with API pagination",
+          "A survey collects answers before submitting a response",
+          "Unsent messages upload in windowed bundles"
+        ],
+        "crossDomainInteractions": [
+          "Messaging targets a grower/wallet from Grower Onboarding",
+          "Message bundles upload through Data Sync & Upload / object storage"
+        ]
+      }
+    },
+    {
+      "id": "domain:dashboard-monitoring",
+      "type": "domain",
+      "name": "Dashboard, Map & App Settings",
+      "summary": "Grower-facing overview surfaces: a dashboard of sync stats and pending uploads, a map of captured trees, plus app settings and language selection. Provides navigation entry points into the main flows.",
+      "tags": [
+        "dashboard",
+        "map",
+        "settings",
+        "navigation"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "TreeMapMarker",
+          "SyncProgress",
+          "Settings",
+          "Language"
+        ],
+        "businessRules": [
+          "The dashboard shows the count of trees still pending upload",
+          "The map renders only captured tree markers with detail cards",
+          "Settings expose feature toggles and logout"
+        ],
+        "crossDomainInteractions": [
+          "Displays sync progress and pending counts from Data Sync & Upload",
+          "Renders captured trees from Tree Capture"
+        ]
+      }
+    },
+    {
+      "id": "flow:capture-tree",
+      "type": "flow",
+      "name": "Capture a Tree",
+      "summary": "Guides the grower through capturing a geotagged tree photo, reviewing it with a note, and saving the tree record.",
+      "tags": [
+        "capture",
+        "camera",
+        "gps"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "TreeCaptureScreen (camera capture)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:capture-tree:request-permissions",
+      "type": "step",
+      "name": "Request Permissions",
+      "summary": "Request camera and location permissions before capture can begin.",
+      "tags": [
+        "permissions",
+        "camera",
+        "gps"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/permissions",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:capture-tree:converge-gps",
+      "type": "step",
+      "name": "Converge GPS",
+      "summary": "Wait for GPS accuracy to converge below the configured threshold and gate capture.",
+      "tags": [
+        "gps",
+        "location"
+      ],
+      "complexity": "complex",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/capture/TreeCaptureViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:capture-tree:capture-photo",
+      "type": "step",
+      "name": "Capture Photo",
+      "summary": "Take the tree photo through the CameraX-backed capture screen.",
+      "tags": [
+        "camera",
+        "capture"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/capture/TreeCaptureScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:capture-tree:review-image",
+      "type": "step",
+      "name": "Review Image",
+      "summary": "Review the captured image and approve or reject it.",
+      "tags": [
+        "review",
+        "ui"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/capture/TreeImageReviewScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:capture-tree:add-tree-note",
+      "type": "step",
+      "name": "Add Tree Note",
+      "summary": "Attach an optional note to the captured tree during review.",
+      "tags": [
+        "note",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/capture/TreeImageReviewViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:capture-tree:persist-tree",
+      "type": "step",
+      "name": "Persist Tree",
+      "summary": "Convert the tree model to an entity, persist it, and report capture analytics.",
+      "tags": [
+        "persistence",
+        "room"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/CreateTreeUseCase.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:record-session-note",
+      "type": "flow",
+      "name": "Record Session Note",
+      "summary": "Captures an optional session-level note applied across trees captured in the current session.",
+      "tags": [
+        "session",
+        "note"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "SessionNoteScreen",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:record-session-note:open-session-note",
+      "type": "step",
+      "name": "Open Session Note",
+      "summary": "Open the session note entry screen during a capture session.",
+      "tags": [
+        "session",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/sessionnote/SessionNoteScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:record-session-note:enter-note",
+      "type": "step",
+      "name": "Enter Note",
+      "summary": "Enter an optional note describing the session.",
+      "tags": [
+        "note",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/sessionnote/SessionNoteViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:record-session-note:persist-session",
+      "type": "step",
+      "name": "Persist Session",
+      "summary": "Persist the session note and forward navigation.",
+      "tags": [
+        "persistence",
+        "room"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/database/SessionDAO.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:grower-signup",
+      "type": "flow",
+      "name": "Sign Up a Grower",
+      "summary": "Multi-step signup that collects a grower name and email/phone credential, validates them, and registers the grower.",
+      "tags": [
+        "signup",
+        "validation"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "SignUpScreen",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:grower-signup:enter-name",
+      "type": "step",
+      "name": "Enter Name",
+      "summary": "Collect the grower first and last name.",
+      "tags": [
+        "signup",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/signup/NameEntryView.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:grower-signup:validate-name",
+      "type": "step",
+      "name": "Validate Name",
+      "summary": "Validate the entered name fields.",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/signup/SignupViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:grower-signup:enter-credential",
+      "type": "step",
+      "name": "Enter Credential",
+      "summary": "Collect an email or phone credential with a privacy dialog.",
+      "tags": [
+        "signup",
+        "ui"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/signup/CredentialEntryView.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:grower-signup:validate-credential",
+      "type": "step",
+      "name": "Validate Credential",
+      "summary": "Validate the email or phone credential format.",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/signup/SignupViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:grower-signup:register-grower",
+      "type": "step",
+      "name": "Register Grower",
+      "summary": "Persist the new user and queue the registration for upload.",
+      "tags": [
+        "persistence",
+        "registration"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/database/UserDAO.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:select-grower",
+      "type": "flow",
+      "name": "Select Active Grower",
+      "summary": "Lists existing growers and selects the active one, with edit and delete support, before proceeding to capture.",
+      "tags": [
+        "user",
+        "selection"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "UserSelectScreen",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:select-grower:list-growers",
+      "type": "step",
+      "name": "List Growers",
+      "summary": "List existing users in a selectable grid.",
+      "tags": [
+        "user",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/userselect/UserSelect.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:select-grower:select-grower",
+      "type": "step",
+      "name": "Select Grower",
+      "summary": "Select a grower as the active planter.",
+      "tags": [
+        "user",
+        "selection"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/userselect/UserSelectViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:select-grower:edit-or-delete",
+      "type": "step",
+      "name": "Edit or Delete",
+      "summary": "Enter edit mode to update or remove a grower.",
+      "tags": [
+        "user",
+        "edit"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/userselect/UserSelectViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:select-grower:forward-to-capture",
+      "type": "step",
+      "name": "Forward to Capture",
+      "summary": "Drive forward navigation into the capture flow on selection.",
+      "tags": [
+        "navigation"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/userselect/UserSelectScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:manage-profile",
+      "type": "flow",
+      "name": "Manage Grower Profile",
+      "summary": "Displays and edits grower profile fields with validation and supports profile deletion.",
+      "tags": [
+        "profile",
+        "user"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "ProfileScreen",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:manage-profile:load-profile",
+      "type": "step",
+      "name": "Load Profile",
+      "summary": "Load the selected grower profile fields.",
+      "tags": [
+        "profile",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/profile/ProfileScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:manage-profile:edit-fields",
+      "type": "step",
+      "name": "Edit Fields",
+      "summary": "Edit profile fields with name validation.",
+      "tags": [
+        "profile",
+        "validation"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/profile/ProfileScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:manage-profile:delete-profile",
+      "type": "step",
+      "name": "Delete Profile",
+      "summary": "Confirm and perform deletion of the grower profile.",
+      "tags": [
+        "profile",
+        "delete"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/profile/DeleteProfileScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:select-organization",
+      "type": "flow",
+      "name": "Select Organization",
+      "summary": "Selects the organization a grower belongs to during onboarding, or adds a new one by identifier.",
+      "tags": [
+        "organization",
+        "onboarding"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "OrgPickerScreen",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:select-organization:list-orgs",
+      "type": "step",
+      "name": "List Organizations",
+      "summary": "List available organizations for selection.",
+      "tags": [
+        "organization",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/orgpicker/OrgPickerScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:select-organization:add-org",
+      "type": "step",
+      "name": "Add Organization",
+      "summary": "Add an organization by entering its identifier via API lookup.",
+      "tags": [
+        "organization",
+        "api"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/orgpicker/AddOrgViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:select-organization:persist-org",
+      "type": "step",
+      "name": "Persist Organization",
+      "summary": "Persist the selected organization and its capture-flow config.",
+      "tags": [
+        "organization",
+        "persistence"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/database/OrganizationDAO.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:select-wallet",
+      "type": "flow",
+      "name": "Select Destination Wallet",
+      "summary": "Chooses the destination wallet that receives captured trees, or adds a new wallet, then persists the capture setup.",
+      "tags": [
+        "wallet",
+        "capture-setup"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "WalletSelectScreen",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:select-wallet:list-wallets",
+      "type": "step",
+      "name": "List Wallets",
+      "summary": "List wallets with user images for selection.",
+      "tags": [
+        "wallet",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/walletselect/WalletSelectScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:select-wallet:select-wallet",
+      "type": "step",
+      "name": "Select Wallet",
+      "summary": "Select the destination wallet for captures.",
+      "tags": [
+        "wallet",
+        "selection"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/walletselect/WalletSelectViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:select-wallet:add-wallet",
+      "type": "step",
+      "name": "Add Wallet",
+      "summary": "Enter a new wallet name and confirm.",
+      "tags": [
+        "wallet",
+        "ui"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/walletselect/AddWalletScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:select-wallet:persist-capture-setup",
+      "type": "step",
+      "name": "Persist Capture Setup",
+      "summary": "Persist the chosen wallet into the capture setup and forward navigation.",
+      "tags": [
+        "capture-setup",
+        "persistence"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/walletselect/AddWalletViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:background-sync",
+      "type": "flow",
+      "name": "Background Data Sync",
+      "summary": "WorkManager worker that orchestrates uploading growers, sessions, trees, device config, and messages with a foreground progress notification.",
+      "tags": [
+        "sync",
+        "background",
+        "worker"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "TreeSyncWorker (WorkManager)",
+        "entryType": "event"
+      }
+    },
+    {
+      "id": "step:background-sync:schedule-worker",
+      "type": "step",
+      "name": "Schedule Worker",
+      "summary": "Enqueue the sync coroutine worker to run in the background.",
+      "tags": [
+        "worker",
+        "background"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/background/TreeSyncWorker.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:background-sync:check-internet",
+      "type": "step",
+      "name": "Check Internet",
+      "summary": "Confirm internet availability before starting sync.",
+      "tags": [
+        "network"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/CheckForInternetUseCase.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:background-sync:upload-planters-sessions",
+      "type": "step",
+      "name": "Upload Planters & Sessions",
+      "summary": "Upload pending planter registrations and capture sessions.",
+      "tags": [
+        "upload",
+        "registration"
+      ],
+      "complexity": "complex",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/SyncDataUseCase.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:background-sync:upload-trees",
+      "type": "step",
+      "name": "Upload Trees",
+      "summary": "Upload pending captured trees to the backend.",
+      "tags": [
+        "upload",
+        "trees"
+      ],
+      "complexity": "complex",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/SyncDataUseCase.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:background-sync:upload-device-config-messages",
+      "type": "step",
+      "name": "Upload Config & Messages",
+      "summary": "Upload device config and message bundles as part of sync.",
+      "tags": [
+        "upload",
+        "config"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/SyncDataUseCase.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:background-sync:report-progress",
+      "type": "step",
+      "name": "Report Progress",
+      "summary": "Update the foreground notification and progress state.",
+      "tags": [
+        "notification",
+        "progress"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/background/SyncNotificationManager.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:build-tree-request",
+      "type": "flow",
+      "name": "Build Tree Upload Request",
+      "summary": "Builds a NewTreeRequest payload from a stored tree capture plus device metadata for upload.",
+      "tags": [
+        "upload",
+        "dto"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "CreateTreeRequestUseCase",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:build-tree-request:load-tree-capture",
+      "type": "step",
+      "name": "Load Tree Capture",
+      "summary": "Read the stored tree capture record from the DAO.",
+      "tags": [
+        "room",
+        "read"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/database/TreeDAO.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:build-tree-request:assemble-payload",
+      "type": "step",
+      "name": "Assemble Payload",
+      "summary": "Assemble the NewTreeRequest payload from capture data.",
+      "tags": [
+        "dto",
+        "upload"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/CreateTreeRequestUseCase.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:build-tree-request:attach-device-metadata",
+      "type": "step",
+      "name": "Attach Device Metadata",
+      "summary": "Attach device and app version metadata to the request.",
+      "tags": [
+        "dto",
+        "metadata"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/api/NewTreeRequest.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:upload-location-tracks",
+      "type": "flow",
+      "name": "Upload Location Tracks",
+      "summary": "Groups pending GPS location data by session into TracksRequests and uploads them, then marks records as uploaded.",
+      "tags": [
+        "upload",
+        "gps",
+        "tracks"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "UploadLocationDataUseCase",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:upload-location-tracks:group-locations",
+      "type": "step",
+      "name": "Group Locations",
+      "summary": "Group pending location records by capture session.",
+      "tags": [
+        "gps",
+        "grouping"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/UploadLocationDataUseCase.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:upload-location-tracks:build-tracks-request",
+      "type": "step",
+      "name": "Build Tracks Request",
+      "summary": "Model session GPS points into a TracksRequest payload.",
+      "tags": [
+        "dto",
+        "gps"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/api/TracksRequest.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:upload-location-tracks:upload-and-mark",
+      "type": "step",
+      "name": "Upload and Mark",
+      "summary": "Upload the tracks and mark location records uploaded.",
+      "tags": [
+        "upload",
+        "room"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/database/LocationDAO.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:upload-images",
+      "type": "flow",
+      "name": "Upload Images to Object Storage",
+      "summary": "Uploads a single image file to DigitalOcean Spaces via the AWS S3 SDK and returns its public URL.",
+      "tags": [
+        "upload",
+        "storage",
+        "s3"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "UploadImageUseCase",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:upload-images:read-image-file",
+      "type": "step",
+      "name": "Read Image File",
+      "summary": "Read the captured image file to upload.",
+      "tags": [
+        "file",
+        "read"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/UploadImageUseCase.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:upload-images:upload-to-s3",
+      "type": "step",
+      "name": "Upload to Object Storage",
+      "summary": "Upload the image to object storage via the S3 client.",
+      "tags": [
+        "s3",
+        "upload"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/api/ObjectStorageClient.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:upload-images:return-public-url",
+      "type": "step",
+      "name": "Return Public URL",
+      "summary": "Return the public URL referencing the uploaded image.",
+      "tags": [
+        "url",
+        "storage"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/UploadImageUseCase.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:sync-messages",
+      "type": "flow",
+      "name": "Sync Messages",
+      "summary": "Fetches paginated messages from the API, persists them locally, uploads unsent messages, and exposes the message list.",
+      "tags": [
+        "messaging",
+        "sync",
+        "api"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "MessagesApiService (GET messages)",
+        "entryType": "event"
+      }
+    },
+    {
+      "id": "step:sync-messages:fetch-messages",
+      "type": "step",
+      "name": "Fetch Paginated Messages",
+      "summary": "Fetch messages for a wallet using the paginated API endpoint.",
+      "tags": [
+        "api",
+        "pagination"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/MessagesApiService.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:sync-messages:persist-messages",
+      "type": "step",
+      "name": "Persist Messages",
+      "summary": "Persist fetched messages, surveys, and questions to Room.",
+      "tags": [
+        "room",
+        "persistence"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/MessagesDAO.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:sync-messages:upload-unsent",
+      "type": "step",
+      "name": "Upload Unsent Messages",
+      "summary": "Upload unsent local messages in windowed bundles.",
+      "tags": [
+        "upload",
+        "storage"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/MessageUploader.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:sync-messages:expose-list",
+      "type": "step",
+      "name": "Expose Message List",
+      "summary": "Expose the persisted message list to the UI.",
+      "tags": [
+        "repository",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/MessagesRepo.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:send-chat-message",
+      "type": "flow",
+      "name": "Send Chat Message",
+      "summary": "Composes a direct message, tracks the draft, and persists it for upload in the conversation thread.",
+      "tags": [
+        "messaging",
+        "chat"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "ChatScreen",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:send-chat-message:compose-message",
+      "type": "step",
+      "name": "Compose Message",
+      "summary": "Compose a direct message in the chat thread.",
+      "tags": [
+        "chat",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/ChatScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:send-chat-message:save-draft",
+      "type": "step",
+      "name": "Track Draft",
+      "summary": "Track the draft text in the chat view model.",
+      "tags": [
+        "chat",
+        "state"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/ChatViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:send-chat-message:persist-queue",
+      "type": "step",
+      "name": "Persist and Queue",
+      "summary": "Save the message locally and queue it for upload.",
+      "tags": [
+        "room",
+        "upload"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/MessageEntity.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:complete-survey",
+      "type": "flow",
+      "name": "Complete Survey",
+      "summary": "Presents survey questions, navigates between them, collects answers, and submits the survey response.",
+      "tags": [
+        "messaging",
+        "survey"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "SurveyScreen",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:complete-survey:load-survey",
+      "type": "step",
+      "name": "Load Survey",
+      "summary": "Load the survey questions and prompts.",
+      "tags": [
+        "survey",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/SurveyViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:complete-survey:navigate-questions",
+      "type": "step",
+      "name": "Navigate Questions",
+      "summary": "Navigate forward and back through survey questions.",
+      "tags": [
+        "survey",
+        "navigation"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/SurveyScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:complete-survey:collect-answers",
+      "type": "step",
+      "name": "Collect Answers",
+      "summary": "Collect the selected answers for each question.",
+      "tags": [
+        "survey",
+        "state"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/SurveyViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:complete-survey:submit-response",
+      "type": "step",
+      "name": "Submit Response",
+      "summary": "Persist and queue the survey response for upload.",
+      "tags": [
+        "survey",
+        "upload"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/MessageRequest.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:view-dashboard",
+      "type": "flow",
+      "name": "View Dashboard",
+      "summary": "Shows sync stats, pending upload counts, and sync progress, with navigation entry points to main flows.",
+      "tags": [
+        "dashboard",
+        "sync",
+        "navigation"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "DashboardScreen",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:view-dashboard:compute-pending",
+      "type": "step",
+      "name": "Compute Trees To Sync",
+      "summary": "Compute and cache the count of trees pending upload.",
+      "tags": [
+        "dashboard",
+        "count"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/dashboard/TreesToSyncHelper.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:view-dashboard:observe-progress",
+      "type": "step",
+      "name": "Observe Sync Progress",
+      "summary": "Observe background sync progress and update state.",
+      "tags": [
+        "dashboard",
+        "progress"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/dashboard/DashboardViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:view-dashboard:navigate-features",
+      "type": "step",
+      "name": "Navigate Features",
+      "summary": "Provide navigation entry points into capture and other flows.",
+      "tags": [
+        "navigation",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/dashboard/DashboardScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:view-tree-map",
+      "type": "flow",
+      "name": "View Tree Map",
+      "summary": "Renders captured tree markers on a MapLibre map with a carousel of tree detail cards.",
+      "tags": [
+        "map",
+        "visualization"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "MapScreen",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:view-tree-map:load-markers",
+      "type": "step",
+      "name": "Load Tree Markers",
+      "summary": "Load captured tree markers and step points from the database.",
+      "tags": [
+        "map",
+        "read"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/map/MapViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:view-tree-map:render-map",
+      "type": "step",
+      "name": "Render Map",
+      "summary": "Render the markers and step points on the MapLibre view.",
+      "tags": [
+        "map",
+        "ui"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/map/LibreMap.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:view-tree-map:select-marker",
+      "type": "step",
+      "name": "Select Marker Detail",
+      "summary": "Select a marker to show the tree detail card.",
+      "tags": [
+        "map",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/map/MapScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:manage-settings",
+      "type": "flow",
+      "name": "Manage Settings",
+      "summary": "Lists app options, toggles feature flags and power-user mode, and handles logout.",
+      "tags": [
+        "settings",
+        "preferences"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "SettingsScreen",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:manage-settings:list-options",
+      "type": "step",
+      "name": "List Options",
+      "summary": "List settings options including privacy policy and toggles.",
+      "tags": [
+        "settings",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/settings/SettingsScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:manage-settings:toggle-features",
+      "type": "step",
+      "name": "Toggle Features",
+      "summary": "Toggle power-user mode and feature flags.",
+      "tags": [
+        "settings",
+        "feature-flag"
+      ],
+      "complexity": "moderate",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/settings/SettingsViewmodel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:manage-settings:logout",
+      "type": "step",
+      "name": "Logout",
+      "summary": "Log the grower out from the settings screen.",
+      "tags": [
+        "settings",
+        "auth"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/settings/SettingsViewmodel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "flow:pick-language",
+      "type": "flow",
+      "name": "Pick App Language",
+      "summary": "Lets the grower pick and apply the app language from a selectable list.",
+      "tags": [
+        "language",
+        "preferences"
+      ],
+      "complexity": "simple",
+      "domainMeta": {
+        "entryPoint": "LanguageSelectScreen",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:pick-language:list-languages",
+      "type": "step",
+      "name": "List Languages",
+      "summary": "Show the selectable list of app languages.",
+      "tags": [
+        "language",
+        "ui"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/languagepicker/LanguageSelectScreen.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "step:pick-language:apply-language",
+      "type": "step",
+      "name": "Apply Language",
+      "summary": "Confirm and apply the selected app language.",
+      "tags": [
+        "language",
+        "preferences"
+      ],
+      "complexity": "simple",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/languagepicker/LanguagePickerViewModel.kt",
+      "lineRange": [
+        0,
+        0
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:tree-capture",
+      "target": "flow:capture-tree",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:capture-tree",
+      "target": "step:capture-tree:request-permissions",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.17
+    },
+    {
+      "source": "flow:capture-tree",
+      "target": "step:capture-tree:converge-gps",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:capture-tree",
+      "target": "step:capture-tree:capture-photo",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:capture-tree",
+      "target": "step:capture-tree:review-image",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:capture-tree",
+      "target": "step:capture-tree:add-tree-note",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.83
+    },
+    {
+      "source": "flow:capture-tree",
+      "target": "step:capture-tree:persist-tree",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:tree-capture",
+      "target": "flow:record-session-note",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:record-session-note",
+      "target": "step:record-session-note:open-session-note",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:record-session-note",
+      "target": "step:record-session-note:enter-note",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:record-session-note",
+      "target": "step:record-session-note:persist-session",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:grower-onboarding",
+      "target": "flow:grower-signup",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:grower-signup",
+      "target": "step:grower-signup:enter-name",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:grower-signup",
+      "target": "step:grower-signup:validate-name",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:grower-signup",
+      "target": "step:grower-signup:enter-credential",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:grower-signup",
+      "target": "step:grower-signup:validate-credential",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:grower-signup",
+      "target": "step:grower-signup:register-grower",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:grower-onboarding",
+      "target": "flow:select-grower",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:select-grower",
+      "target": "step:select-grower:list-growers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.25
+    },
+    {
+      "source": "flow:select-grower",
+      "target": "step:select-grower:select-grower",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:select-grower",
+      "target": "step:select-grower:edit-or-delete",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.75
+    },
+    {
+      "source": "flow:select-grower",
+      "target": "step:select-grower:forward-to-capture",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:grower-onboarding",
+      "target": "flow:manage-profile",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:manage-profile",
+      "target": "step:manage-profile:load-profile",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:manage-profile",
+      "target": "step:manage-profile:edit-fields",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:manage-profile",
+      "target": "step:manage-profile:delete-profile",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:organization-wallet",
+      "target": "flow:select-organization",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:select-organization",
+      "target": "step:select-organization:list-orgs",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:select-organization",
+      "target": "step:select-organization:add-org",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:select-organization",
+      "target": "step:select-organization:persist-org",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:organization-wallet",
+      "target": "flow:select-wallet",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:select-wallet",
+      "target": "step:select-wallet:list-wallets",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.25
+    },
+    {
+      "source": "flow:select-wallet",
+      "target": "step:select-wallet:select-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:select-wallet",
+      "target": "step:select-wallet:add-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.75
+    },
+    {
+      "source": "flow:select-wallet",
+      "target": "step:select-wallet:persist-capture-setup",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:data-sync",
+      "target": "flow:background-sync",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:background-sync",
+      "target": "step:background-sync:schedule-worker",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.17
+    },
+    {
+      "source": "flow:background-sync",
+      "target": "step:background-sync:check-internet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:background-sync",
+      "target": "step:background-sync:upload-planters-sessions",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:background-sync",
+      "target": "step:background-sync:upload-trees",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:background-sync",
+      "target": "step:background-sync:upload-device-config-messages",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.83
+    },
+    {
+      "source": "flow:background-sync",
+      "target": "step:background-sync:report-progress",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:data-sync",
+      "target": "flow:build-tree-request",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:build-tree-request",
+      "target": "step:build-tree-request:load-tree-capture",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:build-tree-request",
+      "target": "step:build-tree-request:assemble-payload",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:build-tree-request",
+      "target": "step:build-tree-request:attach-device-metadata",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:data-sync",
+      "target": "flow:upload-location-tracks",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:upload-location-tracks",
+      "target": "step:upload-location-tracks:group-locations",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:upload-location-tracks",
+      "target": "step:upload-location-tracks:build-tracks-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:upload-location-tracks",
+      "target": "step:upload-location-tracks:upload-and-mark",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:data-sync",
+      "target": "flow:upload-images",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:upload-images",
+      "target": "step:upload-images:read-image-file",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:upload-images",
+      "target": "step:upload-images:upload-to-s3",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:upload-images",
+      "target": "step:upload-images:return-public-url",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:messaging",
+      "target": "flow:sync-messages",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:sync-messages",
+      "target": "step:sync-messages:fetch-messages",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.25
+    },
+    {
+      "source": "flow:sync-messages",
+      "target": "step:sync-messages:persist-messages",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:sync-messages",
+      "target": "step:sync-messages:upload-unsent",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.75
+    },
+    {
+      "source": "flow:sync-messages",
+      "target": "step:sync-messages:expose-list",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:messaging",
+      "target": "flow:send-chat-message",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:send-chat-message",
+      "target": "step:send-chat-message:compose-message",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:send-chat-message",
+      "target": "step:send-chat-message:save-draft",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:send-chat-message",
+      "target": "step:send-chat-message:persist-queue",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:messaging",
+      "target": "flow:complete-survey",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:complete-survey",
+      "target": "step:complete-survey:load-survey",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.25
+    },
+    {
+      "source": "flow:complete-survey",
+      "target": "step:complete-survey:navigate-questions",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:complete-survey",
+      "target": "step:complete-survey:collect-answers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.75
+    },
+    {
+      "source": "flow:complete-survey",
+      "target": "step:complete-survey:submit-response",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:dashboard-monitoring",
+      "target": "flow:view-dashboard",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:view-dashboard",
+      "target": "step:view-dashboard:compute-pending",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:view-dashboard",
+      "target": "step:view-dashboard:observe-progress",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:view-dashboard",
+      "target": "step:view-dashboard:navigate-features",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:dashboard-monitoring",
+      "target": "flow:view-tree-map",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:view-tree-map",
+      "target": "step:view-tree-map:load-markers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:view-tree-map",
+      "target": "step:view-tree-map:render-map",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:view-tree-map",
+      "target": "step:view-tree-map:select-marker",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:dashboard-monitoring",
+      "target": "flow:manage-settings",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:manage-settings",
+      "target": "step:manage-settings:list-options",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.33
+    },
+    {
+      "source": "flow:manage-settings",
+      "target": "step:manage-settings:toggle-features",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.67
+    },
+    {
+      "source": "flow:manage-settings",
+      "target": "step:manage-settings:logout",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:dashboard-monitoring",
+      "target": "flow:pick-language",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "flow:pick-language",
+      "target": "step:pick-language:list-languages",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:pick-language",
+      "target": "step:pick-language:apply-language",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "domain:grower-onboarding",
+      "target": "domain:tree-capture",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Provides the active grower (planter) that a capture binds to",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:organization-wallet",
+      "target": "domain:tree-capture",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Supplies the destination wallet and org capture setup for captures",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:tree-capture",
+      "target": "domain:data-sync",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Captured trees and location tracks feed the upload pipeline",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:grower-onboarding",
+      "target": "domain:data-sync",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Grower registration payloads are uploaded during sync",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:organization-wallet",
+      "target": "domain:data-sync",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Organization and device config records sync to the backend",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:messaging",
+      "target": "domain:data-sync",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Message and survey bundles upload through object storage",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:data-sync",
+      "target": "domain:dashboard-monitoring",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Sync progress and pending counts drive the dashboard",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:tree-capture",
+      "target": "domain:dashboard-monitoring",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Captured trees render as markers on the tree map",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:grower-onboarding",
+      "target": "domain:messaging",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Messaging targets a selected grower and wallet",
+      "weight": 0.5
+    }
+  ],
+  "layers": [],
+  "tour": []
+}

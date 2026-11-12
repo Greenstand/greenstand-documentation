@@ -1,0 +1,1025 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-09T12:00:00.000Z",
+  "title": "Design System: understand-greenstand site look",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Mineral Ground",
+        "canonical": "#f3f5f0",
+        "tonalRamp": [
+          "#0b0b0a",
+          "#252524",
+          "#414240",
+          "#60625e",
+          "#81837f",
+          "#a4a5a2",
+          "#c8c9c7",
+          "#eeefed"
+        ]
+      },
+      "ground-dark": {
+        "role": "neutral",
+        "displayName": "Mineral Ground (dark)",
+        "canonical": "#131915",
+        "tonalRamp": [
+          "#0a0c0b",
+          "#232624",
+          "#3f4340",
+          "#5d635f",
+          "#7d8480",
+          "#a1a7a3",
+          "#c6cac7",
+          "#edefed"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Field Surface",
+        "canonical": "#e8ece5",
+        "tonalRamp": [
+          "#0b0b0a",
+          "#242623",
+          "#41433f",
+          "#5f625d",
+          "#80837e",
+          "#a3a6a1",
+          "#c8cac6",
+          "#eeefed"
+        ]
+      },
+      "surface-dark": {
+        "role": "neutral",
+        "displayName": "Field Surface (dark)",
+        "canonical": "#1b231e",
+        "tonalRamp": [
+          "#0a0c0a",
+          "#222624",
+          "#3e4440",
+          "#5b645e",
+          "#7c857f",
+          "#a0a7a2",
+          "#c5cbc7",
+          "#ecefed"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Evergreen-Black Ink",
+        "canonical": "#1b2420",
+        "tonalRamp": [
+          "#0a0c0b",
+          "#222624",
+          "#3d4441",
+          "#5a645f",
+          "#7b8580",
+          "#9fa7a3",
+          "#c5cbc8",
+          "#ecefee"
+        ]
+      },
+      "ink-dark": {
+        "role": "neutral",
+        "displayName": "Evergreen-Black Ink (dark)",
+        "canonical": "#e2e8e0",
+        "tonalRamp": [
+          "#0a0b0a",
+          "#242623",
+          "#40433f",
+          "#5e635d",
+          "#7f847e",
+          "#a2a6a1",
+          "#c7cac6",
+          "#edefed"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Lichen Muted",
+        "canonical": "#56625a",
+        "tonalRamp": [
+          "#090c0a",
+          "#222623",
+          "#3c443f",
+          "#5a645d",
+          "#7a867e",
+          "#9fa8a2",
+          "#c4cbc7",
+          "#ecefed"
+        ]
+      },
+      "muted-dark": {
+        "role": "neutral",
+        "displayName": "Lichen Muted (dark)",
+        "canonical": "#9aa79e",
+        "tonalRamp": [
+          "#090c0a",
+          "#222623",
+          "#3d443f",
+          "#5a645d",
+          "#7a867e",
+          "#9fa8a1",
+          "#c5cbc6",
+          "#ecefed"
+        ]
+      },
+      "link": {
+        "role": "primary",
+        "displayName": "Water Blue",
+        "canonical": "#2c5d84",
+        "tonalRamp": [
+          "#040c14",
+          "#132737",
+          "#26455e",
+          "#3b6589",
+          "#5b87ac",
+          "#87a9c7",
+          "#b4cde2",
+          "#e2f1fd"
+        ]
+      },
+      "link-dark": {
+        "role": "primary",
+        "displayName": "Water Blue (dark)",
+        "canonical": "#8fb9d9",
+        "tonalRamp": [
+          "#050c12",
+          "#172733",
+          "#2c4558",
+          "#43667f",
+          "#6387a2",
+          "#8da9bf",
+          "#b8ccdc",
+          "#e5f0f9"
+        ]
+      },
+      "best-guess": {
+        "role": "tertiary",
+        "displayName": "Best-Guess Ochre",
+        "canonical": "#7a5a12",
+        "tonalRamp": [
+          "#100a01",
+          "#302308",
+          "#533e14",
+          "#795c22",
+          "#9b7d45",
+          "#b9a277",
+          "#d8c7a9",
+          "#f7eddc"
+        ]
+      },
+      "best-guess-dark": {
+        "role": "tertiary",
+        "displayName": "Best-Guess Ochre (dark)",
+        "canonical": "#d9b25c",
+        "tonalRamp": [
+          "#110a00",
+          "#312302",
+          "#543e05",
+          "#7a5c0b",
+          "#9e7d30",
+          "#bca26b",
+          "#dac7a1",
+          "#f8edd8"
+        ]
+      },
+      "not-working": {
+        "role": "tertiary",
+        "displayName": "Not-Working Rose",
+        "canonical": "#9e3f4b",
+        "tonalRamp": [
+          "#170507",
+          "#3d171b",
+          "#682c33",
+          "#97424c",
+          "#bc646c",
+          "#d68f93",
+          "#eebabc",
+          "#fee8e9"
+        ]
+      },
+      "not-working-dark": {
+        "role": "tertiary",
+        "displayName": "Not-Working Rose (dark)",
+        "canonical": "#e08a93",
+        "tonalRamp": [
+          "#150608",
+          "#3a1a1e",
+          "#633037",
+          "#8f4951",
+          "#b36a72",
+          "#ce9398",
+          "#e8bcc0",
+          "#ffe8ea"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#c5cec3",
+        "tonalRamp": [
+          "#0a0c0a",
+          "#232622",
+          "#3f443d",
+          "#5d645b",
+          "#7d857c",
+          "#a1a7a0",
+          "#c6cbc5",
+          "#edefec"
+        ]
+      },
+      "line-dark": {
+        "role": "neutral",
+        "displayName": "Hairline (dark)",
+        "canonical": "#2e3a33",
+        "tonalRamp": [
+          "#090c0a",
+          "#212723",
+          "#3c443f",
+          "#59655e",
+          "#7a867e",
+          "#9ea8a2",
+          "#c4cbc7",
+          "#ebf0ed"
+        ]
+      },
+      "evergreen": {
+        "role": "secondary",
+        "displayName": "Evergreen",
+        "canonical": "#35614e",
+        "tonalRamp": [
+          "#050d09",
+          "#182921",
+          "#2d493c",
+          "#446b59",
+          "#658d7a",
+          "#8ead9e",
+          "#b9cfc4",
+          "#e5f2ec"
+        ]
+      },
+      "evergreen-dark": {
+        "role": "secondary",
+        "displayName": "Evergreen (dark)",
+        "canonical": "#33634d",
+        "tonalRamp": [
+          "#050d09",
+          "#162a21",
+          "#2b493b",
+          "#426c58",
+          "#628e78",
+          "#8dae9d",
+          "#b8d0c3",
+          "#e5f2eb"
+        ]
+      },
+      "cropland": {
+        "role": "secondary",
+        "displayName": "Cropland Ochre",
+        "canonical": "#92600d",
+        "tonalRamp": [
+          "#130901",
+          "#342003",
+          "#5a3b09",
+          "#835712",
+          "#a6783a",
+          "#c29e70",
+          "#dfc4a4",
+          "#fbecd9"
+        ]
+      },
+      "cropland-dark": {
+        "role": "secondary",
+        "displayName": "Cropland Ochre (dark)",
+        "canonical": "#916618",
+        "tonalRamp": [
+          "#120901",
+          "#332104",
+          "#573c0c",
+          "#7f5916",
+          "#a27b3c",
+          "#bfa072",
+          "#dcc6a5",
+          "#faedda"
+        ]
+      },
+      "shrub": {
+        "role": "secondary",
+        "displayName": "Shrub Khaki",
+        "canonical": "#bba25b",
+        "tonalRamp": [
+          "#0f0b01",
+          "#2e2407",
+          "#4f4012",
+          "#745f1f",
+          "#968042",
+          "#b5a475",
+          "#d4c9a8",
+          "#f5eedb"
+        ]
+      },
+      "shrub-dark": {
+        "role": "secondary",
+        "displayName": "Shrub Khaki (dark)",
+        "canonical": "#b49e56",
+        "tonalRamp": [
+          "#0f0b01",
+          "#2d2407",
+          "#4e4112",
+          "#72601f",
+          "#948142",
+          "#b3a575",
+          "#d3c9a8",
+          "#f4eedb"
+        ]
+      },
+      "wetland": {
+        "role": "secondary",
+        "displayName": "Wetland Blue-Gray",
+        "canonical": "#6f9db3",
+        "tonalRamp": [
+          "#050c11",
+          "#162830",
+          "#2a4653",
+          "#40677a",
+          "#61899c",
+          "#8baaba",
+          "#b7cdd8",
+          "#e4f1f7"
+        ]
+      },
+      "wetland-dark": {
+        "role": "secondary",
+        "displayName": "Wetland Blue-Gray (dark)",
+        "canonical": "#7fb0c6",
+        "tonalRamp": [
+          "#040d11",
+          "#152830",
+          "#294754",
+          "#3e687a",
+          "#5f899c",
+          "#8aabba",
+          "#b6cdd8",
+          "#e4f1f7"
+        ]
+      },
+      "deciduous": {
+        "role": "secondary",
+        "displayName": "Deciduous Green",
+        "canonical": "#6c8951",
+        "tonalRamp": [
+          "#080d04",
+          "#1e2913",
+          "#374926",
+          "#526a3a",
+          "#728c5a",
+          "#98ad86",
+          "#c0cfb3",
+          "#e9f2e2"
+        ]
+      },
+      "deciduous-dark": {
+        "role": "secondary",
+        "displayName": "Deciduous Green (dark)",
+        "canonical": "#49854f",
+        "tonalRamp": [
+          "#040e05",
+          "#132b16",
+          "#264c2a",
+          "#3b6f40",
+          "#5c9160",
+          "#88b28b",
+          "#b5d2b6",
+          "#e3f4e4"
+        ]
+      },
+      "mixed-forest": {
+        "role": "secondary",
+        "displayName": "Mixed Forest Sage",
+        "canonical": "#b1bd97",
+        "tonalRamp": [
+          "#0a0c06",
+          "#232719",
+          "#3f452f",
+          "#5c6647",
+          "#7d8767",
+          "#a1a990",
+          "#c6ccba",
+          "#edf0e5"
+        ]
+      },
+      "mixed-forest-dark": {
+        "role": "secondary",
+        "displayName": "Mixed Forest Sage (dark)",
+        "canonical": "#b1b38e",
+        "tonalRamp": [
+          "#0b0c06",
+          "#262618",
+          "#43442e",
+          "#626445",
+          "#848566",
+          "#a6a78e",
+          "#cacbb9",
+          "#efefe5"
+        ]
+      },
+      "bare-ground": {
+        "role": "secondary",
+        "displayName": "Bare Ground Taupe",
+        "canonical": "#7c796e",
+        "tonalRamp": [
+          "#0c0b09",
+          "#262521",
+          "#44423b",
+          "#646158",
+          "#858278",
+          "#a7a59d",
+          "#cbc9c3",
+          "#efeeeb"
+        ]
+      },
+      "bare-ground-dark": {
+        "role": "secondary",
+        "displayName": "Bare Ground Taupe (dark)",
+        "canonical": "#858377",
+        "tonalRamp": [
+          "#0c0b09",
+          "#262520",
+          "#43423b",
+          "#636257",
+          "#848378",
+          "#a7a59d",
+          "#cac9c3",
+          "#efeeeb"
+        ]
+      },
+      "edge": {
+        "role": "neutral",
+        "displayName": "Ink Edge",
+        "canonical": "color-mix(in srgb, #1b2420 25%, transparent)",
+        "tonalRamp": [
+          "#0a0c0b",
+          "#222624",
+          "#3d4441",
+          "#5a645f",
+          "#7b8580",
+          "#9fa7a3",
+          "#c5cbc8",
+          "#ecefee"
+        ]
+      },
+      "selection": {
+        "role": "neutral",
+        "displayName": "Ink Selection",
+        "canonical": "color-mix(in srgb, #1b2420 18%, transparent)",
+        "tonalRamp": [
+          "#0a0c0b",
+          "#222624",
+          "#3d4441",
+          "#5a645f",
+          "#7b8580",
+          "#9fa7a3",
+          "#c5cbc8",
+          "#ecefee"
+        ]
+      },
+      "selection-dark": {
+        "role": "neutral",
+        "displayName": "Ink Selection (dark)",
+        "canonical": "color-mix(in srgb, #e2e8e0 18%, transparent)",
+        "tonalRamp": [
+          "#0a0b0a",
+          "#242623",
+          "#40433f",
+          "#5e635d",
+          "#7f847e",
+          "#a2a6a1",
+          "#c7cac6",
+          "#edefed"
+        ]
+      },
+      "parcel-field": {
+        "role": "neutral",
+        "displayName": "Parcel Ink",
+        "canonical": "color-mix(in srgb, #1b2420 11.5%, transparent)",
+        "tonalRamp": [
+          "#0a0c0b",
+          "#222624",
+          "#3d4441",
+          "#5a645f",
+          "#7b8580",
+          "#9fa7a3",
+          "#c5cbc8",
+          "#ecefee"
+        ]
+      },
+      "parcel-field-dark": {
+        "role": "neutral",
+        "displayName": "Parcel Ink (dark)",
+        "canonical": "color-mix(in srgb, #e2e8e0 9.1%, transparent)",
+        "tonalRamp": [
+          "#0a0b0a",
+          "#242623",
+          "#40433f",
+          "#5e635d",
+          "#7f847e",
+          "#a2a6a1",
+          "#c7cac6",
+          "#edefed"
+        ]
+      },
+      "edge-dark": {
+        "role": "neutral",
+        "displayName": "Ink Edge (dark)",
+        "canonical": "color-mix(in srgb, #e2e8e0 25%, transparent)",
+        "tonalRamp": [
+          "#0a0b0a",
+          "#242623",
+          "#40433f",
+          "#5e635d",
+          "#7f847e",
+          "#a2a6a1",
+          "#c7cac6",
+          "#edefed"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The site title in the masthead."
+      },
+      "display-rail": {
+        "displayName": "Display (legend rail)",
+        "purpose": "The site title in the legend rail at 64rem and more."
+      },
+      "headline-featured": {
+        "displayName": "Headline (Start here)",
+        "purpose": "The Start here heading."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "The heading of an area section."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "The name link of a repo entry. In the Start here path it is 1.18rem: a link to a page, or plain ink text for a step with links to other sites."
+      },
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "The step numbers of the Start here path, muted, in the margin number column."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All running text, in the system sans: 1.03125rem (16.5px at the default 16px), so it follows the default font size of the reader."
+      },
+      "body-small": {
+        "displayName": "Body small",
+        "purpose": "Entry links, the snapshot line, and the Go deeper line."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Area keys in the legend rail and the hover name of a strip cell. On the capture journey page: the chapter line, the state tags, the stage numbers, and the chapter numbers in the footer. On the roadmap page: the best-guess tag."
+      },
+      "label-rail": {
+        "displayName": "Label (rail name)",
+        "purpose": "The repo names in the upright estate strip, and the station labels of the capture journey track."
+      },
+      "label-nav": {
+        "displayName": "Label (jump links)",
+        "purpose": "The jump links to the areas, and the back links of a text page."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Commit ids and code only: inline code and code blocks on a text page."
+      },
+      "display-text": {
+        "displayName": "Display (text page)",
+        "purpose": "The h1 of a text page and of the capture journey page."
+      },
+      "headline-text": {
+        "displayName": "Headline (text page)",
+        "purpose": "The h2 of a text page, under a 2px ink rule, and the h2 of a stage of the capture journey page."
+      },
+      "title-text": {
+        "displayName": "Title (text page)",
+        "purpose": "The h3 of a text page."
+      },
+      "title-small": {
+        "displayName": "Title small",
+        "purpose": "The h4 of a text page, with text-wrap: balance."
+      },
+      "label-table": {
+        "displayName": "Label (table)",
+        "purpose": "The table heads of a text page and of the At a glance table of the roadmap page, on the surface."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "The muted line under the title of the capture journey page."
+      },
+      "numeral-station": {
+        "displayName": "Numeral (station)",
+        "purpose": "The number of a station of the capture journey track, in the ground color on an ink square."
+      },
+      "label-bar": {
+        "displayName": "Label (bar)",
+        "purpose": "The text of the sticky bar of the capture journey page: \"N of M: <stage>\" (M is the count of the stages of the chapter), on one line."
+      },
+      "label-summary": {
+        "displayName": "Label (summary)",
+        "purpose": "The summary of a \"For developers\" box on the capture journey page."
+      },
+      "drawing-title": {
+        "displayName": "Drawing title",
+        "purpose": "The title of a step in a drawing in the site look, and the name of the cloud, of the cylinder, and of a dashed box. Ink, in the drawing font (\"Archivo Drawing\", weight 600, width 87.5%)."
+      },
+      "drawing-line": {
+        "displayName": "Drawing line",
+        "purpose": "The other lines of a drawing in the site look, muted, in the drawing font (weight 400, width 87.5%). A repo name is a drawing line too, not monospace. An ink drawing line (the same face and size, in ink) gives a value of a drawn screen or the lead line of a drawing. A date has the form \"2 March 2026\"."
+      },
+      "drawing-numeral": {
+        "displayName": "Drawing numeral",
+        "purpose": "The step number of a drawing in the site look: tabular, in the ground color on a 30-unit ink square, as the station number of the track."
+      },
+      "label-snapshot": {
+        "displayName": "Label (snapshot)",
+        "purpose": "The snapshot line of a repo entry on the landing page: the scene date of the map sheet, muted, with tabular figures."
+      },
+      "title-fold": {
+        "displayName": "Title (fold)",
+        "purpose": "The summary of a fold of the roadmap page: the heading of a section of the source, at the full width."
+      },
+      "label-count": {
+        "displayName": "Label (count)",
+        "purpose": "The item count in the summary of a fold of the roadmap page, muted, after a middle dot (“· 3 items”)."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ink-edge",
+        "value": "inset 0 0 0 1px color-mix(in srgb, var(--ink) 25%, transparent)",
+        "purpose": "The 1px ink outline on every area fill (strip cells, mark cells, chips). An outline, not an elevation."
+      },
+      {
+        "name": "diagram-scroll-shadows",
+        "value": "linear-gradient(to right, <surface> 30%, <surface>00) left / 2rem 100% no-repeat local, linear-gradient(to left, <surface> 30%, <surface>00) right / 2rem 100% no-repeat local, radial-gradient(farthest-side at 0 50%, <ink>40, <ink>00) left / .75rem 100% no-repeat scroll, radial-gradient(farthest-side at 100% 50%, <ink>40, <ink>00) right / .75rem 100% no-repeat scroll",
+        "purpose": "The one exception to the Flat Map Rule: the cue that a wide diagram scrolls. The surface and the ink come from site-colors.mjs, light and dark. A .75rem shade of 25% ink shows only on a side with more of the diagram."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-cell",
+        "value": "cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "The move of a strip cell color block on hover or focus."
+      },
+      {
+        "name": "duration-cell",
+        "value": ".25s",
+        "purpose": "The move of a strip cell color block: 4px up, or 3px right in the legend rail."
+      },
+      {
+        "name": "duration-label",
+        "value": ".15s",
+        "purpose": "The fade of the repo name under the strip."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone-title",
+        "value": "max-width: 30rem",
+        "purpose": "The display title takes a width of 78%."
+      },
+      {
+        "name": "strip-links",
+        "value": "@container masthead (min-width: 422px)",
+        "purpose": "A container query on the masthead, computed by build-landing.mjs from the repo counts (CELL_GAP 2px, AREA_GAP 6px): the estate strip (links) replaces the estate mark where each cell can be 24px wide. 422px of strip today (a 462px page at a 16px default font size). It changes with the repo counts."
+      },
+      {
+        "name": "legend-rail",
+        "value": "min-width: 64rem",
+        "purpose": "The sticky 17.5rem legend rail (`--rail`) with the upright estate strip. The rail always shows the links and never the estate mark. The parcel field lies under the rail, with the rail-edge hairline at its edge. `WIDE` in site-html.mjs; `NARROW` (`not all and (min-width: 64rem)`) is its exact opposite and puts the parcel field under the masthead. On a text page the legend rail is sticky, holds the estate mark (up to 13.5rem x .75rem) over the back links, and main is at most 64rem with the reading column at the left."
+      },
+      {
+        "name": "text-page-band",
+        "value": "not all and (min-width: 64rem)",
+        "purpose": "`NARROW` on a text page, the capture journey page, and a moved page (`mastheadStyle(column)`): the masthead is a band at the top with a hairline below, the estate mark is 8.5rem x .55rem, and the content column is in the center (44rem, or 58rem on the capture journey page)."
+      },
+      {
+        "name": "journey-stage-stack",
+        "value": "@container (max-width: 46rem)",
+        "purpose": "A container query on `main` of the capture journey page: each stage is one column, and the images come first."
+      },
+      {
+        "name": "journey-track-rows",
+        "value": "@container (max-width: 34rem)",
+        "purpose": "A container query on `main` of the capture journey page: a track of up to 4 stations stays in one row, with its line. A longer track is rows of 3 stations with no line (`trackColumns`). A phone screenshot is 130px wide."
+      },
+      {
+        "name": "journey-small-phone",
+        "value": "@container (max-width: 30rem)",
+        "purpose": "A container query on `main` of the capture journey page: the image plate of a stage reaches the screen edges (a side padding of .5rem), the stage label column is compact (icon 1.5rem, label .74rem), and the text under the heading takes the full width."
+      },
+      {
+        "name": "journey-track-pairs",
+        "value": "@container (width < 20rem)",
+        "purpose": "A container query on `main` of the capture journey page: a track of 4 stations is 2 rows of 2, with no line. No station is ever alone in a row (`trackColumns`)."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Estate Strip",
+      "kind": "custom",
+      "refersTo": "estate-cell",
+      "description": "One cell per repo, grouped by area, in the area colors; each cell links to its repo entry and shows its name on hover or focus. Shown from the masthead width where each cell can be 24px wide.",
+      "html": "<nav class=\"ds-strip\" aria-label=\"Repos by area\"><span class=\"ds-group\" style=\"--area: var(--c-evergreen); --n: 3\"><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-2-1</span></a><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-2-2</span></a><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-2-3</span></a></span><span class=\"ds-group\" style=\"--area: var(--c-cropland); --n: 3\"><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-3-1</span></a><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-3-2</span></a><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-3-3</span></a></span><span class=\"ds-group\" style=\"--area: var(--c-shrub); --n: 2\"><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-4-1</span></a><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-4-2</span></a></span><span class=\"ds-group\" style=\"--area: var(--c-wetland); --n: 2\"><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-5-1</span></a><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-5-2</span></a></span><span class=\"ds-group\" style=\"--area: var(--c-deciduous); --n: 1\"><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-6-1</span></a></span><span class=\"ds-group\" style=\"--area: var(--c-mixed-forest); --n: 2\"><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-7-1</span></a><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-7-2</span></a></span><span class=\"ds-group\" style=\"--area: var(--c-bare-ground); --n: 1\"><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-8-1</span></a></span><span class=\"ds-group\" style=\"--area: var(--c-ink); --n: 1\"><a class=\"ds-cell\" href=\"#\"><span class=\"ds-label\">repo-1-1</span></a></span></nav>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-strip { display: flex; position: relative; gap: 6px; padding-bottom: 1.9rem; background: var(--ground); } .ds-group { display: flex; flex: var(--n) 1 0; gap: 2px; min-width: 0; } .ds-cell { display: block; flex: 1 1 0; min-width: 0; height: clamp(2rem, 1.3rem + 2.4vw, 3.25rem); text-decoration: none; } .ds-cell::before { content: \"\"; display: block; height: 100%; background: var(--area); box-shadow: inset 0 0 0 1px var(--edge); transition: transform .25s cubic-bezier(.16, 1, .3, 1); } .ds-cell:hover::before, .ds-cell:focus-visible::before { transform: translateY(-4px); } .ds-cell:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; } .ds-label { position: absolute; left: 0; bottom: 0; font: 600 .82rem/1.2 var(--display); font-stretch: 87.5%; color: var(--ink); opacity: 0; pointer-events: none; transition: opacity .15s; } .ds-cell:hover .ds-label, .ds-cell:focus-visible .ds-label { opacity: 1; } @media (prefers-reduced-motion: reduce) { .ds-cell::before, .ds-label { transition: none; } }"
+    },
+    {
+      "name": "Estate Strip in the Legend Rail",
+      "kind": "nav",
+      "refersTo": "estate-cell-rail",
+      "description": "The estate strip upright in the sticky legend rail on wide screens: the area key over each group, one row per repo with its color block and name. The target row gets the ink outline.",
+      "html": "<nav class=\"ds-rail\" aria-label=\"Repos by area\"><span class=\"ds-rgroup\" style=\"--area: var(--c-evergreen)\"><span class=\"ds-key\">Core API</span><a class=\"ds-row\" href=\"#\">treetracker-api</a><a class=\"ds-row ds-here\" href=\"#\">treetracker-query-api</a><a class=\"ds-row\" href=\"#\">images-api</a></span><span class=\"ds-rgroup\" style=\"--area: var(--c-cropland)\"><span class=\"ds-key\">Wallet</span><a class=\"ds-row\" href=\"#\">treetracker-wallet-api</a></span></nav>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-rail { display: flex; flex-direction: column; gap: .75rem; width: 14rem; padding: 1rem; background: var(--ground); } .ds-rgroup { display: grid; gap: 2px; } .ds-key { margin: 0 0 .3rem; font: 600 .82rem/1.2 var(--display); font-stretch: 87.5%; color: var(--muted); } .ds-row { display: grid; grid-template-columns: 1rem minmax(0, 1fr); align-items: center; gap: .65rem; min-height: max(1.5rem, 24px); color: var(--ink); text-decoration: none; font: 500 .9rem/1.25 var(--display); font-stretch: 87.5%; overflow-wrap: anywhere; } .ds-row::before { content: \"\"; align-self: stretch; background: var(--area); box-shadow: inset 0 0 0 1px var(--edge); transition: transform .25s cubic-bezier(.16, 1, .3, 1); } .ds-row:hover::before, .ds-row:focus-visible::before { transform: translateX(3px); } .ds-row:hover { text-decoration: underline; text-decoration-color: var(--line); } .ds-row:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; } .ds-here { outline: 2px solid var(--ink); outline-offset: 2px; }"
+    },
+    {
+      "name": "Estate Mark",
+      "kind": "custom",
+      "refersTo": "estate-cell",
+      "description": "The estate strip as a picture: no links, no words, hidden from screen readers. It replaces the strip where the masthead is narrower than the links width; never in the legend rail. On a one-repo page, `estateMark(areas, current)` gives the cell of that repo the locator: an ink outline (2px solid, 1px offset).",
+      "html": "<div class=\"ds-mark\" aria-hidden=\"true\"><span class=\"ds-group\" style=\"--area: var(--c-evergreen); --n: 3\"><i></i><i></i><i></i></span><span class=\"ds-group\" style=\"--area: var(--c-cropland); --n: 3\"><i></i><i class=\"ds-here\"></i><i></i></span><span class=\"ds-group\" style=\"--area: var(--c-shrub); --n: 2\"><i></i><i></i></span><span class=\"ds-group\" style=\"--area: var(--c-wetland); --n: 2\"><i></i><i></i></span><span class=\"ds-group\" style=\"--area: var(--c-deciduous); --n: 1\"><i></i></span><span class=\"ds-group\" style=\"--area: var(--c-mixed-forest); --n: 2\"><i></i><i></i></span><span class=\"ds-group\" style=\"--area: var(--c-bare-ground); --n: 1\"><i></i></span><span class=\"ds-group\" style=\"--area: var(--c-ink); --n: 1\"><i></i></span></div>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-mark { display: flex; gap: 6px; width: 350px; background: var(--ground); } .ds-group { display: flex; flex: var(--n) 1 0; gap: 2px; min-width: 0; } .ds-mark i { display: block; flex: 1 1 0; min-width: 0; height: 2rem; background: var(--area); box-shadow: inset 0 0 0 1px var(--edge); } .ds-mark i.ds-here { outline: 2px solid var(--ink); outline-offset: 1px; }"
+    },
+    {
+      "name": "Area Chip and Heading",
+      "kind": "chip",
+      "refersTo": "area-chip",
+      "description": "The 3px area-color rule, the chip, and the heading that open an area section. The chip rule is `CHIP_STYLE` in `site-html.mjs`, shared by the landing page and the roadmap page.",
+      "html": "<section class=\"ds-area\" style=\"--area: var(--c-shrub)\"><h2><i class=\"ds-chip\" aria-hidden=\"true\"></i>Admin</h2></section>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-area { padding-top: .9rem; border-top: 3px solid var(--area); background: var(--ground); color: var(--ink); } .ds-area h2 { margin: 0; font: 660 1.45rem/1.15 var(--display); } .ds-chip { display: inline-block; width: .8em; height: .8em; margin-right: .45em; vertical-align: -.02em; background: var(--area); box-shadow: inset 0 0 0 1px var(--edge); }"
+    },
+    {
+      "name": "Start Here Field",
+      "kind": "card",
+      "refersTo": "start-here-field",
+      "description": "The numbered newcomer path on the surface, with muted Archivo numerals in a margin number column. A step is a page link, or a name in plain text with a links line. The plate has the neatline (`PLATE_EDGE`).",
+      "html": "<section class=\"ds-start\"><h2>Start here</h2><p class=\"ds-intro\">Learn the mission and the big picture of the platform before you read the code.</p><ol class=\"ds-path\"><li><a class=\"ds-name\" href=\"#\">Ecosystem maps</a><p>How the code repos work together at run time.</p></li><li><span class=\"ds-name\">Greenstand and the live map</span><p>The Greenstand website and the live Treetracker map.</p><p class=\"ds-links\"><a href=\"#\">Website</a> · <a href=\"#\">Live map</a></p></li></ol></section>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-start { padding: 1.6rem 1.75rem 1.4rem; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 1.03125rem/1.62 system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; } .ds-start h2 { margin: 0 0 .35rem; font: 680 1.55rem/1.15 var(--display); } .ds-intro { margin: 0 0 1rem; color: var(--muted); } .ds-path { margin: 0; padding: 0; list-style: none; counter-reset: step; } .ds-path > li { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); padding: .85rem 0 .9rem; border-top: 1px solid var(--line); counter-increment: step; } .ds-path > li::before { content: counter(step); grid-row: span 3; padding-top: .1rem; font: 600 1.7rem/1 var(--display); font-stretch: 75%; font-variant-numeric: tabular-nums; color: var(--muted); } .ds-path p { margin: .2rem 0 0; } .ds-path .ds-links { font-size: .92rem; } .ds-links a { color: var(--link); } .ds-name { font: 640 1.18rem/1.3 var(--display); } a.ds-name { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, var(--link) 35%, transparent); text-underline-offset: .2em; } a.ds-name:hover { text-decoration-color: currentColor; } a.ds-name:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }"
+    },
+    {
+      "name": "Register Entry",
+      "kind": "card",
+      "refersTo": "register-entry",
+      "description": "A repo entry: name link, description, page links, and the snapshot label (the scene date, in the display face) with its commit id. The target entry gets a 14% tint of its area color.",
+      "html": "<ul class=\"ds-register\" style=\"--area: var(--c-cropland)\"><li class=\"ds-target\"><a class=\"ds-name\" href=\"#\">treetracker-wallet-api</a><p class=\"ds-desc\">The wallet service: wallets, trust relationships, and token transfers.</p><p class=\"ds-links\"><span><a href=\"#\">Viewer</a> · <a href=\"#\">Onboarding</a> · <a href=\"#\">Source</a></span><span class=\"ds-snap\">Snapshot 2026-09-03 at <a href=\"#\"><code>e95c15a</code></a></span></p></li><li><a class=\"ds-name\" href=\"#\">treetracker-wallet-app</a><p class=\"ds-desc\">The wallet app monorepo.</p></li></ul>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-register { margin: 0; padding: 0 1rem; list-style: none; background: var(--ground); color: var(--ink); font: 1.03125rem/1.62 system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; } .ds-register > li { padding: .85rem 0 1.1rem; border-top: 1px solid var(--line); } .ds-register > li.ds-target { margin-inline: -1rem; padding-inline: 1rem; background: color-mix(in srgb, var(--area) 14%, transparent); } .ds-register p { margin: 0; } .ds-desc { max-width: 40rem; margin: .2rem 0 .45rem !important; } .ds-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .3rem 1.25rem; font-size: .92rem; } .ds-snap { color: var(--muted); font: 500 .88rem/1.3 var(--display); font-stretch: 87.5%; font-variant-numeric: tabular-nums; } .ds-register code { font-family: ui-monospace, \"SF Mono\", Menlo, Consolas, monospace; font-size: .86em; } .ds-register a { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, var(--link) 35%, transparent); text-underline-offset: .2em; } .ds-register a:hover { text-decoration-color: currentColor; } .ds-register a:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; } .ds-register .ds-name { font: 640 1.12rem/1.3 var(--display); }"
+    },
+    {
+      "name": "Jump Links",
+      "kind": "nav",
+      "refersTo": "jump-link",
+      "description": "One row of area links between two hairlines: a chip and the area name in ink.",
+      "html": "<nav class=\"ds-jump\" aria-label=\"Areas\"><span>Areas:</span><a href=\"#\" style=\"--area: var(--c-evergreen)\"><i class=\"ds-chip\" aria-hidden=\"true\"></i>Core API</a><a href=\"#\" style=\"--area: var(--c-cropland)\"><i class=\"ds-chip\" aria-hidden=\"true\"></i>Wallet</a><a href=\"#\" style=\"--area: var(--c-wetland)\"><i class=\"ds-chip\" aria-hidden=\"true\"></i>Web map</a></nav>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-jump { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1.4rem; padding: .9rem 0; border-block: 1px solid var(--line); background: var(--ground); font: 500 .98rem/1.3 var(--display); font-stretch: 87.5%; } .ds-jump > span { color: var(--muted); } .ds-jump a { color: var(--ink); text-decoration: none; } .ds-jump a:hover { text-decoration: underline; text-decoration-color: var(--line); } .ds-jump a:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; } .ds-chip { display: inline-block; width: .8em; height: .8em; margin-right: .45em; vertical-align: -.02em; background: var(--area); box-shadow: inset 0 0 0 1px var(--edge); }"
+    },
+    {
+      "name": "Text Link",
+      "kind": "button",
+      "refersTo": "text-link",
+      "description": "A link in running text: water blue with a soft 1px underline that takes the full color on hover.",
+      "html": "<p class=\"ds-p\">The <a class=\"ds-link\" href=\"#\">estate glossary</a> lists the business terms of all repos.</p>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-p { margin: 0; color: var(--ink); background: var(--ground); font: 1.03125rem/1.62 system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; } .ds-link { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, var(--link) 35%, transparent); text-underline-offset: .2em; } .ds-link:hover { text-decoration-color: currentColor; } .ds-link:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }"
+    },
+    {
+      "name": "Parcel Field",
+      "kind": "custom",
+      "refersTo": "parcel-field",
+      "description": "The still background of the site look: the boundaries of made-up field parcels and some planting rows, in parcel ink, under the legend rail on a wide screen (with the rail-edge hairline) and under the masthead on a phone. Never under the content column. Hidden in forced colors, with more contrast, and in print.",
+      "html": "<div class=\"ds-rail\"><svg class=\"ds-field\" viewBox=\"0 0 280 200\" preserveAspectRatio=\"xMidYMid slice\" aria-hidden=\"true\"><path fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.1\" stroke-linejoin=\"round\" d=\"M-5 -5L120 -5L110 70L-5 80ZM120 -5L285 -5L285 60L110 70ZM-5 80L110 70L125 140L-5 150ZM110 70L285 60L285 130L125 140ZM-5 150L125 140L120 205L-5 205ZM125 140L285 130L285 205L120 205Z\"/><path stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-opacity=\".8\" d=\"M140 84h0M149 84h0M158 84h0M167 84h0M176 84h0M185 84h0M194 84h0M203 84h0M212 84h0M221 84h0M230 84h0M239 84h0M248 84h0M257 84h0M266 84h0M140 93h0M149 93h0M158 93h0M167 93h0M176 93h0M185 93h0M194 93h0M203 93h0M212 93h0M221 93h0M230 93h0M239 93h0M248 93h0M257 93h0M266 93h0M140 102h0M149 102h0M158 102h0M167 102h0M176 102h0M185 102h0M194 102h0M203 102h0M212 102h0M221 102h0M230 102h0M239 102h0M248 102h0M257 102h0M266 102h0M140 111h0M149 111h0M158 111h0M167 111h0M176 111h0M185 111h0M194 111h0M203 111h0M212 111h0M221 111h0M230 111h0M239 111h0M248 111h0M257 111h0M266 111h0M140 120h0M149 120h0M158 120h0M167 120h0M176 120h0M185 120h0M194 120h0M203 120h0M212 120h0M221 120h0M230 120h0M239 120h0M248 120h0M257 120h0M266 120h0\"/></svg><p class=\"ds-title\">understand-greenstand</p></div>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; --parcel-ink-share: 11.5%; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; --parcel-ink-share: 9.1%; } } .ds-rail { position: relative; width: 17.5rem; height: 12.5rem; overflow: hidden; background: var(--ground); color: var(--ink); border-right: 1px solid var(--line); } .ds-field { position: absolute; inset: 0; width: 100%; height: 100%; color: color-mix(in srgb, var(--ink) var(--parcel-ink-share), transparent); } .ds-title { position: relative; margin: 0; padding: 2rem 1.5rem 0 2rem; font: 720 1.95rem/1.02 var(--display); letter-spacing: -.025em; } @media (forced-colors: active), (prefers-contrast: more), print { .ds-field { display: none; } .ds-rail { border-right: 0; } }"
+    },
+    {
+      "name": "Text-Page Masthead",
+      "kind": "nav",
+      "refersTo": "back-link",
+      "description": "The estate mark in small over the back links: a band at the top on a narrow screen, the legend rail on a wide screen. `masthead(areas, parts, current)` writes it and `mastheadStyle(column)` gives its style; the capture journey page, the contributors page, and the moved pages use the same masthead. On a one-repo page the estate mark shows the locator. In print, the mark cells keep their area colors.",
+      "html": "<header class=\"ds-tmast\"><div class=\"ds-tmark\" aria-hidden=\"true\"><span class=\"ds-tgroup\" style=\"--area: var(--c-evergreen); --n: 3\"><i class=\"ds-here\"></i><i></i><i></i></span><span class=\"ds-tgroup\" style=\"--area: var(--c-cropland); --n: 3\"><i></i><i></i><i></i></span><span class=\"ds-tgroup\" style=\"--area: var(--c-shrub); --n: 2\"><i></i><i></i></span><span class=\"ds-tgroup\" style=\"--area: var(--c-wetland); --n: 2\"><i></i><i></i></span><span class=\"ds-tgroup\" style=\"--area: var(--c-mixed-forest); --n: 2\"><i></i><i></i></span><span class=\"ds-tgroup\" style=\"--area: var(--c-ink); --n: 1\"><i></i></span></div><nav class=\"ds-tnav\"><a href=\"#\">&larr; Viewer</a><a href=\"#\">All viewers</a></nav></header>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-tmast { padding: 1.25rem; background: var(--ground); border-bottom: 1px solid var(--line); } .ds-tmark { display: flex; gap: 3px; width: 8.5rem; height: .55rem; margin-bottom: .75rem; } .ds-tgroup { display: flex; flex: var(--n) 1 0; gap: 1px; min-width: 0; } .ds-tmark i { flex: 1 1 0; min-width: 0; background: var(--area); box-shadow: inset 0 0 0 1px var(--edge); -webkit-print-color-adjust: exact; print-color-adjust: exact; } .ds-tnav { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; font: 500 .98rem/1.3 var(--display); font-stretch: 87.5%; } .ds-tnav a { display: inline-block; padding-block: .15rem; color: var(--ink); text-decoration: none; } .ds-tnav a:hover { text-decoration: underline; text-decoration-color: var(--line); } .ds-tnav a:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; } .ds-tmark i.ds-here { outline: 2px solid var(--ink); outline-offset: 1px; }"
+    },
+    {
+      "name": "Diagram Plate",
+      "kind": "card",
+      "refersTo": "diagram-plate",
+      "description": "A Mermaid diagram on a surface plate with the neatline (node padding 10): nodes on the ground with a muted border and ink labels in Archivo; a repo node in a 30% tint of its area color with a 1.5px border in the area color.",
+      "html": "<div class=\"ds-plate\"><svg viewBox=\"0 0 300 60\" width=\"300\" height=\"60\" role=\"img\" aria-label=\"Diagram\"><g class=\"ds-node\"><rect x=\"1\" y=\"14\" width=\"110\" height=\"32\"/><text x=\"56\" y=\"35\">client app</text></g><path class=\"ds-edge\" d=\"M111 30 H189\"/><g class=\"ds-node ds-area-node\" style=\"--area: var(--c-evergreen)\"><rect x=\"189\" y=\"14\" width=\"110\" height=\"32\"/><text x=\"244\" y=\"35\">treetracker-api</text></g></svg></div>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-plate { padding: 1.5rem 1rem; text-align: center; border: 1px solid var(--line); background: var(--surface); } .ds-node rect { fill: var(--ground); stroke: var(--muted); stroke-width: 1px; } .ds-node text { fill: var(--ink); font: 400 13px var(--display); text-anchor: middle; } .ds-edge { stroke: var(--muted); stroke-width: 1.5px; fill: none; } .ds-area-node rect { fill: color-mix(in srgb, var(--area) 30%, var(--ground)); stroke: var(--area); stroke-width: 1.5px; }"
+    },
+    {
+      "name": "Capture Journey Track",
+      "kind": "nav",
+      "refersTo": "track-station",
+      "description": "One square station for each stage on a 1.5px ink line: the ink icon on the ground (a line drawing from `ICONS`: view box 48, stroke 3, round caps and joins, square corners with no `rx`, no leaf; 16 icons, with `mint`, `transfer`, and `token` for chapter 3, and `account`, `export`, `numbers`, and `cards` for chapter 4), the number on an ink square, the label under it. On hover the station fills with ink. In a narrow main (34rem or less), up to 4 stations stay in one row with the line, and more stations are rows of 3 with no line. Below 20rem, 4 stations are 2 rows of 2. No station is alone in a row.",
+      "html": "<ol class=\"ds-track\" aria-label=\"The stages\" style=\"--stages: 3\"><li><a href=\"#\"><svg class=\"ds-icon\" viewBox=\"0 0 48 48\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"14\" y=\"4\" width=\"20\" height=\"40\"/><path d=\"M21 38h6\"/></svg><span class=\"ds-n\">1</span><span class=\"ds-l\">Capture</span></a></li><li><a href=\"#\"><svg class=\"ds-icon\" viewBox=\"0 0 48 48\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"14\" y=\"4\" width=\"20\" height=\"40\"/><path d=\"M24 30V14M18 20l6-6 6 6\"/></svg><span class=\"ds-n\">2</span><span class=\"ds-l\">Upload</span></a></li><li><a href=\"#\"><svg class=\"ds-icon\" viewBox=\"0 0 48 48\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"8\" y=\"8\" width=\"32\" height=\"32\"/><path d=\"M16 24l6 6 11-12\"/></svg><span class=\"ds-n\">3</span><span class=\"ds-l\">Verify</span></a></li></ol>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --best-guess: #7a5a12; --not-working: #9e3f4b; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --best-guess: #d9b25c; --not-working: #e08a93; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-track { position: relative; display: grid; grid-template-columns: repeat(var(--stages), minmax(0, 1fr)); gap: .5rem; list-style: none; margin: 0; padding: 1rem; background: var(--ground); } .ds-track::before { content: \"\"; position: absolute; left: calc(1rem + (100% - 2rem) / var(--stages) / 2); right: calc(1rem + (100% - 2rem) / var(--stages) / 2); top: calc(2.75rem - .75px); border-top: 1.5px solid var(--ink); } .ds-track a { position: relative; display: flex; flex-direction: column; align-items: center; gap: .5rem; color: var(--ink); text-decoration: none; } .ds-icon { display: block; width: 3.5rem; height: 3.5rem; padding: .7rem; box-sizing: border-box; border: 1.5px solid var(--ink); background: var(--ground); color: var(--ink); } .ds-track a:hover .ds-icon { background: var(--ink); color: var(--ground); } .ds-track a:hover .ds-l { text-decoration: underline; text-decoration-color: var(--line); } .ds-track a:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; } .ds-n { position: absolute; top: -.45rem; left: calc(50% + 1.3rem); min-width: 1.25rem; height: 1.25rem; padding: 0 .2rem; box-sizing: border-box; background: var(--ink); color: var(--ground); text-align: center; font: 600 .75rem/1.25rem var(--display); font-stretch: 75%; font-variant-numeric: tabular-nums; } .ds-l { font: 500 .9rem/1.25 var(--display); font-stretch: 87.5%; text-align: center; }"
+    },
+    {
+      "name": "Sticky Bar",
+      "kind": "nav",
+      "refersTo": "sticky-bar",
+      "description": "The 2.5rem bar at the top of main on the capture journey page: the ground with a hairline below, one square dot for each stage (done = muted fill, current = ink fill), and \"N of M: <stage>\" on one line (M is the count of the stages of the chapter). Hidden without JavaScript and in print.",
+      "html": "<div class=\"ds-bar\" aria-hidden=\"true\"><span class=\"ds-dots\"><span class=\"ds-done\"></span><span class=\"ds-done\"></span><span class=\"ds-on\"></span><span></span><span></span><span></span></span><span class=\"ds-now\">3 of 6: The stage name of the third stage</span></div>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --best-guess: #7a5a12; --not-working: #9e3f4b; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --best-guess: #d9b25c; --not-working: #e08a93; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-bar { display: flex; align-items: center; gap: .75rem; height: 2.5rem; box-sizing: border-box; padding-inline: 1.25rem; max-width: 22rem; background: var(--ground); border-bottom: 1px solid var(--line); color: var(--ink); } .ds-dots { display: flex; flex: none; gap: .3rem; } .ds-dots span { width: .65rem; height: .65rem; box-sizing: border-box; border: 1.5px solid var(--ink); } .ds-dots .ds-done { background: var(--muted); border-color: var(--muted); } .ds-dots .ds-on { background: var(--ink); } .ds-now { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: 600 .9rem/1.3 var(--display); font-stretch: 87.5%; font-variant-numeric: tabular-nums; } @media (forced-colors: active) { .ds-dots .ds-on { forced-color-adjust: none; background-color: CanvasText; } }"
+    },
+    {
+      "name": "State Marks",
+      "kind": "chip",
+      "refersTo": "state-tag-best-guess",
+      "description": "A state tag (the mark and the label in the state color: a square with a hatch for a best guess, a square with a cross for not working) and a flag (a square block with a 1px border in the state color, no fill). `STATE_STYLE` in `site-html.mjs` holds them for the capture journey pages and the roadmap page. A flag is in a stage or in a fold of the roadmap page. In a row of the At a glance table, a best guess shows the mark only, with a hidden text for screen readers. The mark is a mask that the state color paints; CanvasText in forced colors; it keeps its color in print.",
+      "html": "<div class=\"ds-states\"><p class=\"ds-legend\"><span class=\"ds-tag ds-guess\">Best guess</span> The docs infer this part from the code.</p><p class=\"ds-flag ds-broken\"><span class=\"ds-tag\">Not working today</span> The upload stops at this step. <a href=\"#\">treetracker-api#123</a></p></div>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --best-guess: #7a5a12; --not-working: #9e3f4b; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --best-guess: #d9b25c; --not-working: #e08a93; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-states { padding: 1rem; background: var(--ground); color: var(--ink); font: 1.03125rem/1.62 system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; } .ds-legend { margin: .5rem 0; font-size: .92rem; line-height: 1.5; color: var(--muted); } .ds-tag { display: inline; font: 600 .82rem/1.7 var(--display); font-stretch: 87.5%; white-space: nowrap; } .ds-tag::before { content: \"\"; display: inline-block; width: .9em; height: .9em; margin-right: .4em; vertical-align: -.1em; background-color: currentColor; -webkit-mask: var(--state-mark) center / 100% 100% no-repeat; mask: var(--state-mark) center / 100% 100% no-repeat; -webkit-print-color-adjust: exact; print-color-adjust: exact; } .ds-guess, .ds-flag.ds-guess .ds-tag { --state-mark: url(\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%221.2%22%3E%3Crect%20x%3D%22.6%22%20y%3D%22.6%22%20width%3D%2210.8%22%20height%3D%2210.8%22%2F%3E%3Cpath%20d%3D%22M.6%206.6l6-6M.6%2011.4L11.4.6M5.4%2011.4l6-6%22%2F%3E%3C%2Fsvg%3E\"); color: var(--best-guess); } .ds-flag.ds-broken .ds-tag { --state-mark: url(\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%221.2%22%3E%3Crect%20x%3D%22.6%22%20y%3D%22.6%22%20width%3D%2210.8%22%20height%3D%2210.8%22%2F%3E%3Cpath%20d%3D%22M3.2%203.2l5.6%205.6M8.8%203.2l-5.6%205.6%22%2F%3E%3C%2Fsvg%3E\"); color: var(--not-working); } .ds-flag { margin: 1rem 0 0; padding: .6rem .85rem; border: 1px solid; } .ds-flag.ds-broken { border-color: var(--not-working); } .ds-flag a { white-space: nowrap; color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, var(--link) 35%, transparent); text-underline-offset: .2em; } @media (forced-colors: active) { .ds-tag::before { forced-color-adjust: none; background-color: CanvasText; } }"
+    },
+    {
+      "name": "Roadmap Group Section and Fold",
+      "kind": "custom",
+      "refersTo": "fold-summary",
+      "description": "A group section of the roadmap page (a 3px rule in the area color and the chip for an area; a 2px ink rule and no chip for a group that is not an area), with each section of the source as a fold: a details box between hairlines, a muted triangle marker (ink on hover, turned down when open, no motion), the heading, the muted item count, and the best-guess tag, the last word kept with the count.",
+      "html": "<div class=\"ds-rm\"><section class=\"ds-group\" style=\"--area: var(--c-cropland)\"><h2><i class=\"ds-chip\" aria-hidden=\"true\"></i>Wallet</h2><p class=\"ds-repos\">Repos: <a href=\"#\">treetracker-wallet-api</a></p><details class=\"ds-fold\" open><summary>Wallet <span class=\"ds-nb\">features <span class=\"ds-n\">· 3 items</span></span> <span class=\"ds-tag\">Best guess</span></summary><p class=\"ds-flag\"><span class=\"ds-tag\">Best guess</span> for the area: the items name wallet screens.</p><ul><li>Item one of the source.</li><li>Item two of the source.</li></ul></details><details class=\"ds-fold\"><summary>Token <span class=\"ds-nb\">transfers <span class=\"ds-n\">· 1 item</span></span></summary><ul><li>Item of the source.</li></ul></details></section><section class=\"ds-group ds-other\"><h2>Across the estate</h2><p class=\"ds-repos\">Sections about many repos.</p><details class=\"ds-fold\"><summary>Documentation <span class=\"ds-n\">· 2 items</span></summary><ul><li>Item of the source.</li></ul></details></section></div>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --best-guess: #7a5a12; --not-working: #9e3f4b; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --best-guess: #d9b25c; --not-working: #e08a93; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-rm { padding: 1rem; background: var(--ground); color: var(--ink); font: 1.03125rem/1.62 system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; } .ds-group { margin-top: 2rem; padding-top: .75rem; border-top: 3px solid var(--area); } .ds-group:first-child { margin-top: 0; } .ds-other { border-top: 2px solid var(--ink); } .ds-group h2 { margin: 0 0 .5rem; font: 660 1.5rem/1.15 var(--display); } .ds-chip { display: inline-block; width: .8em; height: .8em; margin-right: .45em; vertical-align: -.02em; background: var(--area); box-shadow: inset 0 0 0 1px var(--edge); } .ds-repos { margin: 0 0 1rem; color: var(--muted); } .ds-repos a { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, var(--link) 35%, transparent); text-underline-offset: .2em; } .ds-fold { border-top: 1px solid var(--line); } .ds-fold:last-of-type { border-bottom: 1px solid var(--line); } .ds-fold > summary { position: relative; display: block; padding: .6rem 0 .6rem 1.1rem; cursor: pointer; font: 600 1.02rem/1.45 var(--display); list-style: none; } .ds-fold > summary::-webkit-details-marker { display: none; } .ds-fold > summary::before { content: \"\"; position: absolute; left: 0; top: calc(.6rem + .725em - .375rem); width: .75rem; height: .75rem; background-color: var(--muted); -webkit-mask: url(\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20d%3D%22M2.5%201.5l8%204.5-8%204.5z%22%2F%3E%3C%2Fsvg%3E\") center / 100% 100% no-repeat; mask: url(\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20d%3D%22M2.5%201.5l8%204.5-8%204.5z%22%2F%3E%3C%2Fsvg%3E\") center / 100% 100% no-repeat; } .ds-fold > summary:hover::before { background-color: var(--ink); } .ds-fold[open] > summary::before { transform: rotate(90deg); } .ds-fold > summary:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; } .ds-n { font-weight: 500; font-stretch: 87.5%; font-variant-numeric: tabular-nums; color: var(--muted); } .ds-nb { white-space: nowrap; } .ds-fold > :not(summary) { margin: 0 0 0 1.1rem; } .ds-fold > :last-child:not(summary) { margin-bottom: 1.1rem; } .ds-fold li { margin-block: .3rem; } .ds-fold li::marker { color: var(--muted); } .ds-tag { display: inline; margin-left: .3rem; font: 600 .82rem/1.7 var(--display); font-stretch: 87.5%; white-space: nowrap; color: var(--best-guess); --state-mark: url(\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%221.2%22%3E%3Crect%20x%3D%22.6%22%20y%3D%22.6%22%20width%3D%2210.8%22%20height%3D%2210.8%22%2F%3E%3Cpath%20d%3D%22M.6%206.6l6-6M.6%2011.4L11.4.6M5.4%2011.4l6-6%22%2F%3E%3C%2Fsvg%3E\"); } .ds-tag::before { content: \"\"; display: inline-block; width: .9em; height: .9em; margin-right: .4em; vertical-align: -.1em; background-color: currentColor; -webkit-mask: var(--state-mark) center / 100% 100% no-repeat; mask: var(--state-mark) center / 100% 100% no-repeat; } .ds-flag { margin: .2rem 0 1rem 1.1rem; padding: .6rem .85rem; border: 1px solid var(--best-guess); } .ds-flag .ds-tag { margin-left: 0; } @media (forced-colors: active) { .ds-fold > summary::before, .ds-tag::before { forced-color-adjust: none; background-color: CanvasText; } }"
+    },
+    {
+      "name": "Stage",
+      "kind": "card",
+      "refersTo": "stage-media",
+      "description": "A stage of the capture journey: a 2px ink rule above it, the images on a surface plate with no neatline (each image has its own frame) beside the text (the text in the wider column), the stage label (a small station icon over \"Stage N of M\") in a margin column at the left of the heading, level with its first line, the h2 in the text-page headline style, the text hanging under the heading in the second column, an optional note that can end with one link (\"See\" and a link: `seeChapter` for another chapter, `seeLink` for a public page), and a square \"For developers\" box with a hairline border. Under each repo, the box lists the cited files, then the open public issues of the stage (`issues`: \"issue #N\" and what it says). A code in the box stays on one line when it fits; a longer code breaks inside its own box (an inline block, `max-width: 100%`, `vertical-align: top`).",
+      "html": "<section class=\"ds-stage\"><div class=\"ds-media\"><figure class=\"ds-phone\"><div class=\"ds-shot\"></div><figcaption>The capture screen of the app.</figcaption></figure></div><div class=\"ds-text\"><p class=\"ds-num\"><svg class=\"ds-sicon\" viewBox=\"0 0 48 48\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"14\" y=\"4\" width=\"20\" height=\"40\"/><path d=\"M21 38h6\"/></svg> Stage <span class=\"of\">1 of 6</span></p><h2>A grower takes a photo of a tree</h2><p>The app stores the photo and the place on the phone.</p><details class=\"ds-dev\"><summary>For developers</summary><p>The repos and files of this stage.</p></details></div></section>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --best-guess: #7a5a12; --not-working: #9e3f4b; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --best-guess: #d9b25c; --not-working: #e08a93; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 1.5rem 2.5rem; align-items: start; padding: 1.5rem 1rem 1rem; border-top: 2px solid var(--ink); background: var(--ground); color: var(--ink); font: 1.03125rem/1.62 system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; } .ds-media { display: flex; justify-content: center; padding: 1.25rem; background: var(--surface); } figure { margin: 0; text-align: center; } .ds-phone { width: 150px; } .ds-shot { aspect-ratio: 9 / 19; background: var(--ground); outline: 1px solid var(--edge); outline-offset: -1px; } figcaption { margin-top: .5rem; font-size: .85rem; line-height: 1.4; color: var(--muted); text-wrap: balance; } .ds-text { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: .9rem; align-items: start; } .ds-text > * { grid-column: 2; } .ds-num { display: flex; align-items: center; gap: .55rem; margin: 0; font: 600 .82rem/1.2 var(--display); font-stretch: 87.5%; font-variant-numeric: tabular-nums; color: var(--muted); } .ds-text > .ds-num { grid-column: 1; grid-row: 1 / span 2; flex-direction: column; align-items: flex-start; gap: 0; margin: .6rem 0 0; white-space: nowrap; } .ds-text > .ds-num .ds-sicon { margin-bottom: .4rem; } .ds-text > h2 { grid-row: 1; } .ds-sicon { width: 1.75rem; height: 1.75rem; padding: .3rem; box-sizing: border-box; border: 1.5px solid var(--ink); color: var(--ink); } .ds-text h2 { margin: .6rem 0 .9rem; font: 660 1.5rem/1.15 var(--display); text-wrap: balance; } .ds-text p { margin: 0 0 1rem; } .ds-dev { margin: 1.25rem 0 0; padding: .25rem .9rem; border: 1px solid var(--line); font-size: .92rem; } .ds-dev summary { padding-block: .2rem; cursor: pointer; font: 600 .92rem/1.6 var(--display); font-stretch: 87.5%; } .ds-dev summary::marker { color: var(--muted); } .ds-dev p { margin: .4rem 0; }"
+    },
+    {
+      "name": "Capture Journey Chapters",
+      "kind": "nav",
+      "refersTo": "chapter-number",
+      "description": "The chapters in the footer of each capture journey page (`footer.page-end`, a hairline above it, muted text): the heading \"Chapters\", one row for each chapter between 1px hairlines (\"Chapter N\" in a 5rem margin column, then the subtitle), and, only when the data has the optional later text, a muted line on the chapters that are not written yet (no chapter has it now, so no footer shows this line). The subtitle of each other chapter is a link to its page. The row of this page has no link: the subtitle is ink and \"(this page)\" follows it. A later chapter also has a start line at the top of its intro: a link to the stage of chapter 1 where the chapter starts, then the sentence on the chapters.",
+      "html": "<footer class=\"ds-end\"><nav class=\"ds-chapters\" aria-labelledby=\"ds-ch\"><h2 id=\"ds-ch\">Chapters</h2><ul><li><span class=\"ds-cn\">Chapter 1</span><a href=\"#\">From the grower’s phone to the grower’s reward</a></li><li><span class=\"ds-cn\">Chapter 2</span><span><span class=\"ds-ct\">The capture on the public web map</span> (this page)</span></li><li><span class=\"ds-cn\">Chapter 3</span><a href=\"#\">The capture as an impact token</a></li><li><span class=\"ds-cn\">Chapter 4</span><a href=\"#\">The capture in the data for organizations</a></li></ul></nav></footer>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --link: #2c5d84; --line: #c5cec3; --edge: color-mix(in srgb, #1b2420 25%, transparent); --display: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; --c-ink: #1b2420; --best-guess: #7a5a12; --not-working: #9e3f4b; --c-evergreen: #35614e; --c-cropland: #92600d; --c-shrub: #bba25b; --c-wetland: #6f9db3; --c-deciduous: #6c8951; --c-mixed-forest: #b1bd97; --c-bare-ground: #7c796e; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --link: #8fb9d9; --line: #2e3a33; --edge: color-mix(in srgb, #e2e8e0 25%, transparent); --c-ink: #e2e8e0; --best-guess: #d9b25c; --not-working: #e08a93; --c-evergreen: #33634d; --c-cropland: #916618; --c-shrub: #b49e56; --c-wetland: #7fb0c6; --c-deciduous: #49854f; --c-mixed-forest: #b1b38e; --c-bare-ground: #858377; } } .ds-end { padding: 1.25rem 1rem 1rem; border-top: 1px solid var(--line); background: var(--ground); color: var(--muted); font: 1.03125rem/1.62 system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; } .ds-chapters h2 { margin: 0 0 .5rem; font: 660 1.15rem/1.15 var(--display); color: var(--ink); } .ds-chapters ul { max-width: 44rem; margin: 0 0 1rem; padding: 0; list-style: none; } .ds-chapters li { display: grid; grid-template-columns: 5rem minmax(0, 1fr); column-gap: .9rem; align-items: baseline; padding-block: .55rem; border-top: 1px solid var(--line); } .ds-chapters li:last-child { border-bottom: 1px solid var(--line); } .ds-cn { font: 600 .82rem/1.4 var(--display); font-stretch: 87.5%; font-variant-numeric: tabular-nums; } .ds-ct { color: var(--ink); } .ds-chapters a { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, var(--link) 35%, transparent); text-underline-offset: .2em; } .ds-chapters p { max-width: 44rem; margin: 0; }"
+    },
+    {
+      "name": "Drawing in the Site Look",
+      "kind": "custom",
+      "refersTo": "drawing-step",
+      "description": "A drawing of the capture journey in the site look: the surface background, square ground step boxes with a 1.5 muted border, ink number squares with ground numerals, muted lines and arrow heads, and a dashed box for a step outside the Greenstand system. The map drawings of chapter 2 (`map-pins.svg`, `map-clusters.svg`, `tree-page.svg`) use the same 5 colors: a ground map card with a 1.5 muted border and field edges in the line color, muted pins with a ground hole (a new pin is ink), clusters as ground circles with a 2-unit ink ring and an ink count (a dashed ring for a count that changes), tags 36 units high (a ground box with a 1.5 ink border and an ink title), and the tree page: a ground card with a surface photo plate, a tree (a ground crown with a muted edge, a muted trunk, a muted ground line), and badges. A screen of a Greenstand app that real data keeps off the page is drawn in the site look with made-up data (`tree-page.svg`, `no-token.svg`, `token-page.svg`): numbers such as \"#1234\", wallet and organization names that start with \"Example\", dates such as \"2 March 2026\", and a person as a plain surface block with only the role word. A token is a tag shape (a ground box with a pointed left end, a 1.5 ink border, and a muted hole), not a coin. An ink drawing line gives a value of a drawn screen. Chapter 3 adds `no-token.svg`, `token-mint.svg`, `token-transfer.svg`, and `token-page.svg`. Chapter 4 adds `org-account.svg`, `org-export.svg`, `org-numbers.svg`, and `org-cards.svg`: an ink box (class `inkbox`, a ground box with a 1.5 ink border) marks a button, a destination, or the data that a person sees, and it is never a state; an ink check mark (class `inkline`) fills a box of a list of options; and the top growers are plain surface blocks with only the role word \"Grower\". 13 of the 15 drawings are in the site look. Each drawing holds only the CSS rules that it uses. The real drawing holds the site color block and the drawing font block; this snippet uses Archivo with the system sans as the fallback. A drawing in the site look is 400 units wide; the 2 older app-screen drawings (`web-map-badges.svg`, `verify-page.svg`) are 360 units wide, keep their own colors, and are not a rule source.",
+      "html": "<svg class=\"ds-drawing\" viewBox=\"0 0 400 182\" role=\"img\" aria-label=\"Two steps\"><rect class=\"bg\" width=\"400\" height=\"182\"/><rect class=\"card\" x=\"12\" y=\"12\" width=\"376\" height=\"68\"/><rect class=\"nb\" x=\"26\" y=\"31\" width=\"30\" height=\"30\"/><text class=\"num\" x=\"41\" y=\"52\" text-anchor=\"middle\">3</text><text class=\"t\" x=\"68\" y=\"41\">The funder downloads the list</text><text class=\"s\" x=\"68\" y=\"64\">The Earnings page of the admin panel</text><path class=\"line\" d=\"M200 80V98\"/><path class=\"head\" d=\"M193 97l7 9 7-9z\"/><rect class=\"card dash\" x=\"12\" y=\"106\" width=\"376\" height=\"68\"/><rect class=\"nb\" x=\"26\" y=\"125\" width=\"30\" height=\"30\"/><text class=\"num\" x=\"41\" y=\"146\" text-anchor=\"middle\">4</text><text class=\"t\" x=\"68\" y=\"135\">The funder pays the grower</text><text class=\"s\" x=\"68\" y=\"158\">Outside the Greenstand system</text></svg>",
+      "css": ":host { --ground: #f3f5f0; --surface: #e8ece5; --ink: #1b2420; --muted: #56625a; --line: #c5cec3; } @media (prefers-color-scheme: dark) { :host { --ground: #131915; --surface: #1b231e; --ink: #e2e8e0; --muted: #9aa79e; --line: #2e3a33; } } .ds-drawing { display: block; width: 350px; height: auto; border: 1px solid var(--line); } .ds-drawing .bg { fill: var(--surface); } .ds-drawing .card { fill: var(--ground); stroke: var(--muted); stroke-width: 1.5; } .ds-drawing .dash { stroke-dasharray: 6 5; } .ds-drawing .line { fill: none; stroke: var(--muted); stroke-width: 2; } .ds-drawing .head { fill: var(--muted); } .ds-drawing .nb { fill: var(--ink); } .ds-drawing text { font-family: \"Archivo\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", sans-serif; font-stretch: 87.5%; text-rendering: geometricPrecision; } .ds-drawing .t { font-size: 18px; font-weight: 600; fill: var(--ink); } .ds-drawing .s { font-size: 15.5px; font-weight: 400; fill: var(--muted); } .ds-drawing .num { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; fill: var(--ground); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Land-Cover Map",
+    "overview": "The site reads as a land-cover classification map of the code estate. Each area of repos is a land-cover class. Each class has one flat, muted area color. The snapshot commit is the scene date. The reader sees the whole estate in one estate strip, learns the area key, follows the numbered Start here path, and then finds a repo entry with its proof links.\n\nThe site look is calm and dense. The page is a mineral ground with evergreen-black ink. Hairline rules divide the content. The parcel field, the faint ink boundaries of made-up field parcels, lies behind the legend rail. It is decoration, not data. Apart from the link blue, the area colors are the only saturated colors on the page, and they fill shapes only. The pages follow the color scheme of the reader, so each color is a pair: one value for light, one value for dark (the `-dark` tokens). The site look refuses the GitHub-clone docs look (the former look) and the stock eco template: no leaf art, no gradients, no drop shadows, no Greenstand logo.\n\nScope of this record: every page that the site scripts make is in the site look. These pages are the landing page, the text pages, the capture journey pages, the contributors page, the moved pages, and the roadmap page. The shared base is the colors in `.github/scripts/site-colors.mjs` and these parts of `.github/scripts/site-html.mjs`: `siteStyle`, `siteHead`, the estate mark (`estateMark(areas, current)`, `areaGroup`, `areaStyle`), the masthead (`masthead`, `mastheadStyle`), the reading column (`READING_COLUMN`), the content column of the capture journey page (`CONTENT_COLUMN`), the plate edge (`PLATE_EDGE`), the inline code chip (`CODE_CHIP`), the state marks (`STATE_STYLE`), the rules of running text (`TEXT_STYLE`), the area chip (`CHIP_STYLE`), the page footer (`PAGE_END_STYLE`), and the files of the site look (`SITE_LOOK_FILES`: the font and the parcel field). The parcel field is also in the shared base (`.github/scripts/build-parcel-field.mjs` writes `art/parcel-field.svg`). `build-landing.mjs` writes the landing page. `render-md.mjs` writes the text pages: the ecosystem maps, the shared-resource page, the estate glossary, the volunteer guide, and the onboarding guide, the README, and the glossary of each repo. `capture-journey-page.mjs` holds the capture journey page of each chapter, and `build-capture-journey.mjs --site` writes them: `capture-journey.html` for chapter 1 and `capture-journey-<id>.html` for a later chapter (`capture-journey-web-map.html` for chapter 2, `capture-journey-token.html` for chapter 3, and `capture-journey-organizations.html` for chapter 4). `build-moved.mjs` writes the moved pages: a moved page is at the former name of a repo and sends the reader to the new name. `roadmap-page.mjs` holds the roadmap page, and `build-roadmap.mjs --site` writes it (`roadmap.html`). The roadmap page shows the Greenstand roadmap by the areas of the estate. Its text copy for GitHub is `docs/roadmap.md`. Every page shows the parcel field. The former look (`BASE_STYLE`) is not in the build any more.",
+    "keyCharacteristics": [
+      "A mineral ground, an ink text color, and water blue for links only, from one data module of [light, dark] pairs.",
+      "Eight area colors (seven land-cover classes and ink for Organization) that fill cells, chips, and rules, never text.",
+      "An ink edge on each area fill, so that pale fills stay visible on the ground.",
+      "Archivo (a variable face with a width axis) for headings, labels, and numerals; the system sans for body text.",
+      "Square corners, hairline rules, and no elevation. Each plate in the surface color has a hairline neatline, as the frame of a map sheet.",
+      "The parcel field: the faint, still ink boundaries of made-up field parcels under the legend rail on a wide screen and under the masthead on a phone. The content column stays plain.",
+      "The estate strip as the signature: a picture on a phone, a row of links on a wider page, an upright legend in the legend rail on a wide screen. The other pages show it small, as the estate mark in the masthead. On a one-repo page, the locator outlines the cell of that repo.",
+      "The capture journey as an ink track: one square station for each stage. A best guess has a hatch, and a part that does not work has a cross.",
+      "Diagrams on a plate in the surface color, with each repo node in a tint of its area color.",
+      "The roadmap page: one group section for each area in its area color, and each section of the source as a fold with its item count."
+    ],
+    "rules": [
+      {
+        "name": "The One Color, One Job Rule",
+        "body": "An area color marks its area and nothing else. It fills cells, chips, rules, and tints. It never colors text. Water blue is for links only. The state colors are for states only.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Backgrounds Rule",
+        "body": "Each text color has a contrast of 4.5:1 or more on each background (the ground and the surface), in light and in dark mode. `.github/scripts/check-site-colors.mjs` enforces it in CI. Add a new text color to `TEXTS` in `site-colors.mjs`, so that CI checks it.",
+        "section": "colors"
+      },
+      {
+        "name": "The State Apart Rule",
+        "body": "Each area color is 10 or more (CIE76) from each state color, in both schemes. CI enforces it. Thus an area color does not look like a state.",
+        "section": "colors"
+      },
+      {
+        "name": "The Color-Blind Key Rule",
+        "body": "Each two area colors are 10 or more apart (CIEDE2000), in both schemes, for normal vision and for simulated protanopia and deuteranopia (Machado 2009, severity 1). CI enforces it. A new area color must pass this check before a page uses it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ink Edge Rule",
+        "body": "Every area fill carries the ink edge (a 1px inset outline in 25% ink). Pale fills, for example Mixed Forest Sage, stay visible on the ground.",
+        "section": "colors"
+      },
+      {
+        "name": "The Faint Field Rule",
+        "body": "The parcel field at full mask has a contrast of 1.25:1 or less with the ground, so it stays in the background. Each text color has a contrast of 4.5:1 or more on the field, because the title and the estate strip lie on it. The ink share is above 0 and at most 100. `check-site-colors.mjs` enforces these rules in CI, in light and in dark mode. Today the field is 1.2489:1 (light) and 1.2480:1 (dark) to the ground. The weakest text on the field is best-guess at 4.64:1 and muted at 4.66:1, both in light mode. Change the strength of the field only in `PARCEL_FIELD_INK_SHARE`.",
+        "section": "colors"
+      },
+      {
+        "name": "The Node Tint Rule",
+        "body": "The node of a repo in a diagram has a fill of its area color at `DIAGRAM_NODE_TINT` (30%) mixed with the ground. The ink labels have a contrast of 4.5:1 or more on the node tint of each area color, in light and in dark mode. The tint is a percent above 0 and at most 100. `check-site-colors.mjs` enforces these rules in CI. Today the weakest label is ink on the ink tint (Organization): 7.76:1 in light mode and 5.93:1 in dark mode. Change the tint only in `DIAGRAM_NODE_TINT`.",
+        "section": "colors"
+      },
+      {
+        "name": "The Drawing Colors Rule",
+        "body": "A drawing in the site look holds the site color block: the 5 neutral colors (ground, surface, ink, muted, line) as CSS custom properties on `svg`, light and dark by `prefers-color-scheme`. An SVG in an `<img>` cannot read the custom properties of the page, so the drawing holds its own copy. `build-capture-journey.mjs` writes the block from `site-colors.mjs` (`DRAWING_COLORS` in `site-drawings.mjs`), and `--site` copies the drawing with the current block. `--check` (CI) fails on a stale block. Each mode fails on a `var(--x)` that is not one of the 5. Each mode also fails on any other color outside the block: a hex color, a color function, a named color, or `currentColor`. A drawing with no site color block fails when it uses `var(--x)` or the drawing font. Thus a drawing in the site look has no area color, no state color, and no link color (the One Color, One Job Rule). A drawing with no site color block keeps its own colors.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Voices Rule",
+        "body": "Archivo sets headings, labels, and numerals. The system sans sets the body text. Monospace sets code and commit ids only.",
+        "section": "typography"
+      },
+      {
+        "name": "The Narrow Label Rule",
+        "body": "Archivo labels use a width of 87.5%. Numerals use a width of 75%. The full width is for headings. Headings use `text-wrap: balance`.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Lone Word Rule",
+        "body": "`siteStyle` sets `text-wrap: pretty` on paragraphs, list items, `dd`, and quotes, on every page in the site look. Thus the browser avoids one word alone on the last line of a paragraph.",
+        "section": "typography"
+      },
+      {
+        "name": "The Whole Name Rule",
+        "body": "A date (YYYY-MM-DD), a repo name, a quoted group in parentheses (for example \"(Complete)\"), and the last word of a fold heading with its count and its tag stay on one line, in a nowrap span. A browser breaks a line at a hyphen and between an opening quote and \"(\", and a count must not stand alone on a line. The roadmap page puts the spans in the text between the tags.",
+        "section": "typography"
+      },
+      {
+        "name": "The Drawing Font Rule",
+        "body": "All text of a drawing in the site look is in the drawing font. The system sans is only its fallback. When the words of a drawing change, run `subset-drawing-font.py`, so that the drawing font has each character.",
+        "section": "typography"
+      },
+      {
+        "name": "The 24 px Target Rule",
+        "body": "A strip cell is a link only where it can be 24px wide. Below that width, the strip is the estate mark: a picture with no links and no words, hidden from screen readers. Do not hard-code the width; compute it from the repo counts and test it on the masthead container, not on the page. In the legend rail each row is at least `max(1.5rem, 24px)` high, so the rail always has links.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Map Rule",
+        "body": "Surfaces are flat at all times. Use tone (the surface), the neatline, and hairlines for structure. Use no drop shadow and no gradient. The one exception is the scroll shadows of a wide diagram: they are the cue that a diagram scrolls, and they show nowhere else. The parcel field is a flat ink layer behind the page, not a surface above it.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Neatline Rule",
+        "body": "Each plate in the surface color carries `PLATE_EDGE` (1px solid, the line color). Take the edge from `PLATE_EDGE`; do not write a new border value for a plate.",
+        "section": "elevation"
+      },
+      {
+        "name": "The One Frame Rule",
+        "body": "A plate that holds framed images has no neatline: a frame inside a frame is noise. The image plate of a capture journey stage has no edge, because each phone screenshot has its ink edge outline and each drawing has its hairline border.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Locator Rule",
+        "body": "The estate mark outlines one cell at most: the cell of the repo of a one-repo page. The outline is ink (2px solid, 1px offset), never an area color. A page about more than one repo shows no locator.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do take every color from `BACKGROUNDS`, `TEXTS`, `STATES`, `LINES`, and `AREA_COLORS` in `site-colors.mjs`, as a [light, dark] pair, through the CSS custom properties of `siteStyle`.",
+      "Do define every custom property that a page uses. `build-landing.mjs`, `render-md.mjs`, `build-capture-journey.mjs`, `build-moved.mjs`, `build-contributors.mjs`, and `build-roadmap.mjs --site` fail when a page uses a custom property that nothing defines (`undefinedProperties` in `site-html.mjs`; the check skips scripts).",
+      "Do let a page build fail when a file that the page loads is missing. `build-landing.mjs`, `render-md.mjs`, `build-capture-journey.mjs --site`, `build-moved.mjs`, and `build-roadmap.mjs --site` check the files of the site look (`SITE_LOOK_FILES`: the font and the parcel field) and show every missing file at once. `render-md.mjs` also checks Mermaid for a page with a diagram. The contributors page is built in a job with no site (`build-contributors.mjs --out`), so `build-landing.mjs` checks its files: it fails when the page, the font, or the parcel field is missing from the site.",
+      "Do write the estate mark with `estateMark`, `areaGroup`, and `areaStyle` from `site-html.mjs`. On each page but the landing page, write the masthead with `masthead` and its style with `mastheadStyle`, which gives the estate mark its size. On a one-repo page, give the repo name as `current`, so the estate mark shows the locator. The landing page gives the estate mark its size in its own style.",
+      "Do take the diagram colors from `site-colors.mjs` through the Mermaid `themeVariables`, and change the tint of a repo node only in `DIAGRAM_NODE_TINT`.",
+      "Do give an element its area color with `--area: var(--c-<color>)`, from the `\"color\"` of its area in `estate.json`.",
+      "Do put the ink edge (1px inset, 25% ink) on every area fill.",
+      "Do keep text at 4.5:1 or more on the ground, on the surface, and on the parcel field in both schemes, and let `check-site-colors.mjs` prove it. Text may sit on the parcel field.",
+      "Do change the strength of the parcel field only in `PARCEL_FIELD_INK_SHARE`, and keep the field at 1.25:1 or less with the ground.",
+      "Do hide the parcel field and the rail-edge hairline in forced colors, with `prefers-contrast: more`, and in print.",
+      "Do set headings, labels, and numerals in Archivo, and body text in the system sans.",
+      "Do keep a strip cell at 24px or more wherever it is a link.",
+      "Do give each plate in the surface color the neatline from `PLATE_EDGE`, and each inline code the chip from `CODE_CHIP`.",
+      "Do take the state marks from `STATE_STYLE`, the rules of running text from `TEXT_STYLE`, the area chip from `CHIP_STYLE`, and the page footer from `PAGE_END_STYLE` in `site-html.mjs`. Do not copy them into a page script.",
+      "Do keep a date, a repo name, a quoted group in parentheses, and the last word of a fold heading with its count on one line (see the Whole Name Rule).",
+      "Do keep the parts of a page of running text in the reading column (`READING_COLUMN`), so the page has one right edge. A diagram plate can be wider (see Text pages). Only the capture journey page uses the content column (`CONTENT_COLUMN`).",
+      "Do put a section label (for example the stage label) in a margin column beside its heading, level with the first line of the heading.",
+      "Do turn off motion under `prefers-reduced-motion: reduce`.",
+      "Do put each new drawing of the capture journey in the site look: the site color block, the drawing font block, and the 5 neutral colors only. A screen that real data keeps off the page (a real screen shows a real grower) is drawn in the site look with made-up data. Only the 2 older app-screen drawings (`web-map-badges.svg`, `verify-page.svg`) keep their own colors. Run `build-capture-journey.mjs` for the colors and `subset-drawing-font.py` for the font.",
+      "Do write a date in a drawing as \"2 March 2026\", never in numbers only.",
+      "Do use the curly apostrophe (’) in the prose of a capture journey page and of a drawing."
+    ],
+    "donts": [
+      "Don't color text with an area color.",
+      "Don't show a state by its state color alone.",
+      "Don't use water blue for anything but links and the focus ring.",
+      "Don't put an area color, a state color, or water blue in a drawing in the site look.",
+      "Don't use a drop shadow, a gradient, a rounded corner, or leaf art. The one exception is the scroll shadows of a wide diagram (see the Flat Map Rule). This also applies to the station icons: no `rx` on a `rect`, and no leaf.",
+      "Don't put real data in a drawing of an app screen: no real grower, no real name, and no real face.",
+      "Don't use the default look of Mermaid; it draws node shadows. Use the \"classic\" look.",
+      "Don't put a label above a heading.",
+      "Don't give a chip to a group that is not an area. A chip names an area.",
+      "Don't put a neatline on a plate that holds framed images (see the One Frame Rule).",
+      "Don't add a Greenstand logo or Greenstand brand colors. The site has no binding Greenstand brand, and it shows no Greenstand logo until Greenstand approves one (PRODUCT.md).",
+      "Don't load a font or another asset from a third-party host; vendor it and pin its hash.",
+      "Don't put the parcel field under the content column. It belongs to the legend rail and the masthead only.",
+      "Don't animate the parcel field.",
+      "Don't add fills or a hatch to the parcel field. A hatch is the mark of a best guess.",
+      "Don't show a real place or a capture in the parcel field, and do not call the field a map, a wallpaper, or a background illustration. It is decoration, not data."
+    ]
+  }
+}

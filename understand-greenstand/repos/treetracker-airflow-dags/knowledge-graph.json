@@ -1,0 +1,3605 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-airflow-dags",
+    "languages": [
+      "python",
+      "javascript",
+      "shell",
+      "json",
+      "markdown"
+    ],
+    "frameworks": [
+      "Apache Airflow"
+    ],
+    "description": "Greenstand treetracker-airflow-dags: an Apache Airflow analysis/automation pipeline. Python DAGs schedule and trigger data export, migration, reporting, and web-map precompute jobs, backed by a shared lib/ of job modules over PostGIS/CKAN.",
+    "analyzedAt": "2026-09-02T23:10:40.250Z",
+    "gitCommitHash": "a5372312efc52797b7a2f5cd620507ab65fff871"
+  },
+  "nodes": [
+    {
+      "id": "file:create-tokens.py",
+      "type": "file",
+      "name": "create-tokens.py",
+      "filePath": "create-tokens.py",
+      "summary": "Airflow DAG that creates wallet tokens by inserting rows into a Postgres wallet database, driven by a Python task callable and run configuration.",
+      "tags": [
+        "airflow-dag",
+        "data-pipeline",
+        "database",
+        "wallet",
+        "python-operator"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Uses PythonOperator with a create_tokens callable that reads dag_run.conf and writes via PostgresHook."
+    },
+    {
+      "id": "file:earnings_export_dag.py",
+      "type": "file",
+      "name": "earnings_export_dag.py",
+      "filePath": "earnings_export_dag.py",
+      "summary": "Airflow DAG (earning_export version 1) that orchestrates the monthly earnings export by invoking the shared earning_export routine from lib.",
+      "tags": [
+        "airflow-dag",
+        "data-pipeline",
+        "earnings",
+        "export",
+        "orchestration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:lib/earning_export.py",
+      "type": "file",
+      "name": "earning_export.py",
+      "filePath": "lib/earning_export.py",
+      "summary": "Shared library implementing the earning_export routine that queries earnings for a date range and pushes the resulting dataset to a CKAN endpoint.",
+      "tags": [
+        "utility",
+        "earnings",
+        "export",
+        "ckan",
+        "service",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:lib/earning_export_test.py",
+      "type": "file",
+      "name": "earning_export_test.py",
+      "filePath": "lib/earning_export_test.py",
+      "summary": "Unit test exercising the earning_export routine from the shared library.",
+      "tags": [
+        "test",
+        "unit-test",
+        "earnings"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/utils.py",
+      "type": "file",
+      "name": "utils.py",
+      "filePath": "lib/utils.py",
+      "summary": "Shared helper module providing Slack notification, task-failure callback, timing, and month-range date utilities used across all DAGs.",
+      "tags": [
+        "utility",
+        "shared",
+        "date",
+        "notification",
+        "slack",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:lib/utils_test.py",
+      "type": "file",
+      "name": "utils_test.py",
+      "filePath": "lib/utils_test.py",
+      "summary": "Unit test validating the previous-month date-range helper in lib/utils.",
+      "tags": [
+        "test",
+        "unit-test",
+        "date"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:map/tile-pre-cache.py",
+      "type": "file",
+      "name": "tile-pre-cache.py",
+      "filePath": "map/tile-pre-cache.py",
+      "summary": "Airflow DAG that runs a shell script every 5 minutes to cURL map tiles and refresh cache storage for the most-visited map views.",
+      "tags": [
+        "airflow-dag",
+        "map",
+        "caching",
+        "bash-operator",
+        "scheduled"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:map/update-clusters-for-deactivated-trees.py",
+      "type": "file",
+      "name": "update-clusters-for-deactivated-trees.py",
+      "filePath": "map/update-clusters-for-deactivated-trees.py",
+      "summary": "Airflow DAG that removes deactivated trees from map cluster counts, using a conf-testing decorator to gate execution.",
+      "tags": [
+        "airflow-dag",
+        "map",
+        "clustering",
+        "data-pipeline",
+        "python-operator"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:migrate_stakeholders_dag.py",
+      "type": "file",
+      "name": "migrate_stakeholders_dag.py",
+      "filePath": "migrate_stakeholders_dag.py",
+      "summary": "Airflow DAG that consolidates the stakeholder and entity tables, using Postgres and Kubernetes pod operators for the migration.",
+      "tags": [
+        "airflow-dag",
+        "migration",
+        "database",
+        "stakeholders",
+        "kubernetes"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:mysecond.py",
+      "type": "file",
+      "name": "mysecond.py",
+      "filePath": "mysecond.py",
+      "summary": "Experimental Airflow DAG (first attempt to process a tree) demonstrating a conf-testing decorator and a context-printing Python task.",
+      "tags": [
+        "airflow-dag",
+        "example",
+        "python-operator",
+        "experimental"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:populate-reports-schema.py",
+      "type": "file",
+      "name": "populate-reports-schema.py",
+      "filePath": "populate-reports-schema.py",
+      "summary": "Airflow DAG that populates the reporting schema in Postgres via a sequence of SQL and Python tasks.",
+      "tags": [
+        "airflow-dag",
+        "database",
+        "reporting",
+        "data-pipeline",
+        "postgres"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:populate_tree_reports_schema.py",
+      "type": "file",
+      "name": "populate_tree_reports_schema.py",
+      "filePath": "populate_tree_reports_schema.py",
+      "summary": "Airflow DAG that populates the tree_denormalized table in the reporting schema for downstream analytics.",
+      "tags": [
+        "airflow-dag",
+        "database",
+        "reporting",
+        "denormalization",
+        "postgres"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:refresh_webmap_org_location_dag.py",
+      "type": "file",
+      "name": "refresh_webmap_org_location_dag.py",
+      "filePath": "refresh_webmap_org_location_dag.py",
+      "summary": "Airflow DAG that refreshes the organization_location materialized view in the webmap database.",
+      "tags": [
+        "airflow-dag",
+        "map",
+        "materialized-view",
+        "database",
+        "refresh"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:refresh_webmap_planter_location_dag.py",
+      "type": "file",
+      "name": "refresh_webmap_planter_location_dag.py",
+      "filePath": "refresh_webmap_planter_location_dag.py",
+      "summary": "Airflow DAG that refreshes the planter_location materialized view in the webmap database.",
+      "tags": [
+        "airflow-dag",
+        "map",
+        "materialized-view",
+        "database",
+        "refresh"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:refresh_webmap_species_stat_dag.py",
+      "type": "file",
+      "name": "refresh_webmap_species_stat_dag.py",
+      "filePath": "refresh_webmap_species_stat_dag.py",
+      "summary": "Airflow DAG that refreshes the species statistics materialized view in the webmap database.",
+      "tags": [
+        "airflow-dag",
+        "map",
+        "materialized-view",
+        "database",
+        "refresh"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:session_time_chopping_dag.py",
+      "type": "file",
+      "name": "session_time_chopping_dag.py",
+      "filePath": "session_time_chopping_dag.py",
+      "summary": "Airflow DAG that computes the session_segment for each raw_capture within a session, writing UUID-keyed segments to Postgres.",
+      "tags": [
+        "airflow-dag",
+        "data-pipeline",
+        "sessions",
+        "database",
+        "postgres"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Registers psycopg2 UUID adapter and uses typing.List for segment processing."
+    },
+    {
+      "id": "file:test1.py",
+      "type": "file",
+      "name": "test1.py",
+      "filePath": "test1.py",
+      "summary": "Scratch Airflow DAG (to test update) used for experimenting with Postgres and Python operator wiring.",
+      "tags": [
+        "airflow-dag",
+        "example",
+        "experimental",
+        "postgres"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tutorial.py",
+      "type": "file",
+      "name": "tutorial.py",
+      "filePath": "tutorial.py",
+      "summary": "Airflow tutorial DAG demonstrating BashOperator task wiring and default_args with a shared failure callback.",
+      "tags": [
+        "airflow-dag",
+        "example",
+        "tutorial",
+        "bash-operator",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tutorial_test.py",
+      "type": "file",
+      "name": "tutorial_test.py",
+      "filePath": "tutorial_test.py",
+      "summary": "Test/scratch variant of the tutorial DAG that mirrors the tutorial task wiring using the shared failure callback.",
+      "tags": [
+        "airflow-dag",
+        "test",
+        "tutorial",
+        "example"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:lib/earning_export.py:earning_export",
+      "type": "function",
+      "name": "earning_export",
+      "filePath": "lib/earning_export.py",
+      "lineRange": [
+        7,
+        161
+      ],
+      "summary": "Queries earnings for a given date range from the connection and exports the resulting dataset to CKAN using the provided config.",
+      "tags": [
+        "earnings",
+        "export",
+        "ckan",
+        "database"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:lib/earning_export_test.py:Test_TestIncrementDecrement",
+      "type": "class",
+      "name": "Test_TestIncrementDecrement",
+      "filePath": "lib/earning_export_test.py",
+      "lineRange": [
+        5,
+        40
+      ],
+      "summary": "Unit test case that exercises the earning_export routine.",
+      "tags": [
+        "test",
+        "unit-test",
+        "earnings"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:lib/utils.py:print_time",
+      "type": "function",
+      "name": "print_time",
+      "filePath": "lib/utils.py",
+      "lineRange": [
+        6,
+        9
+      ],
+      "summary": "Prints a message with the current timestamp for lightweight task logging.",
+      "tags": [
+        "utility",
+        "logging",
+        "date"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:lib/utils.py:slack_message",
+      "type": "function",
+      "name": "slack_message",
+      "filePath": "lib/utils.py",
+      "lineRange": [
+        11,
+        18
+      ],
+      "summary": "Posts a message to a Slack channel used for pipeline notifications.",
+      "tags": [
+        "utility",
+        "notification",
+        "slack"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:lib/utils.py:on_failure_callback",
+      "type": "function",
+      "name": "on_failure_callback",
+      "filePath": "lib/utils.py",
+      "lineRange": [
+        20,
+        31
+      ],
+      "summary": "Airflow failure callback that sends a Slack notification with task context when a DAG task fails; wired into default_args across all DAGs.",
+      "tags": [
+        "utility",
+        "event-handler",
+        "notification",
+        "slack"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:lib/utils.py:get_first_last_day_of_month",
+      "type": "function",
+      "name": "get_first_last_day_of_month",
+      "filePath": "lib/utils.py",
+      "lineRange": [
+        41,
+        50
+      ],
+      "summary": "Returns the first and last day of the month for a given date.",
+      "tags": [
+        "utility",
+        "date"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:lib/utils.py:get_start_and_end_date_of_previous_month",
+      "type": "function",
+      "name": "get_start_and_end_date_of_previous_month",
+      "filePath": "lib/utils.py",
+      "lineRange": [
+        52,
+        80
+      ],
+      "summary": "Computes the start and end date of the month preceding a given date, used for monthly export windows.",
+      "tags": [
+        "utility",
+        "date"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:lib/utils_test.py:Test_Utils",
+      "type": "class",
+      "name": "Test_Utils",
+      "filePath": "lib/utils_test.py",
+      "lineRange": [
+        4,
+        11
+      ],
+      "summary": "Unit test case validating the previous-month date-range helper.",
+      "tags": [
+        "test",
+        "unit-test",
+        "date"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:map/update-clusters-for-deactivated-trees.py:allow_conf_testing",
+      "type": "function",
+      "name": "allow_conf_testing",
+      "filePath": "map/update-clusters-for-deactivated-trees.py",
+      "lineRange": [
+        43,
+        48
+      ],
+      "summary": "Decorator that gates a task callable to allow conf-based testing overrides.",
+      "tags": [
+        "utility",
+        "decorator",
+        "testing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mysecond.py:allow_conf_testing",
+      "type": "function",
+      "name": "allow_conf_testing",
+      "filePath": "mysecond.py",
+      "lineRange": [
+        43,
+        48
+      ],
+      "summary": "Decorator that gates a task callable to allow conf-based testing overrides.",
+      "tags": [
+        "utility",
+        "decorator",
+        "testing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mysecond.py:print_context",
+      "type": "function",
+      "name": "print_context",
+      "filePath": "mysecond.py",
+      "lineRange": [
+        62,
+        66
+      ],
+      "summary": "Python task callable that prints the Airflow execution context for debugging.",
+      "tags": [
+        "utility",
+        "logging",
+        "example"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/contracts_earnings_fcc.py",
+      "type": "file",
+      "name": "contracts_earnings_fcc.py",
+      "filePath": "lib/contracts_earnings_fcc.py",
+      "summary": "Shared library that computes FCC contract earnings per term directly against a Postgres connection, inserting or updating earnings records.",
+      "tags": [
+        "service",
+        "database",
+        "earnings",
+        "utility",
+        "tested"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses psycopg2 cursors with raw SQL execute/commit for term-based earnings aggregation."
+    },
+    {
+      "id": "function:lib/contracts_earnings_fcc.py:contract_earnings_fcc_term",
+      "type": "function",
+      "name": "contract_earnings_fcc_term",
+      "filePath": "lib/contracts_earnings_fcc.py",
+      "lineRange": [
+        8,
+        140
+      ],
+      "summary": "Queries and writes FCC contract earnings for a single term bounded by start and end dates, committing updates through the shared connection.",
+      "tags": [
+        "database",
+        "earnings",
+        "sql",
+        "aggregation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:lib/contracts_earnings_fcc.py:contract_earnings_fcc",
+      "type": "function",
+      "name": "contract_earnings_fcc",
+      "filePath": "lib/contracts_earnings_fcc.py",
+      "lineRange": [
+        142,
+        158
+      ],
+      "summary": "Entry helper that enumerates contract terms and delegates each to contract_earnings_fcc_term to populate earnings.",
+      "tags": [
+        "database",
+        "earnings",
+        "orchestration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/contracts_earnings_fcc_test.py",
+      "type": "file",
+      "name": "contracts_earnings_fcc_test.py",
+      "filePath": "lib/contracts_earnings_fcc_test.py",
+      "summary": "Unit test that connects to Postgres and exercises contract_earnings_fcc end to end.",
+      "tags": [
+        "test",
+        "database",
+        "earnings"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:lib/contracts_earnings_fcc_test.py:Test",
+      "type": "class",
+      "name": "Test",
+      "filePath": "lib/contracts_earnings_fcc_test.py",
+      "lineRange": [
+        4,
+        16
+      ],
+      "summary": "unittest TestCase that opens a database connection and asserts contract_earnings_fcc runs successfully.",
+      "tags": [
+        "test",
+        "unittest",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/planter_entity.py",
+      "type": "file",
+      "name": "planter_entity.py",
+      "filePath": "lib/planter_entity.py",
+      "summary": "Shared library that populates or refreshes the planter entity table from planter data using raw SQL on a Postgres connection.",
+      "tags": [
+        "service",
+        "database",
+        "data-model",
+        "utility",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:lib/planter_entity.py:planter_entity",
+      "type": "function",
+      "name": "planter_entity",
+      "filePath": "lib/planter_entity.py",
+      "lineRange": [
+        9,
+        62
+      ],
+      "summary": "Reads planter rows and inserts or updates corresponding entity records, committing the transaction through the connection.",
+      "tags": [
+        "database",
+        "sql",
+        "data-model"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:lib/planter_entity_test.py",
+      "type": "file",
+      "name": "planter_entity_test.py",
+      "filePath": "lib/planter_entity_test.py",
+      "summary": "Unit test that connects to Postgres and exercises the planter_entity function.",
+      "tags": [
+        "test",
+        "database",
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:lib/planter_entity_test.py:Test",
+      "type": "class",
+      "name": "Test",
+      "filePath": "lib/planter_entity_test.py",
+      "lineRange": [
+        4,
+        16
+      ],
+      "summary": "unittest TestCase that opens a database connection and asserts planter_entity runs successfully.",
+      "tags": [
+        "test",
+        "unittest",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/pre_request.py",
+      "type": "file",
+      "name": "pre_request.py",
+      "filePath": "lib/pre_request.py",
+      "summary": "Shared helper that issues an HTTP GET to warm a given URL, logging status and swallowing errors.",
+      "tags": [
+        "utility",
+        "http",
+        "cache-warming",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:lib/pre_request.py:pre_request",
+      "type": "function",
+      "name": "pre_request",
+      "filePath": "lib/pre_request.py",
+      "lineRange": [
+        6,
+        23
+      ],
+      "summary": "Performs a GET request against the provided URL to pre-warm caches and prints the response status or error.",
+      "tags": [
+        "http",
+        "cache-warming",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/pre_request_map_clusters.py",
+      "type": "file",
+      "name": "pre_request_map_clusters.py",
+      "filePath": "lib/pre_request_map_clusters.py",
+      "summary": "Shared helper that pre-warms map cluster tile endpoints across zoom levels by repeatedly calling pre_request with a URL prefix.",
+      "tags": [
+        "utility",
+        "http",
+        "cache-warming",
+        "map",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:lib/pre_request_map_clusters.py:pre_request_map_clusters",
+      "type": "function",
+      "name": "pre_request_map_clusters",
+      "filePath": "lib/pre_request_map_clusters.py",
+      "lineRange": [
+        8,
+        31
+      ],
+      "summary": "Iterates map cluster URLs at multiple zoom levels and delegates each to pre_request to warm the cluster cache.",
+      "tags": [
+        "http",
+        "cache-warming",
+        "map"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/pre_request_map_clusters_test.py",
+      "type": "file",
+      "name": "pre_request_map_clusters_test.py",
+      "filePath": "lib/pre_request_map_clusters_test.py",
+      "summary": "Unit test that exercises the pre_request_map_clusters cache-warming helper.",
+      "tags": [
+        "test",
+        "http",
+        "map"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:lib/pre_request_map_clusters_test.py:Test",
+      "type": "class",
+      "name": "Test",
+      "filePath": "lib/pre_request_map_clusters_test.py",
+      "lineRange": [
+        6,
+        8
+      ],
+      "summary": "unittest TestCase that invokes pre_request_map_clusters against a target URL prefix.",
+      "tags": [
+        "test",
+        "unittest",
+        "map"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/pre_request_test.py",
+      "type": "file",
+      "name": "pre_request_test.py",
+      "filePath": "lib/pre_request_test.py",
+      "summary": "Unit test that exercises the pre_request HTTP warming helper.",
+      "tags": [
+        "test",
+        "http",
+        "cache-warming"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:lib/pre_request_test.py:Test",
+      "type": "class",
+      "name": "Test",
+      "filePath": "lib/pre_request_test.py",
+      "lineRange": [
+        4,
+        12
+      ],
+      "summary": "unittest TestCase that calls pre_request against a target URL.",
+      "tags": [
+        "test",
+        "unittest",
+        "http"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:pre_request_map_client_dag.py",
+      "type": "file",
+      "name": "pre_request_map_client_dag.py",
+      "filePath": "pre_request_map_client_dag.py",
+      "summary": "Airflow DAG scheduled every 5 minutes that pre-warms the web map client top and per-organization pages by calling pre_request over a fixed URL list.",
+      "tags": [
+        "entry-point",
+        "airflow-dag",
+        "cache-warming",
+        "map"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Defines the PythonOperator callable inside the `with DAG(...)` context, so no module-level function is exported."
+    },
+    {
+      "id": "file:pre_request_map_clusters_dag.py",
+      "type": "file",
+      "name": "pre_request_map_clusters_dag.py",
+      "filePath": "pre_request_map_clusters_dag.py",
+      "summary": "Airflow DAG that pre-warms map cluster tile caches by invoking the pre_request_map_clusters helper on a schedule.",
+      "tags": [
+        "entry-point",
+        "airflow-dag",
+        "cache-warming",
+        "map"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:pre_request_map_clusters_fccphase1_dag.py",
+      "type": "file",
+      "name": "pre_request_map_clusters_fccphase1_dag.py",
+      "filePath": "pre_request_map_clusters_fccphase1_dag.py",
+      "summary": "Airflow DAG variant for the FCC phase 1 map that iterates cluster URLs and calls pre_request to warm the cluster caches.",
+      "tags": [
+        "entry-point",
+        "airflow-dag",
+        "cache-warming",
+        "map"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:pre_request_reporting_card.py",
+      "type": "file",
+      "name": "pre_request_reporting_card.py",
+      "filePath": "pre_request_reporting_card.py",
+      "summary": "Airflow DAG that pre-warms the reporting capture statistics endpoint using the K8S_DOMAIN Airflow Variable and the current date.",
+      "tags": [
+        "entry-point",
+        "airflow-dag",
+        "cache-warming",
+        "reporting"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:capture_export_dag.py",
+      "type": "file",
+      "name": "capture_export_dag.py",
+      "filePath": "capture_export_dag.py",
+      "summary": "Airflow DAG that schedules the monthly capture export task, pulling CKAN config from Airflow Variables and running capture_export against the Postgres connection.",
+      "tags": [
+        "airflow",
+        "dag",
+        "data-pipeline",
+        "entry-point",
+        "data-export"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Defines an Airflow DAG with a PythonOperator wrapper (capture_export_wrap) that reads Variable.get config and a PostgresHook connection."
+    },
+    {
+      "id": "file:lib/assign_new_trees_to_cluster.py",
+      "type": "file",
+      "name": "assign_new_trees_to_cluster.py",
+      "filePath": "lib/assign_new_trees_to_cluster.py",
+      "summary": "Core routine that assigns newly captured trees to their nearest map cluster by running a sequence of SQL statements against a Postgres connection.",
+      "tags": [
+        "database",
+        "clustering",
+        "service",
+        "geospatial",
+        "sql",
+        "tested"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Single large function managing transaction isolation, batched cursor execution, and commit/rollback error handling."
+    },
+    {
+      "id": "file:lib/assign_new_trees_to_cluster_test.py",
+      "type": "file",
+      "name": "assign_new_trees_to_cluster_test.py",
+      "filePath": "lib/assign_new_trees_to_cluster_test.py",
+      "summary": "Integration test that opens a psycopg2 connection and exercises assign_new_trees_to_cluster end to end.",
+      "tags": [
+        "test",
+        "database",
+        "integration-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/capture_export.py",
+      "type": "file",
+      "name": "capture_export.py",
+      "filePath": "lib/capture_export.py",
+      "summary": "Exports monthly tree-capture data to CSV files and uploads them to a CKAN data portal, streaming query results in batches from Postgres.",
+      "tags": [
+        "data-export",
+        "ckan",
+        "csv",
+        "database",
+        "serialization",
+        "tested"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Large single function combining input validation, batched cursor fetch, CSV writing, file rename, and CKAN HTTP upload."
+    },
+    {
+      "id": "file:lib/capture_export_test.py",
+      "type": "file",
+      "name": "capture_export_test.py",
+      "filePath": "lib/capture_export_test.py",
+      "summary": "Integration test validating input handling and behavior of capture_export against a live psycopg2 connection.",
+      "tags": [
+        "test",
+        "database",
+        "integration-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:map/assign-new-trees-to-clusters.py",
+      "type": "file",
+      "name": "assign-new-trees-to-clusters.py",
+      "filePath": "map/assign-new-trees-to-clusters.py",
+      "summary": "Airflow DAG for the map subsystem that runs assign_new_trees_to_cluster on a schedule using a PostgresHook connection.",
+      "tags": [
+        "airflow",
+        "dag",
+        "data-pipeline",
+        "clustering",
+        "entry-point"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Defines a DAG with an assign_tree task wrapping the shared clustering routine."
+    },
+    {
+      "id": "function:lib/assign_new_trees_to_cluster.py:assign_new_trees_to_cluster",
+      "type": "function",
+      "name": "assign_new_trees_to_cluster",
+      "filePath": "lib/assign_new_trees_to_cluster.py",
+      "lineRange": [
+        5,
+        149
+      ],
+      "summary": "Runs staged SQL against Postgres to compute and persist cluster assignments for newly added trees, with transaction management and rollback on error.",
+      "tags": [
+        "database",
+        "clustering",
+        "sql",
+        "transaction"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:lib/capture_export.py:capture_export",
+      "type": "function",
+      "name": "capture_export",
+      "filePath": "lib/capture_export.py",
+      "lineRange": [
+        6,
+        255
+      ],
+      "summary": "Validates inputs, streams query results to CSV in batches, and uploads the resulting files to a CKAN dataset for the given organization and date.",
+      "tags": [
+        "data-export",
+        "ckan",
+        "csv",
+        "serialization",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:lib/assign_new_trees_to_cluster_test.py:Test_AssignNewTreesToCluster",
+      "type": "class",
+      "name": "Test_AssignNewTreesToCluster",
+      "filePath": "lib/assign_new_trees_to_cluster_test.py",
+      "lineRange": [
+        6,
+        16
+      ],
+      "summary": "unittest TestCase that connects to Postgres and invokes assign_new_trees_to_cluster to verify it runs without error.",
+      "tags": [
+        "test",
+        "integration-test",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:lib/capture_export_test.py:Test_TestIncrementDecrement",
+      "type": "class",
+      "name": "Test_TestIncrementDecrement",
+      "filePath": "lib/capture_export_test.py",
+      "lineRange": [
+        4,
+        33
+      ],
+      "summary": "unittest TestCase that asserts input validation rules and runs capture_export against a live Postgres connection.",
+      "tags": [
+        "test",
+        "integration-test",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:country_learder_board_dag.py",
+      "type": "file",
+      "name": "country_learder_board_dag.py",
+      "filePath": "country_learder_board_dag.py",
+      "summary": "Airflow DAG that refreshes the country leader board by connecting to Postgres and invoking refresh_country_leader_board on a schedule.",
+      "tags": [
+        "entry-point",
+        "airflow",
+        "dag",
+        "data-pipeline",
+        "database"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses a PythonOperator wrapping a nested 'wrap' callable that opens a PostgresHook connection."
+    },
+    {
+      "id": "file:grower_export_dag.py",
+      "type": "file",
+      "name": "grower_export_dag.py",
+      "filePath": "grower_export_dag.py",
+      "summary": "Airflow DAG that exports grower data to CKAN, reading Airflow Variables for configuration and calling grower_export with a Postgres connection.",
+      "tags": [
+        "entry-point",
+        "airflow",
+        "dag",
+        "data-pipeline",
+        "export"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Reads runtime settings via airflow.models.Variable.get inside the task callable."
+    },
+    {
+      "id": "file:lib/country_leader_board.py",
+      "type": "file",
+      "name": "country_leader_board.py",
+      "filePath": "lib/country_leader_board.py",
+      "summary": "Core logic that queries planted-tree counts per country with PostGIS spatial SQL and writes the resulting leader board back to the database.",
+      "tags": [
+        "data-pipeline",
+        "database",
+        "sql",
+        "geospatial",
+        "service",
+        "tested"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Embeds large PostGIS queries (ST_Contains, ST_Area, ST_AsGeoJSON) using triple-quoted SQL string templates."
+    },
+    {
+      "id": "file:lib/country_leader_board_test.py",
+      "type": "file",
+      "name": "country_leader_board_test.py",
+      "filePath": "lib/country_leader_board_test.py",
+      "summary": "Unittest suite that opens a psycopg2 connection and exercises refresh_country_leader_board against a live database.",
+      "tags": [
+        "test",
+        "database",
+        "integration-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/grower_exort_test.py",
+      "type": "file",
+      "name": "grower_exort_test.py",
+      "filePath": "lib/grower_exort_test.py",
+      "summary": "Unittest suite that opens a psycopg2 connection and exercises the grower_export function end to end.",
+      "tags": [
+        "test",
+        "database",
+        "integration-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/grower_export.py",
+      "type": "file",
+      "name": "grower_export.py",
+      "filePath": "lib/grower_export.py",
+      "summary": "Core logic that queries grower records from Postgres, builds a CSV payload, and uploads it to a CKAN datastore over HTTP.",
+      "tags": [
+        "data-pipeline",
+        "database",
+        "export",
+        "http-client",
+        "service",
+        "tested"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Validates inputs with regex, builds CSV via StringIO, and posts to CKAN with requests."
+    },
+    {
+      "id": "function:lib/country_leader_board.py:refresh_country_leader_board",
+      "type": "function",
+      "name": "refresh_country_leader_board",
+      "filePath": "lib/country_leader_board.py",
+      "lineRange": [
+        6,
+        172
+      ],
+      "summary": "Runs spatial aggregation SQL to rank countries by planted trees, fetches centroids, and persists the leader board JSON back into the database.",
+      "tags": [
+        "database",
+        "sql",
+        "geospatial",
+        "aggregation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:lib/grower_export.py:grower_export",
+      "type": "function",
+      "name": "grower_export",
+      "filePath": "lib/grower_export.py",
+      "lineRange": [
+        5,
+        134
+      ],
+      "summary": "Validates parameters, queries grower rows for an organization and date, assembles a CSV, and uploads it to a CKAN resource via HTTP POST.",
+      "tags": [
+        "export",
+        "database",
+        "http-client",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:lib/country_leader_board_test.py:Test_Country_Leader_Board",
+      "type": "class",
+      "name": "Test_Country_Leader_Board",
+      "filePath": "lib/country_leader_board_test.py",
+      "lineRange": [
+        6,
+        32
+      ],
+      "summary": "Unittest TestCase that connects to Postgres and asserts refresh_country_leader_board completes successfully.",
+      "tags": [
+        "test",
+        "integration-test",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:lib/grower_exort_test.py:Test_Grower_Export",
+      "type": "class",
+      "name": "Test_Grower_Export",
+      "filePath": "lib/grower_exort_test.py",
+      "lineRange": [
+        4,
+        30
+      ],
+      "summary": "Unittest TestCase that connects to Postgres and asserts the grower_export function runs against live data.",
+      "tags": [
+        "test",
+        "integration-test",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:contracts-earnings-fcc.py",
+      "type": "file",
+      "name": "contracts-earnings-fcc.py",
+      "filePath": "contracts-earnings-fcc.py",
+      "summary": "Airflow DAG that calculates daily earnings for FCC (Freetown) planters, chaining tasks to create person records, sync entity stakeholders, and produce the earnings report.",
+      "tags": [
+        "entry-point",
+        "dag",
+        "data-pipeline",
+        "orchestration",
+        "postgres"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Airflow DAG defined via `with DAG(...) as dag`; PythonOperator callables are nested functions bound to a shared Postgres connection hook."
+    },
+    {
+      "id": "file:lib/sync_entity_stakeholder.py",
+      "type": "file",
+      "name": "sync_entity_stakeholder.py",
+      "filePath": "lib/sync_entity_stakeholder.py",
+      "summary": "Shared library routine that reconciles entity-stakeholder relationships in Postgres within a single transaction, supporting a dry-run mode.",
+      "tags": [
+        "utility",
+        "service",
+        "database",
+        "postgres",
+        "transaction",
+        "tested"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Manages an explicit transaction with set_isolation_level, commit, and rollback on error paths."
+    },
+    {
+      "id": "function:lib/sync_entity_stakeholder.py:sync_entity_stakeholder",
+      "type": "function",
+      "name": "sync_entity_stakeholder",
+      "filePath": "lib/sync_entity_stakeholder.py",
+      "lineRange": [
+        11,
+        104
+      ],
+      "summary": "Executes SQL to detect and synchronize stakeholder records against entities, committing on success or rolling back on failure; honors a dry_run flag.",
+      "tags": [
+        "database",
+        "sql",
+        "transaction",
+        "sync",
+        "postgres"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:lib/sync_entity_stakeholder_test.py",
+      "type": "file",
+      "name": "sync_entity_stakeholder_test.py",
+      "filePath": "lib/sync_entity_stakeholder_test.py",
+      "summary": "Unit test exercising sync_entity_stakeholder against a Postgres connection to verify the sync routine runs successfully.",
+      "tags": [
+        "test",
+        "database",
+        "unittest",
+        "postgres"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:lib/sync_entity_stakeholder_test.py:Test",
+      "type": "class",
+      "name": "Test",
+      "filePath": "lib/sync_entity_stakeholder_test.py",
+      "lineRange": [
+        4,
+        15
+      ],
+      "summary": "unittest.TestCase that connects to Postgres and asserts sync_entity_stakeholder completes.",
+      "tags": [
+        "test",
+        "unittest",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:create-authors.py",
+      "type": "file",
+      "name": "create-authors.py",
+      "filePath": "create-authors.py",
+      "summary": "Airflow DAG that hourly creates messaging-system author users for approved organizations by opening a Postgres connection and delegating to the shared create_authors routine.",
+      "tags": [
+        "entry-point",
+        "dag",
+        "airflow",
+        "data-pipeline",
+        "messaging"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses the Airflow DAG context manager with a nested PythonOperator callable (create_authors_wrap) and a BashOperator; on_failure_callback is set in default_args."
+    },
+    {
+      "id": "file:lib/create_authors_test.py",
+      "type": "file",
+      "name": "create_authors_test.py",
+      "filePath": "lib/create_authors_test.py",
+      "summary": "Standalone test harness that opens a psycopg2 connection and exercises messaging.create_authors against dev and production database configurations.",
+      "tags": [
+        "test",
+        "messaging",
+        "database",
+        "manual-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:lib/create_authors_test.py:Test",
+      "type": "class",
+      "name": "Test",
+      "filePath": "lib/create_authors_test.py",
+      "lineRange": [
+        4,
+        15
+      ],
+      "summary": "Test case connecting to a development Postgres database and invoking messaging.create_authors.",
+      "tags": [
+        "test",
+        "database",
+        "messaging"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:lib/create_authors_test.py:Test2",
+      "type": "class",
+      "name": "Test2",
+      "filePath": "lib/create_authors_test.py",
+      "lineRange": [
+        17,
+        28
+      ],
+      "summary": "Test case connecting to a production Postgres database and invoking messaging.create_authors.",
+      "tags": [
+        "test",
+        "database",
+        "messaging"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/messaging.py",
+      "type": "file",
+      "name": "messaging.py",
+      "filePath": "lib/messaging.py",
+      "summary": "Shared library implementing create_authors, which reads approved growers/organizations and inserts corresponding messaging-system author records via Postgres cursors.",
+      "tags": [
+        "service",
+        "messaging",
+        "database",
+        "utility",
+        "data-model",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:lib/messaging.py:create_authors",
+      "type": "function",
+      "name": "create_authors",
+      "filePath": "lib/messaging.py",
+      "lineRange": [
+        9,
+        91
+      ],
+      "summary": "Reads approved growers/organizations from the database and inserts messaging-system author rows, supporting an optional organization filter toggle and committing per batch.",
+      "tags": [
+        "service",
+        "database",
+        "messaging",
+        "sql",
+        "data-pipeline"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Manages multiple raw psycopg2 cursors and branches on a DISABLE_ORGANIZATION_FILTER flag; raises ValueError on invalid state."
+    },
+    {
+      "id": "file:lib/upload_planter_info.py",
+      "type": "file",
+      "name": "upload_planter_info.py",
+      "filePath": "lib/upload_planter_info.py",
+      "summary": "Queries planter info from a Postgres connection, builds a CSV in memory, and uploads it to an FTP server. Supports a dry_run mode that skips the actual upload.",
+      "tags": [
+        "utility",
+        "data-pipeline",
+        "serialization",
+        "ftp",
+        "tested"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses io.BytesIO plus ftplib.FTP.storbinary to stream a generated CSV over FTP."
+    },
+    {
+      "id": "function:lib/upload_planter_info.py:upload_planter_info",
+      "type": "function",
+      "name": "upload_planter_info",
+      "filePath": "lib/upload_planter_info.py",
+      "lineRange": [
+        5,
+        68
+      ],
+      "summary": "Runs a SQL query against the given Postgres connection, encodes the result rows into a CSV byte stream, and uploads the file to an FTP host unless dry_run is set.",
+      "tags": [
+        "utility",
+        "serialization",
+        "ftp",
+        "database"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:lib/upload_planter_info_test.py",
+      "type": "file",
+      "name": "upload_planter_info_test.py",
+      "filePath": "lib/upload_planter_info_test.py",
+      "summary": "Manual/unit-style test that opens a Postgres connection and invokes upload_planter_info to exercise the export flow.",
+      "tags": [
+        "test",
+        "database",
+        "integration-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:lib/upload_planter_info_test.py:Test_AssignNewTreesToCluster",
+      "type": "class",
+      "name": "Test_AssignNewTreesToCluster",
+      "filePath": "lib/upload_planter_info_test.py",
+      "lineRange": [
+        5,
+        18
+      ],
+      "summary": "Test class whose test method connects to Postgres and calls upload_planter_info to validate the planter info export.",
+      "tags": [
+        "test",
+        "database",
+        "integration-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:upload_planter_info_dag.py",
+      "type": "file",
+      "name": "upload_planter_info_dag.py",
+      "filePath": "upload_planter_info_dag.py",
+      "summary": "Airflow DAG that schedules a daily planter info export, wiring a PythonOperator to fetch FTP credentials from Airflow Variables and run the upload_planter_info helper.",
+      "tags": [
+        "entry-point",
+        "data-pipeline",
+        "airflow-dag",
+        "orchestration"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Defines the task callable inside a `with DAG(...)` context manager and chains tasks with the >> operator."
+    },
+    {
+      "id": "function:upload_planter_info_dag.py:earing_export_wrap",
+      "type": "function",
+      "name": "earing_export_wrap",
+      "filePath": "upload_planter_info_dag.py",
+      "lineRange": [
+        57,
+        77
+      ],
+      "summary": "PythonOperator callable that opens a Postgres connection via PostgresHook, reads FTP credentials from Airflow Variables, and delegates to upload_planter_info, raising ValueError on failure.",
+      "tags": [
+        "event-handler",
+        "data-pipeline",
+        "airflow-task",
+        "database"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:map/scripts/assign-new-trees-to-clusters.sh",
+      "type": "file",
+      "name": "assign-new-trees-to-clusters.sh",
+      "filePath": "map/scripts/assign-new-trees-to-clusters.sh",
+      "summary": "Cron wrapper shell script that guards against concurrent runs with a PID lock file and then executes the assign-new-trees-to-clusters.js Node task, logging output to a system log file.",
+      "tags": [
+        "script",
+        "cron",
+        "automation",
+        "map",
+        "pid-lock"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses a PID file plus an EXIT trap to enforce single-instance execution of the cron job."
+    },
+    {
+      "id": "file:map/scripts/notify-daily-tree-count.sh",
+      "type": "file",
+      "name": "notify-daily-tree-count.sh",
+      "filePath": "map/scripts/notify-daily-tree-count.sh",
+      "summary": "Cron wrapper shell script that uses a PID lock to prevent overlapping runs and invokes the notify-daily-tree-count.js Node task to send the daily tree count report.",
+      "tags": [
+        "script",
+        "cron",
+        "automation",
+        "notification",
+        "pid-lock"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:map/scripts/package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "map/scripts/package.json",
+      "summary": "Node package manifest for the map cron scripts, declaring the request and request-promise-native HTTP dependencies used by the JavaScript cron tasks.",
+      "tags": [
+        "configuration",
+        "npm",
+        "dependencies",
+        "cron"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:map/scripts/precache.sh",
+      "type": "file",
+      "name": "precache.sh",
+      "filePath": "map/scripts/precache.sh",
+      "summary": "Warms the map tile-server cache by curling low-zoom tiles for a fixed list of map names, wallets, and user ids across the cluster-internal tile-server endpoint.",
+      "tags": [
+        "script",
+        "cache-warming",
+        "map",
+        "tile-server",
+        "automation"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Wraps the body in a heredoc-fed nested bash invocation; the request() helper loops a tile index range and appends an optional query filter."
+    },
+    {
+      "id": "file:map/scripts/update-clusters-for-deactivated-trees.sh",
+      "type": "file",
+      "name": "update-clusters-for-deactivated-trees.sh",
+      "filePath": "map/scripts/update-clusters-for-deactivated-trees.sh",
+      "summary": "Cron wrapper shell script that PID-guards against concurrent runs and executes the update-clusters-for-deactivated-trees.js Node task, logging to a system log file.",
+      "tags": [
+        "script",
+        "cron",
+        "automation",
+        "map",
+        "pid-lock"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:map/scripts/precache.sh:request",
+      "type": "function",
+      "name": "request",
+      "filePath": "map/scripts/precache.sh",
+      "lineRange": [
+        4,
+        15
+      ],
+      "summary": "Loops over a tile index range and curls each tile URL from the cluster-internal tile server, appending an optional query filter (map_name, wallet, or userid) to warm the cache.",
+      "tags": [
+        "utility",
+        "cache-warming",
+        "http",
+        "tile-server"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.env.local",
+      "type": "config",
+      "name": ".env.local",
+      "filePath": ".env.local",
+      "summary": "Local environment overrides defining the CKAN_DOMAIN variable used by the map scripts and DAGs during development.",
+      "tags": [
+        "configuration",
+        "environment",
+        "local-dev"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project overview and developer setup guide for the Treetracker Airflow automation, covering local, pip, and docker install options plus DAG authoring and pull-request workflow.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "setup-guide",
+        "airflow"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:lib/leader_board.py",
+      "type": "file",
+      "name": "leader_board.py",
+      "filePath": "lib/leader_board.py",
+      "summary": "Shared library that computes country tree-planting rankings and upserts the results into a leaderboard table in Postgres.",
+      "tags": [
+        "utility",
+        "database",
+        "leaderboard",
+        "data-pipeline",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:lib/leader_board.py:insertLeaderBoard",
+      "type": "function",
+      "name": "insertLeaderBoard",
+      "filePath": "lib/leader_board.py",
+      "lineRange": [
+        116,
+        151
+      ],
+      "summary": "Inserts or updates leading-country leaderboard rows into Postgres, serializing results to JSON and committing via the given connection.",
+      "tags": [
+        "database",
+        "serialization",
+        "upsert",
+        "leaderboard"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:lib/leader_board_test.py",
+      "type": "file",
+      "name": "leader_board_test.py",
+      "filePath": "lib/leader_board_test.py",
+      "summary": "Unit test that connects to Postgres and exercises the insertLeaderBoard function from the leader_board library.",
+      "tags": [
+        "test",
+        "database",
+        "leaderboard"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:lib/leader_board_test.py:Test_Leaderboard",
+      "type": "class",
+      "name": "Test_Leaderboard",
+      "filePath": "lib/leader_board_test.py",
+      "lineRange": [
+        5,
+        31
+      ],
+      "summary": "unittest TestCase verifying leaderboard insertion against a live Postgres connection.",
+      "tags": [
+        "test",
+        "database",
+        "leaderboard"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/species_id.py",
+      "type": "file",
+      "name": "species_id.py",
+      "filePath": "lib/species_id.py",
+      "summary": "Shared library for the species-identification pipeline: pulls capture image URLs from the DB, loads images to S3, builds SageMaker input manifests, and produces a validation set from inference results.",
+      "tags": [
+        "utility",
+        "machine-learning",
+        "s3",
+        "data-pipeline",
+        "species-id",
+        "tested"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:lib/species_id.py:load_images_to_s3",
+      "type": "function",
+      "name": "load_images_to_s3",
+      "filePath": "lib/species_id.py",
+      "lineRange": [
+        18,
+        41
+      ],
+      "summary": "Downloads capture images from their URLs and streams them into a destination S3 bucket for inference.",
+      "tags": [
+        "s3",
+        "image-processing",
+        "data-pipeline"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:lib/species_id.py:get_image_urls",
+      "type": "function",
+      "name": "get_image_urls",
+      "filePath": "lib/species_id.py",
+      "lineRange": [
+        44,
+        104
+      ],
+      "summary": "Opens an SSH-tunneled SQLAlchemy connection to query capture image URLs within a geographic bounding box and date range.",
+      "tags": [
+        "database",
+        "ssh-tunnel",
+        "query",
+        "geospatial"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:lib/species_id.py:generate_input_manifest",
+      "type": "function",
+      "name": "generate_input_manifest",
+      "filePath": "lib/species_id.py",
+      "lineRange": [
+        106,
+        131
+      ],
+      "summary": "Writes a JSON-lines input manifest of image URIs and uploads it to S3 for a SageMaker batch transform job.",
+      "tags": [
+        "s3",
+        "serialization",
+        "machine-learning",
+        "manifest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:lib/species_id.py:create_validation_set",
+      "type": "function",
+      "name": "create_validation_set",
+      "filePath": "lib/species_id.py",
+      "lineRange": [
+        133,
+        169
+      ],
+      "summary": "Reads inference JSON responses, filters predictions by an acceptance threshold, and downloads the accepted images into a local validation set.",
+      "tags": [
+        "machine-learning",
+        "validation",
+        "image-processing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:lib/species_id.py:clear_s3_after_inference",
+      "type": "function",
+      "name": "clear_s3_after_inference",
+      "filePath": "lib/species_id.py",
+      "lineRange": [
+        171,
+        189
+      ],
+      "summary": "Lists and deletes all objects in the inference S3 bucket to clean up after a batch transform run.",
+      "tags": [
+        "s3",
+        "cleanup",
+        "machine-learning"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:lib/species_id_test.py",
+      "type": "file",
+      "name": "species_id_test.py",
+      "filePath": "lib/species_id_test.py",
+      "summary": "Integration tests exercising the species_id pipeline end to end: data import, manifest generation, SageMaker inference, prediction retrieval, S3 cleanup, and validation.",
+      "tags": [
+        "test",
+        "machine-learning",
+        "s3",
+        "species-id"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:lib/species_id_test.py:Test",
+      "type": "class",
+      "name": "Test",
+      "filePath": "lib/species_id_test.py",
+      "lineRange": [
+        41,
+        194
+      ],
+      "summary": "unittest TestCase covering each stage of the species-identification pipeline against live AWS and DB resources.",
+      "tags": [
+        "test",
+        "machine-learning",
+        "integration-test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:map/scripts/assign-new-trees-to-clusters.js",
+      "type": "file",
+      "name": "assign-new-trees-to-clusters.js",
+      "filePath": "map/scripts/assign-new-trees-to-clusters.js",
+      "summary": "Node script that queries newly tracked active trees and assigns them to map cluster regions in Postgres.",
+      "tags": [
+        "utility",
+        "database",
+        "map",
+        "clustering"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Top-level async IIFE using node-postgres Pool; no module exports."
+    },
+    {
+      "id": "file:map/scripts/notify-daily-tree-count.js",
+      "type": "file",
+      "name": "notify-daily-tree-count.js",
+      "filePath": "map/scripts/notify-daily-tree-count.js",
+      "summary": "Node script that queries the daily count of tracked trees and posts the total to Slack, with Sentry error reporting.",
+      "tags": [
+        "utility",
+        "database",
+        "notification",
+        "monitoring"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Top-level async IIFE; integrates Sentry and request-promise-native."
+    },
+    {
+      "id": "file:map/scripts/update-clusters-for-deactivated-trees.js",
+      "type": "file",
+      "name": "update-clusters-for-deactivated-trees.js",
+      "filePath": "map/scripts/update-clusters-for-deactivated-trees.js",
+      "summary": "Node script that refreshes the active_tree_region materialized view and recomputes map clusters after trees are deactivated.",
+      "tags": [
+        "utility",
+        "database",
+        "map",
+        "clustering"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses transactional queries and REFRESH MATERIALIZED VIEW via node-postgres."
+    },
+    {
+      "id": "file:migrate_captures_dag.py",
+      "type": "file",
+      "name": "migrate_captures_dag.py",
+      "filePath": "migrate_captures_dag.py",
+      "summary": "Airflow DAG that migrates legacy capture data into the new domain database on a daily schedule using Postgres and Kubernetes pod operators.",
+      "tags": [
+        "entry-point",
+        "airflow",
+        "dag",
+        "migration",
+        "database"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Airflow DAG defined via the with-DAG context manager and operator task dependencies."
+    },
+    {
+      "id": "file:species_id_dag.py",
+      "type": "file",
+      "name": "species_id_dag.py",
+      "filePath": "species_id_dag.py",
+      "summary": "Airflow DAG orchestrating the species-identification pipeline: generates the input manifest, triggers a SageMaker batch transform job, and cleans up S3 buckets.",
+      "tags": [
+        "entry-point",
+        "airflow",
+        "dag",
+        "machine-learning",
+        "species-id"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Combines Airflow PythonOperator tasks with boto3 SageMaker calls and XCom data passing."
+    },
+    {
+      "id": "function:species_id_dag.py:generate_input_manifest",
+      "type": "function",
+      "name": "generate_input_manifest",
+      "filePath": "species_id_dag.py",
+      "lineRange": [
+        39,
+        65
+      ],
+      "summary": "Builds a JSON-lines manifest of image URIs and uploads it to S3 as input for the SageMaker batch transform job.",
+      "tags": [
+        "s3",
+        "serialization",
+        "manifest",
+        "machine-learning"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:species_id_dag.py:trigger_batch_transform_job_inference",
+      "type": "function",
+      "name": "trigger_batch_transform_job_inference",
+      "filePath": "species_id_dag.py",
+      "lineRange": [
+        67,
+        98
+      ],
+      "summary": "Creates a SageMaker batch transform job against the given model to run inference over the uploaded manifest.",
+      "tags": [
+        "machine-learning",
+        "sagemaker",
+        "inference"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:species_id_dag.py:create_postgres_connection",
+      "type": "function",
+      "name": "create_postgres_connection",
+      "filePath": "species_id_dag.py",
+      "lineRange": [
+        117,
+        137
+      ],
+      "summary": "Registers or updates the Airflow Postgres Connection record in the metadata database via a session.",
+      "tags": [
+        "airflow",
+        "database",
+        "connection"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:species_id_dag.py:call_sagemaker",
+      "type": "function",
+      "name": "call_sagemaker",
+      "filePath": "species_id_dag.py",
+      "lineRange": [
+        149,
+        156
+      ],
+      "summary": "PythonOperator task that pulls image URLs via XCom, generates the manifest, and triggers the SageMaker inference job.",
+      "tags": [
+        "airflow",
+        "machine-learning",
+        "task",
+        "xcom"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:species_id_dag.py:clean_s3_buckets",
+      "type": "function",
+      "name": "clean_s3_buckets",
+      "filePath": "species_id_dag.py",
+      "lineRange": [
+        173,
+        178
+      ],
+      "summary": "Deletes staged manifest and inference objects from S3 after the pipeline run completes.",
+      "tags": [
+        "s3",
+        "cleanup",
+        "machine-learning"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:create-tokens.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:earnings_export_dag.py",
+      "target": "file:lib/earning_export.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:earnings_export_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/earning_export_test.py",
+      "target": "file:lib/earning_export.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/earning_export_test.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/utils_test.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:map/tile-pre-cache.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:map/update-clusters-for-deactivated-trees.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:migrate_stakeholders_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mysecond.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:populate-reports-schema.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:populate_tree_reports_schema.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:refresh_webmap_org_location_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:refresh_webmap_planter_location_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:refresh_webmap_species_stat_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:session_time_chopping_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:test1.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tutorial.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tutorial_test.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/earning_export.py",
+      "target": "function:lib/earning_export.py:earning_export",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/earning_export.py",
+      "target": "function:lib/earning_export.py:earning_export",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/earning_export_test.py",
+      "target": "class:lib/earning_export_test.py:Test_TestIncrementDecrement",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/earning_export_test.py",
+      "target": "class:lib/earning_export_test.py:Test_TestIncrementDecrement",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/utils.py",
+      "target": "function:lib/utils.py:print_time",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/utils.py",
+      "target": "function:lib/utils.py:print_time",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/utils.py",
+      "target": "function:lib/utils.py:slack_message",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/utils.py",
+      "target": "function:lib/utils.py:slack_message",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/utils.py",
+      "target": "function:lib/utils.py:on_failure_callback",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/utils.py",
+      "target": "function:lib/utils.py:on_failure_callback",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/utils.py",
+      "target": "function:lib/utils.py:get_first_last_day_of_month",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/utils.py",
+      "target": "function:lib/utils.py:get_first_last_day_of_month",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/utils.py",
+      "target": "function:lib/utils.py:get_start_and_end_date_of_previous_month",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/utils.py",
+      "target": "function:lib/utils.py:get_start_and_end_date_of_previous_month",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/utils_test.py",
+      "target": "class:lib/utils_test.py:Test_Utils",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/utils_test.py",
+      "target": "class:lib/utils_test.py:Test_Utils",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:map/update-clusters-for-deactivated-trees.py",
+      "target": "function:map/update-clusters-for-deactivated-trees.py:allow_conf_testing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:map/update-clusters-for-deactivated-trees.py",
+      "target": "function:map/update-clusters-for-deactivated-trees.py:allow_conf_testing",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mysecond.py",
+      "target": "function:mysecond.py:allow_conf_testing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:mysecond.py",
+      "target": "function:mysecond.py:allow_conf_testing",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mysecond.py",
+      "target": "function:mysecond.py:print_context",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:mysecond.py",
+      "target": "function:mysecond.py:print_context",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:earnings_export_dag.py",
+      "target": "function:lib/earning_export.py:earning_export",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/earning_export_test.py",
+      "target": "function:lib/earning_export.py:earning_export",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/utils_test.py",
+      "target": "function:lib/utils.py:get_start_and_end_date_of_previous_month",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/earning_export.py",
+      "target": "file:lib/earning_export_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:lib/utils.py",
+      "target": "file:lib/utils_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tutorial.py",
+      "target": "file:tutorial_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:lib/contracts_earnings_fcc.py",
+      "target": "function:lib/contracts_earnings_fcc.py:contract_earnings_fcc_term",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/contracts_earnings_fcc.py",
+      "target": "function:lib/contracts_earnings_fcc.py:contract_earnings_fcc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/contracts_earnings_fcc.py",
+      "target": "function:lib/contracts_earnings_fcc.py:contract_earnings_fcc_term",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/contracts_earnings_fcc.py",
+      "target": "function:lib/contracts_earnings_fcc.py:contract_earnings_fcc",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:lib/contracts_earnings_fcc.py:contract_earnings_fcc",
+      "target": "function:lib/contracts_earnings_fcc.py:contract_earnings_fcc_term",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/contracts_earnings_fcc_test.py",
+      "target": "class:lib/contracts_earnings_fcc_test.py:Test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/contracts_earnings_fcc_test.py",
+      "target": "class:lib/contracts_earnings_fcc_test.py:Test",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/contracts_earnings_fcc_test.py",
+      "target": "file:lib/contracts_earnings_fcc.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/contracts_earnings_fcc.py",
+      "target": "file:lib/contracts_earnings_fcc_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:lib/planter_entity.py",
+      "target": "function:lib/planter_entity.py:planter_entity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/planter_entity.py",
+      "target": "function:lib/planter_entity.py:planter_entity",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/planter_entity_test.py",
+      "target": "class:lib/planter_entity_test.py:Test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/planter_entity_test.py",
+      "target": "class:lib/planter_entity_test.py:Test",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/planter_entity_test.py",
+      "target": "file:lib/planter_entity.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/planter_entity.py",
+      "target": "file:lib/planter_entity_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:lib/pre_request.py",
+      "target": "function:lib/pre_request.py:pre_request",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/pre_request.py",
+      "target": "function:lib/pre_request.py:pre_request",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/pre_request_map_clusters.py",
+      "target": "function:lib/pre_request_map_clusters.py:pre_request_map_clusters",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/pre_request_map_clusters.py",
+      "target": "function:lib/pre_request_map_clusters.py:pre_request_map_clusters",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/pre_request_map_clusters.py",
+      "target": "file:lib/pre_request.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:lib/pre_request_map_clusters.py:pre_request_map_clusters",
+      "target": "function:lib/pre_request.py:pre_request",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/pre_request_map_clusters_test.py",
+      "target": "class:lib/pre_request_map_clusters_test.py:Test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/pre_request_map_clusters_test.py",
+      "target": "class:lib/pre_request_map_clusters_test.py:Test",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/pre_request_map_clusters_test.py",
+      "target": "file:lib/assign_new_trees_to_cluster.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/pre_request_map_clusters_test.py",
+      "target": "file:lib/pre_request_map_clusters.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/pre_request_map_clusters.py",
+      "target": "file:lib/pre_request_map_clusters_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:lib/pre_request_test.py",
+      "target": "class:lib/pre_request_test.py:Test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/pre_request_test.py",
+      "target": "class:lib/pre_request_test.py:Test",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/pre_request_test.py",
+      "target": "file:lib/pre_request.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/pre_request.py",
+      "target": "file:lib/pre_request_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:pre_request_map_client_dag.py",
+      "target": "file:lib/contracts_earnings_fcc.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_client_dag.py",
+      "target": "file:lib/planter_entity.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_client_dag.py",
+      "target": "file:lib/pre_request.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_client_dag.py",
+      "target": "file:lib/pre_request_map_clusters.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_client_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_client_dag.py",
+      "target": "function:lib/pre_request.py:pre_request",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:pre_request_map_clusters_dag.py",
+      "target": "file:lib/contracts_earnings_fcc.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_clusters_dag.py",
+      "target": "file:lib/planter_entity.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_clusters_dag.py",
+      "target": "file:lib/pre_request.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_clusters_dag.py",
+      "target": "file:lib/pre_request_map_clusters.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_clusters_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_clusters_dag.py",
+      "target": "function:lib/pre_request_map_clusters.py:pre_request_map_clusters",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:pre_request_map_clusters_fccphase1_dag.py",
+      "target": "file:lib/contracts_earnings_fcc.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_clusters_fccphase1_dag.py",
+      "target": "file:lib/planter_entity.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_clusters_fccphase1_dag.py",
+      "target": "file:lib/pre_request.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_clusters_fccphase1_dag.py",
+      "target": "file:lib/pre_request_map_clusters.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_clusters_fccphase1_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_map_clusters_fccphase1_dag.py",
+      "target": "function:lib/pre_request.py:pre_request",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:pre_request_reporting_card.py",
+      "target": "file:lib/contracts_earnings_fcc.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_reporting_card.py",
+      "target": "file:lib/planter_entity.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_reporting_card.py",
+      "target": "file:lib/pre_request.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_reporting_card.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:pre_request_reporting_card.py",
+      "target": "function:lib/pre_request.py:pre_request",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:capture_export_dag.py",
+      "target": "file:lib/capture_export.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:capture_export_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/assign_new_trees_to_cluster_test.py",
+      "target": "file:lib/assign_new_trees_to_cluster.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/assign_new_trees_to_cluster_test.py",
+      "target": "file:lib/capture_export.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/capture_export_test.py",
+      "target": "file:lib/capture_export.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:map/assign-new-trees-to-clusters.py",
+      "target": "file:lib/assign_new_trees_to_cluster.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:map/assign-new-trees-to-clusters.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/assign_new_trees_to_cluster.py",
+      "target": "function:lib/assign_new_trees_to_cluster.py:assign_new_trees_to_cluster",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/assign_new_trees_to_cluster.py",
+      "target": "function:lib/assign_new_trees_to_cluster.py:assign_new_trees_to_cluster",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/capture_export.py",
+      "target": "function:lib/capture_export.py:capture_export",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/capture_export.py",
+      "target": "function:lib/capture_export.py:capture_export",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/assign_new_trees_to_cluster_test.py",
+      "target": "class:lib/assign_new_trees_to_cluster_test.py:Test_AssignNewTreesToCluster",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/capture_export_test.py",
+      "target": "class:lib/capture_export_test.py:Test_TestIncrementDecrement",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:capture_export_dag.py",
+      "target": "function:lib/capture_export.py:capture_export",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:map/assign-new-trees-to-clusters.py",
+      "target": "function:lib/assign_new_trees_to_cluster.py:assign_new_trees_to_cluster",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/assign_new_trees_to_cluster.py",
+      "target": "file:lib/assign_new_trees_to_cluster_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:lib/capture_export.py",
+      "target": "file:lib/capture_export_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:lib/country_leader_board.py",
+      "target": "function:lib/country_leader_board.py:refresh_country_leader_board",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/country_leader_board.py",
+      "target": "function:lib/country_leader_board.py:refresh_country_leader_board",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/grower_export.py",
+      "target": "function:lib/grower_export.py:grower_export",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/grower_export.py",
+      "target": "function:lib/grower_export.py:grower_export",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/country_leader_board_test.py",
+      "target": "class:lib/country_leader_board_test.py:Test_Country_Leader_Board",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/country_leader_board_test.py",
+      "target": "class:lib/country_leader_board_test.py:Test_Country_Leader_Board",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/grower_exort_test.py",
+      "target": "class:lib/grower_exort_test.py:Test_Grower_Export",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/grower_exort_test.py",
+      "target": "class:lib/grower_exort_test.py:Test_Grower_Export",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:country_learder_board_dag.py",
+      "target": "file:lib/country_leader_board.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:country_learder_board_dag.py",
+      "target": "file:lib/grower_export.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:country_learder_board_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:grower_export_dag.py",
+      "target": "file:lib/grower_export.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:grower_export_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/country_leader_board_test.py",
+      "target": "file:lib/country_leader_board.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/country_leader_board_test.py",
+      "target": "file:lib/grower_export.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/grower_exort_test.py",
+      "target": "file:lib/grower_export.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:country_learder_board_dag.py",
+      "target": "function:lib/country_leader_board.py:refresh_country_leader_board",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:grower_export_dag.py",
+      "target": "function:lib/grower_export.py:grower_export",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:lib/country_leader_board_test.py:Test_Country_Leader_Board",
+      "target": "function:lib/country_leader_board.py:refresh_country_leader_board",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:lib/grower_exort_test.py:Test_Grower_Export",
+      "target": "function:lib/grower_export.py:grower_export",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/country_leader_board.py",
+      "target": "file:lib/country_leader_board_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:lib/grower_export.py",
+      "target": "file:lib/grower_exort_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:contracts-earnings-fcc.py",
+      "target": "file:lib/contracts_earnings_fcc.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:contracts-earnings-fcc.py",
+      "target": "file:lib/planter_entity.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:contracts-earnings-fcc.py",
+      "target": "file:lib/sync_entity_stakeholder.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:contracts-earnings-fcc.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/sync_entity_stakeholder_test.py",
+      "target": "file:lib/sync_entity_stakeholder.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:contracts-earnings-fcc.py",
+      "target": "function:lib/contracts_earnings_fcc.py:contract_earnings_fcc",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:contracts-earnings-fcc.py",
+      "target": "function:lib/planter_entity.py:planter_entity",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:contracts-earnings-fcc.py",
+      "target": "function:lib/sync_entity_stakeholder.py:sync_entity_stakeholder",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/sync_entity_stakeholder.py",
+      "target": "function:lib/sync_entity_stakeholder.py:sync_entity_stakeholder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/sync_entity_stakeholder.py",
+      "target": "function:lib/sync_entity_stakeholder.py:sync_entity_stakeholder",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/sync_entity_stakeholder_test.py",
+      "target": "class:lib/sync_entity_stakeholder_test.py:Test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/sync_entity_stakeholder_test.py",
+      "target": "class:lib/sync_entity_stakeholder_test.py:Test",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/sync_entity_stakeholder.py",
+      "target": "file:lib/sync_entity_stakeholder_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:create-authors.py",
+      "target": "file:lib/messaging.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:create-authors.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/create_authors_test.py",
+      "target": "file:lib/messaging.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:create-authors.py",
+      "target": "function:lib/messaging.py:create_authors",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:create-authors.py",
+      "target": "function:lib/utils.py:on_failure_callback",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/create_authors_test.py",
+      "target": "function:lib/messaging.py:create_authors",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/create_authors_test.py",
+      "target": "class:lib/create_authors_test.py:Test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/create_authors_test.py",
+      "target": "class:lib/create_authors_test.py:Test2",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/create_authors_test.py",
+      "target": "class:lib/create_authors_test.py:Test",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/create_authors_test.py",
+      "target": "class:lib/create_authors_test.py:Test2",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/messaging.py",
+      "target": "function:lib/messaging.py:create_authors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/messaging.py",
+      "target": "function:lib/messaging.py:create_authors",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/messaging.py",
+      "target": "file:lib/create_authors_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:lib/upload_planter_info.py",
+      "target": "function:lib/upload_planter_info.py:upload_planter_info",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/upload_planter_info.py",
+      "target": "function:lib/upload_planter_info.py:upload_planter_info",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/upload_planter_info_test.py",
+      "target": "class:lib/upload_planter_info_test.py:Test_AssignNewTreesToCluster",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/upload_planter_info_test.py",
+      "target": "class:lib/upload_planter_info_test.py:Test_AssignNewTreesToCluster",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/upload_planter_info_test.py",
+      "target": "file:lib/upload_planter_info.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/upload_planter_info.py",
+      "target": "file:lib/upload_planter_info_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "class:lib/upload_planter_info_test.py:Test_AssignNewTreesToCluster",
+      "target": "function:lib/upload_planter_info.py:upload_planter_info",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:upload_planter_info_dag.py",
+      "target": "function:upload_planter_info_dag.py:earing_export_wrap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:upload_planter_info_dag.py",
+      "target": "file:lib/upload_planter_info.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:upload_planter_info_dag.py",
+      "target": "file:lib/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:upload_planter_info_dag.py:earing_export_wrap",
+      "target": "function:lib/upload_planter_info.py:upload_planter_info",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:upload_planter_info_dag.py:earing_export_wrap",
+      "target": "function:lib/utils.py:on_failure_callback",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:map/scripts/precache.sh",
+      "target": "function:map/scripts/precache.sh:request",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/leader_board_test.py",
+      "target": "file:lib/leader_board.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/species_id_test.py",
+      "target": "file:lib/species_id.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:lib/leader_board.py",
+      "target": "function:lib/leader_board.py:insertLeaderBoard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/leader_board.py",
+      "target": "function:lib/leader_board.py:insertLeaderBoard",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/leader_board_test.py",
+      "target": "class:lib/leader_board_test.py:Test_Leaderboard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/leader_board_test.py",
+      "target": "class:lib/leader_board_test.py:Test_Leaderboard",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/species_id.py",
+      "target": "function:lib/species_id.py:load_images_to_s3",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/species_id.py",
+      "target": "function:lib/species_id.py:load_images_to_s3",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/species_id.py",
+      "target": "function:lib/species_id.py:get_image_urls",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/species_id.py",
+      "target": "function:lib/species_id.py:get_image_urls",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/species_id.py",
+      "target": "function:lib/species_id.py:generate_input_manifest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/species_id.py",
+      "target": "function:lib/species_id.py:generate_input_manifest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/species_id.py",
+      "target": "function:lib/species_id.py:create_validation_set",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/species_id.py",
+      "target": "function:lib/species_id.py:create_validation_set",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/species_id.py",
+      "target": "function:lib/species_id.py:clear_s3_after_inference",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/species_id.py",
+      "target": "function:lib/species_id.py:clear_s3_after_inference",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/species_id_test.py",
+      "target": "class:lib/species_id_test.py:Test",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:lib/species_id_test.py",
+      "target": "class:lib/species_id_test.py:Test",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:species_id_dag.py",
+      "target": "function:species_id_dag.py:generate_input_manifest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:species_id_dag.py",
+      "target": "function:species_id_dag.py:generate_input_manifest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:species_id_dag.py",
+      "target": "function:species_id_dag.py:trigger_batch_transform_job_inference",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:species_id_dag.py",
+      "target": "function:species_id_dag.py:trigger_batch_transform_job_inference",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:species_id_dag.py",
+      "target": "function:species_id_dag.py:create_postgres_connection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:species_id_dag.py",
+      "target": "function:species_id_dag.py:create_postgres_connection",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:species_id_dag.py",
+      "target": "function:species_id_dag.py:call_sagemaker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:species_id_dag.py",
+      "target": "function:species_id_dag.py:call_sagemaker",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:species_id_dag.py",
+      "target": "function:species_id_dag.py:clean_s3_buckets",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:species_id_dag.py",
+      "target": "function:species_id_dag.py:clean_s3_buckets",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:lib/leader_board.py",
+      "target": "file:lib/leader_board_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:lib/species_id.py",
+      "target": "file:lib/species_id_test.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "class:lib/leader_board_test.py:Test_Leaderboard",
+      "target": "function:lib/leader_board.py:insertLeaderBoard",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:lib/species_id_test.py:Test",
+      "target": "function:lib/species_id.py:get_image_urls",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:lib/species_id_test.py:Test",
+      "target": "function:lib/species_id.py:load_images_to_s3",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:lib/species_id_test.py:Test",
+      "target": "function:lib/species_id.py:create_validation_set",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:species_id_dag.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:migrate_captures_dag.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:dag-orchestration",
+      "name": "DAG Orchestration",
+      "description": "Top-level Apache Airflow DAG entry points that schedule and trigger the export, migration, reporting, cache-warming, and species-id jobs.",
+      "nodeIds": [
+        "file:create-tokens.py",
+        "file:earnings_export_dag.py",
+        "file:migrate_stakeholders_dag.py",
+        "file:mysecond.py",
+        "file:populate-reports-schema.py",
+        "file:populate_tree_reports_schema.py",
+        "file:refresh_webmap_org_location_dag.py",
+        "file:refresh_webmap_planter_location_dag.py",
+        "file:refresh_webmap_species_stat_dag.py",
+        "file:session_time_chopping_dag.py",
+        "file:test1.py",
+        "file:tutorial.py",
+        "file:pre_request_map_client_dag.py",
+        "file:pre_request_map_clusters_dag.py",
+        "file:pre_request_map_clusters_fccphase1_dag.py",
+        "file:pre_request_reporting_card.py",
+        "file:capture_export_dag.py",
+        "file:country_learder_board_dag.py",
+        "file:grower_export_dag.py",
+        "file:contracts-earnings-fcc.py",
+        "file:create-authors.py",
+        "file:upload_planter_info_dag.py",
+        "file:migrate_captures_dag.py",
+        "file:species_id_dag.py"
+      ]
+    },
+    {
+      "id": "layer:job-library",
+      "name": "Job Library (lib)",
+      "description": "Reusable Python job implementation modules (export, migration, leaderboard, reporting, messaging, utils) that the DAGs and map scripts import.",
+      "nodeIds": [
+        "file:lib/earning_export.py",
+        "file:lib/utils.py",
+        "file:lib/contracts_earnings_fcc.py",
+        "file:lib/planter_entity.py",
+        "file:lib/pre_request.py",
+        "file:lib/pre_request_map_clusters.py",
+        "file:lib/assign_new_trees_to_cluster.py",
+        "file:lib/capture_export.py",
+        "file:lib/country_leader_board.py",
+        "file:lib/grower_export.py",
+        "file:lib/sync_entity_stakeholder.py",
+        "file:lib/messaging.py",
+        "file:lib/upload_planter_info.py",
+        "file:lib/leader_board.py",
+        "file:lib/species_id.py"
+      ]
+    },
+    {
+      "id": "layer:web-map-precompute",
+      "name": "Web-Map Precompute (map)",
+      "description": "Airflow DAGs and Node.js scripts that precompute web-map tiles and tree clusters for the Greenstand map.",
+      "nodeIds": [
+        "file:map/tile-pre-cache.py",
+        "file:map/update-clusters-for-deactivated-trees.py",
+        "file:map/assign-new-trees-to-clusters.py",
+        "file:map/scripts/assign-new-trees-to-clusters.js",
+        "file:map/scripts/notify-daily-tree-count.js",
+        "file:map/scripts/update-clusters-for-deactivated-trees.js"
+      ]
+    },
+    {
+      "id": "layer:tests",
+      "name": "Tests",
+      "description": "Pytest unit test modules covering the lib job logic and the tutorial DAG.",
+      "nodeIds": [
+        "file:tutorial_test.py",
+        "file:lib/earning_export_test.py",
+        "file:lib/utils_test.py",
+        "file:lib/contracts_earnings_fcc_test.py",
+        "file:lib/planter_entity_test.py",
+        "file:lib/pre_request_map_clusters_test.py",
+        "file:lib/pre_request_test.py",
+        "file:lib/assign_new_trees_to_cluster_test.py",
+        "file:lib/capture_export_test.py",
+        "file:lib/country_leader_board_test.py",
+        "file:lib/grower_exort_test.py",
+        "file:lib/sync_entity_stakeholder_test.py",
+        "file:lib/create_authors_test.py",
+        "file:lib/upload_planter_info_test.py",
+        "file:lib/leader_board_test.py",
+        "file:lib/species_id_test.py"
+      ]
+    },
+    {
+      "id": "layer:tooling-scripts",
+      "name": "Tooling & Scripts",
+      "description": "Shell cron wrappers with PID locking that run the map precompute and notification jobs outside Airflow.",
+      "nodeIds": [
+        "file:map/scripts/assign-new-trees-to-clusters.sh",
+        "file:map/scripts/notify-daily-tree-count.sh",
+        "file:map/scripts/precache.sh",
+        "file:map/scripts/update-clusters-for-deactivated-trees.sh"
+      ]
+    },
+    {
+      "id": "layer:project-config-docs",
+      "name": "Project Config & Docs",
+      "description": "Repository configuration, environment files, npm dependencies, tooling ignore rules, and the project README.",
+      "nodeIds": [
+        "config:.env.local",
+        "document:README.md",
+        "config:map/scripts/package.json"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "Start with the README to learn what this repository is: Greenstand's Apache Airflow automation for the Treetracker platform. It explains the three install paths (local, pip, docker), how DAGs are authored, and the pull-request workflow. Read this first to build a mental map before you open any Python code.",
+      "nodeIds": [
+        "document:README.md"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "The DAG Orchestration Pattern",
+      "description": "The earnings export DAG is the canonical example of this project's core pattern. An Airflow DAG file stays thin: it only defines the schedule and wires a PythonOperator to a callable that lives in the shared lib module. This separation keeps orchestration (when to run) apart from business logic (what to do), which you will see repeated across every DAG.",
+      "nodeIds": [
+        "file:earnings_export_dag.py"
+      ],
+      "languageLesson": "Airflow DAGs use PythonOperator(task_id=..., python_callable=fn) to run a Python function as a scheduled task. The DAG object is a directed acyclic graph of such operators; default_args (retries, failure callbacks) apply to every task."
+    },
+    {
+      "order": 3,
+      "title": "Shared Utilities (lib/utils)",
+      "description": "lib/utils.py is the most depended-upon file in the project, imported by nearly every DAG and job. It centralizes Slack notifications, the task-failure callback wired into default_args, timing helpers, and month-range date math. Understand it early: once you know these helpers, the rest of the codebase reads faster.",
+      "nodeIds": [
+        "file:lib/utils.py"
+      ],
+      "languageLesson": "A Python callback like on_failure_callback passes a function reference (not a call) so Airflow invokes it later with task context. This is the same first-class-function idea PythonOperator relies on."
+    },
+    {
+      "order": 4,
+      "title": "An Export Job (lib/earning_export)",
+      "description": "Following the callable that Step 2's DAG wired up, lib/earning_export.py holds the real work: query earnings for a date range, then push the dataset to a CKAN endpoint. This is the archetypal export job. Note how it uses the date helpers from lib/utils (Step 3) and keeps all I/O and SQL in the library, not the DAG.",
+      "nodeIds": [
+        "file:lib/earning_export.py",
+        "file:lib/grower_export.py"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "A Reporting Job with PostGIS",
+      "description": "lib/country_leader_board.py shows the reporting flavor of a job: it runs spatial SQL (PostGIS) to count planted trees per country and writes the leader board back to the database. Compared to the export jobs in Step 4, reporting jobs compute aggregates in-database rather than shipping raw data out. This illustrates the range of logic the shared lib layer holds.",
+      "nodeIds": [
+        "file:lib/country_leader_board.py"
+      ]
+    },
+    {
+      "order": 6,
+      "title": "A Migration Job",
+      "description": "Migration jobs reshape data rather than export or report it. migrate_stakeholders_dag.py orchestrates the consolidation using Postgres and Kubernetes pod operators, while lib/sync_entity_stakeholder.py does the transactional reconciliation of entity-stakeholder relationships, complete with a dry-run mode. This is the third major job category alongside export (Step 4) and reporting (Step 5).",
+      "nodeIds": [
+        "file:migrate_stakeholders_dag.py",
+        "file:lib/sync_entity_stakeholder.py"
+      ]
+    },
+    {
+      "order": 7,
+      "title": "Web-Map Precompute DAGs",
+      "description": "The map precompute layer keeps the Greenstand web map fast. pre_request_map_clusters_dag.py schedules cache warming, and lib/pre_request_map_clusters.py pre-warms cluster tile endpoints across zoom levels by repeatedly calling the pre_request helper. This reuses the exact thin-DAG-plus-lib-callable pattern from Step 2, now applied to map tiles instead of data exports.",
+      "nodeIds": [
+        "file:pre_request_map_clusters_dag.py",
+        "file:lib/pre_request_map_clusters.py"
+      ]
+    },
+    {
+      "order": 8,
+      "title": "Map Node.js Scripts",
+      "description": "Some map work runs in Node.js rather than Python. map/tile-pre-cache.py is an Airflow DAG that shells out every 5 minutes to cURL hot map tiles, while map/scripts/assign-new-trees-to-clusters.js queries newly tracked trees and assigns them to cluster regions in Postgres. This shows the project spanning two runtimes for the map subsystem.",
+      "nodeIds": [
+        "file:map/tile-pre-cache.py",
+        "file:map/scripts/assign-new-trees-to-clusters.js"
+      ]
+    },
+    {
+      "order": 9,
+      "title": "Cron & Shell Wrappers",
+      "description": "Not everything runs inside Airflow. The shell wrappers run the Node map scripts from Step 8 as cron jobs. precache.sh warms the tile-server cache by curling low-zoom tiles, and assign-new-trees-to-clusters.sh guards against overlapping runs with a PID lock file before invoking the Node task. package.json declares the HTTP dependencies those scripts need.",
+      "nodeIds": [
+        "file:map/scripts/precache.sh",
+        "file:map/scripts/assign-new-trees-to-clusters.sh",
+        "config:map/scripts/package.json"
+      ],
+      "languageLesson": "A PID lock file (write $$ to a file, check it on start) prevents a slow cron job from starting a second overlapping instance. It is the shell equivalent of a mutex for scheduled tasks."
+    },
+    {
+      "order": 10,
+      "title": "The Test Approach",
+      "description": "The project tests the lib job logic, not the thin DAGs. lib/utils_test.py validates the shared date helpers from Step 3, and lib/earning_export_test.py exercises the export routine from Step 4; tutorial_test.py mirrors the tutorial DAG wiring. This confirms the design intent: because logic lives in lib and DAGs stay thin, unit tests can cover the important behavior without spinning up Airflow.",
+      "nodeIds": [
+        "file:lib/utils_test.py",
+        "file:lib/earning_export_test.py",
+        "file:tutorial_test.py"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3632 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "treetracker-wallet-app",
+    "languages": [
+      "css",
+      "dockerfile",
+      "html",
+      "javascript",
+      "json",
+      "markdown",
+      "typescript",
+      "yaml"
+    ],
+    "frameworks": [
+      "Next.js",
+      "React",
+      "React Native",
+      "Expo",
+      "NestJS",
+      "Material UI",
+      "Jotai",
+      "Jest",
+      "Cypress",
+      "WebdriverIO",
+      "Docker",
+      "GitHub Actions"
+    ],
+    "description": "Greenstand's digital wallet for tokens that represent verified tree planting: users sign in with Keycloak, manage their wallets, send, accept, decline and cancel token transfers, and share tokens by claim links. A NestJS user API proxies identity operations to Keycloak and rewards new wallets with tokens.",
+    "analyzedAt": "2026-10-17T05:25:38Z",
+    "gitCommitHash": "3c1411357ce9dd6efb3b33e1ed95a23d51d16f16"
+  },
+  "nodes": [
+    {
+      "id": "domain:authentication-and-identity",
+      "type": "domain",
+      "name": "Authentication and Identity",
+      "summary": "Handles sign-in, registration, session lifetime and the account profile. The web app delegates login and registration to the Keycloak hosted pages (public client with PKCE), mirrors the access token into the shared core tokenAtom and ends sessions across tabs; the NestJS user API proxies password login, user creation and the /me profile to Keycloak. Several parts are not live: the native login, forgot-password and log-out screens make no API call, the web /api/auth/login and /api/auth/signup route handlers have no caller and cannot run under the static export, the core loginAtom and registerAtom are not used by any app, and the web forgot-password RESEND LINK button only logs.",
+      "tags": [
+        "authentication",
+        "keycloak",
+        "oidc",
+        "session",
+        "identity"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Keycloak session",
+          "Access token",
+          "Refresh token",
+          "User account",
+          "User profile",
+          "Service-account token"
+        ],
+        "businessRules": [
+          "Web login and registration go through the Keycloak hosted pages with redirect URI /auth/callback.",
+          "Only a refused token refresh or an explicit logout ends a web session, never an HTTP status from a resource call.",
+          "The access token lives in per-tab sessionStorage, so logout is broadcast to other tabs over the wallet-auth BroadcastChannel.",
+          "Keycloak init is capped at 8 seconds before the app renders.",
+          "GET /me rejects a request without a bearer token with 401.",
+          "The user API caches its client_credentials token until expires_in elapses."
+        ],
+        "crossDomainInteractions": [
+          "Supplies the tokenAtom bearer token that every wallet API hook of Wallet Management, Token Transfer and Share Links and Claims sends.",
+          "The protected layout mounts the pending-claim handler of Share Links and Claims after sign-in.",
+          "The user API service-account token authorizes the new-wallet reward transfer of Wallet Management."
+        ]
+      }
+    },
+    {
+      "id": "domain:wallet-management",
+      "type": "domain",
+      "name": "Wallet Management",
+      "summary": "Covers the user's wallets: the home dashboard of token and wallet totals, wallet creation, the wallet profile (display name, about text, logo, cover image, web-map visibility), the token list of a wallet and the provenance of each token (tree photo, transaction history, map link). The user API also listens for wallet-creation events to send a reward token bundle, but that listener has defects that likely stop it from working. The native wallet screens use hard-coded mock wallets and placeholder activity, and native wallet creation only logs.",
+      "tags": [
+        "wallet",
+        "tokens",
+        "profile",
+        "dashboard"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Wallet",
+          "Token",
+          "Token transaction",
+          "Tree",
+          "Wallet profile",
+          "Reward bundle"
+        ],
+        "businessRules": [
+          "A user can have at most 2 wallets; only the web client enforces this, because the API sets no limit.",
+          "Wallet names must be unique, compared case-insensitively, and a new wallet needs a name and a description.",
+          "Display name must be 2 to 30 characters and about text 5 to 250 characters; a field that had a value cannot be emptied.",
+          "Logo and cover images must be image files of at most 1MB, sent as multipart form data.",
+          "Token tree data comes from the public Treetracker query API without authentication."
+        ],
+        "crossDomainInteractions": [
+          "Wallet creation redeems a saved claim link of Share Links and Claims into the new wallet.",
+          "The new-wallet reward sends a token bundle through the wallet API transfer endpoint that Token Transfer also uses.",
+          "Wallet balances (tokens_available, tokens_pending) limit the amounts of Token Transfer and Share Links and Claims."
+        ]
+      }
+    },
+    {
+      "id": "domain:token-transfer",
+      "type": "domain",
+      "name": "Token Transfer",
+      "summary": "Moves tokens between wallets through the wallet API: a sender starts a transfer of an N-token bundle to a named wallet, the receiver accepts or declines it from notifications or the transfers page, the sender can cancel it while it is pending, and both sides see the transfer history and details. The native send and request screens only collect a recipient and an amount from mock search data and show a snackbar; they make no API call, and the native notifications tab shows hard-coded items.",
+      "tags": [
+        "transfer",
+        "tokens",
+        "pending",
+        "notifications"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Transfer",
+          "Token bundle",
+          "Pending transfer",
+          "Incoming transfer",
+          "Transfer state"
+        ],
+        "businessRules": [
+          "The amount must be a whole number of at least 1 and not more than the tokens_available of the sender wallet.",
+          "The recipient wallet must differ from the sender wallet.",
+          "Only transfers addressed to one of the user's own wallets can be accepted or declined.",
+          "Only the sender can cancel a pending transfer, before the receiver accepts it.",
+          "A decline is final and the tokens stay with the sender.",
+          "Pending means the requested and pending states, fetched separately and merged."
+        ],
+        "crossDomainInteractions": [
+          "Reads the user's wallets from Wallet Management to pick a source wallet and classify transfers as incoming or outgoing.",
+          "The send page also issues claim links of Share Links and Claims when the Share by QR code option is on.",
+          "The native send and request flow takes its recipient from Search and Discovery."
+        ]
+      }
+    },
+    {
+      "id": "domain:share-links-and-claims",
+      "type": "domain",
+      "name": "Share Links and Claims",
+      "summary": "Lets a sender give tokens to someone without a known wallet: the web send page issues a signed, expiring action token as a /claim link with a QR code, the transfers page lists and cancels these links, and the public /claim page redeems a link into the recipient's wallet. A signed-out or wallet-less recipient gets the link saved in localStorage, and the protected layout or the first wallet creation redeems it later.",
+      "tags": [
+        "action-token",
+        "claim-link",
+        "qr-code",
+        "redeem"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entities": [
+          "Action token",
+          "Claim link",
+          "Share link state",
+          "Pending claim"
+        ],
+        "businessRules": [
+          "A claim link is single use; the saved link leaves storage before the redeem request, so a failure is never retried.",
+          "Only active links can be cancelled.",
+          "A signed-in user without a wallet gets the no_wallet reason and is sent to create a wallet; the link stays saved.",
+          "Redeem errors map to user messages: expired, not valid, or already used.",
+          "The link recipient email is a fixed placeholder (link-recipient@greenstand.org)."
+        ],
+        "crossDomainInteractions": [
+          "Redeeming needs a wallet from Wallet Management, either the first existing wallet or the wallet that the user just created.",
+          "Depends on the signed-in session of Authentication and Identity; the protected layout mounts the pending-claim handler.",
+          "Links are created from the same send page as Token Transfer and listed on the same transfers page."
+        ]
+      }
+    },
+    {
+      "id": "domain:search-and-discovery",
+      "type": "domain",
+      "name": "Search and Discovery",
+      "summary": "Finds a recipient wallet or user to send tokens to or request tokens from. The native app searches a hard-coded core mockData directory through Jotai search atoms and can read a recipient from a QR code. The web /search page filters a hard-coded wallet list and opens a mock send or request keypad; no web link leads to /search, because the ChooseAction drawer is not used and the default header has no search button.",
+      "tags": [
+        "search",
+        "discovery",
+        "qr-code",
+        "mock-data"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entities": [
+          "Search item",
+          "Search category",
+          "Recent search",
+          "QR payload"
+        ],
+        "businessRules": [
+          "Search categories are send (users), request (businesses) and all.",
+          "Results split into matching and non-matching sections for the query.",
+          "Up to 5 recent searches are kept.",
+          "A QR payload is read as JSON, as a URL query, or as plain text; it must hold a recipient name."
+        ],
+        "crossDomainInteractions": [
+          "Hands the selected recipient to the native send and request flow of Token Transfer.",
+          "The web mock search stores a pendingTransaction that the Wallet Management home page shows as a snackbar."
+        ]
+      }
+    },
+    {
+      "id": "flow:sign-in-or-register-with-keycloak",
+      "type": "flow",
+      "name": "Sign In or Register with Keycloak",
+      "summary": "Sends a web visitor to the Keycloak hosted login or registration page, processes the OIDC code on /auth/callback, resumes or refreshes the session and lets the user into the protected pages. After registration the callback goes straight to /home: no live code navigates to the /welcome or /account-created pages.",
+      "tags": [
+        "keycloak",
+        "login",
+        "registration",
+        "pkce"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "GET /login or GET /signup (web)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:sign-in-or-register-with-keycloak:route-visitor-by-auth-state",
+      "type": "step",
+      "name": "Route visitor by auth state",
+      "filePath": "apps/web/src/app/page.tsx",
+      "lineRange": [
+        12,
+        21
+      ],
+      "summary": "The root / route reads the authenticated flag from useAuth and redirects to /home or /login.",
+      "tags": [
+        "routing",
+        "redirect"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:sign-in-or-register-with-keycloak:open-hosted-login",
+      "type": "step",
+      "name": "Open hosted login",
+      "filePath": "apps/web/src/app/(public)/login/page.tsx",
+      "lineRange": [
+        10,
+        23
+      ],
+      "summary": "The /login page calls the Keycloak login redirect once on mount, with a ref guard against strict-mode double effects.",
+      "tags": [
+        "login",
+        "redirect"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:sign-in-or-register-with-keycloak:open-hosted-registration",
+      "type": "step",
+      "name": "Open hosted registration",
+      "filePath": "apps/web/src/app/(public)/signup/page.tsx",
+      "lineRange": [
+        10,
+        23
+      ],
+      "summary": "The /signup page calls the Keycloak register redirect once on mount, so registration happens on the Keycloak page.",
+      "tags": [
+        "registration",
+        "redirect"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:sign-in-or-register-with-keycloak:redirect-to-keycloak",
+      "type": "step",
+      "name": "Redirect to Keycloak",
+      "filePath": "apps/web/src/auth/keycloak.ts",
+      "lineRange": [
+        91,
+        97
+      ],
+      "summary": "login() and register() send the browser to Keycloak with /auth/callback as the redirect URI.",
+      "tags": [
+        "keycloak",
+        "oidc"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:sign-in-or-register-with-keycloak:initialize-keycloak-session",
+      "type": "step",
+      "name": "Initialize Keycloak session",
+      "filePath": "apps/web/src/auth/keycloak.ts",
+      "lineRange": [
+        61,
+        84
+      ],
+      "summary": "initKeycloak runs an idempotent PKCE S256 init that processes the callback code or resumes the tokens stored in sessionStorage.",
+      "tags": [
+        "keycloak",
+        "pkce",
+        "session"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:sign-in-or-register-with-keycloak:mirror-and-refresh-token",
+      "type": "step",
+      "name": "Mirror and refresh token",
+      "filePath": "apps/web/src/components/KeycloakProvider.tsx",
+      "lineRange": [
+        44,
+        126
+      ],
+      "summary": "KeycloakProvider blocks rendering behind an init capped at 8 seconds, copies the access token into tokenAtom, refreshes it on expiry and on tab focus, and ends the session only when Keycloak refuses a refresh.",
+      "tags": [
+        "token",
+        "refresh",
+        "jotai"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "step:sign-in-or-register-with-keycloak:handle-oidc-callback",
+      "type": "step",
+      "name": "Handle OIDC callback",
+      "filePath": "apps/web/src/app/auth/callback/page.tsx",
+      "lineRange": [
+        10,
+        20
+      ],
+      "summary": "The /auth/callback page waits for the provider to be ready and replaces the route with /home when authenticated, or /login otherwise.",
+      "tags": [
+        "callback",
+        "redirect"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:sign-in-or-register-with-keycloak:guard-protected-routes",
+      "type": "step",
+      "name": "Guard protected routes",
+      "filePath": "apps/web/src/app/(protected)/layout.tsx",
+      "lineRange": [
+        17,
+        70
+      ],
+      "summary": "The protected layout shows a spinner until mount, redirects to /login when tokenAtom is empty, and wraps the pages in the header, snackbar and bottom navigation.",
+      "tags": [
+        "auth-gate",
+        "layout"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "flow:log-out-across-tabs",
+      "type": "flow",
+      "name": "Log Out Across Tabs",
+      "summary": "Ends the web session from the settings or account page: it clears the stored tokens, tells the other tabs, and ends the Keycloak SSO session with a redirect to /login.",
+      "tags": [
+        "logout",
+        "session",
+        "broadcast-channel"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "log out button on /settings or /settings/account (web)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:log-out-across-tabs:choose-log-out",
+      "type": "step",
+      "name": "Choose log out",
+      "filePath": "apps/web/src/app/(protected)/settings/page.tsx",
+      "lineRange": [
+        18,
+        85
+      ],
+      "summary": "The settings page lists one Account item and a log out button that pushes /logout.",
+      "tags": [
+        "settings",
+        "navigation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:log-out-across-tabs:run-logout-page",
+      "type": "step",
+      "name": "Run logout page",
+      "filePath": "apps/web/src/app/logout/page.tsx",
+      "lineRange": [
+        9,
+        35
+      ],
+      "summary": "The /logout page removes the mirrored token, clears the stored tokens, broadcasts logout, awaits Keycloak init and then calls the Keycloak logout.",
+      "tags": [
+        "logout"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:log-out-across-tabs:clear-stored-tokens",
+      "type": "step",
+      "name": "Clear stored tokens",
+      "filePath": "apps/web/src/auth/keycloak.ts",
+      "lineRange": [
+        51,
+        57
+      ],
+      "summary": "clearStoredTokens removes the kc_tokens pair from sessionStorage, so the next load cannot resume the session.",
+      "tags": [
+        "storage",
+        "token"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:log-out-across-tabs:broadcast-logout",
+      "type": "step",
+      "name": "Broadcast logout",
+      "filePath": "apps/web/src/auth/sessionChannel.ts",
+      "lineRange": [
+        11,
+        16
+      ],
+      "summary": "broadcastLogout posts a logout message on the wallet-auth BroadcastChannel.",
+      "tags": [
+        "broadcast-channel"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:log-out-across-tabs:end-keycloak-session",
+      "type": "step",
+      "name": "End Keycloak session",
+      "filePath": "apps/web/src/auth/keycloak.ts",
+      "lineRange": [
+        99,
+        105
+      ],
+      "summary": "logout() asks Keycloak to end the SSO session and to return to /login.",
+      "tags": [
+        "keycloak",
+        "sso"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:log-out-across-tabs:log-out-other-tabs",
+      "type": "step",
+      "name": "Log out other tabs",
+      "filePath": "apps/web/src/auth/sessionChannel.ts",
+      "lineRange": [
+        19,
+        30
+      ],
+      "summary": "onLogout lets the protected layout of each other tab clear tokenAtom and go to /login when the message arrives.",
+      "tags": [
+        "broadcast-channel",
+        "multi-tab"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:view-account-profile",
+      "type": "flow",
+      "name": "View Account Profile",
+      "summary": "Shows the signed-in user's email and member-since date on /settings/account, from the user API /me endpoint with a Keycloak userinfo fallback, and links to the Keycloak account console for password management.",
+      "tags": [
+        "profile",
+        "account",
+        "user-api"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /settings/account (web), GET /me (user API)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:view-account-profile:open-account-page",
+      "type": "step",
+      "name": "Open account page",
+      "filePath": "apps/web/src/app/(protected)/settings/account/page.tsx",
+      "lineRange": [
+        21,
+        234
+      ],
+      "summary": "The account page loads the profile, shows partial data or an error alert, and offers password management and log out.",
+      "tags": [
+        "account",
+        "ui"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:view-account-profile:load-user-profile",
+      "type": "step",
+      "name": "Load user profile",
+      "filePath": "apps/web/src/utils/userProfile.ts",
+      "lineRange": [
+        121,
+        141
+      ],
+      "summary": "loadUserProfile asks the user service first, falls back to Keycloak userinfo when no email comes back, and decides whether the session expired.",
+      "tags": [
+        "profile"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:view-account-profile:request-user-api-profile",
+      "type": "step",
+      "name": "Request user API profile",
+      "filePath": "apps/web/src/utils/userProfile.ts",
+      "lineRange": [
+        57,
+        86
+      ],
+      "summary": "fromUserApi calls GET /me on the user API with the bearer token for email and createdAt.",
+      "tags": [
+        "http",
+        "user-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:view-account-profile:accept-me-request",
+      "type": "step",
+      "name": "Accept /me request",
+      "filePath": "apps/user/src/user/user.controller.ts",
+      "lineRange": [
+        35,
+        42
+      ],
+      "summary": "UserController.getMe strips the Bearer prefix and rejects a missing token with 401.",
+      "tags": [
+        "nestjs",
+        "controller"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:view-account-profile:combine-keycloak-records",
+      "type": "step",
+      "name": "Combine Keycloak records",
+      "filePath": "apps/user/src/user/user.service.ts",
+      "lineRange": [
+        149,
+        194
+      ],
+      "summary": "UserService.getMe reads Keycloak userinfo and the admin user record, and returns the email and creation date.",
+      "tags": [
+        "keycloak",
+        "admin-api"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:view-account-profile:fall-back-to-userinfo",
+      "type": "step",
+      "name": "Fall back to userinfo",
+      "filePath": "apps/web/src/utils/userProfile.ts",
+      "lineRange": [
+        88,
+        119
+      ],
+      "summary": "fromKeycloak reads the email from the Keycloak OIDC userinfo endpoint when the user service gives none; it has no creation date.",
+      "tags": [
+        "keycloak",
+        "fallback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:view-account-profile:open-keycloak-account-console",
+      "type": "step",
+      "name": "Open Keycloak account console",
+      "filePath": "apps/web/src/auth/keycloak.ts",
+      "lineRange": [
+        107,
+        112
+      ],
+      "summary": "accountUrl builds the Keycloak account console URL that the account page opens for password management.",
+      "tags": [
+        "keycloak",
+        "password"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:user-api-login-and-registration",
+      "type": "flow",
+      "name": "User API Login and Registration",
+      "summary": "The NestJS user API exposes POST /login (password grant) and POST /register (Keycloak admin user creation). No client in this repo calls them: the core loginAtom and registerAtom that post to them are not imported by any app, and the web app uses the Keycloak hosted pages instead.",
+      "tags": [
+        "user-api",
+        "nestjs",
+        "keycloak",
+        "unused-endpoint"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "POST /login, POST /register (user API)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:user-api-login-and-registration:bootstrap-user-api",
+      "type": "step",
+      "name": "Bootstrap user API",
+      "filePath": "apps/user/src/main.ts",
+      "lineRange": [
+        6,
+        43
+      ],
+      "summary": "bootstrap creates the app from AppModule, enables Swagger outside production, applies a whitelisting ValidationPipe and CORS, and listens on PORT (default 8080).",
+      "tags": [
+        "nestjs",
+        "bootstrap"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:user-api-login-and-registration:route-login-and-register",
+      "type": "step",
+      "name": "Route login and register",
+      "filePath": "apps/user/src/user/user.controller.ts",
+      "lineRange": [
+        19,
+        28
+      ],
+      "summary": "UserController maps POST /login (HTTP 200) and POST /register to UserService after DTO validation.",
+      "tags": [
+        "controller",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:user-api-login-and-registration:exchange-password-for-tokens",
+      "type": "step",
+      "name": "Exchange password for tokens",
+      "filePath": "apps/user/src/user/user.service.ts",
+      "lineRange": [
+        18,
+        75
+      ],
+      "summary": "UserService.loginUser rejects missing credentials and sends a password grant to the Keycloak token endpoint.",
+      "tags": [
+        "keycloak",
+        "password-grant"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:user-api-login-and-registration:get-service-account-token",
+      "type": "step",
+      "name": "Get service-account token",
+      "filePath": "apps/user/src/auth/auth.service.ts",
+      "lineRange": [
+        15,
+        21
+      ],
+      "summary": "AuthService.getToken returns the cached client_credentials token and fetches a new one when it expired.",
+      "tags": [
+        "keycloak",
+        "client-credentials",
+        "cache"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:user-api-login-and-registration:create-keycloak-user",
+      "type": "step",
+      "name": "Create Keycloak user",
+      "filePath": "apps/user/src/user/user.service.ts",
+      "lineRange": [
+        77,
+        147
+      ],
+      "summary": "UserService.createUser posts the new user to the Keycloak admin API with the service-account token, and maps 409 to a conflict error.",
+      "tags": [
+        "keycloak",
+        "admin-api",
+        "registration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "flow:native-onboarding-and-login",
+      "type": "flow",
+      "name": "Native Onboarding and Login",
+      "summary": "Routes a native app launch to onboarding, the home tab or the login screen from AsyncStorage flags. The native login is a stub: it calls no API and only stores a local isAuth flag. Sign up points to /(auth)/register, a route that does not exist, the forgot-password link is commented out, password reset sends nothing, log out only logs, and no route leads to the account confirmation screen.",
+      "tags": [
+        "native",
+        "onboarding",
+        "login",
+        "stub"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "app launch (native)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:native-onboarding-and-login:pick-launch-route",
+      "type": "step",
+      "name": "Pick launch route",
+      "filePath": "apps/native/app/index.tsx",
+      "lineRange": [
+        5,
+        27
+      ],
+      "summary": "InitialRoute sends a first launch to /onboarding, an isAuth user to the home tab and everyone else to /(auth)/login.",
+      "tags": [
+        "routing",
+        "async-storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:native-onboarding-and-login:show-onboarding-slides",
+      "type": "step",
+      "name": "Show onboarding slides",
+      "filePath": "apps/native/app/onboarding/index.tsx",
+      "lineRange": [
+        53,
+        149
+      ],
+      "summary": "The onboarding screen pages three slides and sets hasLaunched; SIGN UP pushes /(auth)/register, which has no route file.",
+      "tags": [
+        "onboarding",
+        "broken-link"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:native-onboarding-and-login:submit-stub-login",
+      "type": "step",
+      "name": "Submit stub login",
+      "filePath": "apps/native/app/(auth)/login.tsx",
+      "lineRange": [
+        18,
+        120
+      ],
+      "summary": "The login screen calls no API: a press sets local state, and only a later press stores isAuth and opens the home tab. The social buttons only log, and the forgot-password link is commented out.",
+      "tags": [
+        "login",
+        "stub"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:native-onboarding-and-login:request-password-reset-stub",
+      "type": "step",
+      "name": "Request password reset (stub)",
+      "filePath": "apps/native/app/(auth)/forgotPassword.tsx",
+      "lineRange": [
+        15,
+        90
+      ],
+      "summary": "The forgot-password screen validates the email and navigates to the check-email screen without any reset API call.",
+      "tags": [
+        "password-reset",
+        "stub"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:native-onboarding-and-login:show-check-email",
+      "type": "step",
+      "name": "Show check email",
+      "filePath": "apps/native/app/(auth)/checkEmail.tsx",
+      "lineRange": [
+        14,
+        72
+      ],
+      "summary": "The check-email screen offers back to login; its resend link points to /forgotPassword without sending anything.",
+      "tags": [
+        "password-reset",
+        "stub"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:native-onboarding-and-login:log-out-stub",
+      "type": "step",
+      "name": "Log out (stub)",
+      "filePath": "apps/native/app/(tabs)/settings/index.tsx",
+      "lineRange": [
+        101,
+        153
+      ],
+      "summary": "The native settings tab lists seven static entries; the item handlers and the LOG OUT button only log to the console.",
+      "tags": [
+        "logout",
+        "stub"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:view-wallet-dashboard",
+      "type": "flow",
+      "name": "View Wallet Dashboard",
+      "summary": "Shows the web home page with the total tokens (and pending count) across the user's wallets, the wallet count and the 5 most recent transfers as sent or received activity. The native home tab instead shows hard-coded balances (1000 tokens, 2 wallets) and mock activity.",
+      "tags": [
+        "dashboard",
+        "balance",
+        "activity"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /home (web)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:view-wallet-dashboard:render-home-page",
+      "type": "step",
+      "name": "Render home page",
+      "filePath": "apps/web/src/app/(protected)/home/page.tsx",
+      "lineRange": [
+        55,
+        139
+      ],
+      "summary": "The home page sums tokens_in_wallet and tokens_pending over the wallets, counts the wallets and shows a pending send or request snackbar.",
+      "tags": [
+        "dashboard",
+        "ui"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:view-wallet-dashboard:load-wallets",
+      "type": "step",
+      "name": "Load wallets",
+      "filePath": "packages/wallet/src/hooks/useGetWallets.ts",
+      "lineRange": [
+        6,
+        56
+      ],
+      "summary": "useGetWallets loads the user's wallets with the tokenAtom token and formats their creation dates.",
+      "tags": [
+        "hook",
+        "wallet"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:view-wallet-dashboard:call-get-wallets",
+      "type": "step",
+      "name": "Call GET /wallets",
+      "filePath": "packages/wallet/src/api/getWallets.ts",
+      "lineRange": [
+        4,
+        25
+      ],
+      "summary": "getWallets lists the caller's wallets from the wallet API with a limit parameter.",
+      "tags": [
+        "api-client",
+        "wallet-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:view-wallet-dashboard:load-recent-transfers",
+      "type": "step",
+      "name": "Load recent transfers",
+      "filePath": "packages/wallet/src/hooks/useGetTransfers.ts",
+      "lineRange": [
+        9,
+        37
+      ],
+      "summary": "useGetTransfers loads the newest transfers of the signed-in user (5 on the home page).",
+      "tags": [
+        "hook",
+        "transfer"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:view-wallet-dashboard:call-get-transfers",
+      "type": "step",
+      "name": "Call GET /transfers",
+      "filePath": "packages/wallet/src/api/getTransfers.ts",
+      "lineRange": [
+        15,
+        55
+      ],
+      "summary": "getTransfers lists transfers with pagination, state, wallet, date-range and sort filters.",
+      "tags": [
+        "api-client",
+        "wallet-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:view-wallet-dashboard:classify-activity",
+      "type": "step",
+      "name": "Classify activity",
+      "filePath": "apps/web/src/app/(protected)/home/page.tsx",
+      "lineRange": [
+        20,
+        53
+      ],
+      "summary": "toActivityEntry marks a transfer as sent when an own wallet is the source, maps its state to a status, and shows the amount only when completed.",
+      "tags": [
+        "activity",
+        "mapping"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:view-wallet-dashboard:show-recent-activity",
+      "type": "step",
+      "name": "Show recent activity",
+      "filePath": "apps/web/src/components/RecentActivity.tsx",
+      "lineRange": [
+        9,
+        50
+      ],
+      "summary": "RecentActivity shows skeleton rows while loading, an empty state, or the activity rows with a View all link to /transfers.",
+      "tags": [
+        "ui",
+        "activity"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:create-wallet",
+      "type": "flow",
+      "name": "Create Wallet",
+      "summary": "Creates a managed wallet from the web /wallet page with a name and description, then redeems any saved claim link into it. The page shows a first-wallet gift message; the gift depends on the user API reward listener, which likely does not work.",
+      "tags": [
+        "wallet",
+        "create",
+        "validation"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "CREATE WALLET button on /wallet (web)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:create-wallet:list-wallets-and-check-limit",
+      "type": "step",
+      "name": "List wallets and check limit",
+      "filePath": "apps/web/src/app/(protected)/wallet/page.tsx",
+      "lineRange": [
+        30,
+        188
+      ],
+      "summary": "The wallet page lists the user's wallets and turns off CREATE WALLET at the client-side limit of 2 wallets.",
+      "tags": [
+        "wallet-limit",
+        "ui"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:create-wallet:validate-new-wallet",
+      "type": "step",
+      "name": "Validate new wallet",
+      "filePath": "apps/web/src/components/WalletCreateDrawer.tsx",
+      "lineRange": [
+        43,
+        244
+      ],
+      "summary": "WalletCreateDrawer requires a name and a description, rejects a case-insensitive duplicate name, and maps API errors to the field.",
+      "tags": [
+        "validation",
+        "form"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:create-wallet:bind-create-wallet",
+      "type": "step",
+      "name": "Bind create wallet",
+      "filePath": "packages/wallet/src/hooks/useCreateWallet.ts",
+      "lineRange": [
+        6,
+        17
+      ],
+      "summary": "useCreateWallet binds the createWallet call to the tokenAtom token.",
+      "tags": [
+        "hook"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:create-wallet:call-post-wallets",
+      "type": "step",
+      "name": "Call POST /wallets",
+      "filePath": "packages/wallet/src/api/createWallet.ts",
+      "lineRange": [
+        5,
+        31
+      ],
+      "summary": "createWallet posts the name and about text to the wallet API.",
+      "tags": [
+        "api-client",
+        "wallet-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:create-wallet:handle-created-wallet",
+      "type": "step",
+      "name": "Handle created wallet",
+      "filePath": "apps/web/src/app/(protected)/wallet/page.tsx",
+      "lineRange": [
+        48,
+        94
+      ],
+      "summary": "handleCreate adds the wallet to the list, shows the first-wallet gift message and redeems a saved claim link into the new wallet.",
+      "tags": [
+        "wallet",
+        "claim"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:create-wallet:redeem-saved-claim",
+      "type": "step",
+      "name": "Redeem saved claim",
+      "filePath": "apps/web/src/utils/claimPendingToken.ts",
+      "lineRange": [
+        24,
+        44
+      ],
+      "summary": "claimPendingToken takes the saved link out of storage and redeems it into the named wallet.",
+      "tags": [
+        "claim",
+        "action-token"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "flow:reward-new-wallet",
+      "type": "flow",
+      "name": "Reward New Wallet",
+      "summary": "The user API listens on the PostgreSQL wallets/creation channel and sends a reward token bundle from a configured sender wallet to the new user's first wallet. No code in this repo publishes to that channel. The code has defects that likely stop the reward: the listener reads msg.payload, but subscribe emits the queue.message row; the Authorization header holds an unawaited Promise; the body uses receive_wallet, not receiver_wallet; and errors still return transferStatus true.",
+      "tags": [
+        "queue",
+        "reward",
+        "postgres",
+        "event",
+        "defect"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "PostgreSQL LISTEN wallets/creation (user API)",
+        "entryType": "event"
+      }
+    },
+    {
+      "id": "step:reward-new-wallet:register-queue-listener",
+      "type": "step",
+      "name": "Register queue listener",
+      "filePath": "apps/user/src/queue-listener/queue-listener.service.ts",
+      "lineRange": [
+        22,
+        30
+      ],
+      "summary": "QueueListenerService.onModuleInit registers the wallet-creation callback when the user API starts.",
+      "tags": [
+        "nestjs",
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:reward-new-wallet:subscribe-to-wallet-creation",
+      "type": "step",
+      "name": "Subscribe to wallet creation",
+      "filePath": "apps/user/src/queue-listener/helpers/onQueueNotification.ts",
+      "lineRange": [
+        22,
+        33
+      ],
+      "summary": "onQueueNotification subscribes as user-api-client to wallets/creation and passes the account_id that it parses from msg.payload.",
+      "tags": [
+        "queue",
+        "subscribe"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:reward-new-wallet:listen-on-channel",
+      "type": "step",
+      "name": "Listen on channel",
+      "filePath": "packages/queue/subscribe.js",
+      "lineRange": [
+        5,
+        27
+      ],
+      "summary": "subscribe issues LISTEN on the channel and emits each notified row after it is acknowledged.",
+      "tags": [
+        "postgres",
+        "listen-notify"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:reward-new-wallet:acknowledge-message",
+      "type": "step",
+      "name": "Acknowledge message",
+      "filePath": "packages/queue/ack.js",
+      "lineRange": [
+        2,
+        24
+      ],
+      "summary": "ack writes the client receipt time into the queue.message ack column and verifies it.",
+      "tags": [
+        "postgres",
+        "ack"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:reward-new-wallet:find-user-wallet",
+      "type": "step",
+      "name": "Find user wallet",
+      "filePath": "apps/user/src/queue-listener/queue-listener.service.ts",
+      "lineRange": [
+        60,
+        82
+      ],
+      "summary": "sendToWalletApi gets a service-account token, lists the account's wallets from /wallet/v2/wallets, and picks the first one.",
+      "tags": [
+        "wallet-api",
+        "lookup"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:reward-new-wallet:get-reward-token",
+      "type": "step",
+      "name": "Get service-account token",
+      "filePath": "apps/user/src/auth/auth.service.ts",
+      "lineRange": [
+        15,
+        21
+      ],
+      "summary": "AuthService.getToken returns the cached Keycloak client_credentials token.",
+      "tags": [
+        "keycloak",
+        "token"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:reward-new-wallet:send-reward-bundle",
+      "type": "step",
+      "name": "Send reward bundle",
+      "filePath": "apps/user/src/queue-listener/queue-listener.service.ts",
+      "lineRange": [
+        32,
+        58
+      ],
+      "summary": "transferToken posts a REGISTER_REWARD_TOKEN_COUNT bundle from SENDER_WALLET_ID; it sends an unawaited token Promise as the bearer and reports success even on failure.",
+      "tags": [
+        "transfer",
+        "reward",
+        "defect"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "flow:browse-wallet-tokens-and-provenance",
+      "type": "flow",
+      "name": "Browse Wallet Tokens and Provenance",
+      "summary": "Shows one wallet's cover, logo, display name, balance and token list, then the details of one token: its wallet, creation date, tree photo and species from the public query API, a map link and its transaction history.",
+      "tags": [
+        "wallet",
+        "token",
+        "provenance",
+        "tree"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /wallet/details?name= and GET /token/details?id= (web)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:browse-wallet-tokens-and-provenance:open-wallet-details",
+      "type": "step",
+      "name": "Open wallet details",
+      "filePath": "apps/web/src/app/(protected)/wallet/details/page.tsx",
+      "lineRange": [
+        35,
+        242
+      ],
+      "summary": "The wallet details page resolves the wallet by name, shows its profile and balance with the pending count, and links each token and the web map.",
+      "tags": [
+        "wallet",
+        "ui"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:browse-wallet-tokens-and-provenance:load-wallet-tokens",
+      "type": "step",
+      "name": "Load wallet tokens",
+      "filePath": "packages/wallet/src/hooks/useGetTokens.ts",
+      "lineRange": [
+        6,
+        33
+      ],
+      "summary": "useGetTokens loads the tokens of the named wallet with the tokenAtom token.",
+      "tags": [
+        "hook",
+        "token"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:browse-wallet-tokens-and-provenance:call-get-tokens",
+      "type": "step",
+      "name": "Call GET /tokens",
+      "filePath": "packages/wallet/src/api/getTokens.ts",
+      "lineRange": [
+        4,
+        31
+      ],
+      "summary": "getTokens lists the tokens in the named wallet from the wallet API.",
+      "tags": [
+        "api-client",
+        "wallet-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:browse-wallet-tokens-and-provenance:open-token-details",
+      "type": "step",
+      "name": "Open token details",
+      "filePath": "apps/web/src/app/(protected)/token/details/page.tsx",
+      "lineRange": [
+        28,
+        140
+      ],
+      "summary": "The token details page shows the token id, wallet and creation date, its tree, a map link and its transaction history.",
+      "tags": [
+        "token",
+        "ui"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:browse-wallet-tokens-and-provenance:load-token-record",
+      "type": "step",
+      "name": "Load token record",
+      "filePath": "packages/wallet/src/hooks/useGetToken.ts",
+      "lineRange": [
+        16,
+        43
+      ],
+      "summary": "useGetToken loads one token record by id through GET /tokens/:id.",
+      "tags": [
+        "hook",
+        "token"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:browse-wallet-tokens-and-provenance:load-token-transactions",
+      "type": "step",
+      "name": "Load token transactions",
+      "filePath": "packages/wallet/src/hooks/useGetTokenTransactions.ts",
+      "lineRange": [
+        8,
+        35
+      ],
+      "summary": "useGetTokenTransactions loads the lineage of the token through GET /tokens/:id/transactions.",
+      "tags": [
+        "hook",
+        "lineage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:browse-wallet-tokens-and-provenance:load-token-tree",
+      "type": "step",
+      "name": "Load token tree",
+      "filePath": "packages/wallet/src/hooks/useGetTokenTree.ts",
+      "lineRange": [
+        4,
+        29
+      ],
+      "summary": "useGetTokenTree loads the tree linked to the token without authentication.",
+      "tags": [
+        "hook",
+        "tree"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:browse-wallet-tokens-and-provenance:call-query-api",
+      "type": "step",
+      "name": "Call query API",
+      "filePath": "packages/wallet/src/api/getTokenTree.ts",
+      "lineRange": [
+        10,
+        22
+      ],
+      "summary": "getTokenTree reads the tree id, image URL and species name from the public Treetracker query API.",
+      "tags": [
+        "api-client",
+        "query-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:edit-wallet-profile",
+      "type": "flow",
+      "name": "Edit Wallet Profile",
+      "summary": "Edits a wallet's public profile: display name, about text and web-map visibility in a drawer on the details page, or display name, about text, logo and cover image on the customize page, saved through a multipart PATCH.",
+      "tags": [
+        "wallet",
+        "profile",
+        "upload",
+        "validation"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Edit or Customize on /wallet/details (web)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:edit-wallet-profile:edit-profile-fields",
+      "type": "step",
+      "name": "Edit profile fields",
+      "filePath": "apps/web/src/components/WalletProfileDrawer.tsx",
+      "lineRange": [
+        29,
+        167
+      ],
+      "summary": "WalletProfileDrawer seeds the display name, about text and web-map switch from the wallet and validates them before save.",
+      "tags": [
+        "form",
+        "profile"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:edit-wallet-profile:validate-profile-field",
+      "type": "step",
+      "name": "Validate profile field",
+      "filePath": "apps/web/src/utils/walletFields.ts",
+      "lineRange": [
+        4,
+        17
+      ],
+      "summary": "walletFieldError forbids emptying a field that had a value and enforces the min and max length of the API.",
+      "tags": [
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:edit-wallet-profile:save-and-reload-profile",
+      "type": "step",
+      "name": "Save and reload profile",
+      "filePath": "apps/web/src/app/(protected)/wallet/details/page.tsx",
+      "lineRange": [
+        59,
+        69
+      ],
+      "summary": "handleSave on the details page updates the wallet by id and reloads the wallets, with an error when the reload fails.",
+      "tags": [
+        "save",
+        "reload"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:edit-wallet-profile:customize-images",
+      "type": "step",
+      "name": "Customize images",
+      "filePath": "apps/web/src/app/(protected)/wallet/customize/page.tsx",
+      "lineRange": [
+        34,
+        407
+      ],
+      "summary": "The customize page edits display name and about text and uploads logo and cover images (image/* only, 1MB max), then reloads the details page.",
+      "tags": [
+        "upload",
+        "images"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:edit-wallet-profile:bind-update-wallet",
+      "type": "step",
+      "name": "Bind update wallet",
+      "filePath": "packages/wallet/src/hooks/useUpdateWallet.ts",
+      "lineRange": [
+        6,
+        21
+      ],
+      "summary": "useUpdateWallet binds the multipart updateWallet call to the tokenAtom token.",
+      "tags": [
+        "hook"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:edit-wallet-profile:call-patch-wallet",
+      "type": "step",
+      "name": "Call PATCH /wallets/:id",
+      "filePath": "packages/wallet/src/api/updateWallet.ts",
+      "lineRange": [
+        8,
+        46
+      ],
+      "summary": "updateWallet sends the fields and optional image blobs as multipart FormData, because the API rejects JSON.",
+      "tags": [
+        "api-client",
+        "multipart"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:native-wallet-screens",
+      "type": "flow",
+      "name": "Native Wallet Screens (Mock)",
+      "summary": "The native wallet tab lists two hard-coded wallets and opens a detail screen with placeholder activity. Native wallet creation validates the form but only logs; the Edit wallet, Delete wallet and filter APPLY actions have no handlers.",
+      "tags": [
+        "native",
+        "wallet",
+        "mock",
+        "stub"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Wallet tab (native)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:native-wallet-screens:list-mock-wallets",
+      "type": "step",
+      "name": "List mock wallets",
+      "filePath": "apps/native/app/(tabs)/wallet/index.tsx",
+      "lineRange": [
+        14,
+        77
+      ],
+      "summary": "The wallet tab renders two hard-coded mock wallets and pushes the detail route with name and balance params.",
+      "tags": [
+        "mock-data",
+        "wallet"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:native-wallet-screens:fill-create-wallet-form",
+      "type": "step",
+      "name": "Fill create wallet form",
+      "filePath": "apps/native/components/wallet/WalletCreateDrawer.tsx",
+      "lineRange": [
+        29,
+        153
+      ],
+      "summary": "WalletCreateDrawer collects a name and description and rejects empty or duplicate names; the wallet tab's submit handler only logs.",
+      "tags": [
+        "form",
+        "stub"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:native-wallet-screens:show-wallet-detail",
+      "type": "step",
+      "name": "Show wallet detail",
+      "filePath": "apps/native/app/(tabs)/wallet/[walletId].tsx",
+      "lineRange": [
+        38,
+        94
+      ],
+      "summary": "The detail screen switches between an Activity tab and a Details tab and opens the filter modal without an onApply handler.",
+      "tags": [
+        "wallet",
+        "ui"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:native-wallet-screens:read-placeholder-activity",
+      "type": "step",
+      "name": "Read placeholder activity",
+      "filePath": "apps/native/data/walletActivityPlaceholder.ts",
+      "lineRange": [
+        92,
+        96
+      ],
+      "summary": "getPlaceholderWalletActivity returns temporary mock pending and completed transactions by wallet id.",
+      "tags": [
+        "mock-data"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:native-wallet-screens:show-wallet-actions",
+      "type": "step",
+      "name": "Show wallet actions",
+      "filePath": "apps/native/components/wallet/WalletDetails.tsx",
+      "lineRange": [
+        14,
+        50
+      ],
+      "summary": "WalletDetails shows the balance and Edit wallet and Delete wallet rows; the detail screen passes no handlers, so they do nothing.",
+      "tags": [
+        "stub",
+        "ui"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:send-tokens-to-wallet",
+      "type": "flow",
+      "name": "Send Tokens to Wallet",
+      "summary": "Sends an N-token bundle from one of the user's wallets to a named recipient wallet through POST /transfers, then shows the pending list.",
+      "tags": [
+        "transfer",
+        "send",
+        "bundle"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Send button of the bottom navigation, GET /send (web)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:send-tokens-to-wallet:open-send-page",
+      "type": "step",
+      "name": "Open send page",
+      "filePath": "apps/web/src/components/navigation/BottomNavigatorBar.tsx",
+      "lineRange": [
+        17,
+        117
+      ],
+      "summary": "The bottom navigation's raised Send button pushes /send.",
+      "tags": [
+        "navigation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:send-tokens-to-wallet:validate-send-form",
+      "type": "step",
+      "name": "Validate send form",
+      "filePath": "apps/web/src/app/(protected)/send/page.tsx",
+      "lineRange": [
+        30,
+        274
+      ],
+      "summary": "The send page defaults the source wallet, and requires a recipient other than the sender and a whole amount from 1 to tokens_available.",
+      "tags": [
+        "validation",
+        "form"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:send-tokens-to-wallet:submit-transfer",
+      "type": "step",
+      "name": "Submit transfer",
+      "filePath": "apps/web/src/app/(protected)/send/page.tsx",
+      "lineRange": [
+        79,
+        113
+      ],
+      "summary": "onSend calls sendTransfer with the bundle size and claim false, shows a snackbar and goes to /transfers.",
+      "tags": [
+        "submit"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:send-tokens-to-wallet:bind-send-transfer",
+      "type": "step",
+      "name": "Bind send transfer",
+      "filePath": "packages/wallet/src/hooks/useSendTransfer.ts",
+      "lineRange": [
+        5,
+        16
+      ],
+      "summary": "useSendTransfer binds the sendTransfer call to the tokenAtom token.",
+      "tags": [
+        "hook"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:send-tokens-to-wallet:call-post-transfers",
+      "type": "step",
+      "name": "Call POST /transfers",
+      "filePath": "packages/wallet/src/api/sendTransfer.ts",
+      "lineRange": [
+        14,
+        50
+      ],
+      "summary": "sendTransfer posts either specific token ids or a bundle from the sender wallet to the receiver wallet and returns the transfer.",
+      "tags": [
+        "api-client",
+        "wallet-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:review-incoming-transfer",
+      "type": "flow",
+      "name": "Review Incoming Transfer",
+      "summary": "Shows pending transfers addressed to the user's wallets as notifications with a badge count, and lets the recipient accept or decline one. The native notifications tab shows four hard-coded mock items instead.",
+      "tags": [
+        "transfer",
+        "accept",
+        "decline",
+        "notifications"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /notifications and GET /notifications/details?id= (web)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:review-incoming-transfer:filter-incoming-transfers",
+      "type": "step",
+      "name": "Filter incoming transfers",
+      "filePath": "packages/wallet/src/hooks/useIncomingTransfers.ts",
+      "lineRange": [
+        7,
+        25
+      ],
+      "summary": "useIncomingTransfers keeps the pending transfers whose destination is one of the user's wallets; the bottom navigation badges this count.",
+      "tags": [
+        "hook",
+        "filter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:review-incoming-transfer:list-notifications",
+      "type": "step",
+      "name": "List notifications",
+      "filePath": "apps/web/src/app/(protected)/notifications/page.tsx",
+      "lineRange": [
+        16,
+        67
+      ],
+      "summary": "The notifications page lists each incoming transfer and opens its details page.",
+      "tags": [
+        "notifications",
+        "ui"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:review-incoming-transfer:show-transfer-review",
+      "type": "step",
+      "name": "Show transfer review",
+      "filePath": "apps/web/src/app/(protected)/notifications/details/page.tsx",
+      "lineRange": [
+        28,
+        240
+      ],
+      "summary": "The details page shows the source, destination, token count and state, with Accept and a confirmed Decline.",
+      "tags": [
+        "review",
+        "ui"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:review-incoming-transfer:load-transfer-details",
+      "type": "step",
+      "name": "Load transfer details",
+      "filePath": "packages/wallet/src/hooks/useGetTransfer.ts",
+      "lineRange": [
+        9,
+        41
+      ],
+      "summary": "useGetTransfer loads one transfer and the tokens it carries.",
+      "tags": [
+        "hook",
+        "transfer"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:review-incoming-transfer:accept-transfer",
+      "type": "step",
+      "name": "Accept transfer",
+      "filePath": "packages/wallet/src/api/acceptTransfer.ts",
+      "lineRange": [
+        5,
+        26
+      ],
+      "summary": "acceptTransfer posts /transfers/:id/accept for the receiver.",
+      "tags": [
+        "api-client",
+        "accept"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:review-incoming-transfer:report-received-token",
+      "type": "step",
+      "name": "Report received token",
+      "filePath": "packages/wallet/src/api/getTransferTokens.ts",
+      "lineRange": [
+        5,
+        29
+      ],
+      "summary": "getTransferTokens re-reads the transfer tokens after accept, so the page reports the id of the token that landed in the wallet.",
+      "tags": [
+        "api-client",
+        "token"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:review-incoming-transfer:decline-transfer",
+      "type": "step",
+      "name": "Decline transfer",
+      "filePath": "packages/wallet/src/api/declineTransfer.ts",
+      "lineRange": [
+        5,
+        26
+      ],
+      "summary": "declineTransfer posts /transfers/:id/decline; the tokens stay with the sender.",
+      "tags": [
+        "api-client",
+        "decline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:review-incoming-transfer:show-native-mock-notifications",
+      "type": "step",
+      "name": "Show native mock notifications",
+      "filePath": "apps/native/app/(tabs)/notifications/index.tsx",
+      "lineRange": [
+        106,
+        135
+      ],
+      "summary": "The native notifications tab renders four hard-coded token notifications and highlights the newest pending one; it calls no API.",
+      "tags": [
+        "native",
+        "mock-data"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:manage-pending-transfers-and-history",
+      "type": "flow",
+      "name": "Manage Pending Transfers and History",
+      "summary": "Groups the user's transfers on /transfers into incoming (accept or decline), outgoing pending (cancel) and the 20 most recent, and opens the details of one transfer.",
+      "tags": [
+        "transfer",
+        "cancel",
+        "history"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /transfers and GET /transfers/details?id= (web)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:manage-pending-transfers-and-history:open-transfers-page",
+      "type": "step",
+      "name": "Open transfers page",
+      "filePath": "apps/web/src/app/(protected)/transfers/page.tsx",
+      "lineRange": [
+        201,
+        368
+      ],
+      "summary": "The transfers page splits pending transfers into incoming and outgoing by the user's wallet names and runs one action at a time.",
+      "tags": [
+        "transfer",
+        "ui"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:manage-pending-transfers-and-history:load-pending-transfers",
+      "type": "step",
+      "name": "Load pending transfers",
+      "filePath": "packages/wallet/src/hooks/usePendingTransfers.ts",
+      "lineRange": [
+        12,
+        62
+      ],
+      "summary": "usePendingTransfers fetches the requested and pending states, merges them, and reloads after accept, decline or cancel.",
+      "tags": [
+        "hook",
+        "pending"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:manage-pending-transfers-and-history:cancel-transfer",
+      "type": "step",
+      "name": "Cancel transfer",
+      "filePath": "packages/wallet/src/api/cancelTransfer.ts",
+      "lineRange": [
+        6,
+        26
+      ],
+      "summary": "cancelTransfer deletes /transfers/:id for a sender before the receiver accepts.",
+      "tags": [
+        "api-client",
+        "cancel"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:manage-pending-transfers-and-history:load-transfer-history",
+      "type": "step",
+      "name": "Load transfer history",
+      "filePath": "packages/wallet/src/hooks/useGetTransfers.ts",
+      "lineRange": [
+        9,
+        37
+      ],
+      "summary": "useGetTransfers loads the 20 newest transfers for the history list.",
+      "tags": [
+        "hook",
+        "history"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:manage-pending-transfers-and-history:show-transfer-details",
+      "type": "step",
+      "name": "Show transfer details",
+      "filePath": "apps/web/src/app/(protected)/transfers/details/page.tsx",
+      "lineRange": [
+        17,
+        101
+      ],
+      "summary": "The transfer details page shows the id, state, wallets, token count, times and the token list with links to token details.",
+      "tags": [
+        "transfer",
+        "ui"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:manage-pending-transfers-and-history:call-get-transfer",
+      "type": "step",
+      "name": "Call GET /transfers/:id",
+      "filePath": "packages/wallet/src/api/getTransfer.ts",
+      "lineRange": [
+        5,
+        25
+      ],
+      "summary": "getTransfer fetches the details of one transfer.",
+      "tags": [
+        "api-client",
+        "wallet-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:native-send-or-request",
+      "type": "flow",
+      "name": "Native Send or Request (Mock)",
+      "summary": "The native app lets the user choose Send or Request, pick a recipient from mock search results or a QR code, and enter an amount and a note. It calls no wallet API: the entry screen only returns to the home tab with a snackbar. No screen navigates to the transfer/notification confirmation route.",
+      "tags": [
+        "native",
+        "transfer",
+        "mock",
+        "stub"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "center swap button of the tab bar (native)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:native-send-or-request:open-action-selection",
+      "type": "step",
+      "name": "Open action selection",
+      "filePath": "apps/native/components/CustomTabBar.tsx",
+      "lineRange": [
+        10,
+        114
+      ],
+      "summary": "CustomTabBar inserts a raised swap button that opens the action selection modal through ModalContext.",
+      "tags": [
+        "navigation",
+        "modal"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:native-send-or-request:choose-send-or-request",
+      "type": "step",
+      "name": "Choose send or request",
+      "filePath": "apps/native/components/ActionSelectionModal.tsx",
+      "lineRange": [
+        13,
+        91
+      ],
+      "summary": "ActionSelectionModal sets the search category and pushes /transfer with mode send or request.",
+      "tags": [
+        "modal",
+        "category"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:native-send-or-request:pick-recipient",
+      "type": "step",
+      "name": "Pick recipient",
+      "filePath": "apps/native/app/transfer/index.tsx",
+      "lineRange": [
+        16,
+        75
+      ],
+      "summary": "The recipient screen sets the category, shows the QR card and the mock search results, and pushes the entry screen with the chosen item.",
+      "tags": [
+        "recipient",
+        "search"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:native-send-or-request:enter-amount-and-note",
+      "type": "step",
+      "name": "Enter amount and note",
+      "filePath": "apps/native/app/transfer/entry.tsx",
+      "lineRange": [
+        22,
+        155
+      ],
+      "summary": "The entry screen shows the recipient avatar, an amount and a note; SEND or REQUEST only replaces the route with /home and snackbar params.",
+      "tags": [
+        "amount",
+        "stub"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:native-send-or-request:show-home-snackbar",
+      "type": "step",
+      "name": "Show home snackbar",
+      "filePath": "apps/native/app/(tabs)/home/index.tsx",
+      "lineRange": [
+        114,
+        126
+      ],
+      "summary": "The home tab shows '<amount> Tokens sent!' or 'requested!' for 6 seconds; no transfer exists behind it.",
+      "tags": [
+        "snackbar",
+        "mock"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:create-and-manage-share-links",
+      "type": "flow",
+      "name": "Create and Manage Share Links",
+      "summary": "Issues a claim link with a QR code from the send page for a bundle of tokens without a recipient wallet, and lists the user's links on /transfers with a cancel action for active links.",
+      "tags": [
+        "action-token",
+        "share-link",
+        "qr-code"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Share by QR code option on /send (web)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:create-and-manage-share-links:request-share-link",
+      "type": "step",
+      "name": "Request share link",
+      "filePath": "apps/web/src/app/(protected)/send/page.tsx",
+      "lineRange": [
+        84,
+        96
+      ],
+      "summary": "With Share by QR code on, onSend calls generateActionToken for the bundle and builds {BASE_URL}/claim?action_token=<token>.",
+      "tags": [
+        "action-token",
+        "submit"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:create-and-manage-share-links:call-post-action-tokens",
+      "type": "step",
+      "name": "Call POST /action-tokens",
+      "filePath": "packages/wallet/src/api/generateActionToken.ts",
+      "lineRange": [
+        19,
+        56
+      ],
+      "summary": "generateActionToken issues a signed, expiring action token for specific tokens or an N-token bundle from the sender wallet.",
+      "tags": [
+        "api-client",
+        "wallet-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:create-and-manage-share-links:share-link-and-qr",
+      "type": "step",
+      "name": "Share link and QR",
+      "filePath": "apps/web/src/app/(protected)/send/page.tsx",
+      "lineRange": [
+        117,
+        128
+      ],
+      "summary": "onShare uses the system share sheet on a phone and falls back to the clipboard; the page shows the link as a QR code.",
+      "tags": [
+        "share",
+        "qr-code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:create-and-manage-share-links:load-share-links",
+      "type": "step",
+      "name": "Load share links",
+      "filePath": "packages/wallet/src/hooks/useActionTokens.ts",
+      "lineRange": [
+        9,
+        43
+      ],
+      "summary": "useActionTokens loads the user's links and exposes a cancel action that refreshes the list.",
+      "tags": [
+        "hook"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:create-and-manage-share-links:call-get-action-tokens",
+      "type": "step",
+      "name": "Call GET /action-tokens",
+      "filePath": "packages/wallet/src/api/getActionTokens.ts",
+      "lineRange": [
+        18,
+        47
+      ],
+      "summary": "getActionTokens lists the caller's links with optional state, limit and offset filters.",
+      "tags": [
+        "api-client",
+        "wallet-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:create-and-manage-share-links:show-share-link-row",
+      "type": "step",
+      "name": "Show share link row",
+      "filePath": "apps/web/src/app/(protected)/transfers/page.tsx",
+      "lineRange": [
+        152,
+        199
+      ],
+      "summary": "ShareLinkRow shows the token count, the expiry or redeem time and the state, with Cancel only for active links.",
+      "tags": [
+        "ui"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:create-and-manage-share-links:cancel-share-link",
+      "type": "step",
+      "name": "Cancel share link",
+      "filePath": "packages/wallet/src/api/cancelActionToken.ts",
+      "lineRange": [
+        6,
+        26
+      ],
+      "summary": "cancelActionToken deletes /action-tokens/:id so the link can no longer be redeemed.",
+      "tags": [
+        "api-client",
+        "cancel"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:claim-shared-tokens",
+      "type": "flow",
+      "name": "Claim Shared Tokens",
+      "summary": "Redeems a /claim link into the recipient's wallet. A signed-in user with a wallet redeems at once; a signed-out visitor or a user without a wallet gets the link saved, and the protected layout or the first wallet creation redeems it later.",
+      "tags": [
+        "claim",
+        "redeem",
+        "action-token"
+      ],
+      "complexity": "complex",
+      "domainMeta": {
+        "entryPoint": "GET /claim?action_token= (web)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:claim-shared-tokens:open-claim-link",
+      "type": "step",
+      "name": "Open claim link",
+      "filePath": "apps/web/src/app/claim/page.tsx",
+      "lineRange": [
+        28,
+        192
+      ],
+      "summary": "The public claim page reads action_token, offers sign in or register to a signed-out visitor, and redeems at once for a signed-in user.",
+      "tags": [
+        "claim",
+        "ui"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "step:claim-shared-tokens:save-pending-claim",
+      "type": "step",
+      "name": "Save pending claim",
+      "filePath": "apps/web/src/utils/actionToken.ts",
+      "lineRange": [
+        6,
+        12
+      ],
+      "summary": "savePendingActionToken keeps the link under the pending_action_token localStorage key until a wallet can receive it.",
+      "tags": [
+        "storage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:claim-shared-tokens:call-redeem",
+      "type": "step",
+      "name": "Call POST /action-tokens/redeem",
+      "filePath": "packages/wallet/src/api/redeemActionToken.ts",
+      "lineRange": [
+        14,
+        41
+      ],
+      "summary": "redeemActionToken moves the linked tokens into the caller's wallet as one completed transfer and throws a typed error with the reason.",
+      "tags": [
+        "api-client",
+        "wallet-api"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:claim-shared-tokens:detect-missing-wallet",
+      "type": "step",
+      "name": "Detect missing wallet",
+      "filePath": "packages/wallet/src/api/errors.ts",
+      "lineRange": [
+        14,
+        16
+      ],
+      "summary": "isNoWalletError recognizes the no_wallet reason, so the page keeps the link and sends the user to create a wallet.",
+      "tags": [
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:claim-shared-tokens:mount-pending-claim-handler",
+      "type": "step",
+      "name": "Mount pending claim handler",
+      "filePath": "apps/web/src/app/(protected)/layout.tsx",
+      "lineRange": [
+        17,
+        70
+      ],
+      "summary": "The protected layout reads the saved link once on mount and mounts PendingClaimHandler only when one exists.",
+      "tags": [
+        "layout",
+        "claim"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:claim-shared-tokens:redeem-into-first-wallet",
+      "type": "step",
+      "name": "Redeem into first wallet",
+      "filePath": "apps/web/src/components/PendingClaimHandler.tsx",
+      "lineRange": [
+        19,
+        51
+      ],
+      "summary": "PendingClaimHandler redeems the saved link into the user's first wallet once authenticated and shows the outcome.",
+      "tags": [
+        "claim",
+        "snackbar"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:claim-shared-tokens:redeem-and-report",
+      "type": "step",
+      "name": "Redeem and report",
+      "filePath": "apps/web/src/utils/claimPendingToken.ts",
+      "lineRange": [
+        24,
+        44
+      ],
+      "summary": "claimPendingToken removes the link before the request and maps expired, not verified and no longer owned errors to user messages.",
+      "tags": [
+        "claim",
+        "error-mapping"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "flow:native-recipient-search",
+      "type": "flow",
+      "name": "Native Recipient Search",
+      "summary": "Searches the hard-coded core mockData directory of five users and five businesses from the shared header bar and lists matching and other results by category. The home tab swaps to the results while searching; the separate search tab is hidden (href null) and no screen navigates to it.",
+      "tags": [
+        "search",
+        "native",
+        "jotai",
+        "mock-data"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "search icon of the header bar (native)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:native-recipient-search:type-search-query",
+      "type": "step",
+      "name": "Type search query",
+      "filePath": "apps/native/components/HeaderSearch.tsx",
+      "lineRange": [
+        30,
+        170
+      ],
+      "summary": "The native HeaderSearch toggles the search box, starts and cancels a search and writes the query to the core search atoms.",
+      "tags": [
+        "search",
+        "ui"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:native-recipient-search:perform-search",
+      "type": "step",
+      "name": "Perform search",
+      "filePath": "packages/core/src/atoms/search/index.ts",
+      "lineRange": [
+        116,
+        133
+      ],
+      "summary": "performSearchAtom stores the query and adds it to the recent searches, keeping up to 5.",
+      "tags": [
+        "jotai",
+        "recent-searches"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:native-recipient-search:filter-mock-directory",
+      "type": "step",
+      "name": "Filter mock directory",
+      "filePath": "packages/core/src/atoms/search/index.ts",
+      "lineRange": [
+        60,
+        103
+      ],
+      "summary": "Derived atoms filter the mockData items by the selected category and split them into matching and non-matching sets.",
+      "tags": [
+        "jotai",
+        "mock-data",
+        "filter"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:native-recipient-search:rank-results",
+      "type": "step",
+      "name": "Rank results",
+      "filePath": "packages/core/src/atoms/search/index.ts",
+      "lineRange": [
+        27,
+        50
+      ],
+      "summary": "sortSearchResults puts names that start with the query first, then exact matches, then sorts the rest by name.",
+      "tags": [
+        "sort"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:native-recipient-search:build-result-sections",
+      "type": "step",
+      "name": "Build result sections",
+      "filePath": "packages/core/src/hooks/useSearchResults.ts",
+      "lineRange": [
+        11,
+        56
+      ],
+      "summary": "useSearchResults turns the display data, stats and category label into SectionList sections.",
+      "tags": [
+        "hook",
+        "sections"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:native-recipient-search:render-search-results",
+      "type": "step",
+      "name": "Render search results",
+      "filePath": "apps/native/components/ui/SearchResults.tsx",
+      "lineRange": [
+        11,
+        34
+      ],
+      "summary": "SearchResults renders the sections as pressable rows, or an empty state when nothing matches.",
+      "tags": [
+        "ui",
+        "list"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:scan-recipient-qr-code",
+      "type": "flow",
+      "name": "Scan Recipient QR Code",
+      "summary": "Reads a recipient from a QR code with the camera or from a gallery image and opens the native transfer entry screen in send mode.",
+      "tags": [
+        "qr-code",
+        "camera",
+        "native"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "Scan or show QR code card (native)",
+        "entryType": "manual"
+      }
+    },
+    {
+      "id": "step:scan-recipient-qr-code:open-qr-card",
+      "type": "step",
+      "name": "Open QR card",
+      "filePath": "apps/native/components/ui/QRCodeDisplay.tsx",
+      "lineRange": [
+        12,
+        71
+      ],
+      "summary": "The QR card on the home, search and transfer screens routes to /scancode.",
+      "tags": [
+        "ui",
+        "navigation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:scan-recipient-qr-code:scan-with-camera",
+      "type": "step",
+      "name": "Scan with camera",
+      "filePath": "apps/native/app/scancode.tsx",
+      "lineRange": [
+        97,
+        415
+      ],
+      "summary": "The scan screen asks for camera permission and reads QR codes live through expo-camera.",
+      "tags": [
+        "camera",
+        "permissions"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:scan-recipient-qr-code:read-gallery-image",
+      "type": "step",
+      "name": "Read gallery image",
+      "filePath": "apps/native/app/scancode.tsx",
+      "lineRange": [
+        173,
+        227
+      ],
+      "summary": "handleGalleryPress asks for media-library permission and decodes a picked image with scanFromURLAsync.",
+      "tags": [
+        "gallery",
+        "permissions"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:scan-recipient-qr-code:parse-qr-payload",
+      "type": "step",
+      "name": "Parse QR payload",
+      "filePath": "apps/native/app/scancode.tsx",
+      "lineRange": [
+        43,
+        95
+      ],
+      "summary": "parseQrPayload reads the recipient id, name and avatar from JSON, a URL query or plain text, and rejects a payload without a name.",
+      "tags": [
+        "parsing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:scan-recipient-qr-code:open-transfer-entry",
+      "type": "step",
+      "name": "Open transfer entry",
+      "filePath": "apps/native/app/scancode.tsx",
+      "lineRange": [
+        106,
+        119
+      ],
+      "summary": "navigateToTransferEntry replaces the route with /transfer/entry in send mode with the recipient params.",
+      "tags": [
+        "navigation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "flow:web-wallet-search-mock",
+      "type": "flow",
+      "name": "Web Wallet Search (Mock)",
+      "summary": "The web /search page filters three hard-coded wallets by the header query and opens a keypad modal to send or request. It calls no API: the modal only stores a pendingTransaction in sessionStorage, the home page shows it as a snackbar, and UNDO only logs. No live link leads to /search.",
+      "tags": [
+        "search",
+        "web",
+        "mock-data",
+        "stub"
+      ],
+      "complexity": "moderate",
+      "domainMeta": {
+        "entryPoint": "GET /search?action=send|request (web, direct URL only)",
+        "entryType": "http"
+      }
+    },
+    {
+      "id": "step:web-wallet-search-mock:filter-mock-wallets",
+      "type": "step",
+      "name": "Filter mock wallets",
+      "filePath": "apps/web/src/app/(protected)/search/page.tsx",
+      "lineRange": [
+        62,
+        212
+      ],
+      "summary": "SearchContent filters the hard-coded WALLETS_DATA list by name, company or address and picks send or request copy from ?action=.",
+      "tags": [
+        "mock-data",
+        "filter"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "step:web-wallet-search-mock:type-header-query",
+      "type": "step",
+      "name": "Type header query",
+      "filePath": "apps/web/src/components/header/HeaderSearch.tsx",
+      "lineRange": [
+        21,
+        99
+      ],
+      "summary": "HeaderSearch binds the expanded text field to the HeaderContext searchQuery.",
+      "tags": [
+        "search",
+        "ui"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:web-wallet-search-mock:hold-search-state",
+      "type": "step",
+      "name": "Hold search state",
+      "filePath": "apps/web/src/context/HeaderContext.tsx",
+      "lineRange": [
+        15,
+        35
+      ],
+      "summary": "HeaderProvider holds isSearchExpanded and searchQuery for the header and the search page.",
+      "tags": [
+        "context"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:web-wallet-search-mock:submit-mock-transaction",
+      "type": "step",
+      "name": "Submit mock transaction",
+      "filePath": "apps/web/src/components/WalletDetailModal.tsx",
+      "lineRange": [
+        212,
+        245
+      ],
+      "summary": "handleTransactionSubmit stores the action, amount, wallet and note as pendingTransaction and reloads /home; it sends nothing to the wallet API.",
+      "tags": [
+        "mock",
+        "stub"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:web-wallet-search-mock:show-transaction-snackbar",
+      "type": "step",
+      "name": "Show transaction snackbar",
+      "filePath": "apps/web/src/components/TransactionSnackbar.tsx",
+      "lineRange": [
+        17,
+        66
+      ],
+      "summary": "TransactionSnackbar shows '<amount> Tokens sent!' or 'requested!' with an UNDO button.",
+      "tags": [
+        "snackbar",
+        "ui"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:web-wallet-search-mock:undo-mock-transaction",
+      "type": "step",
+      "name": "Undo mock transaction",
+      "filePath": "apps/web/src/context/SnackbarContext.tsx",
+      "lineRange": [
+        39,
+        46
+      ],
+      "summary": "undoTransaction in SnackbarProvider only logs the transaction and closes the snackbar; no undo API exists.",
+      "tags": [
+        "stub",
+        "context"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "domain:authentication-and-identity",
+      "target": "flow:sign-in-or-register-with-keycloak",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:sign-in-or-register-with-keycloak",
+      "target": "step:sign-in-or-register-with-keycloak:route-visitor-by-auth-state",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:sign-in-or-register-with-keycloak",
+      "target": "step:sign-in-or-register-with-keycloak:open-hosted-login",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:sign-in-or-register-with-keycloak",
+      "target": "step:sign-in-or-register-with-keycloak:open-hosted-registration",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:sign-in-or-register-with-keycloak",
+      "target": "step:sign-in-or-register-with-keycloak:redirect-to-keycloak",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:sign-in-or-register-with-keycloak",
+      "target": "step:sign-in-or-register-with-keycloak:initialize-keycloak-session",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:sign-in-or-register-with-keycloak",
+      "target": "step:sign-in-or-register-with-keycloak:mirror-and-refresh-token",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:sign-in-or-register-with-keycloak",
+      "target": "step:sign-in-or-register-with-keycloak:handle-oidc-callback",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "flow:sign-in-or-register-with-keycloak",
+      "target": "step:sign-in-or-register-with-keycloak:guard-protected-routes",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:authentication-and-identity",
+      "target": "flow:log-out-across-tabs",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:log-out-across-tabs",
+      "target": "step:log-out-across-tabs:choose-log-out",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:log-out-across-tabs",
+      "target": "step:log-out-across-tabs:run-logout-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:log-out-across-tabs",
+      "target": "step:log-out-across-tabs:clear-stored-tokens",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:log-out-across-tabs",
+      "target": "step:log-out-across-tabs:broadcast-logout",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:log-out-across-tabs",
+      "target": "step:log-out-across-tabs:end-keycloak-session",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:log-out-across-tabs",
+      "target": "step:log-out-across-tabs:log-out-other-tabs",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:authentication-and-identity",
+      "target": "flow:view-account-profile",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:view-account-profile",
+      "target": "step:view-account-profile:open-account-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:view-account-profile",
+      "target": "step:view-account-profile:load-user-profile",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:view-account-profile",
+      "target": "step:view-account-profile:request-user-api-profile",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:view-account-profile",
+      "target": "step:view-account-profile:accept-me-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:view-account-profile",
+      "target": "step:view-account-profile:combine-keycloak-records",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:view-account-profile",
+      "target": "step:view-account-profile:fall-back-to-userinfo",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "flow:view-account-profile",
+      "target": "step:view-account-profile:open-keycloak-account-console",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:authentication-and-identity",
+      "target": "flow:user-api-login-and-registration",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:user-api-login-and-registration",
+      "target": "step:user-api-login-and-registration:bootstrap-user-api",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:user-api-login-and-registration",
+      "target": "step:user-api-login-and-registration:route-login-and-register",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:user-api-login-and-registration",
+      "target": "step:user-api-login-and-registration:exchange-password-for-tokens",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:user-api-login-and-registration",
+      "target": "step:user-api-login-and-registration:get-service-account-token",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:user-api-login-and-registration",
+      "target": "step:user-api-login-and-registration:create-keycloak-user",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:authentication-and-identity",
+      "target": "flow:native-onboarding-and-login",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:native-onboarding-and-login",
+      "target": "step:native-onboarding-and-login:pick-launch-route",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:native-onboarding-and-login",
+      "target": "step:native-onboarding-and-login:show-onboarding-slides",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:native-onboarding-and-login",
+      "target": "step:native-onboarding-and-login:submit-stub-login",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:native-onboarding-and-login",
+      "target": "step:native-onboarding-and-login:request-password-reset-stub",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:native-onboarding-and-login",
+      "target": "step:native-onboarding-and-login:show-check-email",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:native-onboarding-and-login",
+      "target": "step:native-onboarding-and-login:log-out-stub",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:wallet-management",
+      "target": "flow:view-wallet-dashboard",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:view-wallet-dashboard",
+      "target": "step:view-wallet-dashboard:render-home-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:view-wallet-dashboard",
+      "target": "step:view-wallet-dashboard:load-wallets",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:view-wallet-dashboard",
+      "target": "step:view-wallet-dashboard:call-get-wallets",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:view-wallet-dashboard",
+      "target": "step:view-wallet-dashboard:load-recent-transfers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:view-wallet-dashboard",
+      "target": "step:view-wallet-dashboard:call-get-transfers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:view-wallet-dashboard",
+      "target": "step:view-wallet-dashboard:classify-activity",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "flow:view-wallet-dashboard",
+      "target": "step:view-wallet-dashboard:show-recent-activity",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:wallet-management",
+      "target": "flow:create-wallet",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:create-wallet",
+      "target": "step:create-wallet:list-wallets-and-check-limit",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:create-wallet",
+      "target": "step:create-wallet:validate-new-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:create-wallet",
+      "target": "step:create-wallet:bind-create-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:create-wallet",
+      "target": "step:create-wallet:call-post-wallets",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:create-wallet",
+      "target": "step:create-wallet:handle-created-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:create-wallet",
+      "target": "step:create-wallet:redeem-saved-claim",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:wallet-management",
+      "target": "flow:reward-new-wallet",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:reward-new-wallet",
+      "target": "step:reward-new-wallet:register-queue-listener",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:reward-new-wallet",
+      "target": "step:reward-new-wallet:subscribe-to-wallet-creation",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:reward-new-wallet",
+      "target": "step:reward-new-wallet:listen-on-channel",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:reward-new-wallet",
+      "target": "step:reward-new-wallet:acknowledge-message",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:reward-new-wallet",
+      "target": "step:reward-new-wallet:find-user-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:reward-new-wallet",
+      "target": "step:reward-new-wallet:get-reward-token",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "flow:reward-new-wallet",
+      "target": "step:reward-new-wallet:send-reward-bundle",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:wallet-management",
+      "target": "flow:browse-wallet-tokens-and-provenance",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:browse-wallet-tokens-and-provenance",
+      "target": "step:browse-wallet-tokens-and-provenance:open-wallet-details",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:browse-wallet-tokens-and-provenance",
+      "target": "step:browse-wallet-tokens-and-provenance:load-wallet-tokens",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:browse-wallet-tokens-and-provenance",
+      "target": "step:browse-wallet-tokens-and-provenance:call-get-tokens",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:browse-wallet-tokens-and-provenance",
+      "target": "step:browse-wallet-tokens-and-provenance:open-token-details",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:browse-wallet-tokens-and-provenance",
+      "target": "step:browse-wallet-tokens-and-provenance:load-token-record",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:browse-wallet-tokens-and-provenance",
+      "target": "step:browse-wallet-tokens-and-provenance:load-token-transactions",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:browse-wallet-tokens-and-provenance",
+      "target": "step:browse-wallet-tokens-and-provenance:load-token-tree",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "flow:browse-wallet-tokens-and-provenance",
+      "target": "step:browse-wallet-tokens-and-provenance:call-query-api",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:wallet-management",
+      "target": "flow:edit-wallet-profile",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:edit-wallet-profile",
+      "target": "step:edit-wallet-profile:edit-profile-fields",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:edit-wallet-profile",
+      "target": "step:edit-wallet-profile:validate-profile-field",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:edit-wallet-profile",
+      "target": "step:edit-wallet-profile:save-and-reload-profile",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:edit-wallet-profile",
+      "target": "step:edit-wallet-profile:customize-images",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:edit-wallet-profile",
+      "target": "step:edit-wallet-profile:bind-update-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:edit-wallet-profile",
+      "target": "step:edit-wallet-profile:call-patch-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:wallet-management",
+      "target": "flow:native-wallet-screens",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:native-wallet-screens",
+      "target": "step:native-wallet-screens:list-mock-wallets",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:native-wallet-screens",
+      "target": "step:native-wallet-screens:fill-create-wallet-form",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:native-wallet-screens",
+      "target": "step:native-wallet-screens:show-wallet-detail",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:native-wallet-screens",
+      "target": "step:native-wallet-screens:read-placeholder-activity",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:native-wallet-screens",
+      "target": "step:native-wallet-screens:show-wallet-actions",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:token-transfer",
+      "target": "flow:send-tokens-to-wallet",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:send-tokens-to-wallet",
+      "target": "step:send-tokens-to-wallet:open-send-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:send-tokens-to-wallet",
+      "target": "step:send-tokens-to-wallet:validate-send-form",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:send-tokens-to-wallet",
+      "target": "step:send-tokens-to-wallet:submit-transfer",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:send-tokens-to-wallet",
+      "target": "step:send-tokens-to-wallet:bind-send-transfer",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:send-tokens-to-wallet",
+      "target": "step:send-tokens-to-wallet:call-post-transfers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:token-transfer",
+      "target": "flow:review-incoming-transfer",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:review-incoming-transfer",
+      "target": "step:review-incoming-transfer:filter-incoming-transfers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:review-incoming-transfer",
+      "target": "step:review-incoming-transfer:list-notifications",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:review-incoming-transfer",
+      "target": "step:review-incoming-transfer:show-transfer-review",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:review-incoming-transfer",
+      "target": "step:review-incoming-transfer:load-transfer-details",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:review-incoming-transfer",
+      "target": "step:review-incoming-transfer:accept-transfer",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:review-incoming-transfer",
+      "target": "step:review-incoming-transfer:report-received-token",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:review-incoming-transfer",
+      "target": "step:review-incoming-transfer:decline-transfer",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "flow:review-incoming-transfer",
+      "target": "step:review-incoming-transfer:show-native-mock-notifications",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:token-transfer",
+      "target": "flow:manage-pending-transfers-and-history",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:manage-pending-transfers-and-history",
+      "target": "step:manage-pending-transfers-and-history:open-transfers-page",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:manage-pending-transfers-and-history",
+      "target": "step:manage-pending-transfers-and-history:load-pending-transfers",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:manage-pending-transfers-and-history",
+      "target": "step:manage-pending-transfers-and-history:cancel-transfer",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:manage-pending-transfers-and-history",
+      "target": "step:manage-pending-transfers-and-history:load-transfer-history",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:manage-pending-transfers-and-history",
+      "target": "step:manage-pending-transfers-and-history:show-transfer-details",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:manage-pending-transfers-and-history",
+      "target": "step:manage-pending-transfers-and-history:call-get-transfer",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:token-transfer",
+      "target": "flow:native-send-or-request",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:native-send-or-request",
+      "target": "step:native-send-or-request:open-action-selection",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:native-send-or-request",
+      "target": "step:native-send-or-request:choose-send-or-request",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:native-send-or-request",
+      "target": "step:native-send-or-request:pick-recipient",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:native-send-or-request",
+      "target": "step:native-send-or-request:enter-amount-and-note",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:native-send-or-request",
+      "target": "step:native-send-or-request:show-home-snackbar",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:share-links-and-claims",
+      "target": "flow:create-and-manage-share-links",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:create-and-manage-share-links",
+      "target": "step:create-and-manage-share-links:request-share-link",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:create-and-manage-share-links",
+      "target": "step:create-and-manage-share-links:call-post-action-tokens",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:create-and-manage-share-links",
+      "target": "step:create-and-manage-share-links:share-link-and-qr",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:create-and-manage-share-links",
+      "target": "step:create-and-manage-share-links:load-share-links",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:create-and-manage-share-links",
+      "target": "step:create-and-manage-share-links:call-get-action-tokens",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:create-and-manage-share-links",
+      "target": "step:create-and-manage-share-links:show-share-link-row",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "flow:create-and-manage-share-links",
+      "target": "step:create-and-manage-share-links:cancel-share-link",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:share-links-and-claims",
+      "target": "flow:claim-shared-tokens",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:claim-shared-tokens",
+      "target": "step:claim-shared-tokens:open-claim-link",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.1
+    },
+    {
+      "source": "flow:claim-shared-tokens",
+      "target": "step:claim-shared-tokens:save-pending-claim",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:claim-shared-tokens",
+      "target": "step:claim-shared-tokens:call-redeem",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:claim-shared-tokens",
+      "target": "step:claim-shared-tokens:detect-missing-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:claim-shared-tokens",
+      "target": "step:claim-shared-tokens:mount-pending-claim-handler",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:claim-shared-tokens",
+      "target": "step:claim-shared-tokens:redeem-into-first-wallet",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "flow:claim-shared-tokens",
+      "target": "step:claim-shared-tokens:redeem-and-report",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:search-and-discovery",
+      "target": "flow:native-recipient-search",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:native-recipient-search",
+      "target": "step:native-recipient-search:type-search-query",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:native-recipient-search",
+      "target": "step:native-recipient-search:perform-search",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:native-recipient-search",
+      "target": "step:native-recipient-search:filter-mock-directory",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:native-recipient-search",
+      "target": "step:native-recipient-search:rank-results",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:native-recipient-search",
+      "target": "step:native-recipient-search:build-result-sections",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:native-recipient-search",
+      "target": "step:native-recipient-search:render-search-results",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:search-and-discovery",
+      "target": "flow:scan-recipient-qr-code",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:scan-recipient-qr-code",
+      "target": "step:scan-recipient-qr-code:open-qr-card",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:scan-recipient-qr-code",
+      "target": "step:scan-recipient-qr-code:scan-with-camera",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "flow:scan-recipient-qr-code",
+      "target": "step:scan-recipient-qr-code:read-gallery-image",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "flow:scan-recipient-qr-code",
+      "target": "step:scan-recipient-qr-code:parse-qr-payload",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:scan-recipient-qr-code",
+      "target": "step:scan-recipient-qr-code:open-transfer-entry",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:search-and-discovery",
+      "target": "flow:web-wallet-search-mock",
+      "type": "contains_flow",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "flow:web-wallet-search-mock",
+      "target": "step:web-wallet-search-mock:filter-mock-wallets",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.2
+    },
+    {
+      "source": "flow:web-wallet-search-mock",
+      "target": "step:web-wallet-search-mock:type-header-query",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.3
+    },
+    {
+      "source": "flow:web-wallet-search-mock",
+      "target": "step:web-wallet-search-mock:hold-search-state",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "flow:web-wallet-search-mock",
+      "target": "step:web-wallet-search-mock:submit-mock-transaction",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "flow:web-wallet-search-mock",
+      "target": "step:web-wallet-search-mock:show-transaction-snackbar",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "flow:web-wallet-search-mock",
+      "target": "step:web-wallet-search-mock:undo-mock-transaction",
+      "type": "flow_step",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "domain:authentication-and-identity",
+      "target": "domain:wallet-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Wallet hooks read the bearer token that KeycloakProvider mirrors into tokenAtom; the user API service-account token authorizes the new-wallet reward.",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:authentication-and-identity",
+      "target": "domain:token-transfer",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Transfer hooks and API clients send the tokenAtom bearer token from the Keycloak session.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:authentication-and-identity",
+      "target": "domain:share-links-and-claims",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The protected layout mounts the pending-claim handler after sign-in, and the claim page sends signed-out visitors to /login or /signup.",
+      "weight": 0.7
+    },
+    {
+      "source": "domain:share-links-and-claims",
+      "target": "domain:wallet-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "Redeeming needs a wallet: the claim page sends wallet-less users to /wallet, and wallet creation redeems the saved link into the new wallet.",
+      "weight": 0.8
+    },
+    {
+      "source": "domain:wallet-management",
+      "target": "domain:token-transfer",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The new-wallet reward posts a token bundle to the wallet API transfer endpoint, and wallet balances bound the send amount.",
+      "weight": 0.5
+    },
+    {
+      "source": "domain:token-transfer",
+      "target": "domain:share-links-and-claims",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The send page issues claim links instead of a direct transfer when Share by QR code is on, and the transfers page lists them.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:search-and-discovery",
+      "target": "domain:token-transfer",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The native recipient search and the QR scan hand the chosen recipient to the native transfer entry screen.",
+      "weight": 0.6
+    },
+    {
+      "source": "domain:search-and-discovery",
+      "target": "domain:wallet-management",
+      "type": "cross_domain",
+      "direction": "forward",
+      "description": "The web mock search stores a pendingTransaction that the home dashboard shows as a snackbar.",
+      "weight": 0.3
+    }
+  ],
+  "layers": [],
+  "tour": []
+}

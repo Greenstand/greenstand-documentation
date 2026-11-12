@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 376" role="img" aria-labelledby="t">
+<title id="t">A drawing of the web map tree page: the badge Waiting for verification, then the badge Verified</title>
+<style>
+  .bg{fill:#ffffff}.card{fill:#f6f8fa;stroke:#d0d7de;stroke-width:1.5}.line{stroke:#8c959f;stroke-width:2;fill:none}.s{font:14px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#656d76}.gl{fill:#dafbe1}.al{fill:#fff8c5}.tree1{fill:#4c9a2a}.trunk{fill:#8a6a3b}
+  @media (prefers-color-scheme: dark){.bg{fill:#0d1117}.card{fill:#161b22;stroke:#30363d}.s{fill:#8b949e}.gl{fill:#12261e}.al{fill:#272115}.line{stroke:#6e7681}}
+</style>
+<rect class="bg" width="360" height="376" rx="12"/>
+<g><rect class="card" x="16" y="16" width="328" height="156" rx="10"/><rect class="gl" x="28" y="28" width="304" height="72" rx="6"/>
+<rect class="trunk" x="177" y="70" width="6" height="24"/><circle class="tree1" cx="180" cy="60" r="22"/>
+<rect class="al" x="28" y="110" width="304" height="30" rx="15"/><text x="180" y="130" text-anchor="middle" style="font:600 14px system-ui,sans-serif;fill:#9a6700">Waiting for verification</text>
+<text class="s" x="180" y="162" text-anchor="middle">After the upload</text></g>
+<path class="line" d="M180 176v13"/><path d="M173 188l7 9 7-9z" fill="#8c959f"/>
+<g><rect class="card" x="16" y="204" width="328" height="156" rx="10"/><rect class="gl" x="28" y="216" width="304" height="72" rx="6"/>
+<rect class="trunk" x="177" y="258" width="6" height="24"/><circle class="tree1" cx="180" cy="248" r="22"/>
+<rect class="gl" x="28" y="298" width="304" height="30" rx="15" stroke="#4c9a2a" stroke-width="1.5"/><text x="180" y="318" text-anchor="middle" style="font:600 14px system-ui,sans-serif;fill:#1a7f37">Verified</text>
+<text class="s" x="180" y="350" text-anchor="middle">After the approval</text></g>
+</svg>

@@ -1,0 +1,11 @@
+# Mirrored-text exceptions for the private-name check (.github/scripts/private-names.sh).
+# One per line: <SHA-256 of the exact name, no trailing newline> <path regex, no spaces>
+# The scanners give a path from the top of the docs repo: understand-greenstand/...
+# Add an entry only after a code search shows that public Greenstand source contains the name.
+# The hash keeps the name out of this public file.
+
+# Mirrored by the generated treetracker-infrastructure graph (76 hits). Public Greenstand source
+# contains the name (checked 2026-10-14): treetracker-infrastructure
+# database-grants/terraform/prod/extra/main.tf (15) and treetracker-wallet-app
+# apps/user/README.md (6).
+18ffbd5ea12e64f6579bed0b766a40f8675f1fd20fad8c37c2937ca4c83dbf91 ^understand-greenstand/repos/
