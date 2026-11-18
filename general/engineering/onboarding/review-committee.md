@@ -18,39 +18,39 @@ Greenstand has many contributors but only a few maintainers who can merge. The T
 
 ## Repos to review
 
-Each repo needs **at least 2 reviewers**, so one can cover when another is busy. More are welcome.
+Each repo needs **at least 2 reviewers**, so one can cover when another is busy. More are welcome. ⭐ = current priority. Maintainers come from each repo's `CODEOWNERS` file; "not set yet" means the repo has none.
 
-| Area | Repo | What it is | Reviewers |
-| --- | --- | --- | --- |
-| Core API | [treetracker-api](https://github.com/Greenstand/treetracker-api) | Captures and trees (core data) | |
-| Core API | [treetracker-query-api](https://github.com/Greenstand/treetracker-query-api) | Read API for the map and apps | |
-| Core API | [images-api](https://github.com/Greenstand/images-api) | Resizes images | |
-| Admin | [treetracker-admin-api](https://github.com/Greenstand/treetracker-admin-api) | Admin panel backend | |
-| Admin | [treetracker-admin-client](https://github.com/Greenstand/treetracker-admin-client) | Admin panel screens | |
-| Admin | [treetracker-stakeholder-api](https://github.com/Greenstand/treetracker-stakeholder-api) | Organizations | |
-| Wallet | [treetracker-wallet-api](https://github.com/Greenstand/treetracker-wallet-api) | Tokens and transfers | |
-| Wallet | [treetracker-wallet-app](https://github.com/Greenstand/treetracker-wallet-app) | Wallet app | |
-| Wallet | [treetracker-wallet-admin-client](https://github.com/Greenstand/treetracker-wallet-admin-client) | Wallet admin screens | |
-| Web map | [treetracker-web-map-client](https://github.com/Greenstand/treetracker-web-map-client) | The public map | |
-| Web map | [treetracker-tile-server](https://github.com/Greenstand/treetracker-tile-server) | Map tiles | |
-| Mobile | [treetracker-android](https://github.com/Greenstand/treetracker-android) | Grower app for Android | |
-| Mobile | [treetracker-ios](https://github.com/Greenstand/treetracker-ios) | Grower app for iOS | |
-| Data ingest | [treetracker-field-data](https://github.com/Greenstand/treetracker-field-data) | Receives captures from phones | |
-| Data ingest | [treetracker-airflow-dags](https://github.com/Greenstand/treetracker-airflow-dags) | Scheduled data jobs | |
-| Infrastructure | [treetracker-infrastructure](https://github.com/Greenstand/treetracker-infrastructure) | Servers and clusters | |
-| Docs | [greenstand-documentation](https://github.com/Greenstand/greenstand-documentation) | This documentation | |
+| Area | Repo | What it is | Maintainers | Reviewers |
+| --- | --- | --- | --- | --- |
+| Core API | [treetracker-api](https://github.com/Greenstand/treetracker-api) | Captures and trees (core data) | not set yet | |
+| Core API | [treetracker-query-api](https://github.com/Greenstand/treetracker-query-api) | Read API for the map and apps | `@Greenstand/microservices-working-group` | |
+| Core API | [images-api](https://github.com/Greenstand/images-api) | Resizes images | `@Greenstand/microservices-working-group` | |
+| Admin | ⭐ [treetracker-admin-api](https://github.com/Greenstand/treetracker-admin-api) | Admin panel backend | `@dadiorchen`, `@nmcharlton` | |
+| Admin | ⭐ [treetracker-admin-client](https://github.com/Greenstand/treetracker-admin-client) | Admin panel screens | `@Greenstand/react-js-code-reviewers` | |
+| Admin | [treetracker-stakeholder-api](https://github.com/Greenstand/treetracker-stakeholder-api) | Organizations | `@Greenstand/microservices-working-group` | |
+| Wallet | [treetracker-wallet-api](https://github.com/Greenstand/treetracker-wallet-api) | Tokens and transfers | `@Kpoke`, `@dadiorchen` | |
+| Wallet | [treetracker-wallet-app](https://github.com/Greenstand/treetracker-wallet-app) | Wallet app | `@Greenstand/wallet-mobile-code-reviewers` | |
+| Wallet | ⭐ [treetracker-wallet-admin-client](https://github.com/Greenstand/treetracker-wallet-admin-client) | Wallet admin screens | not set yet | |
+| Web map | [treetracker-web-map-client](https://github.com/Greenstand/treetracker-web-map-client) | The public map | `@Greenstand/web-map-code-reviewer` | |
+| Web map | [treetracker-tile-server](https://github.com/Greenstand/treetracker-tile-server) | Map tiles | not set yet | |
+| Mobile | ⭐ [treetracker-android](https://github.com/Greenstand/treetracker-android) | Grower app for Android | `@Elforama` | |
+| Mobile | [treetracker-ios](https://github.com/Greenstand/treetracker-ios) | Grower app for iOS | `@alexcornforth` | |
+| Data ingest | [treetracker-field-data](https://github.com/Greenstand/treetracker-field-data) | Receives captures from phones | not set yet | |
+| Data ingest | [treetracker-airflow-dags](https://github.com/Greenstand/treetracker-airflow-dags) | Scheduled data jobs | not set yet | |
+| Infrastructure | [treetracker-infrastructure](https://github.com/Greenstand/treetracker-infrastructure) | Servers and clusters | not set yet | |
+| Docs | [greenstand-documentation](https://github.com/Greenstand/greenstand-documentation) | This documentation | not set yet | |
 
 ## Apps to test
 
-Each app needs **at least 2 testers**. More are welcome.
+Each app needs **at least 2 testers**. More are welcome. ⭐ = current priority.
 
 | App | Code | Testers |
 | --- | --- | --- |
-| Admin panel (Keycloak login) | [treetracker-admin-client](https://github.com/Greenstand/treetracker-admin-client) | |
-| Wallet admin app | [treetracker-wallet-admin-client](https://github.com/Greenstand/treetracker-wallet-admin-client) | |
+| ⭐ Admin panel (Keycloak login) | [treetracker-admin-client](https://github.com/Greenstand/treetracker-admin-client) | |
+| ⭐ Wallet admin app | [treetracker-wallet-admin-client](https://github.com/Greenstand/treetracker-wallet-admin-client) | |
 | Wallet app ([wallet.treetracker.org](https://wallet.treetracker.org)) | [treetracker-wallet-app](https://github.com/Greenstand/treetracker-wallet-app) | |
 | Web map ([map.treetracker.org](https://map.treetracker.org)) | [treetracker-web-map-client](https://github.com/Greenstand/treetracker-web-map-client) | |
-| Android grower app | [treetracker-android](https://github.com/Greenstand/treetracker-android) | |
+| ⭐ Android grower app | [treetracker-android](https://github.com/Greenstand/treetracker-android) | |
 | iOS grower app | [treetracker-ios](https://github.com/Greenstand/treetracker-ios) | |
 
 ## How we work
