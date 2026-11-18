@@ -63,6 +63,13 @@ Each app needs **at least 2 testers**. More are welcome. ⭐ = current priority.
 * When it is ready, add the `ready for maintainer` label and tag a maintainer.
 * Reviewers never merge. Maintainers do the final check and merge.
 
+> **For now (temporary):** adding labels needs a GitHub moderator role, which most volunteers do not have yet. Until then:
+>
+> * Find pull requests with no review yet, for example: [admin-api pull requests with no review](https://github.com/Greenstand/treetracker-admin-api/pulls?q=is%3Apr+is%3Aopen+review%3Anone).
+> * Instead of `needs first review`, comment on the pull request that you are reviewing it.
+> * Instead of `ready for maintainer`, submit your review with **Approve** and tag a maintainer from the table above in a comment.
+> * Moderators add the labels when they can. You do not need to wait for them.
+
 ### Testing an app
 
 * Follow a real user flow, for example sign up, log in or send a token.
