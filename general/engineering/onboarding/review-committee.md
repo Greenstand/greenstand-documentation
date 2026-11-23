@@ -18,27 +18,27 @@ Greenstand has many contributors but only a few maintainers who can merge. The T
 
 ## Repos to review
 
-Each repo needs **at least 2 reviewers**, so one can cover when another is busy. More are welcome. ⭐ = current priority. Maintainers come from each repo's `CODEOWNERS` file; "not set yet" means the repo has none.
+Each repo needs **at least 2 reviewers**, so one can cover when another is busy. More are welcome. ⭐ = current priority. Maintainers are the people who review and merge pull requests in each repo (from `CODEOWNERS`, or from recent merges where `CODEOWNERS` names no person). Tag them when a pull request is ready.
 
 | Area | Repo | What it is | Maintainers | Reviewers |
 | --- | --- | --- | --- | --- |
-| Core API | [treetracker-api](https://github.com/Greenstand/treetracker-api) | Captures and trees (core data) | not set yet | |
-| Core API | [treetracker-query-api](https://github.com/Greenstand/treetracker-query-api) | Read API for the map and apps | `@Greenstand/microservices-working-group` | |
-| Core API | [images-api](https://github.com/Greenstand/images-api) | Resizes images | `@Greenstand/microservices-working-group` | |
+| Core API | [treetracker-api](https://github.com/Greenstand/treetracker-api) | Captures and trees (core data) | `@Kpoke`, `@dadiorchen` | |
+| Core API | [treetracker-query-api](https://github.com/Greenstand/treetracker-query-api) | Read API for the map and apps | `@dadiorchen`, `@mahdi2ba` | |
+| Core API | [images-api](https://github.com/Greenstand/images-api) | Resizes images | `@Kpoke` | |
 | Admin | ⭐ [treetracker-admin-api](https://github.com/Greenstand/treetracker-admin-api) | Admin panel backend | `@dadiorchen`, `@nmcharlton` | |
-| Admin | ⭐ [treetracker-admin-client](https://github.com/Greenstand/treetracker-admin-client) | Admin panel screens | `@Greenstand/react-js-code-reviewers` | |
-| Admin | [treetracker-stakeholder-api](https://github.com/Greenstand/treetracker-stakeholder-api) | Organizations | `@Greenstand/microservices-working-group` | |
+| Admin | ⭐ [treetracker-admin-client](https://github.com/Greenstand/treetracker-admin-client) | Admin panel screens | `@dadiorchen`, `@samwel141` | |
+| Admin | [treetracker-stakeholder-api](https://github.com/Greenstand/treetracker-stakeholder-api) | Organizations | `@Kpoke` | |
 | Wallet | [treetracker-wallet-api](https://github.com/Greenstand/treetracker-wallet-api) | Tokens and transfers | `@Kpoke`, `@dadiorchen` | |
-| Wallet | [treetracker-wallet-app](https://github.com/Greenstand/treetracker-wallet-app) | Wallet app | `@Greenstand/wallet-mobile-code-reviewers` | |
-| Wallet | ⭐ [treetracker-wallet-admin-client](https://github.com/Greenstand/treetracker-wallet-admin-client) | Wallet admin screens | not set yet | |
-| Web map | [treetracker-web-map-client](https://github.com/Greenstand/treetracker-web-map-client) | The public map | `@Greenstand/web-map-code-reviewer` | |
-| Web map | [treetracker-tile-server](https://github.com/Greenstand/treetracker-tile-server) | Map tiles | not set yet | |
+| Wallet | [treetracker-wallet-app](https://github.com/Greenstand/treetracker-wallet-app) | Wallet app | `@dadiorchen`, `@mahdi2ba` | |
+| Wallet | ⭐ [treetracker-wallet-admin-client](https://github.com/Greenstand/treetracker-wallet-admin-client) | Wallet admin screens | `@samwel141` | |
+| Web map | [treetracker-web-map-client](https://github.com/Greenstand/treetracker-web-map-client) | The public map | `@dadiorchen` | |
+| Web map | [treetracker-tile-server](https://github.com/Greenstand/treetracker-tile-server) | Map tiles | `@dadiorchen`, `@ZavenArra` | |
 | Mobile | ⭐ [treetracker-android](https://github.com/Greenstand/treetracker-android) | Grower app for Android | `@Elforama` | |
 | Mobile | [treetracker-ios](https://github.com/Greenstand/treetracker-ios) | Grower app for iOS | `@alexcornforth` | |
-| Data ingest | [treetracker-field-data](https://github.com/Greenstand/treetracker-field-data) | Receives captures from phones | not set yet | |
-| Data ingest | [treetracker-airflow-dags](https://github.com/Greenstand/treetracker-airflow-dags) | Scheduled data jobs | not set yet | |
-| Infrastructure | [treetracker-infrastructure](https://github.com/Greenstand/treetracker-infrastructure) | Servers and clusters | not set yet | |
-| Docs | [greenstand-documentation](https://github.com/Greenstand/greenstand-documentation) | This documentation | not set yet | |
+| Data ingest | [treetracker-field-data](https://github.com/Greenstand/treetracker-field-data) | Receives captures from phones | `@Kpoke` | |
+| Data ingest | [treetracker-airflow-dags](https://github.com/Greenstand/treetracker-airflow-dags) | Scheduled data jobs | `@Kpoke` | |
+| Infrastructure | [treetracker-infrastructure](https://github.com/Greenstand/treetracker-infrastructure) | Servers and clusters | `@dadiorchen`, `@mahdi2ba` | |
+| Docs | [greenstand-documentation](https://github.com/Greenstand/greenstand-documentation) | This documentation | `@Davidezrajay` | |
 
 ## Apps to test
 
