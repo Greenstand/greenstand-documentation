@@ -2,7 +2,7 @@
 
 * [Overview](README.md)
 * [Quickstart](quickstart.md)
-* [Handbook WIP](handbook-wip.md)
+* [Handbook](handbook-wip.md)
 * [Feature Dependency Graph](features-waiting-on-outside-dependencies.md)
 * [Ingestion Flow](ingestion-flow.md)
 * [Data Visualization](data-visualization.md)
