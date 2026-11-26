@@ -2,7 +2,7 @@ Greenstand Documentation, Index
 ===============================
 
 ## Project Design
-[Introduction to the purpose and design of Greenstand](docs/project-design/index.md)
+[Introduction to the purpose and design of Greenstand](docs/introduction/the-model/README.md)
 
 ## User Guides
 [How to use Greenstand software tools](docs/user-guides/index.md)

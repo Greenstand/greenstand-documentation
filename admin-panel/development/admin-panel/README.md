@@ -1,53 +1,47 @@
 ---
-description: >-
-  This document provides an overview of the Admin Panel functionalities, team
-  members and environments.
+description: Admin Panel workflows, version boundaries and current development references.
 ---
 
 # Overview
 
 ## About the Admin Panel
 
-The Admin Panel is a tool used by Greenstand and partner organizations to review and manage the following data:
+The Admin Panel helps Greenstand and partner organizations review captures and manage growers, species, organizations and related workflows. Available screens depend on the deployed version and the signed-in user's permissions.
 
-* **Trees**
-* **Captures** (geo- and time-stamped photos of trees)
-* Tree **Species**
-* **Growers** (AKA Planters or Workers)
-* **Contracts** (agreements between Growers and organizations)
-* Grower **Earnings** and **Payments**
-* **Stakeholders** (e.g., tree planting organizations)
-* **Regions** (geographical areas where planting happens)
+## Current development status — 26 November 2026
 
-Additionally, the Admin Panel provides a mechanism for sending messages and surveys to Treetracker app users (**Messaging**).
+There are three distinct layers of work. Do not treat a local dev build or an open PR as a production release.
 
-### Primary Use Case
+- Existing panel: retains legacy Captures/export, matching and wallet service contracts where those screens have not been migrated.
+- Keycloak work: login and organization binding use Keycloak. Approving the current admin binding request assigns an organization claim and the org role; it does not grant organization-administrator rights or approve a grower's Android enrollment.
+- Proposed NDM integration: client PR #1315 and API PR #699 add organization-scoped views over Stakeholder, Herbarium, Field Data, Treetracker and Contracts. Both remain open proposals as of this review.
 
-Tree **Captures** recorded by **Growers** through the [Treetracker app](https://app.gitbook.com/o/-MXNadx4i6aOZ12XcStA/s/-MXtAguKaWMpiXXl0UDb/) appear in the Admin Panel for **verification** (_is it a photo of a tree?_), **tagging** (_what sort of tree is it?_) and **matching** (_is the tree already being tracked?_).
+Sources: https://github.com/Greenstand/treetracker-admin-client/pull/1315 and https://github.com/Greenstand/treetracker-admin-api/pull/699
 
-### Secondary Use Case
+## Views in the NDM integration
 
-Manage the **Contracts** under which **Growers** plant and track trees on behalf of tree planting organizations (**Stakeholders**). Manage the **Payments** from organizations to Growers for fulfilling the contract.
+Projects support search, sorting, add/edit, geography, image URLs and separate tree/capture targets. Growers show account details, projects and sessions, with audited organization transfers. Tracking sessions provide counts, duration, map previews, recorded area and audited project corrections.
 
-## Core Team Members
+Verify supports session-based review, approval/rejection, organization-scoped tags and the effective project/organization species selection. Capture approval and matching a capture to a tree are separate operations; matching event publication remains a dependency.
 
-| Name  | Role      | Slack                                                               | GitHub                                       |
-| ----- | --------- | ------------------------------------------------------------------- | -------------------------------------------- |
-| Nick  | Team Lead | [Nick - Admin Panel Lead](https://app.slack.com/team/U0141R1GV96)   | [@nmcharlton](https://github.com/nmcharlton) |
-| Gwynn | Guide     | [Gwynn (admin panel guide)](https://app.slack.com/team/U01LG7UU0NP) | [@gwynndp](https://github.com/gwynndp)       |
+Species allocation follows project, organization and default scopes. A saved empty custom list remains empty. Herbarium stores the eight-letter name separately from the full Latin name, common names and scoped local names.
 
-## Slack Channels
+Organization users have scoped permissions. Subscription screens show Stripe tiers and NDM usage, and open hosted billing. Complete quota/access enforcement is not implemented. Contract creation, signing and payouts are not provided by the new read views.
 
-* [#admin\_panel](https://greenstand.slack.com/archives/C8W6GT9MZ) (invitation required)
-* [#admin\_panel\_notifications](https://greenstand.slack.com/archives/C01D1GY1NN9)
+The legacy Captures/export and org-binding lookup have not yet been fully migrated to the NDM. See the remaining-work inventory: https://github.com/Greenstand/treetracker-admin-client/issues/1316
 
-## Environments
+## Data ownership and offline collection
 
-* Development environment: [https://dev-admin.treetracker.org](https://dev-admin.treetracker.org)
-* Test environment: [https://test-admin.treetracker.org](https://test-admin.treetracker.org)
-* Staging environment
-* Production environment
+ADR 0024 proposes separate admin memberships, grower memberships, billing and session ownership. Android project selection should remain usable offline; an intended QR destination is not proof of membership, and unassigned sessions can be retained for later allocation. This remains proposed policy, not a released Android feature.
 
-{% hint style="info" %}
-The login credentials for the environments can be found in the Slack channel.
-{% endhint %}
+https://github.com/Greenstand/treetracker-decisions/pull/35
+
+## Access and environments
+
+Use the login method and environment configured by the current repository/deployment. The Keycloak development panel used for the integration is https://dev-beta-admin.treetracker.org. Confirm test, staging and production URLs with the deployment owner; older dev-admin/test-admin URLs may refer to another generation of the panel.
+
+Request an individual account and the required role through the responsible maintainer. Server-side Keycloak directory credentials are separate from a human's admin role. Keep passwords, Stripe keys, database connection strings and service-account secrets out of documentation.
+
+## Collaboration
+
+Use the Admin Panel GitHub repositories and the #admin_panel and #engineering Slack channels for questions, review and progress. Recurring team-meeting schedules have been removed because those meetings are not running. Current maintainers and ownership should be checked in GitHub rather than inferred from an old team roster.

@@ -106,7 +106,7 @@ We make heavy use of github actions to automate deployment to our cloud environm
 
 ## **Google Meet**
 
-We currently make extensive use of Google Meet for our weekly meetings. &#x20;
+Recurring team-meeting schedules are not currently in use. Coordinate through GitHub and Slack; arrange an ad-hoc call only when needed. &#x20;
 
 The closed caption feature  ( \[CC] in bottom right controls panel) is a useful feature for non-native English speakers or those with poor network connections.&#x20;
 

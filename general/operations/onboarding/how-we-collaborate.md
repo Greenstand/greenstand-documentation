@@ -1,10 +1,12 @@
 # How We Collaborate
 
-Greenstand is a globally distributed team. To work together efficiently, it’s important for each contributor to be familiar with certain tools and technologies.&#x20;
+
+Greenstand is a globally distributed team. To work together efficiently, it’s important for each contributor to be familiar with certain tools and technologies.&#x20;
 
 Our core collaboration technologies are currently Slack and Google tools (Gmail, Google meet), and Github (for developers).
 
-
+
+
 
 ### Github
 
@@ -63,11 +65,9 @@ Make sure that your signature is as per the Greenstand specs. Follow the followi
 
 ●       [**How to set up your Gmail signature for Greenstand**](https://docs.google.com/document/d/1k41lkxuNOTtxs0UfxtdvMBpDVo97-SaaK\_wnyjfjXtw/edit#heading=h.b57wy8cd5ys7)**.**
 
-### **Google Meet**
+### Calls when needed
 
-Greenstand contributors meet weekly at team meetings or per the need of ongoing projects. These meetings are optional - if you are comfortable working alone and communicating via Slack, that is perfectly acceptable provided independent work results in task completion. However, we do find that face time and verbal discussion help coordinate and move the project forward effectively. Plus, it’s an excellent way **to meet other collaborators & become connected to the community!**
-
-You can join any meeting directly with the link created by your team lead or anyone with whom your meeting is scheduled, or ask to be invited in order for the meeting to show on your personal calendar. Since Google Meet is a free service, you are equally able to set up meetings, invite attendees, and create unique links to share as well.
+Recurring team-meeting schedules and attendance instructions have been removed because the meetings are not running. Coordinate in the relevant Slack channel or GitHub issue. Arrange an ad-hoc call if the participants agree it is useful.
 
 ### **Google Drive, Asana, Network for Good, HubSpot**
 

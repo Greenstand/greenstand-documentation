@@ -8,7 +8,7 @@ description: Resources and context for Greenstand Engineers
 
 ## **Welcome!**
 
-Thanks for volunteering as a Greenstand Engineer! Greenstand Engineers build the treetracker platform, a powerful and integrated set of applications and software services that employs some of the world’s poorest people to regrow forests by paying them for the positive impacts they create. This guide explains our motivations, organizational culture, software projects, and tools that we use to collaborate, build, and run our platform. [https://greenstand.org](https://greenstand.org)
+Thanks for volunteering as a Greenstand Engineer! Greenstand Engineers build the treetracker platform, a powerful and integrated set of applications and software services that helps growers demonstrate reforestation impact and enables organizations to compensate them. Greenstand provides the software; grower employment and payment arrangements belong to the participating organizations. This guide explains our motivations, organizational culture, software projects, and tools that we use to collaborate, build, and run our platform. [https://greenstand.org](https://greenstand.org)
 
 We are so glad to have you on board. This is a large project and we have many tasks ahead of us - ensuring a quality software service that can verify the growth and success of billions of trees as we collaborate with tens of third party reforestation organizations to rebuild our global forests. It’s a big dream, but by working together that vision is already becoming reality. There is a place in this effort for every software engineer!
 
@@ -37,7 +37,7 @@ An evolving document is maintained at the following link, and changes are sugges
 
 **Our Engineering Organization**
 
-Building treetracker requires diverse technical skills and many projects working together to build a functional whole. As such, we have organized the Greenstand Engineers as a microservices enterprise. We operate on the principle of creating many small, focused teams. Each team organizes an (optional) weekly meeting, has team leads, and receives technical support and coordination from engineering leadership. New volunteers are encouraged to choose one project to contribute to at first. Over time, as you learn more about our platform, there are many opportunities to learn new technologies, attend other team meetings, or collaborate in cross team working groups.
+Building treetracker requires diverse technical skills and many projects working together to build a functional whole. As such, we have organized the Greenstand Engineers as a microservices enterprise. We operate on the principle of creating many small, focused teams. Teams coordinate through repository issues, pull requests and Slack, with technical support and ownership agreed with the relevant maintainers. New volunteers are encouraged to choose one project to contribute to at first. Over time, as you learn more about our platform, there are many opportunities to learn new technologies or collaborate in cross team working groups.
 
 ### **Roles**
 
@@ -63,21 +63,9 @@ Application Platform\
 GIS\
 Dev Ops
 
-### **Team Meetings**
+### Collaboration
 
-Greenstand Engineers meet weekly at a variety of team meetings to coordinate efforts. These meetings are optional - if you are comfortable working alone and communicating via slack we are completely on board with that process - but we do find that face time and verbal discussion help coordinate and move the project forward effectively. Please it’s a good way to meet other collaborators. The team calendar can be found at:
-
-[Greenstand Team Calendar](https://calendar.google.com/calendar/embed?src=greenstand.org_fc0daljnbpsupt6skbb77mkuq0%40group.calendar.google.com\&ctz=America%2FAnchorage)
-
-Ask to be invited to meetings you are interested, and you will receive updates to the meeting details via google calendar automatically.\\
-
-**Developer Roundtables** are forums for tech/organizational questions, group debugging, help for junior devs, and also presentation of items of interest including system architectures and technical training.
-
-**Coworking Sessions** are times when many Greenstand Engineers may be online at the same time and can collaborate or experience community support. \\
-
-Note that Greenstand is an international project and your ability to attend some meetings may be defined somewhat by your time zone. In particular we have a developer roundtable that runs at 10AM London / 6 PM Beijing time to support our international team members in Europe, India, Africa, and China.
-
-Note that Greenstand is an international project and your ability to attend some meetings may be defined somewhat by your time zone.  In particular we have a developer roundtable that runs at 10AM London / 6 PM Beijing time to support our international team members in Europe, India, Africa, and China.  Many other meetings are loosely structured around PST.&#x20;
+Coordinate work through GitHub issues, pull requests and the relevant Slack channels. Recurring team-meeting schedules and attendance instructions have been removed because those meetings are not currently running. Historical minutes remain historical records.
 
 ### **Volunteer Enterprise Perspective**
 
