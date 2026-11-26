@@ -23,7 +23,7 @@ Additionally, the Admin Panel provides a mechanism for sending messages and surv
 
 ### Primary Use Case
 
-Tree **Captures** recorded by **Growers** through the [Treetracker app](http://127.0.0.1:5000/o/-MXNadx4i6aOZ12XcStA/s/-MXtAguKaWMpiXXl0UDb/) appear in the Admin Panel for **verification** (_is it a photo of a tree?_), **tagging** (_what sort of tree is it?_) and **matching** (_is the tree already being tracked?_).
+Tree **Captures** recorded by **Growers** through the [Treetracker app](https://app.gitbook.com/o/-MXNadx4i6aOZ12XcStA/s/-MXtAguKaWMpiXXl0UDb/) appear in the Admin Panel for **verification** (_is it a photo of a tree?_), **tagging** (_what sort of tree is it?_) and **matching** (_is the tree already being tracked?_).
 
 ### Secondary Use Case
 
@@ -40,12 +40,6 @@ Manage the **Contracts** under which **Growers** plant and track trees on behalf
 
 * [#admin\_panel](https://greenstand.slack.com/archives/C8W6GT9MZ) (invitation required)
 * [#admin\_panel\_notifications](https://greenstand.slack.com/archives/C01D1GY1NN9)
-
-## Team meetings
-
-Tuesdays 10AM PST, Slack huddle in [#engineering](https://greenstand.slack.com/archives/C7301AENR) channel.
-
-An opportunity to meet other contributors, hear about ongoing work and ask questions.
 
 ## Environments
 
