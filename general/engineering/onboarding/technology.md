@@ -36,6 +36,10 @@ The
 | Sage Maker | Machine Learning| 
 
 
+## Repository-specific versions
+
+Use each repository's README, package manifest, lockfile and CI configuration for supported versions. There is no single Node, Android SDK or frontend version that applies to the whole platform. The current admin integration uses the upstream React/Material UI client and TypeScript admin API; its open PRs are not a production rollout.
+
 ## General
 
 | Tool       | Description                       |
@@ -91,7 +95,7 @@ The
 
 |            |                                                                      |
 | ---------- | -------------------------------------------------------------------- |
-| Docker     | virtual machine containers for continuous integration and deployment |
+| Docker     | application containers for continuous integration and deployment |
 | Kubernetes | host docker containers in production                                 |
 | Airflow    |                                                                      |
 | Terraform  |                                                                      |
