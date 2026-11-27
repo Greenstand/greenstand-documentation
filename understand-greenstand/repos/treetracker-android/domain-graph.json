@@ -29,7 +29,7 @@
       "MapLibre"
     ],
     "description": "Grower-facing Android app for capturing trees as geotagged photos, managing grower accounts and wallets, and syncing captures to the Treetracker backend.",
-    "analyzedAt": "2026-09-03T05:17:57Z",
+    "analyzedAt": "2026-11-20T13:54:23Z",
     "gitCommitHash": "949d9624a8782ea2805d67e1ff7dfae7ef97e4cd"
   },
   "nodes": [
@@ -250,10 +250,10 @@
         "gps"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/permissions",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/permissions/Permissions.kt",
       "lineRange": [
-        0,
-        0
+        54,
+        145
       ]
     },
     {
@@ -266,10 +266,10 @@
         "location"
       ],
       "complexity": "complex",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/capture/TreeCaptureViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/capture/TreeCaptureViewModel.kt",
       "lineRange": [
-        0,
-        0
+        111,
+        147
       ]
     },
     {
@@ -282,10 +282,10 @@
         "capture"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/capture/TreeCaptureScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/capture/TreeCaptureScreen.kt",
       "lineRange": [
-        0,
-        0
+        83,
+        147
       ]
     },
     {
@@ -298,10 +298,10 @@
         "ui"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/capture/TreeImageReviewScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/capture/TreeImageReviewScreen.kt",
       "lineRange": [
-        0,
-        0
+        52,
+        135
       ]
     },
     {
@@ -314,10 +314,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/capture/TreeImageReviewViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/capture/TreeImageReviewViewModel.kt",
       "lineRange": [
-        0,
-        0
+        81,
+        103
       ]
     },
     {
@@ -332,8 +332,8 @@
       "complexity": "moderate",
       "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/CreateTreeUseCase.kt",
       "lineRange": [
-        0,
-        0
+        27,
+        50
       ]
     },
     {
@@ -361,10 +361,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/sessionnote/SessionNoteScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/sessionnote/SessionNoteScreen.kt",
       "lineRange": [
-        0,
-        0
+        51,
+        66
       ]
     },
     {
@@ -377,10 +377,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/sessionnote/SessionNoteViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/sessionnote/SessionNoteViewModel.kt",
       "lineRange": [
-        0,
-        0
+        48,
+        56
       ]
     },
     {
@@ -393,10 +393,10 @@
         "room"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/database/SessionDAO.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/database/dao/SessionDAO.kt",
       "lineRange": [
-        0,
-        0
+        27,
+        31
       ]
     },
     {
@@ -424,10 +424,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/signup/NameEntryView.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/signup/NameEntryView.kt",
       "lineRange": [
-        0,
-        0
+        54,
+        125
       ]
     },
     {
@@ -439,10 +439,10 @@
         "validation"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/signup/SignupViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/signup/SignupViewModel.kt",
       "lineRange": [
-        0,
-        0
+        195,
+        221
       ]
     },
     {
@@ -455,10 +455,10 @@
         "ui"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/signup/CredentialEntryView.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/signup/CredentialEntryView.kt",
       "lineRange": [
-        0,
-        0
+        159,
+        389
       ]
     },
     {
@@ -470,10 +470,10 @@
         "validation"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/signup/SignupViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/signup/SignupViewModel.kt",
       "lineRange": [
-        0,
-        0
+        142,
+        163
       ]
     },
     {
@@ -486,10 +486,10 @@
         "registration"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/database/UserDAO.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/database/dao/UserDAO.kt",
       "lineRange": [
-        0,
-        0
+        55,
+        59
       ]
     },
     {
@@ -517,10 +517,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/userselect/UserSelect.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/userselect/UserSelect.kt",
       "lineRange": [
-        0,
-        0
+        61,
+        120
       ]
     },
     {
@@ -533,10 +533,10 @@
         "selection"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/userselect/UserSelectViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/userselect/UserSelectViewModel.kt",
       "lineRange": [
-        0,
-        0
+        125,
+        131
       ]
     },
     {
@@ -549,10 +549,10 @@
         "edit"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/userselect/UserSelectViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/userselect/UserSelectViewModel.kt",
       "lineRange": [
-        0,
-        0
+        103,
+        152
       ]
     },
     {
@@ -564,10 +564,10 @@
         "navigation"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/userselect/UserSelectScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/userselect/UserSelectScreen.kt",
       "lineRange": [
-        0,
-        0
+        26,
+        37
       ]
     },
     {
@@ -595,10 +595,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/profile/ProfileScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/profile/ProfileScreen.kt",
       "lineRange": [
-        0,
-        0
+        73,
+        102
       ]
     },
     {
@@ -611,10 +611,10 @@
         "validation"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/profile/ProfileScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/profile/ProfileScreen.kt",
       "lineRange": [
-        0,
-        0
+        148,
+        265
       ]
     },
     {
@@ -627,10 +627,10 @@
         "delete"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/profile/DeleteProfileScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/profile/DeleteProfileScreen.kt",
       "lineRange": [
-        0,
-        0
+        41,
+        83
       ]
     },
     {
@@ -658,10 +658,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/orgpicker/OrgPickerScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/orgpicker/OrgPickerScreen.kt",
       "lineRange": [
-        0,
-        0
+        68,
+        124
       ]
     },
     {
@@ -674,10 +674,10 @@
         "api"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/orgpicker/AddOrgViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/orgpicker/AddOrgViewModel.kt",
       "lineRange": [
-        0,
-        0
+        72,
+        89
       ]
     },
     {
@@ -690,10 +690,10 @@
         "persistence"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/database/OrganizationDAO.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/models/organization/OrgRepo.kt",
       "lineRange": [
-        0,
-        0
+        95,
+        106
       ]
     },
     {
@@ -721,10 +721,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/walletselect/WalletSelectScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/walletselect/WalletSelectScreen.kt",
       "lineRange": [
-        0,
-        0
+        104,
+        175
       ]
     },
     {
@@ -737,10 +737,10 @@
         "selection"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/walletselect/WalletSelectViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/walletselect/WalletSelectViewModel.kt",
       "lineRange": [
-        0,
-        0
+        66,
+        77
       ]
     },
     {
@@ -753,10 +753,10 @@
         "ui"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/walletselect/AddWalletScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/walletselect/addwallet/AddWalletScreen.kt",
       "lineRange": [
-        0,
-        0
+        69,
+        124
       ]
     },
     {
@@ -769,10 +769,10 @@
         "persistence"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/walletselect/AddWalletViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/walletselect/addwallet/AddWalletViewModel.kt",
       "lineRange": [
-        0,
-        0
+        48,
+        56
       ]
     },
     {
@@ -801,25 +801,25 @@
         "background"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/background/TreeSyncWorker.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/dashboard/DashboardViewModel.kt",
       "lineRange": [
-        0,
-        0
+        220,
+        228
       ]
     },
     {
       "id": "step:background-sync:check-internet",
       "type": "step",
       "name": "Check Internet",
-      "summary": "Confirm internet availability before starting sync.",
+      "summary": "Ping a public endpoint before syncing; this does not verify backend API availability.",
       "tags": [
         "network"
       ],
       "complexity": "simple",
       "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/CheckForInternetUseCase.kt",
       "lineRange": [
-        0,
-        0
+        25,
+        35
       ]
     },
     {
@@ -834,8 +834,8 @@
       "complexity": "complex",
       "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/SyncDataUseCase.kt",
       "lineRange": [
-        0,
-        0
+        69,
+        75
       ]
     },
     {
@@ -850,8 +850,8 @@
       "complexity": "complex",
       "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/SyncDataUseCase.kt",
       "lineRange": [
-        0,
-        0
+        105,
+        138
       ]
     },
     {
@@ -866,8 +866,8 @@
       "complexity": "moderate",
       "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/SyncDataUseCase.kt",
       "lineRange": [
-        0,
-        0
+        61,
+        67
       ]
     },
     {
@@ -880,10 +880,10 @@
         "progress"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/background/SyncNotificationManager.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/background/SyncNotificationManager.kt",
       "lineRange": [
-        0,
-        0
+        36,
+        85
       ]
     },
     {
@@ -911,10 +911,10 @@
         "read"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/database/TreeDAO.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/CreateTreeRequestUseCase.kt",
       "lineRange": [
-        0,
-        0
+        31,
+        38
       ]
     },
     {
@@ -929,24 +929,24 @@
       "complexity": "moderate",
       "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/CreateTreeRequestUseCase.kt",
       "lineRange": [
-        0,
-        0
+        31,
+        49
       ]
     },
     {
       "id": "step:build-tree-request:attach-device-metadata",
       "type": "step",
       "name": "Attach Device Metadata",
-      "summary": "Attach device and app version metadata to the request.",
+      "summary": "Include the device identifier and capture metadata in the tree request.",
       "tags": [
         "dto",
         "metadata"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/api/NewTreeRequest.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/CreateTreeRequestUseCase.kt",
       "lineRange": [
-        0,
-        0
+        50,
+        59
       ]
     },
     {
@@ -977,8 +977,8 @@
       "complexity": "moderate",
       "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/UploadLocationDataUseCase.kt",
       "lineRange": [
-        0,
-        0
+        43,
+        60
       ]
     },
     {
@@ -991,10 +991,10 @@
         "gps"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/api/TracksRequest.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/UploadLocationDataUseCase.kt",
       "lineRange": [
-        0,
-        0
+        62,
+        76
       ]
     },
     {
@@ -1007,10 +1007,10 @@
         "room"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/database/LocationDAO.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/UploadLocationDataUseCase.kt",
       "lineRange": [
-        0,
-        0
+        77,
+        85
       ]
     },
     {
@@ -1039,10 +1039,10 @@
         "read"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/UploadImageUseCase.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/api/ObjectStorageClient.kt",
       "lineRange": [
-        0,
-        0
+        113,
+        117
       ]
     },
     {
@@ -1057,8 +1057,8 @@
       "complexity": "moderate",
       "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/api/ObjectStorageClient.kt",
       "lineRange": [
-        0,
-        0
+        117,
+        119
       ]
     },
     {
@@ -1071,10 +1071,10 @@
         "storage"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/usecases/UploadImageUseCase.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/api/ObjectStorageClient.kt",
       "lineRange": [
-        0,
-        0
+        121,
+        135
       ]
     },
     {
@@ -1103,10 +1103,10 @@
         "pagination"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/MessagesApiService.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/models/messages/MessagesRepo.kt",
       "lineRange": [
-        0,
-        0
+        161,
+        195
       ]
     },
     {
@@ -1119,10 +1119,10 @@
         "persistence"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/MessagesDAO.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/models/messages/database/MessagesDAO.kt",
       "lineRange": [
-        0,
-        0
+        34,
+        111
       ]
     },
     {
@@ -1135,10 +1135,10 @@
         "storage"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/MessageUploader.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/models/messages/MessageUploader.kt",
       "lineRange": [
-        0,
-        0
+        35,
+        65
       ]
     },
     {
@@ -1151,10 +1151,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/MessagesRepo.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/models/messages/MessagesRepo.kt",
       "lineRange": [
-        0,
-        0
+        113,
+        130
       ]
     },
     {
@@ -1182,10 +1182,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/ChatScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/directmessages/ChatScreen.kt",
       "lineRange": [
-        0,
-        0
+        162,
+        195
       ]
     },
     {
@@ -1198,10 +1198,10 @@
         "state"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/ChatViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/directmessages/ChatViewModel.kt",
       "lineRange": [
-        0,
-        0
+        72,
+        76
       ]
     },
     {
@@ -1214,10 +1214,10 @@
         "upload"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/MessageEntity.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/models/messages/MessagesRepo.kt",
       "lineRange": [
-        0,
-        0
+        57,
+        82
       ]
     },
     {
@@ -1245,10 +1245,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/SurveyViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/survey/SurveyViewModel.kt",
       "lineRange": [
-        0,
-        0
+        61,
+        73
       ]
     },
     {
@@ -1261,10 +1261,10 @@
         "navigation"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/SurveyScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/survey/SurveyViewModel.kt",
       "lineRange": [
-        0,
-        0
+        87,
+        122
       ]
     },
     {
@@ -1277,10 +1277,10 @@
         "state"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/SurveyViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/survey/SurveyViewModel.kt",
       "lineRange": [
-        0,
-        0
+        75,
+        85
       ]
     },
     {
@@ -1293,10 +1293,10 @@
         "upload"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/messages/MessageRequest.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/models/messages/MessagesRepo.kt",
       "lineRange": [
-        0,
-        0
+        84,
+        111
       ]
     },
     {
@@ -1325,26 +1325,26 @@
         "count"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/dashboard/TreesToSyncHelper.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/dashboard/TreesToSyncHelper.kt",
       "lineRange": [
-        0,
-        0
+        27,
+        32
       ]
     },
     {
       "id": "step:view-dashboard:observe-progress",
       "type": "step",
       "name": "Observe Sync Progress",
-      "summary": "Observe background sync progress and update state.",
+      "summary": "Observe uploaded and pending tree counts and update dashboard sync state.",
       "tags": [
         "dashboard",
         "progress"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/dashboard/DashboardViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/dashboard/DashboardViewModel.kt",
       "lineRange": [
-        0,
-        0
+        179,
+        202
       ]
     },
     {
@@ -1357,10 +1357,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/dashboard/DashboardScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/dashboard/DashboardScreen.kt",
       "lineRange": [
-        0,
-        0
+        86,
+        116
       ]
     },
     {
@@ -1388,26 +1388,26 @@
         "read"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/map/MapViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/map/MapViewModel.kt",
       "lineRange": [
-        0,
-        0
+        84,
+        126
       ]
     },
     {
       "id": "step:view-tree-map:render-map",
       "type": "step",
       "name": "Render Map",
-      "summary": "Render the markers and step points on the MapLibre view.",
+      "summary": "Render the MapLibre map and its location-track geometry using locally loaded map data.",
       "tags": [
         "map",
         "ui"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/map/LibreMap.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/map/LibreMap.kt",
       "lineRange": [
-        0,
-        0
+        45,
+        179
       ]
     },
     {
@@ -1420,10 +1420,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/map/MapScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/map/MapScreen.kt",
       "lineRange": [
-        0,
-        0
+        80,
+        110
       ]
     },
     {
@@ -1451,26 +1451,26 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/settings/SettingsScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/settings/SettingsScreen.kt",
       "lineRange": [
-        0,
-        0
+        129,
+        200
       ]
     },
     {
       "id": "step:manage-settings:toggle-features",
       "type": "step",
-      "name": "Toggle Features",
-      "summary": "Toggle power-user mode and feature flags.",
+      "name": "Display Feature-Gated Settings",
+      "summary": "Display settings options conditionally based on debug and beta feature flags.",
       "tags": [
         "settings",
         "feature-flag"
       ],
       "complexity": "moderate",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/settings/SettingsViewmodel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/settings/SettingsScreen.kt",
       "lineRange": [
-        0,
-        0
+        148,
+        186
       ]
     },
     {
@@ -1483,10 +1483,10 @@
         "auth"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/settings/SettingsViewmodel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/settings/SettingsViewmodel.kt",
       "lineRange": [
-        0,
-        0
+        92,
+        98
       ]
     },
     {
@@ -1514,10 +1514,10 @@
         "ui"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/languagepicker/LanguageSelectScreen.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/languagepicker/LanguageSelectScreen.kt",
       "lineRange": [
-        0,
-        0
+        73,
+        111
       ]
     },
     {
@@ -1530,10 +1530,10 @@
         "preferences"
       ],
       "complexity": "simple",
-      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/view/languagepicker/LanguagePickerViewModel.kt",
+      "filePath": "app/src/main/java/org/greenstand/android/TreeTracker/languagepicker/LanguagePickerViewModel.kt",
       "lineRange": [
-        0,
-        0
+        50,
+        57
       ]
     }
   ],
