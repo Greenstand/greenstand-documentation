@@ -111,7 +111,7 @@ Go deeper: [Documentation](https://github.com/Greenstand/greenstand-documentatio
 ### Mobile
 
 - **[treetracker-android](repos/treetracker-android/)**: The Android app: growers capture trees (photo and GPS) offline and sync them later. Kotlin, Jetpack Compose.\
-  [Viewer](https://greenstand.github.io/greenstand-documentation/treetracker-android/) · [Onboarding](repos/treetracker-android/ONBOARDING.md) · [Glossary](repos/treetracker-android/GLOSSARY.md) · [README](repos/treetracker-android/README.md) · [Source](https://github.com/Greenstand/treetracker-android) · Snapshot 2026‑09‑03 at [`949d962`](https://github.com/Greenstand/treetracker-android/commit/949d9624a8782ea2805d67e1ff7dfae7ef97e4cd)
+  [Viewer](https://greenstand.github.io/greenstand-documentation/treetracker-android/) · [Onboarding](repos/treetracker-android/ONBOARDING.md) · [Glossary](repos/treetracker-android/GLOSSARY.md) · [README](repos/treetracker-android/README.md) · [Source](https://github.com/Greenstand/treetracker-android) · Snapshot 2026‑11‑27 at [`0303c06`](https://github.com/Greenstand/treetracker-android/commit/0303c068153932bdda3dc5aa9b866dd74b245a2f)
 
 ### Data ingest
 
