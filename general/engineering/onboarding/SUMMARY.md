@@ -2,6 +2,7 @@
 
 * [Overview](README.md)
 * [Teams](teams.md)
+* [Test and Review Committee](review-committee.md)
 * [Technology](technology.md)
 * [Tools](tools.md)
 * [Connect](connect.md)
