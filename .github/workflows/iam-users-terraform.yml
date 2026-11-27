@@ -1,0 +1,284 @@
+name: IAM Users – Terraform
+
+on:
+  workflow_dispatch: {}
+    # inputs:
+    #   send_emails:
+    #     description: "Send SES emails after apply?"
+    #     required: true
+    #     type: choice
+    #     options:
+    #       - no  
+    #       - yes
+
+  pull_request:
+    paths:
+      - 'terraform/iam-users/**'
+
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write      # needed for OIDC
+      contents: write
+
+    env:
+      AWS_REGION: us-east-1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::155729781479:role/github-user  # or a GitHubTerraformRole if you create one
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.0
+
+      - name: Terraform Init
+        working-directory: terraform/iam-users
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: terraform/iam-users
+        run: terraform plan -out=tfplan
+
+      # Only apply on manual run or non-PR events (for example push to main or workflow_dispatch)
+      - name: Terraform Apply
+        if: github.event_name != 'pull_request'
+        working-directory: terraform/iam-users
+        run: terraform apply -auto-approve tfplan
+
+      - name: Detect Terraform creates/deletes
+        id: plan_guard
+        working-directory: terraform/iam-users
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Assumes you already ran: terraform plan -out=tfplan
+          terraform show -json tfplan > tfplan.json
+
+          # Look for resource change actions
+          has_creates=$(jq -r '
+            any(.resource_changes[]?; (.change.actions | index("create")) != null)
+          ' tfplan.json)
+
+          has_deletes=$(jq -r '
+            any(.resource_changes[]?; (.change.actions | index("delete")) != null)
+          ' tfplan.json)
+
+          echo "has_creates=$has_creates"
+          echo "has_deletes=$has_deletes"
+
+          # Expose as GitHub Actions step outputs
+          echo "has_creates=$has_creates" >> "$GITHUB_OUTPUT"
+          echo "has_deletes=$has_deletes" >> "$GITHUB_OUTPUT"
+
+      - name: Get user emails from Terraform outputs
+        if: github.event_name != 'pull_request'
+        id: tf_outputs
+        working-directory: terraform/iam-users
+        run: |
+          set -euo pipefail
+          emails_json=$(terraform output -json user_emails)
+          echo "emails_json=$emails_json" >> "$GITHUB_OUTPUT"
+
+        # Send an email via SES to each user
+      - name: Send SES emails to users
+        if: github.event_name != 'pull_request' && steps.plan_guard.outputs.has_creates == 'true'
+        id: email_sent_id
+        working-directory: terraform/iam-users
+        env:
+          SES_FROM_ADDRESS: "info@cloudnestadvisory.com"
+          EMAILS_JSON: ${{ steps.tf_outputs.outputs.emails_json }}
+          email_sent: false
+        run: |
+          set -euo pipefail
+
+          # ------------------------------------------------------------
+          # 1) Sent-email log file: tracks which usernames we've already emailed
+          #    so we do not send duplicates on future runs.
+          # ------------------------------------------------------------
+          SENT_FILE="sent_emails.json"
+          
+          # Ensure sent log exists
+          if [ ! -f "$SENT_FILE" ]; then
+            echo "{}" > "$SENT_FILE"
+          fi
+
+          # Load current sent state into a variable
+
+          sent=$(cat "$SENT_FILE")
+
+          echo "Current sent email log:"
+          echo "$sent" | jq .
+
+          # ------------------------------------------------------------
+          # 2) Confirm we received the emails map from Terraform outputs
+          #    EMAILS_JSON should look like: {"vol-a":"a@x.com","vol-b":"b@x.com"}
+          # ------------------------------------------------------------
+
+          echo "EMAILS_JSON received:"
+          echo "$EMAILS_JSON" | jq .
+
+          #Old Above Below ------
+          # echo "$EMAILS_JSON" | jq -r 'to_entries[] | "\(.key) \(.value)"' | while read username email; do
+          # echo "Sending email to $email for user $username"
+          # Old Code Above -------
+
+          # ------------------------------------------------------------
+          # 3) Loop through each (username, email) pair and only send for NEW users
+          #    Use process substitution to avoid subshell issues from pipes.
+          # ------------------------------------------------------------
+          echo "$EMAILS_JSON" | jq -r 'to_entries[] | "\(.key) \(.value)"' | while read -r username email; do
+            already_sent=$(echo "$sent" | jq -r --arg u "$username" 'has($u)')
+
+            if [ "$already_sent" = "true" ]; then
+              echo "Skipping $username ($email) — already emailed"
+              continue
+            fi
+
+          echo "Sending email to $email for user $username"
+
+          # ------------------------------------------------------------
+          # 4) Build SES message payload as JSON file to avoid CLI quoting issues
+          # ------------------------------------------------------------
+          cat > ses-message.json <<EOF
+          {
+            "Subject": { "Data": "Your IAM access has been configured" },
+            "Body": {
+              "Text": {
+                "Data": "Hello,\n\nYour IAM user \"${username}\" has been created or updated in AWS.\n\nIf you were expecting new access, you should now be able to sign in or use your credentials (delivered to you through our normal secure channel).\n\nIf you did not expect this change, please contact the admin team immediately."
+              }
+            }
+          }
+          EOF
+
+          # ------------------------------------------------------------
+          # 5) Send email via SES
+          # ------------------------------------------------------------
+          aws ses send-email \
+              --region "$AWS_REGION" \
+              --from "$SES_FROM_ADDRESS" \
+              --destination "ToAddresses=$email" \
+              --message file://ses-message.json
+
+          # ------------------------------------------------------------
+          # 6) Record successful send in sent_emails.json (in-memory + on-disk)
+          # ------------------------------------------------------------
+
+          now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          sent=$(echo "$sent" | jq --arg u "$username" --arg t "$now" '. + {($u): $t}')
+          echo "$sent" > "$SENT_FILE"
+
+           # ------------------------------------------------------------
+          # 7) Final debug: show updated sent log so you can confirm it changed
+          # ------------------------------------------------------------
+          echo "Updated sent email log (file):"
+          cat "$SENT_FILE" | jq .
+
+          done
+
+          email_sent=true
+          echo "email_sent=true" >> "$GITHUB_OUTPUT"
+
+      - name: Cleanup sent email log for deleted users
+        if: github.event_name != 'pull_request' && steps.plan_guard.outputs.has_deletes == 'true'
+        id: cleanup_sent_log
+        working-directory: terraform/iam-users
+        env:
+          SES_FROM_ADDRESS: "info@cloudnestadvisory.com"
+          EMAILS_JSON: ${{ steps.tf_outputs.outputs.emails_json }}
+          email_sent: false
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SENT_FILE="sent_emails.json"
+
+          # Ensure log exists
+          if [ ! -f "$SENT_FILE" ]; then
+            echo "{}" > "$SENT_FILE"
+          fi
+
+          # Ensure we have plan JSON available
+          terraform show -json tfplan > tfplan.json
+
+          echo "Current sent email log:"
+          cat "$SENT_FILE" | jq .
+
+          # Pull usernames being deleted from the plan (IAM users)
+          deleted_users=$(jq -r '
+            [.resource_changes[]?
+              | select(.type=="aws_iam_user")
+              | select(.change.actions | index("delete"))
+              | .change.before.name
+            ] | unique | .[]
+          ' tfplan.json || true)
+
+          if [ -z "${deleted_users:-}" ]; then
+            echo "No deleted IAM users found in plan. Nothing to clean."
+            exit 0
+          fi
+
+          echo "Usernames to remove from sent log:"
+          echo "$deleted_users"
+
+          # Load current sent log into memory once, delete keys, write once
+          sent=$(cat "$SENT_FILE")
+
+          while IFS= read -r username; do
+            [ -z "$username" ] && continue
+            echo "Removing $username from $SENT_FILE (if present)..."
+            sent=$(echo "$sent" | jq --arg u "$username" 'del(.[$u])')
+          done <<< "$deleted_users"
+
+          echo "$sent" > "$SENT_FILE"
+
+          echo "Updated sent email log (file):"
+          cat "$SENT_FILE" | jq .
+ 
+      - name: Commit sent email log
+        #if: steps.email_sent_id.outputs.email_sent == 'true'
+        working-directory: terraform/iam-users
+        env: 
+          email_sent_ses: ${{ steps.email_sent_id.outputs.email_sent }}
+        run: |
+          set -euo pipefail
+          echo "Emailis true or flase:$email_sent_ses"
+
+          # ------------------------------------------------------------
+          # 1) Identify this commit as coming from GitHub Actions
+          # ------------------------------------------------------------
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # ------------------------------------------------------------
+          # 2) Stage the sent email log (this is the only file we care about)
+          # ------------------------------------------------------------
+          git add sent_emails.json
+
+          # ------------------------------------------------------------
+          # 3) If the staged file has NOT changed, exit cleanly
+          #    This prevents empty commits when:
+          #      - no emails were sent
+          #      - users were removed
+          #      - apply was a no-op
+          # ------------------------------------------------------------
+          if git diff --cached --quiet; then
+            echo "sent_emails.json unchanged. Nothing to commit."
+            exit 0
+          fi
+
+          # ------------------------------------------------------------
+          # 4) Commit and push the updated sent email log
+          # ------------------------------------------------------------
+          git commit -m "chore: record sent SES emails"
+          git push

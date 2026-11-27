@@ -1,0 +1,169 @@
+name: User Activity (org-wide)
+
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        description: "GitHub login to check (e.g., octocat)"
+        required: true
+      org:
+        description: "Org to scan (defaults to current repo owner)"
+        required: false
+      lookback_days:
+        description: "Consider comments updated in the last N days"
+        required: false
+        default: "90"
+      repo_name_regex:
+        description: "Optional: only repos whose names match this regex"
+        required: false
+        default: ".*"
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  org-scan:
+    runs-on: ubuntu-latest
+    env:
+      # Use PAT if you need private org repos; otherwise GITHUB_TOKEN is fine for what it can see
+      GH_TOKEN: ${{ secrets.ORG_READ_TOKEN || secrets.GITHUB_TOKEN }}
+      USERNAME: ${{ github.event.inputs.username }}
+      LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days }}
+      REPO_NAME_REGEX: ${{ github.event.inputs.repo_name_regex }}
+
+    steps:
+      - name: Resolve org
+        id: ctx
+        env:
+          ORG_INPUT: ${{ github.event.inputs.org }}
+          REPO_OWNER: ${{ github.repository_owner }}
+        run: |
+          if [ -n "$ORG_INPUT" ]; then echo "org=$ORG_INPUT" >> $GITHUB_OUTPUT; else echo "org=$REPO_OWNER" >> $GITHUB_OUTPUT; fi
+          echo "Scanning org: $(cat $GITHUB_OUTPUT)"
+
+      - name: Debug inputs
+        run: |
+          echo "username='$USERNAME'"
+          echo "lookback_days='$LOOKBACK_DAYS'"
+          echo "repo_name_regex='$REPO_NAME_REGEX'"
+          echo "org='${{ steps.ctx.outputs.org }}'"
+
+      - name: Scan repos for latest commit/comment
+        id: scan
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ env.GH_TOKEN }}
+          script: |
+            const org = "${{ steps.ctx.outputs.org }}";
+            const username = process.env.USERNAME?.trim();
+            const lookbackDays = parseInt(process.env.LOOKBACK_DAYS || "90", 10);
+            const repoRegex = new RegExp(process.env.REPO_NAME_REGEX || ".*", "i");
+            const since = new Date(Date.now() - lookbackDays*24*60*60*1000).toISOString();
+
+            let bestCommit = null;
+            let bestComment = null;
+
+            const considerCommit = (repoName, c) => {
+              const when = new Date(c.commit?.author?.date || c.commit?.committer?.date || c.created_at).getTime();
+              const cand = { when, repo: repoName, sha: c.sha, url: c.html_url, msg: c.commit?.message || "", date: new Date(when).toISOString() };
+              if (!bestCommit || when > bestCommit.when) bestCommit = cand;
+            };
+            const considerComment = (repoName, type, url, date, body) => {
+              const when = new Date(date).getTime();
+              const cand = { when, repo: repoName, type, url, date: new Date(when).toISOString(), excerpt: (body||"").slice(0,200) };
+              if (!bestComment || when > bestComment.when) bestComment = cand;
+            };
+
+            // List repos (visibility depends on token)
+            const repos = await github.paginate("GET /orgs/{org}/repos", {
+              org, per_page: 100, type: "all", sort: "full_name", direction: "asc"
+            });
+
+            for (const r of repos.filter(rr => repoRegex.test(rr.name))) {
+              try {
+                // Latest commit by user
+                const commits = await github.request("GET /repos/{owner}/{repo}/commits", {
+                  owner: org, repo: r.name, author: username, per_page: 1
+                });
+                if (commits.data?.[0]) considerCommit(r.name, commits.data[0]);
+
+                // Issue comments
+                const issueComments = await github.paginate("GET /repos/{owner}/{repo}/issues/comments", {
+                  owner: org, repo: r.name, since, per_page: 100
+                });
+                issueComments
+                  .filter(c => c.user?.login?.toLowerCase() === username.toLowerCase())
+                  .forEach(c => considerComment(r.name, "issue_comment", c.html_url, c.updated_at || c.created_at, c.body));
+
+                // PR review comments
+                const reviewComments = await github.paginate("GET /repos/{owner}/{repo}/pulls/comments", {
+                  owner: org, repo: r.name, since, per_page: 100
+                });
+                reviewComments
+                  .filter(c => c.user?.login?.toLowerCase() === username.toLowerCase())
+                  .forEach(c => considerComment(r.name, "pr_review_comment", c.html_url, c.updated_at || c.created_at, c.body));
+
+                // Discussions (best effort)
+                try {
+                  const discComments = await github.paginate("GET /repos/{owner}/{repo}/discussions/comments", {
+                    owner: org, repo: r.name, per_page: 100
+                  });
+                  discComments
+                    .filter(c =>
+                      (c.updated_at || c.created_at) >= since &&
+                      c.user?.login?.toLowerCase() === username.toLowerCase()
+                    )
+                    .forEach(c => considerComment(r.name, "discussion_comment", c.html_url, c.updated_at || c.created_at, c.body));
+                } catch {
+                  core.info(`[${r.name}] Discussions API not available; skipping.`);
+                }
+              } catch (e) {
+                core.warning(`Skipping ${r.name}: ${e.message}`);
+              }
+            }
+
+            core.setOutput("commit_repo", bestCommit?.repo ?? "");
+            core.setOutput("commit_sha", bestCommit?.sha ?? "");
+            core.setOutput("commit_url", bestCommit?.url ?? "");
+            core.setOutput("commit_date", bestCommit?.date ?? "");
+            core.setOutput("commit_message", bestCommit?.msg ?? "");
+
+            core.setOutput("comment_repo", bestComment?.repo ?? "");
+            core.setOutput("comment_type", bestComment?.type ?? "");
+            core.setOutput("comment_url", bestComment?.url ?? "");
+            core.setOutput("comment_date", bestComment?.date ?? "");
+            core.setOutput("comment_excerpt", bestComment?.excerpt ?? "");
+
+      - name: Summarize org-wide findings
+        run: |
+          {
+            echo "### Org-wide user activity summary";
+            echo "";
+            echo "**User:** \`${{ github.event.inputs.username }}\`";
+            echo "**Org:** \`${{ steps.ctx.outputs.org }}\`";
+            echo "**Repo filter:** \`${{ github.event.inputs.repo_name_regex || '.*' }}\`";
+            echo "";
+            echo "#### Latest commit across org";
+            if [ -n "${{ steps.scan.outputs.commit_sha }}" ]; then
+              echo "- Repo: \`${{ steps.scan.outputs.commit_repo }}\`";
+              echo "- SHA: \`${{ steps.scan.outputs.commit_sha }}\`";
+              echo "- Message: ${{ steps.scan.outputs.commit_message }}";
+              echo "- Date: \`${{ steps.scan.outputs.commit_date }}\`";
+              echo "- URL: ${{ steps.scan.outputs.commit_url }}";
+            else
+              echo "_No commits found across scanned repos._";
+            fi
+            echo "";
+            echo "#### Latest comment (issue/PR/discussion) across org";
+            if [ -n "${{ steps.scan.outputs.comment_url }}" ]; then
+              echo "- Repo: \`${{ steps.scan.outputs.comment_repo }}\`";
+              echo "- Type: \`${{ steps.scan.outputs.comment_type }}\`";
+              echo "- Date: \`${{ steps.scan.outputs.comment_date }}\`";
+              echo "- URL: ${{ steps.scan.outputs.comment_url }}";
+              echo "- Excerpt: `${{ steps.scan.outputs.comment_excerpt }}`";
+            else
+              echo "_No comments found across scanned repos in the last ${{ github.event.inputs.lookback_days }} days._";
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
