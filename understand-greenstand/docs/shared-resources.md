@@ -311,7 +311,7 @@ the AWS key from GitHub secrets. Each environment and each channel has its own G
 | Code repo | Use | Evidence |
 |---|---|---|
 | treetracker-admin-client | deploy | [deploy workflow](https://github.com/Greenstand/treetracker-admin-client/blob/ecbfe05/.github/workflows/deploy.yaml#L46-L63) |
-| treetracker-wallet-admin-client | deploy | [build workflow](https://github.com/Greenstand/treetracker-wallet-admin-client/blob/62a60f3/.github/workflows/build-release.yaml#L148-L149), [deploy workflow&nbsp;1](https://github.com/Greenstand/treetracker-wallet-admin-client/blob/62a60f3/.github/workflows/deploy.yaml#L46-L59), [deploy workflow&nbsp;2](https://github.com/Greenstand/treetracker-wallet-admin-client/blob/62a60f3/.github/workflows/deploy.yaml#L152-L153) |
+| treetracker-wallet-admin-client | deploy | [build workflow](https://github.com/Greenstand/treetracker-wallet-admin-client/blob/81b71cb/.github/workflows/build-release.yaml#L148-L149), [deploy workflow&nbsp;1](https://github.com/Greenstand/treetracker-wallet-admin-client/blob/81b71cb/.github/workflows/deploy.yaml#L46-L59), [deploy workflow&nbsp;2](https://github.com/Greenstand/treetracker-wallet-admin-client/blob/81b71cb/.github/workflows/deploy.yaml#L153-L154) |
 | treetracker-wallet-app | deploy | [deploy workflow&nbsp;1](https://github.com/Greenstand/treetracker-wallet-app/blob/3c14113/.github/workflows/static-website-deploy-dev.yml#L86-L96), [deploy workflow&nbsp;2](https://github.com/Greenstand/treetracker-wallet-app/blob/3c14113/.github/workflows/ci-cd-deploy-web-test.yml#L12-L13), [deploy workflow&nbsp;3](https://github.com/Greenstand/treetracker-wallet-app/blob/3c14113/.github/workflows/ci-cd-deploy-web-prod.yml#L12-L13) |
 
 <!-- END shared resource web-hosting-and-cdn uses -->
@@ -349,7 +349,7 @@ The names that you see in the workflows (each secret is a GitHub secret):
 | Secret | `TEST_STAGING_CDN_DISTRIBUTION_ID` |
 | Secret | `TEST_STAGING_CDN_S3_BUCKET` |
 
-Each fact was checked at the snapshot of its code repo (generated 2026-09-03 to 2026-10-17).
+Each fact was checked at the snapshot of its code repo (generated 2026-09-03 to 2026-11-28).
 
 <!-- END shared resource web-hosting-and-cdn names -->
 
