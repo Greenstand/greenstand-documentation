@@ -20,14 +20,14 @@ WorkManager, the AWS S3 SDK, and MapLibre.
 
 ## Snapshot
 
-- **Source commit:** [`949d962`](https://github.com/Greenstand/treetracker-android/commit/949d9624a8782ea2805d67e1ff7dfae7ef97e4cd)
-- **Snapshot date:** 2026-09-03
+- **Source commit:** [`0303c06`](https://github.com/Greenstand/treetracker-android/commit/0303c068153932bdda3dc5aa9b866dd74b245a2f)
+- **Snapshot date:** 2026-11-27
 - **Primary language:** Kotlin
-- **Files analyzed:** 445
-- **Graph:** 910 nodes, 1680 edges, 8 architecture layers, 12-step guided tour
-- **Domain graph:** 6 domains, 18 flows, 65 steps
+- **Files analyzed:** 829
+- **Graph:** 5490 nodes, 12418 edges, 10 architecture layers, 15-step guided tour
+- **Domain graph:** 6 domains, 28 flows, 156 steps
 
-> Kotlin parsed to 220 classes + 246 functions (the rest of the 910 nodes are 317 files, 69 config, 45 document, and 14 pipeline nodes).
+> Kotlin parsed to 626 classes + 4035 functions (the rest of the 5490 nodes are 550 files, 141 config, 120 document, and 18 pipeline nodes). 2952 of the functions are unit and UI test cases.
 
 ## Contents
 
@@ -42,8 +42,8 @@ WorkManager, the AWS S3 SDK, and MapLibre.
 
 - **Tree Capture**: capture a tree as a geotagged photo (camera, GPS convergence, image review with an optional note, and local persistence).
 - **Grower Onboarding & Identity**: grower (planter) sign-up, active-grower selection, and profile management; registers the grower with the platform.
-- **Organization & Wallet Selection**: the organization a grower belongs to and the destination wallet that receives captured trees.
-- **Data Sync & Upload**: background upload of growers, sessions, trees, location tracks, device config, and messages to the Treetracker API, plus image/data bundles to object storage.
+- **Organization & Wallet Selection**: the organization a grower belongs to, and the screens where the grower picks or types a destination wallet. The session does not use that wallet: it takes the grower's own wallet.
+- **Data Sync & Upload**: background upload of growers, sessions, trees, location tracks, device config, and messages as JSON bundles to object storage, plus the tree photos. The only call to the Treetracker API gets the messages.
 - **Grower Messaging**: two-way messaging (direct chat, announcements, and surveys), synced from the API and persisted locally.
 - **Dashboard, Map & App Settings**: grower-facing overview surfaces (sync-stats dashboard, map of captured trees, app settings, and language selection).
 

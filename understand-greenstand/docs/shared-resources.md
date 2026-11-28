@@ -392,7 +392,7 @@ storage (checked 2026-10-24).
 
 | Code repo | Use | Evidence |
 |---|---|---|
-| treetracker-android | write | [build workflow](https://github.com/Greenstand/treetracker-android/blob/949d962/.github/workflows/build.yml#L48-L50) |
+| treetracker-android | write | [build workflow](https://github.com/Greenstand/treetracker-android/blob/0303c06/.github/workflows/build.yml#L54-L56) |
 | treetracker-wallet-api | write | [manifest](https://github.com/Greenstand/treetracker-wallet-api/blob/e95c15a/deployment/base/treetracker-wallet-api-deployment.yaml#L52-L70) |
 
 <!-- END shared resource photo-and-upload-storage uses -->
@@ -409,7 +409,7 @@ the Kubernetes Secret `aws-s3`):
 | Secret | `S3_TEST_IDENTITY_POOL_ID` |
 | Secret | `aws-s3` |
 
-Each fact was checked at the snapshot of its code repo (generated 2026-09-03).
+Each fact was checked at the snapshot of its code repo (generated 2026-09-03 to 2026-11-27).
 
 <!-- END shared resource photo-and-upload-storage names -->
 

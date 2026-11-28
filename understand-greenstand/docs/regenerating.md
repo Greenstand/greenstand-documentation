@@ -140,6 +140,13 @@ Limits:
        --exclude ".ua/,!*.png,!*.jpg,!LICENSE"
        ```
 
+     - `treetracker-android`: the value keeps 2 binary files out of the graph, the Gradle wrapper
+       JAR and an encrypted `.enc` file. The earlier graphs do not have them.
+
+       ```
+       --exclude ".ua/,*.jar,*.enc"
+       ```
+
      Then correct the project block of `/tmp/<repo-name>/.ua/knowledge-graph.json`. Do it
      before the next two skills copy the block. The viewer shows `project.name` as its title.
      It shows `project.description` in its info panel. `project.name` must be the repo name.

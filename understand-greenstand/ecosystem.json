@@ -10,7 +10,7 @@
     "treetracker-admin-api": "1f25d3e",
     "treetracker-web-map-client": "42b3a9a",
     "treetracker-tile-server": "b619c05",
-    "treetracker-android": "949d962",
+    "treetracker-android": "0303c06",
     "treetracker-field-data": "8ffb53c",
     "treetracker-airflow-dags": "a537231",
     "treetracker-infrastructure": "a740d11"
@@ -37,7 +37,7 @@
     { "from": "treetracker-admin-client", "to": "images-api", "label": "loads images", "view": "verification",
       "evidence": "treetracker-admin-client src/components/OptimizedImage.js:27" },
     { "from": "treetracker-android", "to": "storage", "label": "uploads captures", "view": "capture",
-      "evidence": "treetracker-android app/build.gradle:35-36; app/src/main/java/org/greenstand/android/TreeTracker/api/ObjectStorageClient.kt:117,159" },
+      "evidence": "treetracker-android app/build.gradle:37-38; app/src/main/java/org/greenstand/android/TreeTracker/api/ObjectStorageClient.kt:117,159" },
     { "from": "bundles", "to": "storage", "label": "downloads bundles", "view": "capture",
       "evidence": "bulk-pack-consumer consumer.js:40-44 @c7c5256 (outside the estate: the bucket and the key of a queue event, then fetchS3Data)" },
     { "from": "bundles", "to": "treetracker-field-data", "label": "sends captures", "view": "capture",
